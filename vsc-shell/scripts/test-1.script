@@ -1,0 +1,4 @@
+add-source tests/test-1.vala
+find tests/test-1.vala 7 25
+pause
+find tests/test-1.vala 13 23
