@@ -2,6 +2,8 @@ All the source of Vtg with the exception of the source contained
 in the vsc folder are released with a GPL V2+ as stated in the 
 source headers.
 
-The source in the vsc folder are release  with a LGPL v2 so 
+The source in the vsc folder are release  with a LGPL v2.1 so 
 the symbol completion library can be reused also in LGPL
 projects.
+
+See the header of each source file for more info.
