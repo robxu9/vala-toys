@@ -1,0 +1,6 @@
+2008-09-28    <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	replaced the old NamespaceReference with the new UsingDirective class
+

@@ -283,7 +283,7 @@ namespace Vsc
 							name = "%s.vala".printf (name);
 						}
 						source = new SourceFile (current_pri_context, name, false, src.source);
-						source.add_using_directive (new NamespaceReference ("GLib"));
+						source.add_using_directive (new UsingDirective (new UnresolvedSymbol (null, "GLib", null)));
 						current_pri_context.add_source_file (source);
 					}
 				}
@@ -293,13 +293,13 @@ namespace Vsc
 			bool need_reparse = false;
 			//add new namespaces to standard context)
 			foreach (SourceFile src in current_pri_context.get_source_files ()) {
-				foreach (NamespaceReference nr in src.get_using_directives ()) {
+				foreach (UsingDirective nr in src.get_using_directives ()) {
 					try {
-						if (nr.name != null && nr.name != "") {
-							need_reparse = add_package_from_namespace (nr.name, false);
+						if (nr.namespace_symbol.name != null && nr.namespace_symbol.name != "") {
+							need_reparse = add_package_from_namespace (nr.namespace_symbol.name, false);
 						}
 					} catch (Error err) {
-						warning ("Error adding namespace %s from file %s", nr.name, src.filename);
+						warning ("Error adding namespace %s from file %s", nr.namespace_symbol.name, src.filename);
 					}
 				}
 			}
@@ -616,8 +616,8 @@ namespace Vsc
 
 		private bool using_contains (SourceFile source, string name)
 		{
-			foreach (NamespaceReference ns in source.get_using_directives ()) {
-				if (ns.name == name) {
+			foreach (UsingDirective ns in source.get_using_directives ()) {
+				if (ns.namespace_symbol.name == name) {
 					return true;
 				}
 			}
