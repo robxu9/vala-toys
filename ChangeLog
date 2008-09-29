@@ -1,5 +1,11 @@
 2008-09-29    <sejerpz@tin.it>
 
+	* vsc/Makefile.am: 
+
+	fixed missing license files
+	
+2008-09-29    <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala: 
 
 	wrong function name fixes

@@ -5,7 +5,9 @@ SUBDIRS = vsc vsc-shell vtg images po
 vtgdocdir = ${prefix}/doc/vtg
 vtgdoc_DATA = \
         README\
-        COPYING\
+        COPYING-GPL\
+        COPYING-LGPL\
+	LICENSE-NOTE \
         AUTHORS\
         ChangeLog\
         INSTALL\
