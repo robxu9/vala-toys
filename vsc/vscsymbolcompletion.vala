@@ -268,12 +268,12 @@ namespace Vsc
 
 		private void parse_source_buffers ()
 		{
-			var current_pri_context = new CodeContext ();
+			var current_context = new CodeContext ();
 			lock (_sec_context) {
 				SourceFile source;
 
-				source = new SourceFile (current_pri_context, glib_file, true);
-				current_pri_context.add_source_file (source);
+				source = new SourceFile (current_context, glib_file, true);
+				current_context.add_source_file (source);
 			
 				foreach (SourceBuffer src in _source_buffers) {
 					if (src.name != null && src.source != null) {
@@ -282,17 +282,17 @@ namespace Vsc
 						if (!name.has_suffix (".vala")) {
 							name = "%s.vala".printf (name);
 						}
-						source = new SourceFile (current_pri_context, name, false, src.source);
+						source = new SourceFile (current_context, name, false, src.source);
 						source.add_using_directive (new UsingDirective (new UnresolvedSymbol (null, "GLib", null)));
-						current_pri_context.add_source_file (source);
+						current_context.add_source_file (source);
 					}
 				}
 			}
 
-			parse_pri_context (current_pri_context);
+			parse_context (current_context);
 			bool need_reparse = false;
 			//add new namespaces to standard context)
-			foreach (SourceFile src in current_pri_context.get_source_files ()) {
+			foreach (SourceFile src in current_context.get_source_files ()) {
 				foreach (UsingDirective nr in src.get_using_directives ()) {
 					try {
 						if (nr.namespace_symbol.name != null && nr.namespace_symbol.name != "") {
@@ -306,7 +306,7 @@ namespace Vsc
 
 			lock (_sec_context) {
 				need_parse_sec_context = false;
-				_sec_context = current_pri_context;
+				_sec_context = current_context;
 				//primary context reparse?
 				if (need_reparse) {
 					need_parse_pri_context = true;
@@ -316,29 +316,29 @@ namespace Vsc
 
 		private void parse ()
 		{
-			var current_pri_context = new CodeContext ();
+			var current_context = new CodeContext ();
 
 			lock (_pri_context) {
 				SourceFile source;
 				foreach (string item in _packages) {
-					source = new SourceFile (current_pri_context, item, true);
-					current_pri_context.add_source_file (source);
+					source = new SourceFile (current_context, item, true);
+					current_context.add_source_file (source);
 				}
 				foreach (string item in _sources) {
-					source = new SourceFile (current_pri_context, item, false);
-					current_pri_context.add_source_file (source);
+					source = new SourceFile (current_context, item, false);
+					current_context.add_source_file (source);
 				}
 			}
-			parse_pri_context (current_pri_context);
-			analyze_pri_context (current_pri_context);
+			parse_context (current_context);
+			analyze_context (current_context);
 
 			lock (_pri_context) {
 				need_parse_pri_context = false;
-				_pri_context = current_pri_context;
+				_pri_context = current_context;
 			}
 		}
 
-		private void parse_pri_context (CodeContext context)
+		private void parse_context (CodeContext context)
 		{
 			context.assert = false;
 			context.checking = false;
@@ -355,7 +355,7 @@ namespace Vsc
 			parser.parse (context);
 		}
 
-		private void analyze_pri_context (CodeContext context)
+		private void analyze_context (CodeContext context)
 		{
 			//first symbol resolver
 			var symbol_resolver = new SymbolResolver ();
@@ -531,7 +531,7 @@ namespace Vsc
 					source = find_sourcefile (_sec_context, sourcefile);
 					if (source != null) {
 						//first local
-						result = find_datatype_for_name_with_pri_context (_sec_context, toks[0], source, line, column);
+						result = find_datatype_for_name_with_context (_sec_context, toks[0], source, line, column);
 					} else {
 						warning ("no sourcefile found %s", sourcefile);
 					}
@@ -693,11 +693,11 @@ namespace Vsc
 
 
 			} else if (parent is Class) {
-				result = find_symbol_in_class_with_pri_context (context, (Class) parent, name, source);
+				result = find_symbol_in_class_with_context (context, (Class) parent, name, source);
 			} else if (parent is Struct) {
-				result = find_symbol_in_struct_with_pri_context (context, (Struct) parent, name, source);
+				result = find_symbol_in_struct_with_context (context, (Struct) parent, name, source);
 			} else if (parent is Interface) {
-				result = find_symbol_in_interface_with_pri_context (context, (Interface) parent, name, source);
+				result = find_symbol_in_interface_with_context (context, (Interface) parent, name, source);
 			} else if (parent is Property) {
 				var prop = (Property) parent;
 				result = find_symbol_with_context (context, prop.property_type.to_qualified_string (), source);
@@ -712,7 +712,7 @@ namespace Vsc
 			return result;
 		}
 
-		private Symbol? find_symbol_in_struct_with_pri_context (CodeContext context, Struct strt, string name, SourceFile source) {
+		private Symbol? find_symbol_in_struct_with_context (CodeContext context, Struct strt, string name, SourceFile source) {
 			foreach (Vala.Method item in strt.get_methods ()) {
 				if (item.name == name) {
 					return item;
@@ -728,7 +728,7 @@ namespace Vsc
 			return null;
 		}
 
-		private Symbol? find_symbol_in_class_with_pri_context (CodeContext context, Class @class, string name, SourceFile source) {
+		private Symbol? find_symbol_in_class_with_context (CodeContext context, Class @class, string name, SourceFile source) {
 			foreach (Vala.Method item in @class.get_methods ()) {
 				if (item.name == name) {
 					return item;
@@ -759,7 +759,7 @@ namespace Vsc
 
 			if (!(@class is GLib.Object)) {
 				if (@class.base_class is Vala.Class) {
-					result = find_symbol_in_class_with_pri_context (context, @class.base_class, name, source);
+					result = find_symbol_in_class_with_context (context, @class.base_class, name, source);
 				}
 
 				if (result == null) {
@@ -770,7 +770,7 @@ namespace Vsc
 							Namespace ns = null;
 							Class? cl = resolve_class_name (_pri_context, type.to_string (), out ns);
 							if (cl != null) {
-								result = find_symbol_in_class_with_pri_context (_pri_context, cl, name, source);
+								result = find_symbol_in_class_with_context (_pri_context, cl, name, source);
 							}
 						}
 					}
@@ -780,7 +780,7 @@ namespace Vsc
 			return result;
 		}
 
-		private Symbol? find_symbol_in_interface_with_pri_context (CodeContext context, Interface iface, string name, SourceFile source) {
+		private Symbol? find_symbol_in_interface_with_context (CodeContext context, Interface iface, string name, SourceFile source) {
 			foreach (Vala.Method item in iface.get_methods ()) {
 				if (item.name == name) {
 					return item;
@@ -811,7 +811,7 @@ namespace Vsc
 			return null;
 		}
 
- 		private DataType? find_datatype_for_name_with_pri_context (CodeContext context, string symbolname, SourceFile? source = null, int line = 0, int column = 0) throws SymbolCompletionError
+ 		private DataType? find_datatype_for_name_with_context (CodeContext context, string symbolname, SourceFile? source = null, int line = 0, int column = 0) throws SymbolCompletionError
 		{
 			debug ("find datatype");
 			Class cl = null;
@@ -898,7 +898,7 @@ namespace Vsc
 												vt = new ClassType (cl);
 											} else {
 												//not solved!
-												var mdt = find_datatype_for_name_with_pri_context (context, class_name, source, line, column);
+												var mdt = find_datatype_for_name_with_context (context, class_name, source, line, column);
 												if (mdt == null) {
 													//try to see if is a namespace
 													vt = find_datatype_for_symbol_name ("%s.%s".printf (class_name, ma.member_name), source);
@@ -1007,19 +1007,19 @@ namespace Vsc
 			SymbolCompletionResult result;
 
 			lock (_sec_context) {
-				result = find_by_name_with_pri_context (options, _sec_context, symbolname);
+				result = find_by_name_with_context (options, _sec_context, symbolname);
 			}
 
 			if (result.is_empty) {
 				lock (_pri_context) {
-					result = find_by_name_with_pri_context (options, _pri_context, symbolname);
+					result = find_by_name_with_context (options, _pri_context, symbolname);
 				}
 			}
 
 			return result;
 		}
 
-		private SymbolCompletionResult find_by_name_with_pri_context (SymbolCompletionFilterOptions options, CodeContext? context, string symbolname) throws GLib.Error
+		private SymbolCompletionResult find_by_name_with_context (SymbolCompletionFilterOptions options, CodeContext? context, string symbolname) throws GLib.Error
 		{
 			var result = new SymbolCompletionResult ();
 			if (context == null) {
