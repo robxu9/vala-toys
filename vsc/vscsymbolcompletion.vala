@@ -1173,7 +1173,7 @@ namespace Vsc
 							result.methods.add (new SymbolCompletionItem (name));
 						}
 					} else if (!options.only_constructors) {
-						result.methods.add (new SymbolCompletionItem (method.name));
+						result.methods.add (new SymbolCompletionItem.with_method (method));
 					}
 				}
 			}

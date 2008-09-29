@@ -19,16 +19,26 @@
  */
 
 using GLib;
+using Vala;
 
 namespace Vsc
 {
 	public class SymbolCompletionItem
 	{
 		public string name;
-		public Gee.List<SymbolCompletionItem> parameters = new Gee.ArrayList<SymbolCompletionItem> ();
+		public string return_type_name = null;
 
-		public SymbolCompletionItem (string name) {
+		public Gee.List<SymbolCompletionItem> parameters = null;
+
+		public SymbolCompletionItem (string name) 
+		{
 			this.name = name;
+		}
+
+		public SymbolCompletionItem.with_method (Method method)
+		{
+			this.name = method.name;
+			this.parameters = new Gee.ArrayList<SymbolCompletion> ();
 		}
 	}
 }

@@ -1,5 +1,12 @@
 2008-09-29    <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletionitem.vala: 
+	* vsc/vscsymbolcompletion.vala: 
+
+	prepared SymbolCompletionItem to incorporate some info for parameters and return values
+
+2008-09-29    <sejerpz@tin.it>
+	
 	* vsc/Makefile.am: 
 
 	fixed missing license files
