@@ -25,6 +25,7 @@ namespace Vsc
 	public class SymbolCompletionItem
 	{
 		public string name;
+		public Gee.List<SymbolCompletionItem> parameters = new Gee.ArrayList<SymbolCompletionItem> ();
 
 		public SymbolCompletionItem (string name) {
 			this.name = name;

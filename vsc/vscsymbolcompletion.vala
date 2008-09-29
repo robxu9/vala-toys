@@ -577,12 +577,12 @@ namespace Vsc
 			//first on the local context
 			for (int idx = 0; idx < count; idx++) {
 				if (both_pri_context_scope) {
-					result = find_symbol_with_pri_context (_sec_context, fields[idx], source, parent);
+					result = find_symbol_with_context (_sec_context, fields[idx], source, parent);
 				}
 
 				if (result == null || parent != null) {
 					both_pri_context_scope = false;
-					result = find_symbol_with_pri_context (_pri_context, fields[idx], source, parent);
+					result = find_symbol_with_context (_pri_context, fields[idx], source, parent);
 					if (result == null) {
 						break;
 					}
@@ -625,7 +625,7 @@ namespace Vsc
 			return false;
 		}
 
-		private Symbol? find_symbol_with_pri_context (CodeContext context, string name, SourceFile source, Symbol? parent = null) throws SymbolCompletionError
+		private Symbol? find_symbol_with_context (CodeContext context, string name, SourceFile source, Symbol? parent = null) throws SymbolCompletionError
 		{
 			Symbol result = null;
 			if (context == null) {
@@ -646,13 +646,13 @@ namespace Vsc
 				//the using directives
 				foreach (Namespace ns in context.root.get_namespaces ()) {
 					//if (using_contains (source, ns.name)) {
-						result = find_symbol_with_pri_context (context, name, source, ns);
+						result = find_symbol_with_context (context, name, source, ns);
 						//}
 				}
 
 				if (result == null) {
 					//and in the root one
-					result = find_symbol_with_pri_context (context, name, source, context.root);
+					result = find_symbol_with_context (context, name, source, context.root);
 				}
 
 			} else if (parent is Namespace) {
@@ -700,13 +700,13 @@ namespace Vsc
 				result = find_symbol_in_interface_with_pri_context (context, (Interface) parent, name, source);
 			} else if (parent is Property) {
 				var prop = (Property) parent;
-				result = find_symbol_with_pri_context (context, prop.property_type.to_qualified_string (), source);
+				result = find_symbol_with_context (context, prop.property_type.to_qualified_string (), source);
 			} else if (parent is Field) {
 				var field = (Field) parent;
-				result = find_symbol_with_pri_context (context, field.field_type.to_qualified_string (), source);
+				result = find_symbol_with_context (context, field.field_type.to_qualified_string (), source);
 			} else if (parent is Method) {
 				var method = (Method) parent;
-				result = find_symbol_with_pri_context (context, method.return_type.to_qualified_string (), source);
+				result = find_symbol_with_context (context, method.return_type.to_qualified_string (), source);
 			}
 
 			return result;
