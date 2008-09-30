@@ -96,15 +96,20 @@ namespace Vtg
 
 				this.all_doc = true;
 				this.parse (doc);
-				//this.cache_proposal = new Gsc.Proposal ("cache is still building...", "", this._icon_generic);
+
 				this._completion.cache_building += sender => { 
-					cache_building = true; 
+					if (cache_building == false) {
+						cache_building = true; 
+						Idle.add (this.on_idle);
+					}
 				};
 				this._completion.cache_builded += sender => { 
-					cache_building = false; 
+					if (cache_building == true) {
+						cache_building = false; 
+						Idle.add (this.on_idle);
+					}
 				};
-				//Timeout.add_seconds (1, this.on_idle);
-				Idle.add_full (Priority.LOW, this.on_idle);
+
 				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
 				sb_context_id = status_bar.get_context_id ("symbol status");
 			} catch (Error err) {
@@ -134,7 +139,7 @@ namespace Vtg
 				}
 			}
 
-			return true;
+			return false;
 		}
 
 		private bool on_timeout_parse ()

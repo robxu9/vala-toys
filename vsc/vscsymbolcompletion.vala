@@ -1074,20 +1074,20 @@ namespace Vsc
 			foreach (Vala.Struct st in ns.get_structs ()) {
 				if (count <= 1 && st.name.has_prefix (toks[baseidx])) {
 					last_st = st;
-					result.structs.add (new SymbolCompletionItem (st.name));
+					result.structs.add (new SymbolCompletionItem.with_struct (st));
 				} else if (count == 2 && st.name == toks[baseidx]) {
 					last_st = st;
-					result.structs.add (new SymbolCompletionItem (st.name));
+					result.structs.add (new SymbolCompletionItem.with_struct (st));
 				}
 			}
 				
 			foreach (Vala.Class cl in ns.get_classes ()) {
 				if (count <= 1 && cl.name.has_prefix (toks[baseidx])) {
 					last_cl = cl;
-					result.classes.add (new SymbolCompletionItem (cl.name));
+					result.classes.add (new SymbolCompletionItem.with_class (cl));
 				} else if (count == 2 && cl.name == toks[baseidx]) {
 					last_cl = cl;
-					result.classes.add (new SymbolCompletionItem (cl.name));
+					result.classes.add (new SymbolCompletionItem.with_class (cl));
 				}
 			}
 
@@ -1095,10 +1095,10 @@ namespace Vsc
 				foreach (Vala.Interface item in ns.get_interfaces ()) {
 					if (count <= 1 && item.name.has_prefix (toks[baseidx])) {
 						last_if = item;
-						result.interfaces.add (new SymbolCompletionItem (item.name));
+						result.interfaces.add (new SymbolCompletionItem.with_interface (item));
 					} else if (count == 2 && item.name == toks[baseidx]) {
 						last_if = item;
-						result.interfaces.add (new SymbolCompletionItem (item.name));
+						result.interfaces.add (new SymbolCompletionItem.with_interface (item));
 					}
 				}
 			}
@@ -1107,10 +1107,10 @@ namespace Vsc
 				foreach (Vala.Method item in ns.get_methods ()) {
 					if (count <= 1 && item.name.has_prefix (toks[baseidx])) {
 						last_md = item;
-						result.methods.add (new SymbolCompletionItem (item.name));
+						result.methods.add (new SymbolCompletionItem.with_method (item));
 					} else if (count == 2 && item.name == toks[baseidx]) {
 						last_md = item;
-						result.methods.add (new SymbolCompletionItem (item.name));
+						result.methods.add (new SymbolCompletionItem.with_method (item));
 					}
 				}
 			}
@@ -1119,10 +1119,10 @@ namespace Vsc
 				foreach (Vala.Field item in ns.get_fields ()) {
 					if (count <= 1 && item.name.has_prefix (toks[baseidx])) {
 						last_fd = item;
-						result.fields.add (new SymbolCompletionItem (item.name));
+						result.fields.add (new SymbolCompletionItem.with_field (item));
 					} else if (count == 2 && item.name == toks[baseidx]) {
 						last_fd = item;
-						result.fields.add (new SymbolCompletionItem (item.name));
+						result.fields.add (new SymbolCompletionItem.with_field (item));
 					}
 				}
 			}
@@ -1161,17 +1161,7 @@ namespace Vsc
 				if (test_symbol (options, name, method) &&
 				    (options.static_symbols || (options.static_symbols == false && method.binding != MemberBinding.STATIC))) {
 					if (options.only_constructors && (method is Constructor || method.name.has_prefix(".new"))) {
-						string name = method.name;
-
-						if (name.has_prefix (".new.")) {
-							name = name.substring (5, name.length - 5);
-						} else if (name.has_prefix (".new")) {
-							name = name.substring (4, name.length - 4);
-						}
-
-						if (name != null && name != "") {
-							result.methods.add (new SymbolCompletionItem (name));
-						}
+						result.methods.add (new SymbolCompletionItem.with_method (method));
 					} else if (!options.only_constructors) {
 						result.methods.add (new SymbolCompletionItem.with_method (method));
 					}
@@ -1182,21 +1172,21 @@ namespace Vsc
 				foreach (Vala.Field field in item.get_fields ()) {
 					if (test_symbol (options, name, field) &&
 					    (options.static_symbols || (options.static_symbols == false && field.binding != MemberBinding.STATIC))) {
-						result.fields.add (new SymbolCompletionItem (field.name));
+						result.fields.add (new SymbolCompletionItem.with_field (field));
 					}
 				}
 
 
 				foreach (Vala.Property property in item.get_properties ()) {
 					if (test_symbol (options, name, property)) {
-						result.properties.add (new SymbolCompletionItem (property.name));
+						result.properties.add (new SymbolCompletionItem.with_property (property));
 					}
 				}
 
 
 				foreach (Vala.Signal @signal in item.get_signals ()) {
 					if (test_symbol (options, name, @signal)) {
-						result.signals.add (new SymbolCompletionItem (@signal.name));
+						result.signals.add (new SymbolCompletionItem.with_signal (@signal));
 					}
 				}
 			}

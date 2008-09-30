@@ -1,3 +1,14 @@
+2008-09-30    <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala: 
+
+	changed the idle handlerto reduce CPU usage
+	
+	* vsc/vscsymbolcompletion.vala: 
+	* vsc/vscsymbolcompletionitem.vala: 
+
+	more work on symbol info pane
+
 2008-09-29    <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletionitem.vala: 

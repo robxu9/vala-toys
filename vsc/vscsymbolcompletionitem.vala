@@ -35,22 +35,38 @@ namespace Vsc
 			this.info = name;
 		}
 
-		public SymbolCompletionItem.with_method (Method method)
+		private string data_type_to_string (DataType type)
 		{
-			this.name = method.name;
-			
+			string result = type.data_type.name;
+
+			if (result == null)
+				result = "void";
+
+			if (type.is_array ()) {
+				result += "[]";
+			}
+			if (type.nullable ) {
+				result += "?";
+			}
+			if (type.is_dynamic) {
+				result = "dynamic " + result;
+			}
+			return result;
+		}
+
+		public string formal_parameters_to_string (Gee.List<FormalParameter> parameters)
+		{
 			string params = "";
-			int param_count = 0;
 			string param_sep = " ";
-			if (method.get_parameters ().size > 2) {
+			if (parameters.size > 2) {
 				param_sep = "\n\t\t";
 			}
 
-			foreach (FormalParameter parameter in method.get_parameters ()) {
+			foreach (FormalParameter parameter in parameters) {
 				string direction = "";
 				string default_expr = "";
 				string parameter_type = "";
-				param_count++;
+
 				if (parameter.ellipsis) {
 					params = "%s, %s".printf (params, "...");
 				} else {
@@ -63,16 +79,7 @@ namespace Vsc
 						default_expr = " = " + parameter.default_expression.to_string ();
 					}
 					if (parameter.parameter_type != null) {
-						parameter_type = parameter.parameter_type.data_type.name;
-						if (parameter.parameter_type.is_array ()) {
-							parameter_type += "[]";
-						}
-						if (parameter.parameter_type.nullable ) {
-							parameter_type += "?";
-						}
-						if (parameter.parameter_type.is_dynamic) {
-							parameter_type = "dynamic " + parameter_type;
-						}
+						parameter_type = data_type_to_string (parameter.parameter_type);
 					} else {
 						parameter_type = "<unkown>";
 					}
@@ -82,12 +89,95 @@ namespace Vsc
 			if (params != "") {
 				params = params.substring (2, params.length - 2);
 			}
-			this.info = "%s%s<b>%s</b> (%s%s)".printf (
-				method.return_type.to_string (), 
-				(param_count > 2 ? "\n" : " "),
-				name, 
-				(param_count > 2 ? "\n" : ""),
-				params);
+			return params;
+		}
+
+		public SymbolCompletionItem.with_method (Method item)
+		{
+			this.name = item.name;
+			
+			if (name.has_prefix (".new")) {
+				name = name.substring (4, name.length - 4);
+				if (name == "") {
+					name = item.parent_symbol.name;
+				} else if (name.has_prefix (".")) {
+					name = name.substring (1, name.length - 1);
+				}
+			}
+
+			int param_count = item.get_parameters ().size;
+			var params = formal_parameters_to_string (item.get_parameters ());
+
+			this.info = "Method: %s\n\n%s%s<b>%s</b> (%s%s)".printf (
+			    name,
+			    data_type_to_string (item.return_type),
+			    (param_count > 2 ? "\n" : " "),
+			    name, 
+			    (param_count > 2 ? "\n" : ""),
+			    params);
+		}
+
+		public SymbolCompletionItem.with_field (Field item)
+		{
+			this.name = item.name;
+
+			string default_expr = "";
+			if (item.initializer != null) {
+				default_expr = " = " + item.initializer.to_string ();
+			}
+			this.info = "Field: %s\n\n%s <b>%s</b>%s".printf (
+			    name,
+			    data_type_to_string (item.field_type),
+			    name, 
+			    default_expr);
+		}
+
+		public SymbolCompletionItem.with_property (Property item)
+		{
+			this.name = item.name;
+			string default_expr = "";
+			if (item.default_expression != null) {
+				default_expr = " = " + item.default_expression.to_string ();
+			}
+			this.info = "Property: %s\n\n%s <b>%s</b>%s".printf (
+			    name,
+			    data_type_to_string (item.property_type),
+			    name, 
+			    default_expr);
+		}
+
+		public SymbolCompletionItem.with_struct (Struct item)
+		{
+			this.name = item.name;
+			this.info = "Struct: %s".printf (item.name);
+		}
+
+ 		public SymbolCompletionItem.with_class (Class item)
+		{
+			this.name = item.name;
+			this.info = "Class: %s".printf (item.name);
+		}
+
+ 		public SymbolCompletionItem.with_interface (Interface item)
+		{
+			this.name = item.name;
+			this.info = "Interface: %s".printf (item.name);
+		}
+
+ 		public SymbolCompletionItem.with_signal (Vala.Signal item)
+		{
+			this.name = item.name;
+			this.info = "Signal: %s".printf (item.name);
+			int param_count = item.get_parameters ().size;
+			var params = formal_parameters_to_string (item.get_parameters ());
+
+			this.info = "Signal: %s\n\n%s%s<b>%s</b> (%s%s)".printf (
+			    name,
+			    data_type_to_string (item.return_type),
+			    (param_count > 2 ? "\n" : " "),
+			    name, 
+			    (param_count > 2 ? "\n" : ""),
+			    params);
 		}
 	}
 }
