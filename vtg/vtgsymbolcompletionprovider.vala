@@ -222,10 +222,10 @@ namespace Vtg
 					prealloc_index++;
 
 					proposal.label = symbol.name;
-					proposal.info = symbol.name;
+					proposal.info = symbol.info;
 				        proposal.icon = icon;
 				} else {
-					proposal = new Proposal(symbol.name, symbol.name, icon);
+					proposal = new Proposal(symbol.name, symbol.info, icon);
 				}
 				this.list.append (proposal);
 			}

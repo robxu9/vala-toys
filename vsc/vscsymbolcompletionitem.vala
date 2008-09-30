@@ -26,19 +26,68 @@ namespace Vsc
 	public class SymbolCompletionItem
 	{
 		public string name;
-		public string return_type_name = null;
-
-		public Gee.List<SymbolCompletionItem> parameters = null;
+		public string type_name = null;
+		public string info;
 
 		public SymbolCompletionItem (string name) 
 		{
 			this.name = name;
+			this.info = name;
 		}
 
 		public SymbolCompletionItem.with_method (Method method)
 		{
 			this.name = method.name;
-			this.parameters = new Gee.ArrayList<SymbolCompletion> ();
+			
+			string params = "";
+			int param_count = 0;
+			string param_sep = " ";
+			if (method.get_parameters ().size > 2) {
+				param_sep = "\n\t\t";
+			}
+
+			foreach (FormalParameter parameter in method.get_parameters ()) {
+				string direction = "";
+				string default_expr = "";
+				string parameter_type = "";
+				param_count++;
+				if (parameter.ellipsis) {
+					params = "%s, %s".printf (params, "...");
+				} else {
+					if (parameter.direction == ParameterDirection.OUT) {
+						direction = "out ";
+					} else if (parameter.direction == ParameterDirection.REF) {
+						direction = "ref ";
+					}
+					if (parameter.default_expression != null) {
+						default_expr = " = " + parameter.default_expression.to_string ();
+					}
+					if (parameter.parameter_type != null) {
+						parameter_type = parameter.parameter_type.data_type.name;
+						if (parameter.parameter_type.is_array ()) {
+							parameter_type += "[]";
+						}
+						if (parameter.parameter_type.nullable ) {
+							parameter_type += "?";
+						}
+						if (parameter.parameter_type.is_dynamic) {
+							parameter_type = "dynamic " + parameter_type;
+						}
+					} else {
+						parameter_type = "<unkown>";
+					}
+					params = "%s,%s%s%s %s%s".printf (params, param_sep, direction, parameter_type, parameter.name, default_expr);
+				}
+			}
+			if (params != "") {
+				params = params.substring (2, params.length - 2);
+			}
+			this.info = "%s%s<b>%s</b> (%s%s)".printf (
+				method.return_type.to_string (), 
+				(param_count > 2 ? "\n" : " "),
+				name, 
+				(param_count > 2 ? "\n" : ""),
+				params);
 		}
 	}
 }
