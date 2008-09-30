@@ -1,5 +1,11 @@
 2008-09-30    <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletionitem.vala: 
+
+	changed 'formal_parameters_to_string' method visibility from public to private
+
+2008-09-30    <sejerpz@tin.it>
+	
 	* vtg/vtgsymbolcompletionprovider.vala: 
 
 	changed the idle handlerto reduce CPU usage
