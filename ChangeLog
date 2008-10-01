@@ -1,6 +1,14 @@
 2008-10-01    <sejerpz@tin.it>
 
 	* vapi/gnome-build-1.0.vapi:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0-custom.vala:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0.metadata:
+
+	more gnome-build-1.0 vapi fixes
+
+2008-10-01    <sejerpz@tin.it>
+
+	* vapi/gnome-build-1.0.vapi:
 	* vapi/packages/gnome-build-1.0/gnome-build-1.0.metadata:
 
 	added gnome-build-1.0 vapi with some more fixes

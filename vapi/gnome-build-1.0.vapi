@@ -2,7 +2,7 @@
 
 [CCode (cprefix = "Gbf", lower_case_cprefix = "gbf_")]
 namespace Gbf {
-	[CCode (cprefix = "GBF_PROJECT_", cheader_filename = "gnome-build-1.0-custom.h")]
+	[CCode (cprefix = "GBF_PROJECT_", cheader_filename = "gbf/gbf-project.h")]
 	public enum ProjectCapabilities {
 		CAN_ADD_NONE,
 		CAN_ADD_GROUP,
@@ -10,26 +10,33 @@ namespace Gbf {
 		CAN_ADD_SOURCE,
 		CAN_PACKAGES
 	}
-	[CCode (cprefix = "GBF_TREE_NODE_", has_type_id = "0", cheader_filename = "gnome-build-1.0.h")]
+	[CCode (cprefix = "GBF_TREE_NODE_", has_type_id = "0", cheader_filename = "gbf/gbf-tree-data.h")]
 	public enum TreeNodeType {
 		STRING,
 		GROUP,
 		TARGET,
 		TARGET_SOURCE
 	}
-	[Compact]
-	[CCode (cheader_filename = "gbf/gbf-backend.h")]
+	[CCode (ref_function = "gbf_backend_ref", unref_function = "gbf_backend_unref", cheader_filename = "gbf/gbf-backend.h")]
 	public class Backend {
 		public weak string id;
 		public weak string name;
 		public weak string description;
+		public static Gbf.Project new_project (string id);
+		public Backend ();
 		public static weak GLib.SList<Gbf.Backend> get_backends ();
 		public static void init ();
-		[CCode (type = "GbfProject*")]
-		public Backend.project (string id);
+	}
+	[CCode (ref_function = "gbf_project_util_ref", unref_function = "gbf_project_util_unref", cheader_filename = "gbf/gbf-project-util.h")]
+	public class ProjectUtil {
+		public static weak string add_source (Gbf.ProjectModel model, Gtk.Window parent, string default_target, string default_group, string default_uri_to_add);
+		public static weak GLib.List<string> add_source_multi (Gbf.ProjectModel model, Gtk.Window parent, string default_target, string default_group, GLib.List uris_to_add);
+		public static weak string new_group (Gbf.ProjectModel model, Gtk.Window parent, string default_group, string default_group_name_to_add);
+		public static weak string new_target (Gbf.ProjectModel model, Gtk.Window parent, string default_group, string default_target_name_to_add);
+		public ProjectUtil ();
 	}
 	[Compact]
-	[CCode (copy_function = "gbf_tree_data_copy", cheader_filename = "gnome-build-1.0.h")]
+	[CCode (copy_function = "gbf_tree_data_copy", cheader_filename = "gbf/gbf-tree-data.h")]
 	public class TreeData {
 		public Gbf.TreeNodeType type;
 		public weak string name;
@@ -44,7 +51,7 @@ namespace Gbf {
 		public TreeData.target (Gbf.Project project, Gbf.ProjectTarget target);
 	}
 	[Compact]
-	[CCode (copy_function = "gbf_project_group_copy", cheader_filename = "gnome-build-1.0.h")]
+	[CCode (copy_function = "gbf_project_group_copy", cheader_filename = "gbf/gbf-project-group.h")]
 	public class ProjectGroup {
 		public weak string id;
 		public weak string parent_id;
@@ -54,7 +61,7 @@ namespace Gbf {
 		public weak Gbf.ProjectGroup copy ();
 	}
 	[Compact]
-	[CCode (copy_function = "gbf_project_target_copy", cheader_filename = "gnome-build-1.0.h")]
+	[CCode (copy_function = "gbf_project_target_copy", cheader_filename = "gbf/gbf-project.h")]
 	public class ProjectTarget {
 		public weak string id;
 		public weak string group_id;
@@ -64,7 +71,7 @@ namespace Gbf {
 		public weak Gbf.ProjectTarget copy ();
 	}
 	[Compact]
-	[CCode (copy_function = "gbf_project_target_source_copy", cheader_filename = "gnome-build-1.0.h")]
+	[CCode (copy_function = "gbf_project_target_source_copy", cheader_filename = "gbf/gbf-project.h")]
 	public class ProjectTargetSource {
 		public weak string id;
 		public weak string target_id;
@@ -78,10 +85,6 @@ namespace Gbf {
 	[CCode (cheader_filename = "gbf/gbf-project.h")]
 	public class Project : GLib.Object {
 		public static GLib.Quark error_quark ();
-		public static weak string util_add_source (Gbf.ProjectModel model, Gtk.Window parent, string default_target, string default_group, string default_uri_to_add);
-		public static weak GLib.List util_add_source_multi (Gbf.ProjectModel model, Gtk.Window parent, string default_target, string default_group, GLib.List uris_to_add);
-		public static weak string util_new_group (Gbf.ProjectModel model, Gtk.Window parent, string default_group, string default_group_name_to_add);
-		public static weak string util_new_target (Gbf.ProjectModel model, Gtk.Window parent, string default_group, string default_target_name_to_add);
 		public virtual weak string add_group (string parent_id, string name) throws GLib.Error;
 		public virtual weak string add_source (string target_id, string uri) throws GLib.Error;
 		public virtual weak string add_target (string group_id, string name, string type) throws GLib.Error;
@@ -92,12 +95,12 @@ namespace Gbf {
 		public virtual weak Gtk.Widget configure_new_target () throws GLib.Error;
 		public virtual weak Gtk.Widget configure_source (string id) throws GLib.Error;
 		public virtual weak Gtk.Widget configure_target (string id) throws GLib.Error;
-		public virtual weak GLib.List get_all_groups () throws GLib.Error;
-		public virtual weak GLib.List get_all_sources () throws GLib.Error;
-		public virtual weak GLib.List get_all_targets () throws GLib.Error;
+		public virtual weak GLib.List<string> get_all_groups () throws GLib.Error;
+		public virtual weak GLib.List<string> get_all_sources () throws GLib.Error;
+		public virtual weak GLib.List<string> get_all_targets () throws GLib.Error;
 		public virtual Gbf.ProjectCapabilities get_capabilities () throws GLib.Error;
-		public virtual weak GLib.List get_config_modules () throws GLib.Error;
-		public virtual weak GLib.List get_config_packages (string module) throws GLib.Error;
+		public virtual weak GLib.List<string> get_config_modules () throws GLib.Error;
+		public virtual weak GLib.List<string> get_config_packages (string module) throws GLib.Error;
 		public virtual weak Gbf.ProjectGroup get_group (string id) throws GLib.Error;
 		public virtual weak Gbf.ProjectTargetSource get_source (string id) throws GLib.Error;
 		public virtual weak Gbf.ProjectTarget get_target (string id) throws GLib.Error;
@@ -130,6 +133,6 @@ namespace Gbf {
 		public virtual signal void target_selected (string target_id);
 		public virtual signal void uri_activated (string uri);
 	}
-	[CCode (cheader_filename = "gnome-build-1.0.h")]
+	[CCode (cheader_filename = "gbf/gbf-project.h")]
 	public const string BUILD_ID_DEFAULT;
 }
