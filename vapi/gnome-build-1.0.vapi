@@ -18,12 +18,12 @@ namespace Gbf {
 		TARGET_SOURCE
 	}
 	[Compact]
-	[CCode (cheader_filename = "gnome-build-1.0.h")]
+	[CCode (cheader_filename = "gbf/gbf-backend.h")]
 	public class Backend {
 		public weak string id;
 		public weak string name;
 		public weak string description;
-		public static weak GLib.SList get_backends ();
+		public static weak GLib.SList<Gbf.Backend> get_backends ();
 		public static void init ();
 		[CCode (type = "GbfProject*")]
 		public Backend.project (string id);
@@ -75,7 +75,7 @@ namespace Gbf {
 	[CCode (cheader_filename = "gnome-build-1.0.h")]
 	public class ProjectTreeNodeData {
 	}
-	[CCode (cheader_filename = "gnome-build-1.0.h")]
+	[CCode (cheader_filename = "gbf/gbf-project.h")]
 	public class Project : GLib.Object {
 		public static GLib.Quark error_quark ();
 		public static weak string util_add_source (Gbf.ProjectModel model, Gtk.Window parent, string default_target, string default_group, string default_uri_to_add);
@@ -112,7 +112,7 @@ namespace Gbf {
 		public virtual void remove_target (string id) throws GLib.Error;
 		public virtual signal void project_updated ();
 	}
-	[CCode (cheader_filename = "gnome-build-1.0.h")]
+	[CCode (cheader_filename = "gbf/gbf-project-model.h")]
 	public class ProjectModel : Gtk.TreeStore, Gtk.TreeModel, Gtk.TreeDragSource, Gtk.TreeDragDest, Gtk.TreeSortable, Gtk.Buildable {
 		public bool find_id (Gtk.TreeIter iter, Gbf.TreeNodeType type, string id);
 		public weak Gbf.Project get_project ();
@@ -121,7 +121,7 @@ namespace Gbf {
 		public void set_project (Gbf.Project project);
 		public void* project { get; set; }
 	}
-	[CCode (cheader_filename = "gnome-build-1.0.h")]
+	[CCode (cheader_filename = "gbf/gbf-project-view.h")]
 	public class ProjectView : Gtk.TreeView, Gtk.Buildable, Atk.Implementor {
 		public weak Gbf.TreeData find_selected (Gbf.TreeNodeType type);
 		[CCode (type = "GtkWidget*")]
