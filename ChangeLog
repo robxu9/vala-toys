@@ -1,3 +1,16 @@
+2008-10-05    <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala: 
+
+	trimmed line end space when adding ';'
+
+2008-10-02    <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+	* vsc-shell/vsccompletionshell.vala: 
+
+	implemented 'reparse' command
+
 2008-10-01    <sejerpz@tin.it>
 
 	* vapi/gnome-build-1.0.vapi:

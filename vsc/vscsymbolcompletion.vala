@@ -218,6 +218,14 @@ namespace Vsc
 			return result;
 		}
 
+		public void reparse (bool all_context)
+		{
+			schedule_parse_source_buffers ();
+			if (all_context) {
+				schedule_parse ();
+			}
+		}
+
 		private void schedule_parse_source_buffers ()
 		{
 			//scheduling parse for secondary context
@@ -306,6 +314,7 @@ namespace Vsc
 
 			lock (_sec_context) {
 				need_parse_sec_context = false;
+				_sec_context = null;
 				_sec_context = current_context;
 				//primary context reparse?
 				if (need_reparse) {
@@ -338,7 +347,7 @@ namespace Vsc
 			}
 		}
 
-		private void parse_context (CodeContext context)
+		public void parse_context (CodeContext context)
 		{
 			context.assert = false;
 			context.checking = false;

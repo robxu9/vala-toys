@@ -43,6 +43,7 @@ namespace Vsc
 			add_package_from_namespace ("GLib");
 			prompt ();
 			_loop.run ();
+			_completion = null;
 		}
 
 		private bool on_input (IOChannel source, IOCondition condition)
@@ -114,12 +115,20 @@ namespace Vsc
 					case "pause":
 						pause ();
 						break;
+					case "reparse":
+						reparse (toks[1] == "both");
+						break;
 					default:
 						print_error ("unknown command '%s'".printf (command));
 						break;
 				}
 			}
 			return true;
+		}
+
+		private void reparse (bool both_context)
+		{
+			_completion.reparse (both_context);
 		}
 
 		private void describe_symbol (string name, string sourcefile, int line, int column)

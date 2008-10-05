@@ -199,16 +199,29 @@ namespace Vtg
 					instance.move_backwards (src, 2 + (int) indent.length);
 					result = true;
 				} else if (evt.keyval == Gdk.Key_Return) {
-					//move to end line
 					indent = instance.current_indentation_text (src);
 					if ((evt.state & ModifierType.SHIFT_MASK) != 0) {
-
+						//move to end line
 						if (!pos.ends_line ()) {
 							pos.forward_to_line_end ();
 							src.place_cursor (pos);
 						}
 						if ((evt.state & ModifierType.CONTROL_MASK) == 0) {
-							instance.insert_chars (src, ";\n%s".printf(indent));
+							//move backward to first non blank char
+							while (pos.backward_char ()) {
+								unichar ch = pos.get_char ();
+								if (!ch.isspace ())
+								{
+									pos.forward_char ();
+									break;
+								}
+							}
+							src.place_cursor (pos);
+							instance.insert_chars (src, ";");
+							src.get_iter_at_mark (out pos, mark);
+							pos.forward_to_line_end ();
+							src.place_cursor (pos);
+							instance.insert_chars (src, "\n%s".printf(indent));
 							sender.scroll_to_mark (mark, 0, false, 0, 0);
 							//place cursor to end
 							src.get_iter_at_mark (out pos, mark);
