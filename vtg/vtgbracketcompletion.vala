@@ -208,6 +208,7 @@ namespace Vtg
 						}
 						if ((evt.state & ModifierType.CONTROL_MASK) == 0) {
 							//move backward to first non blank char
+							TextIter tmp = pos;
 							while (pos.backward_char ()) {
 								unichar ch = pos.get_char ();
 								if (!ch.isspace ())
@@ -216,12 +217,17 @@ namespace Vtg
 									break;
 								}
 							}
-							src.place_cursor (pos);
-							instance.insert_chars (src, ";");
-							src.get_iter_at_mark (out pos, mark);
-							pos.forward_to_line_end ();
-							src.place_cursor (pos);
-							instance.insert_chars (src, "\n%s".printf(indent));
+							if (tmp.equal (pos)) {
+								instance.insert_chars (src, ";\n%s".printf(indent));
+							} else {
+								src.place_cursor (pos);
+								instance.insert_chars (src, ";");
+								src.get_iter_at_mark (out pos, mark);
+								pos.forward_to_line_end ();
+								src.place_cursor (pos);
+								instance.insert_chars (src, "\n%s".printf(indent));
+							}
+
 							sender.scroll_to_mark (mark, 0, false, 0, 0);
 							//place cursor to end
 							src.get_iter_at_mark (out pos, mark);

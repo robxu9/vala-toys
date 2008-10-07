@@ -1,3 +1,10 @@
+2008-10-07    <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala: 
+
+	added a workaround for a bug introduced by the previous commit 
+	when no trimming is needed.
+
 2008-10-05    <sejerpz@tin.it>
 
 	* vtg/vtgbracketcompletion.vala: 
