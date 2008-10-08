@@ -30,6 +30,7 @@ vtg_VALASOURCES = \
 	vtgsymbolcompletionprovider.vala \
 	vtgsymbolcompletiontrigger.vala \
 	vtgsymbolcompletionhelper.vala \
+	vtgprojectmanager.vala \
 	vtgplugin.vala \
 	vtgutils.vala \
 	$(NULL)

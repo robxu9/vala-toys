@@ -1,3 +1,10 @@
+2008-10-08    <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala: 
+	* vtg/Makefile.am:
+
+	added a stub for the project manager plugin
+
 2008-10-07    <sejerpz@tin.it>
 
 	* vtg/vtgbracketcompletion.vala: 
