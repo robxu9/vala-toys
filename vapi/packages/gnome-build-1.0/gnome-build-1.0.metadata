@@ -21,11 +21,14 @@ GbfTreeNodeData cheader_filename="gbf/gbf-tree-data.h"
 
 GbfTreeData cheader_filename="gbf/gbf-tree-data.h"
 
-GbfProjectGroup cheader_filename="gbf/gbf-project-group.h"
-
 GbfProjectTarget cheader_filename="gbf/gbf-project.h"
 
 GbfProjectTargetSource cheader_filename="gbf/gbf-project.h"
 
 GBF_BUILD_ID_DEFAULT cheader_filename="gbf/gbf-project.h"
 
+GbfProjectGroup cheader_filename="gbf/gbf-project.h"
+GbfProjectGroup.groups type_arguments="string"
+GbfProjectGroup.targets type_arguments="string"
+
+GbfProjectTarget.sources type_arguments="string"

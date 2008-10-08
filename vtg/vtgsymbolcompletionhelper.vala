@@ -30,7 +30,6 @@ namespace Vtg
 {
 	public class SymbolCompletionHelper : GLib.Object
 	{
-
 		private Vtg.Plugin _plugin;
 		private Gedit.View _view;
 		private SymbolCompletion _completion;
@@ -39,16 +38,17 @@ namespace Vtg
 
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 		public Gedit.View view { get { return _view; } construct { _view = value; } default = null; }
+		public SymbolCompletion completion { get { return _completion; } construct { _completion = value; } default = null; }
 
-		public SymbolCompletionHelper (Vtg.Plugin plugin, Gedit.View view)
+		public SymbolCompletionHelper (Vtg.Plugin plugin, Gedit.View view, SymbolCompletion completion)
 		{
 			this.plugin = plugin;
 			this.view = view;
+			this.completion = completion;
 		}
 
 		construct	
 		{
-			_completion = Utils.get_symbol_completion ();
 			try {
 				_completion.add_package_from_namespace ("GLib");
 			} catch (Error err) {

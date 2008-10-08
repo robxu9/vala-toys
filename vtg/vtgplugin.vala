@@ -26,11 +26,22 @@ using Gtk;
 
 namespace Vtg
 {
+	internal class ProjectDescriptor
+	{
+		public Vsc.SymbolCompletion completion;
+		public ProjectManager.Project project;
+	}
+
 	public class Plugin : Gedit.Plugin
 	{
 		private Gedit.Window _window = null;
 		private Gee.List<Vtg.BracketCompletion> bcs = new Gee.ArrayList<Vtg.BracketCompletion> ();
 		private Gee.List<Vtg.SymbolCompletionHelper> scs = new Gee.ArrayList<Vtg.SymbolCompletionHelper> ();
+		private Gee.List<Vtg.ProjectDescriptor> projects = new Gee.ArrayList<Vtg.ProjectDescriptor> ();
+
+		private Vtg.ProjectDescriptor default_project = null;
+
+		private ProjectManager.PluginHelper _prj_man;
 
 		public override void activate (Gedit.Window window)
 		{
@@ -40,13 +51,18 @@ namespace Vtg
 
 			foreach (View view in this._window.get_views ()) {
 				var doc = (Gedit.Document) (view.get_buffer ());
-				if (doc.language != null && doc.language.id == "vala")
-					initialize_view (view);
+				if (doc.language != null && doc.language.id == "vala") {
+					var project = project_descriptor_find_from_document (doc);
+					initialize_view (project, view);
+				}
 			}
 
 			foreach (Document doc in this._window.get_documents ()) {
 				initialize_document (doc);
 			}
+
+			_prj_man = new ProjectManager.PluginHelper (this);
+			//_prj_man.project_loaded += this.on_project_loaded;
 		}
 
 		public override void deactivate (Gedit.Window window)
@@ -81,10 +97,11 @@ namespace Vtg
 		private static void on_tab_added (Gedit.Window sender, Gedit.Tab tab, Vtg.Plugin instance)
 		{
 			var doc = tab.get_document ();
+			var project = instance.project_descriptor_find_from_document (doc);
 
 			if (doc.language != null && doc.language.id == "vala") {
 				var view = tab.get_view ();
-				instance.initialize_view (view);
+				instance.initialize_view (project, view);
 			}
 			instance.initialize_document (doc);
 		}
@@ -97,6 +114,24 @@ namespace Vtg
 
 			instance.uninitialize_view (view);
 			instance.uninitialize_document (doc);
+		}
+
+		private ProjectDescriptor project_descriptor_find_from_document (Gedit.Document document)
+		{
+			var file = document.get_uri ();
+			foreach (ProjectDescriptor project in projects) {
+				if (project.project.contains_source_file (file)) {
+					return project;
+				}
+			}
+
+			//return default_project anyway
+			if (default_project == null) {
+				default_project = new ProjectDescriptor ();
+				default_project.completion = new Vsc.SymbolCompletion ();
+			}
+
+			return default_project;
 		}
 
 		private bool scs_contains (Gedit.View view)
@@ -128,10 +163,10 @@ namespace Vtg
 			return null;
 		}
 
-		private void initialize_view (Gedit.View view)
+		private void initialize_view (ProjectDescriptor project, Gedit.View view)
 		{
 			if (!scs_contains (view)) {
-				var sc = new Vtg.SymbolCompletionHelper (this, view);
+				var sc = new Vtg.SymbolCompletionHelper (this, view, project.completion);
 				scs.add (sc);
 			} else {
 				GLib.warning ("sc already initialized for view");
@@ -183,11 +218,28 @@ namespace Vtg
 					if (sender.language  == null || sender.language.id != "vala") {
 						instance.uninitialize_view (view);
 					} else {
-						instance.initialize_view (view);
+						var project = instance.project_descriptor_find_from_document (sender);
+						instance.initialize_view (project, view);
 					}
 					break;
 				}
 			}
+		}
+
+		internal void on_project_loaded (ProjectManager.PluginHelper sender, ProjectManager.Project project)
+		{
+			GLib.debug ("Project loaded");
+			var prj = new ProjectDescriptor ();
+			var completion = new Vsc.SymbolCompletion ();
+			foreach (ProjectManager.ProjectModule module in project.modules) {
+				foreach (ProjectManager.ProjectPackage package in module.packages) {
+					GLib.debug ("added package %s from project %s", package.name, project.name);
+					completion.try_add_package (package.name);
+				}
+			}
+			prj.completion = completion;
+			prj.project = project;
+			projects.add (prj);
 		}
 
 		~Plugin ()

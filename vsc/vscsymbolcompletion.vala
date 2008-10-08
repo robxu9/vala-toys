@@ -47,7 +47,8 @@ namespace Vsc
 		private bool need_parse_sec_context = false;
 		private bool need_parse_pri_context = false;
 
-		private weak Thread parser_thread = null;
+		private weak Thread parser_pri_thread = null;
+		private weak Thread parser_sec_thread = null;
 
 		public signal void cache_building ();
 		public signal void cache_builded ();
@@ -66,10 +67,19 @@ namespace Vsc
 			}
 		}
 
-		private void create_thread ()
+		private void create_pri_thread ()
 		{
 			try {
-				parser_thread = Thread.create (this.parse_pri_contexts, false);
+				parser_pri_thread = Thread.create (this.parse_pri_contexts, false);
+			} catch (ThreadError err) {
+				error ("Can't create parser thread: %s", err.message);
+			}
+		}
+
+		private void create_sec_thread ()
+		{
+			try {
+				parser_sec_thread = Thread.create (this.parse_sec_contexts, false);
 			} catch (ThreadError err) {
 				error ("Can't create parser thread: %s", err.message);
 			}
@@ -95,6 +105,16 @@ namespace Vsc
 					files.remove (files[0]);
 				}
 				schedule_parse ();
+			}
+		}
+
+		public bool try_add_package (string package_name, bool auto_schedule_parse = true)
+		{
+			try {
+				add_package (package_name, auto_schedule_parse);
+				return true;
+			} catch (Error err) {
+				return false;
 			}
 		}
 
@@ -232,7 +252,7 @@ namespace Vsc
 			lock (_sec_context) {
 				if (!need_parse_sec_context) {
 					need_parse_sec_context = true;
-					create_thread ();
+					create_sec_thread ();
 				}
 			}
 		}
@@ -244,7 +264,7 @@ namespace Vsc
 				if (!need_parse_pri_context) {
 					debug ("PARSE PRIMARY CONTEXT SCHEDULED");
 					need_parse_pri_context = true;
-					create_thread ();
+					create_pri_thread ();
 				}
 			}
 		}
@@ -256,16 +276,28 @@ namespace Vsc
 			this.cache_building ();
 			Gdk.threads_leave ();
 
-			if (need_parse_sec_context) {
-				debug ("PARSING TMP CONTEXT: START");
-				parse_source_buffers ();
-				debug ("PARSING TMP CONTEXT: END");
-			}
-			if (need_parse_pri_context) {
-				debug ("PARSING PRIMARY CONTEXT: START");
-				parse ();
-				debug ("PARSING PRIMARY CONTEXT: END");
-			}
+			debug ("PARSING PRIMARY CONTEXT: START");
+			parse ();
+			debug ("PARSING PRIMARY CONTEXT: END");
+
+			Gdk.threads_enter ();
+			this.cache_builded ();
+			Gdk.threads_leave ();
+			debug ("PARSER THREAD EXIT");
+			return ((void *) 0);
+		}
+
+		private void* parse_sec_contexts ()
+		{
+			debug ("PARSER THREAD ENTER");
+			Gdk.threads_enter ();
+			this.cache_building ();
+			Gdk.threads_leave ();
+
+
+			debug ("PARSING SEC CONTEXT: START");
+			parse_source_buffers ();
+			debug ("PARSING SEC CONTEXT: END");
 
 			Gdk.threads_enter ();
 			this.cache_builded ();
@@ -330,6 +362,7 @@ namespace Vsc
 			lock (_pri_context) {
 				SourceFile source;
 				foreach (string item in _packages) {
+					debug ("adding package %s", item);
 					source = new SourceFile (current_context, item, true);
 					current_context.add_source_file (source);
 				}

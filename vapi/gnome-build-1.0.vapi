@@ -51,13 +51,13 @@ namespace Gbf {
 		public TreeData.target (Gbf.Project project, Gbf.ProjectTarget target);
 	}
 	[Compact]
-	[CCode (copy_function = "gbf_project_group_copy", cheader_filename = "gbf/gbf-project-group.h")]
+	[CCode (copy_function = "gbf_project_group_copy", cheader_filename = "gbf/gbf-project.h")]
 	public class ProjectGroup {
 		public weak string id;
 		public weak string parent_id;
 		public weak string name;
-		public weak GLib.List groups;
-		public weak GLib.List targets;
+		public weak GLib.List<string> groups;
+		public weak GLib.List<string> targets;
 		public weak Gbf.ProjectGroup copy ();
 	}
 	[Compact]
@@ -67,7 +67,7 @@ namespace Gbf {
 		public weak string group_id;
 		public weak string name;
 		public weak string type;
-		public weak GLib.List sources;
+		public weak GLib.List<string> sources;
 		public weak Gbf.ProjectTarget copy ();
 	}
 	[Compact]
@@ -82,7 +82,7 @@ namespace Gbf {
 	[CCode (cheader_filename = "gnome-build-1.0.h")]
 	public class ProjectTreeNodeData {
 	}
-	[CCode (cheader_filename = "gbf/gbf-project.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gbf/gbf-project.h")]
 	public class Project : GLib.Object {
 		public static GLib.Quark error_quark ();
 		public virtual weak string add_group (string parent_id, string name) throws GLib.Error;
@@ -115,7 +115,7 @@ namespace Gbf {
 		public virtual void remove_target (string id) throws GLib.Error;
 		public virtual signal void project_updated ();
 	}
-	[CCode (cheader_filename = "gbf/gbf-project-model.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gbf/gbf-project-model.h")]
 	public class ProjectModel : Gtk.TreeStore, Gtk.TreeModel, Gtk.TreeDragSource, Gtk.TreeDragDest, Gtk.TreeSortable, Gtk.Buildable {
 		public bool find_id (Gtk.TreeIter iter, Gbf.TreeNodeType type, string id);
 		public weak Gbf.Project get_project ();
@@ -124,7 +124,7 @@ namespace Gbf {
 		public void set_project (Gbf.Project project);
 		public void* project { get; set; }
 	}
-	[CCode (cheader_filename = "gbf/gbf-project-view.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gbf/gbf-project-view.h")]
 	public class ProjectView : Gtk.TreeView, Gtk.Buildable, Atk.Implementor {
 		public weak Gbf.TreeData find_selected (Gbf.TreeNodeType type);
 		[CCode (type = "GtkWidget*")]

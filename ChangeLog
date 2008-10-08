@@ -1,5 +1,36 @@
+2008-10-09    <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	added try_add_package method
+
 2008-10-08    <sejerpz@tin.it>
 
+	* configure.ac: 
+
+	added gnome-build dependency
+	
+	* vtg/vtgplugin.vala: 
+	* vtg/vtgutils.vala: 
+	* vtg/vtgprojectmanager.vala: 
+	* vtg/vtgprojectmanagerprojectmodule.vala: 
+	* vtg/vtgprojectmanagerprojectgroup.vala: 
+	* vtg/vtgprojectmanagerprojecttarget.vala: 
+	* vtg/vtgprojectmanagerprojectsource.vala: 
+	* vtg/vtgprojectmanagerproject.vala: 
+
+	added project manager model classes, and first autotools loading code
+
+2008-10-08    <sejerpz@tin.it>
+	
+	* vtg/vtgprojectmanager.vala: 
+	* vtg/vtgplugin.vala: 
+
+	first integration (not done yet) of the project manager plugin
+	with the gedit ui
+	
+2008-10-08    <sejerpz@tin.it>
+	
 	* vtg/vtgprojectmanager.vala: 
 	* vtg/Makefile.am:
 

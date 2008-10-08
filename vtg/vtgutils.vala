@@ -33,17 +33,6 @@ namespace Vtg
 		private static Proposal[] _proposals = null;
 		public const int prealloc_count = 500;
 
-		private static SymbolCompletion _completion = null;
-
-		public static SymbolCompletion get_symbol_completion ()
-		{
-			if (!_initialized) {
-				initialize ();
-			}
-
-			return _completion;
-		}
-
 		public static weak Proposal[] get_proposal_cache ()
 		{
 			if (!_initialized) {
@@ -61,8 +50,6 @@ namespace Vtg
 		private static void initialize ()
 		{
 			try {
-				_completion = new SymbolCompletion ();
-
 				_proposals = new Proposal[prealloc_count];
 				var _icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				for (int idx = 0; idx < prealloc_count; idx++) {
