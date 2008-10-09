@@ -2,8 +2,8 @@
 
 	* vsc/vscsymbolcompletion.vala: 
 
-	using atomic int operation to avoid thread locking and implemented
-	in multi parse passages
+	using atomic int operation to avoid thread locking and to implement
+	in multiple parse passages
 
 2008-10-09    <sejerpz@tin.it>
 
