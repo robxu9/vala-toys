@@ -44,8 +44,8 @@ namespace Vsc
 
 		private string glib_file;
 
-		private bool need_parse_sec_context = false;
-		private bool need_parse_pri_context = false;
+		private int need_parse_sec_context = 0;
+		private int need_parse_pri_context = 0;
 
 		private weak Thread parser_pri_thread = null;
 		private weak Thread parser_sec_thread = null;
@@ -234,7 +234,7 @@ namespace Vsc
 		{
 			bool result = false;
 
-			result = need_parse_pri_context | need_parse_sec_context;
+			result = need_parse_pri_context > 0 | need_parse_sec_context > 0;
 			return result;
 		}
 
@@ -249,23 +249,24 @@ namespace Vsc
 		private void schedule_parse_source_buffers ()
 		{
 			//scheduling parse for secondary context
-			lock (_sec_context) {
-				if (!need_parse_sec_context) {
-					need_parse_sec_context = true;
-					create_sec_thread ();
-				}
+			if (AtomicInt.compare_and_exchange (ref need_parse_sec_context, 0, 1)) {
+				debug ("PARSE SECONDARY  CONTEXT SCHEDULED, AND THREAD CREATED");
+				create_sec_thread ();
+			} else {
+				debug ("PARSE SECONDARY CONTEXT SCHEDULED");
+				AtomicInt.inc (ref need_parse_sec_context);
 			}
 		}
 
 		private void schedule_parse ()
 		{
 			//scheduling parse for primary context
-			lock (_pri_context) {
-				if (!need_parse_pri_context) {
-					debug ("PARSE PRIMARY CONTEXT SCHEDULED");
-					need_parse_pri_context = true;
-					create_pri_thread ();
-				}
+ 			if (AtomicInt.compare_and_exchange (ref need_parse_pri_context, 0, 1)) {
+				debug ("PARSE PRIMARY CONTEXT SCHEDULED, AND THREAD CREATED");
+				create_pri_thread ();
+			} else {
+				debug ("PARSE PRIMARY CONTEXT SCHEDULED");
+				AtomicInt.inc (ref need_parse_pri_context);
 			}
 		}
 
@@ -276,9 +277,16 @@ namespace Vsc
 			this.cache_building ();
 			Gdk.threads_leave ();
 
-			debug ("PARSING PRIMARY CONTEXT: START");
-			parse ();
-			debug ("PARSING PRIMARY CONTEXT: END");
+			while (true) {
+				int stamp = AtomicInt.get (ref need_parse_pri_context);
+				debug ("PARSING PRIMARY CONTEXT: START");
+				parse ();
+				debug ("PARSING PRIMARY CONTEXT: END");
+				//check for changes
+				if (AtomicInt.compare_and_exchange (ref need_parse_pri_context, stamp, 0)) {
+					break;
+				}
+			}
 
 			Gdk.threads_enter ();
 			this.cache_builded ();
@@ -289,20 +297,26 @@ namespace Vsc
 
 		private void* parse_sec_contexts ()
 		{
-			debug ("PARSER THREAD ENTER");
+			debug ("PARSER SEC THREAD ENTER");
 			Gdk.threads_enter ();
 			this.cache_building ();
 			Gdk.threads_leave ();
 
-
-			debug ("PARSING SEC CONTEXT: START");
-			parse_source_buffers ();
-			debug ("PARSING SEC CONTEXT: END");
+			while (true) {
+				int stamp = AtomicInt.get (ref need_parse_sec_context);
+				debug ("PARSING SEC CONTEXT: START");
+				parse_source_buffers ();
+				debug ("PARSING SEC CONTEXT: END");
+				//check for changes
+				if (AtomicInt.compare_and_exchange (ref need_parse_sec_context, stamp, 0)) {
+					break;
+				}
+			}
 
 			Gdk.threads_enter ();
 			this.cache_builded ();
 			Gdk.threads_leave ();
-			debug ("PARSER THREAD EXIT");
+			debug ("PARSER SEC THREAD EXIT");
 			return ((void *) 0);
 		}
 
@@ -345,12 +359,10 @@ namespace Vsc
 			}
 
 			lock (_sec_context) {
-				need_parse_sec_context = false;
-				_sec_context = null;
 				_sec_context = current_context;
 				//primary context reparse?
 				if (need_reparse) {
-					need_parse_pri_context = true;
+					schedule_parse ();
 				}
 			}
 		}
@@ -375,7 +387,6 @@ namespace Vsc
 			analyze_context (current_context);
 
 			lock (_pri_context) {
-				need_parse_pri_context = false;
 				_pri_context = current_context;
 			}
 		}

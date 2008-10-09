@@ -2,6 +2,13 @@
 
 	* vsc/vscsymbolcompletion.vala: 
 
+	using atomic int operation to avoid thread locking and implemented
+	in multi parse passages
+
+2008-10-09    <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
 	added try_add_package method
 
 2008-10-08    <sejerpz@tin.it>
