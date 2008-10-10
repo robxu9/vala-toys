@@ -406,6 +406,9 @@ namespace Vsc
 
 			var parser = new Parser ();
 			parser.parse (context);
+
+			var attributeprocessor = new AttributeProcessor ();
+			attributeprocessor.process (context);
 		}
 
 		private void analyze_context (CodeContext context)

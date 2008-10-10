@@ -1,3 +1,9 @@
+2008-10-10    <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	added the attribute parse pass to the codecontext parse routine
+
 2008-10-09    <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala: 
