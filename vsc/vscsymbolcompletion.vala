@@ -234,7 +234,7 @@ namespace Vsc
 		{
 			bool result = false;
 
-			result = need_parse_pri_context > 0 | need_parse_sec_context > 0;
+			result = need_parse_pri_context > 0 || need_parse_sec_context > 0;
 			return result;
 		}
 
@@ -570,7 +570,7 @@ namespace Vsc
 			return result;
 		}
 
-		public DataType? find_datatype_for_name (string symbolname, string sourcefile, int line, int column) throws SymbolCompletionError
+		public DataType? get_datatype_for_name (string symbolname, string sourcefile, int line, int column) throws SymbolCompletionError
 		{
 			DataType? result = null;
 			string[] toks = symbolname.split (".", 2);
@@ -586,20 +586,20 @@ namespace Vsc
 					source = find_sourcefile (_sec_context, sourcefile);
 					if (source != null) {
 						//first local
-						result = find_datatype_for_name_with_context (_sec_context, toks[0], source, line, column);
+						result = get_datatype_for_name_with_context (_sec_context, toks[0], source, line, column);
 					} else {
 						warning ("no sourcefile found %s", sourcefile);
 					}
 
 					if (result != null && source != null && count > 1) {
-						result = find_inner_datatype (result, toks[1], source);
+						result = get_inner_datatype (result, toks[1], source);
 					}
 				}
 			}
 			return result;
 		}
 
-		private DataType? find_inner_datatype (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
+		private DataType? get_inner_datatype (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
 		{
 			string typename;
 
@@ -613,10 +613,10 @@ namespace Vsc
 			}
 
 			string qualified_type = "%s.%s".printf (typename, fields_path);
-			return find_datatype_for_symbol_name (qualified_type, source);
+			return get_datatype_for_symbol_name (qualified_type, source);
 		}
 
-		private DataType? find_datatype_for_symbol_name (string qualified_type, SourceFile source) throws SymbolCompletionError
+		private DataType? get_datatype_for_symbol_name (string qualified_type, SourceFile source) throws SymbolCompletionError
 		{
 			Symbol? result = null;
 
@@ -632,12 +632,12 @@ namespace Vsc
 			//first on the local context
 			for (int idx = 0; idx < count; idx++) {
 				if (both_pri_context_scope) {
-					result = find_symbol_with_context (_sec_context, fields[idx], source, parent);
+					result = get_symbol_with_context (_sec_context, fields[idx], source, parent);
 				}
 
 				if (result == null || parent != null) {
 					both_pri_context_scope = false;
-					result = find_symbol_with_context (_pri_context, fields[idx], source, parent);
+					result = get_symbol_with_context (_pri_context, fields[idx], source, parent);
 					if (result == null) {
 						break;
 					}
@@ -680,7 +680,7 @@ namespace Vsc
 			return false;
 		}
 
-		private Symbol? find_symbol_with_context (CodeContext context, string name, SourceFile source, Symbol? parent = null) throws SymbolCompletionError
+		private Symbol? get_symbol_with_context (CodeContext context, string name, SourceFile source, Symbol? parent = null) throws SymbolCompletionError
 		{
 			Symbol result = null;
 			if (context == null) {
@@ -701,13 +701,13 @@ namespace Vsc
 				//the using directives
 				foreach (Namespace ns in context.root.get_namespaces ()) {
 					//if (using_contains (source, ns.name)) {
-						result = find_symbol_with_context (context, name, source, ns);
+						result = get_symbol_with_context (context, name, source, ns);
 						//}
 				}
 
 				if (result == null) {
 					//and in the root one
-					result = find_symbol_with_context (context, name, source, context.root);
+					result = get_symbol_with_context (context, name, source, context.root);
 				}
 
 			} else if (parent is Namespace) {
@@ -748,26 +748,26 @@ namespace Vsc
 
 
 			} else if (parent is Class) {
-				result = find_symbol_in_class_with_context (context, (Class) parent, name, source);
+				result = get_symbol_in_class_with_context (context, (Class) parent, name, source);
 			} else if (parent is Struct) {
-				result = find_symbol_in_struct_with_context (context, (Struct) parent, name, source);
+				result = get_symbol_in_struct_with_context (context, (Struct) parent, name, source);
 			} else if (parent is Interface) {
-				result = find_symbol_in_interface_with_context (context, (Interface) parent, name, source);
+				result = get_symbol_in_interface_with_context (context, (Interface) parent, name, source);
 			} else if (parent is Property) {
 				var prop = (Property) parent;
-				result = find_symbol_with_context (context, prop.property_type.to_qualified_string (), source);
+				result = get_symbol_with_context (context, prop.property_type.to_qualified_string (), source);
 			} else if (parent is Field) {
 				var field = (Field) parent;
-				result = find_symbol_with_context (context, field.field_type.to_qualified_string (), source);
+				result = get_symbol_with_context (context, field.field_type.to_qualified_string (), source);
 			} else if (parent is Method) {
 				var method = (Method) parent;
-				result = find_symbol_with_context (context, method.return_type.to_qualified_string (), source);
+				result = get_symbol_with_context (context, method.return_type.to_qualified_string (), source);
 			}
 
 			return result;
 		}
 
-		private Symbol? find_symbol_in_struct_with_context (CodeContext context, Struct strt, string name, SourceFile source) {
+		private Symbol? get_symbol_in_struct_with_context (CodeContext context, Struct strt, string name, SourceFile source) {
 			foreach (Vala.Method item in strt.get_methods ()) {
 				if (item.name == name) {
 					return item;
@@ -783,7 +783,7 @@ namespace Vsc
 			return null;
 		}
 
-		private Symbol? find_symbol_in_class_with_context (CodeContext context, Class @class, string name, SourceFile source) {
+		private Symbol? get_symbol_in_class_with_context (CodeContext context, Class @class, string name, SourceFile source) {
 			foreach (Vala.Method item in @class.get_methods ()) {
 				if (item.name == name) {
 					return item;
@@ -814,7 +814,7 @@ namespace Vsc
 
 			if (!(@class is GLib.Object)) {
 				if (@class.base_class is Vala.Class) {
-					result = find_symbol_in_class_with_context (context, @class.base_class, name, source);
+					result = get_symbol_in_class_with_context (context, @class.base_class, name, source);
 				}
 
 				if (result == null) {
@@ -825,7 +825,7 @@ namespace Vsc
 							Namespace ns = null;
 							Class? cl = resolve_class_name (_pri_context, type.to_string (), out ns);
 							if (cl != null) {
-								result = find_symbol_in_class_with_context (_pri_context, cl, name, source);
+								result = get_symbol_in_class_with_context (_pri_context, cl, name, source);
 							}
 						}
 					}
@@ -835,7 +835,7 @@ namespace Vsc
 			return result;
 		}
 
-		private Symbol? find_symbol_in_interface_with_context (CodeContext context, Interface iface, string name, SourceFile source) {
+		private Symbol? get_symbol_in_interface_with_context (CodeContext context, Interface iface, string name, SourceFile source) {
 			foreach (Vala.Method item in iface.get_methods ()) {
 				if (item.name == name) {
 					return item;
@@ -866,7 +866,7 @@ namespace Vsc
 			return null;
 		}
 
- 		private DataType? find_datatype_for_name_with_context (CodeContext context, string symbolname, SourceFile? source = null, int line = 0, int column = 0) throws SymbolCompletionError
+ 		private DataType? get_datatype_for_name_with_context (CodeContext context, string symbolname, SourceFile? source = null, int line = 0, int column = 0) throws SymbolCompletionError
 		{
 			debug ("find datatype");
 			Class cl = null;
@@ -953,14 +953,14 @@ namespace Vsc
 												vt = new ClassType (cl);
 											} else {
 												//not solved!
-												var mdt = find_datatype_for_name_with_context (context, class_name, source, line, column);
+												var mdt = get_datatype_for_name_with_context (context, class_name, source, line, column);
 												if (mdt == null) {
 													//try to see if is a namespace
-													vt = find_datatype_for_symbol_name ("%s.%s".printf (class_name, ma.member_name), source);
+													vt = get_datatype_for_symbol_name ("%s.%s".printf (class_name, ma.member_name), source);
 												} else {
 													//now locking for the inner datatype
 													debug ("find inner for: %s", ma.member_name);
-													vt = find_inner_datatype (mdt, ma.member_name, source);
+													vt = get_inner_datatype (mdt, ma.member_name, source);
 												}
 											}
 										} else {
@@ -1057,24 +1057,24 @@ namespace Vsc
 			return false;
 		}
 
-		public SymbolCompletionResult find_by_name (SymbolCompletionFilterOptions options, string symbolname) throws GLib.Error
+		public SymbolCompletionResult get_completions_for_name (SymbolCompletionFilterOptions options, string symbolname) throws GLib.Error
 		{
 			SymbolCompletionResult result;
 
 			lock (_sec_context) {
-				result = find_by_name_with_context (options, _sec_context, symbolname);
+				result = get_completions_for_name_with_context (options, _sec_context, symbolname);
 			}
 
 			if (result.is_empty) {
 				lock (_pri_context) {
-					result = find_by_name_with_context (options, _pri_context, symbolname);
+					result = get_completions_for_name_with_context (options, _pri_context, symbolname);
 				}
 			}
 
 			return result;
 		}
 
-		private SymbolCompletionResult find_by_name_with_context (SymbolCompletionFilterOptions options, CodeContext? context, string symbolname) throws GLib.Error
+		private SymbolCompletionResult get_completions_for_name_with_context (SymbolCompletionFilterOptions options, CodeContext? context, string symbolname) throws GLib.Error
 		{
 			var result = new SymbolCompletionResult ();
 			if (context == null) {
@@ -1104,21 +1104,21 @@ namespace Vsc
 			if (count > 0) {
 				if (root_ns == null) {
 					foreach (Namespace ns in context.root.get_namespaces ()) {
-						find_in_namespace (context, options, toks, count, baseidx, ns, result);
+						get_completions_in_namespace (context, options, toks, count, baseidx, ns, result);
 					}
 				} else {
-					find_in_namespace (context, options, toks, count, baseidx, root_ns, result);
+					get_completions_in_namespace (context, options, toks, count, baseidx, root_ns, result);
 				}
 
 				//fallback to the root namespace
 				if (result.is_empty) {
-					find_in_namespace (context, options, toks, count, baseidx, context.root, result);
+					get_completions_in_namespace (context, options, toks, count, baseidx, context.root, result);
 				}
 			}
 			return result;
 		}
 
-		private void find_in_namespace (CodeContext context, SymbolCompletionFilterOptions options, string[] toks, int count, int baseidx, Namespace ns, SymbolCompletionResult result) //throws GLib.Error
+		private void get_completions_in_namespace (CodeContext context, SymbolCompletionFilterOptions options, string[] toks, int count, int baseidx, Namespace ns, SymbolCompletionResult result) //throws GLib.Error
 		{
 			Struct last_st;
 			Class last_cl;

@@ -339,7 +339,7 @@ namespace Vtg
 							typename = "string";
 						} else {
 							timer.start ();
-							var dt = _completion.find_datatype_for_name (word, _sb.name, lineno + 1, colno);
+							var dt = _completion.get_datatype_for_name (word, _sb.name, lineno + 1, colno);
 							timer.stop ();
 							GLib.debug ("find_datatype_for_name: %f", timer.elapsed ());
 							if (dt != null) {
@@ -371,7 +371,7 @@ namespace Vtg
 							}
 							options.exclude_type = typename;
 							timer.start ();
-							result = _completion.find_by_name (options, "%s.".printf(typename));
+							result = _completion.get_completions_for_name (options, "%s.".printf(typename));
 							timer.stop ();
 							GLib.debug ("find_by_name: %f", timer.elapsed ());
 						} else {
@@ -381,9 +381,9 @@ namespace Vtg
 								options.interface_symbols = false;
 								options.public_only ();
 								timer.start ();
-								result = _completion.find_by_name (options, "%s.".printf(word));
+								result = _completion.get_completions_for_name (options, "%s.".printf(word));
 								timer.stop ();
-								GLib.debug ("find_by_name (static): %f", timer.elapsed ());
+								GLib.debug ("find_by_name (static): %f, count %d", timer.elapsed (), result.count);
 							}
 						}
 					} catch (GLib.Error err) {

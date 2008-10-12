@@ -134,7 +134,7 @@ namespace Vsc
 		private void describe_symbol (string name, string sourcefile, int line, int column)
 		{
 			try {
-				var dt = _completion.find_datatype_for_name (name, sourcefile, line, column);
+				var dt = _completion.get_datatype_for_name (name, sourcefile, line, column);
 				if (dt is Vala.UnresolvedSymbol) {
 					UnresolvedSymbol sym = dt as UnresolvedSymbol;
 					print_message ("unresolved symbol: %s".printf(sym.name));
@@ -220,7 +220,7 @@ namespace Vsc
 		{
 			try {
 				var options = new SymbolCompletionFilterOptions ();
-				var result = _completion.find_by_name (options, data);
+				var result = _completion.get_completions_for_name (options, data);
 				display_result (result);
 			} catch (Error err) {
 				print_error (err.message);

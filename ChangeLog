@@ -1,5 +1,20 @@
 2008-10-12    <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletionresult.vala: 
+
+	new total count property
+
+	* vsc-shell/vsccompletionshell.vala: 
+	* vtg/vtgsymbolcompletionprovider.vala: 
+
+	updated to the new vsc api
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	little api refactor
+	
+2008-10-12    <sejerpz@tin.it>
+	
 	* vtg/vtgprojectmanager.vala:
 
 	removed the open icon from Open Project

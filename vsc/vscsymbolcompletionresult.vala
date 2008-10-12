@@ -39,15 +39,22 @@ namespace Vsc
 		public bool is_empty
 		{
 			get {
-				return properties.size == 0 
-				    && classes.size == 0
-				    && interfaces.size == 0
-				    && structs.size == 0
-				    && methods.size == 0
-				    && fields.size == 0
-				    && signals.size == 0
-				    && namespaces.size == 0
-				    && others.size == 0;
+				return this.count == 0;
+			}
+		}
+
+		public int count
+		{
+			get {
+				return properties.size
+				    + classes.size 
+				    + interfaces.size
+				    + structs.size
+				    + methods.size
+				    + fields.size
+				    + signals.size
+				    + namespaces.size
+				    + others.size;
 			}
 		}
 
