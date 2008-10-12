@@ -406,17 +406,16 @@ namespace Vsc
 
 			var parser = new Parser ();
 			parser.parse (context);
-
-			var attributeprocessor = new AttributeProcessor ();
-			attributeprocessor.process (context);
 		}
 
 		private void analyze_context (CodeContext context)
 		{
-			//first symbol resolver
+			var attributeprocessor = new AttributeProcessor ();
+			attributeprocessor.process (context);
+
 			var symbol_resolver = new SymbolResolver ();
 			symbol_resolver.resolve (context);
-			//then semantic (from valac compiler sources)
+
 			var semantic = new SemanticAnalyzer ();
 			semantic.analyze (context);
 		}

@@ -41,7 +41,7 @@ namespace Vtg.ProjectManager
 		private uint _ui_id;
 
 		const ActionEntry[] _action_entries = {
-			{"ProjectOpen", Gtk.STOCK_OPEN, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
+			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
 			{"ProjectSave", Gtk.STOCK_SAVE, N_("S_ave Project..."), "<control><alt>S", N_("Save the current project"), on_project_save}
 		};
 

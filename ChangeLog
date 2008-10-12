@@ -1,3 +1,13 @@
+2008-10-12    <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+
+	removed the open icon from Open Project
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	moved attribute parse pass to the analyze function
+	
 2008-10-10    <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala: 
