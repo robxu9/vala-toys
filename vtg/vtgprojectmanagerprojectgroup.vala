@@ -29,17 +29,27 @@ namespace Vtg.ProjectManager
 	public class ProjectGroup
 	{
 		public string name;
+		public string id;
 		public Gee.List<ProjectTarget> targets = new Gee.ArrayList<ProjectTarget> ();
 		
-		public ProjectGroup (string name)
+		public ProjectGroup (string id)
 		{
-			this.name = name;
+			if (id == null || id.length == 0) {
+				this.id = _("other");
+				this.name = this.id;
+			} else {
+				this.id = id;
+				if (id.length > 2)
+					this.name = id.substring (1,id.length-2);
+				else
+					this.name = id;
+			}
 		}
 		
-		public ProjectTarget? find_target (string name)
+		public ProjectTarget? find_target (string id)
 		{
 			foreach (ProjectTarget target in targets) {
-				if (target.name == name) {
+				if (target.id == id) {
 					return target;
 				}
 			}

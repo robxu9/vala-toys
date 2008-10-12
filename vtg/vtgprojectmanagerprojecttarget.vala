@@ -29,6 +29,7 @@ namespace Vtg.ProjectManager
 	public class ProjectTarget
 	{
 		public string name;
+		public string id;
 		public Gee.List<ProjectSource> sources = new Gee.ArrayList<ProjectSource> ();
 		private bool _simple = false;
 		public bool vala_sources = false;
@@ -36,6 +37,7 @@ namespace Vtg.ProjectManager
 		
 		public ProjectTarget (string name)
 		{
+			this.id = name;
 			this.name = name;
 		}
 

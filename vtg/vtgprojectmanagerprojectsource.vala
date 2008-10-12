@@ -29,10 +29,22 @@ namespace Vtg.ProjectManager
 	public class ProjectSource
 	{
 		public string uri;
+		public string name;
 
 		public ProjectSource (string uri)
 		{
 			this.uri = uri;
+
+			string[] tmp = this.uri.split ("/");
+			int count = 0;
+			while (tmp[count] != null) {
+				count++;
+			}
+			if (count == 0) {
+				this.name = uri;
+			} else {
+				this.name = tmp[count-1];
+			}
 		}
 	}
 }

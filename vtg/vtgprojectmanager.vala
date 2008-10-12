@@ -42,7 +42,7 @@ namespace Vtg.ProjectManager
 
 		const ActionEntry[] _action_entries = {
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
-			{"ProjectSave", Gtk.STOCK_SAVE, N_("S_ave Project..."), "<control><alt>S", N_("Save the current project"), on_project_save}
+			{"ProjectSave", null, N_("S_ave Project..."), "<control><alt>S", N_("Save the current project"), on_project_save}
 		};
 
 
@@ -50,7 +50,8 @@ namespace Vtg.ProjectManager
 		private Gee.List<Project> _projects = new Gee.ArrayList<Project> ();
 
 		private Vtg.Plugin _plugin;
-		
+		private ProjectManager.View _prj_view = null;
+
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 
 		//public signal void project_loaded (Project project);
@@ -96,7 +97,7 @@ namespace Vtg.ProjectManager
 
 			if (dialog.run () == ResponseType.ACCEPT) {
 				var foldername = dialog.get_filename ();
-				open_project (foldername);
+				open_project (foldername);				
 			}
 			dialog.destroy ();
 		}
@@ -110,15 +111,26 @@ namespace Vtg.ProjectManager
 		private void open_project (string name)
 		{
 			try {
-				GLib.debug ("Opening project %s", name);
 				var project = new Project ();
 				project.open (name);
 				_projects.add (project);
 				//HACK: why the signal isn't working?!?!
 				//this.project_loaded (project);
 				_plugin.on_project_loaded (this, project);
+				this.get_project_manager_view.add_project (project);
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
+			}
+		}
+
+		private View get_project_manager_view
+		{
+			get {
+				if (_prj_view == null) {
+					_prj_view = new ProjectManager.View (this._plugin);
+				}
+
+				return _prj_view;
 			}
 		}
 	}

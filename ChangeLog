@@ -1,5 +1,23 @@
 2008-10-12    <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerprojectmodule.vala: 
+	* vtg/vtgprojectmanagerprojecttarget.vala: 
+	* vtg/vtgprojectmanagerproject.vala: 
+	* vtg/vtgprojectmanagerprojectpackage.vala: 
+	* vtg/vtgprojectmanagerprojectgroup.vala: 
+	* vtg/vtgprojectmanagerprojectsource.vala: 
+	* vtg/vtgplugin.vala: 
+	* vtg/vtgprojectmanagerview.vala: 
+	* vtg/Makefile.am: 
+
+	added and implemented new project 'readonly' manager view side panel
+	
+	* vtg/vtgprojectmanagerproject.vala: 
+
+	fix return value of open method
+	
+2008-10-12    <sejerpz@tin.it>
+	
 	* vsc/vscsymbolcompletionresult.vala: 
 
 	new total count property

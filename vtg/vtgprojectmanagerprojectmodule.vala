@@ -29,11 +29,13 @@ namespace Vtg.ProjectManager
 	public class ProjectModule
 	{
 		public string name;
+		public string id;
 		public Gee.List<ProjectPackage> packages = new Gee.ArrayList<ProjectPackage> ();
 
 		public ProjectModule (string name)
 		{
 			this.name = name;
+			this.id = name;
 		}
 	}
 }

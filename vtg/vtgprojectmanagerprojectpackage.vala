@@ -29,10 +29,12 @@ namespace Vtg.ProjectManager
 	public class ProjectPackage
 	{
 		public string name;
+		public string id;
 
 		public ProjectPackage (string name)
 		{
 			this.name = name;
+			this.id = name;
 		}
 	}
 }

@@ -35,13 +35,18 @@ namespace Vtg
 	public class Plugin : Gedit.Plugin
 	{
 		private Gedit.Window _window = null;
-		private Gee.List<Vtg.BracketCompletion> bcs = new Gee.ArrayList<Vtg.BracketCompletion> ();
-		private Gee.List<Vtg.SymbolCompletionHelper> scs = new Gee.ArrayList<Vtg.SymbolCompletionHelper> ();
-		private Gee.List<Vtg.ProjectDescriptor> projects = new Gee.ArrayList<Vtg.ProjectDescriptor> ();
+		private Gee.List<Vtg.BracketCompletion> _bcs = new Gee.ArrayList<Vtg.BracketCompletion> ();
+		private Gee.List<Vtg.SymbolCompletionHelper> _scs = new Gee.ArrayList<Vtg.SymbolCompletionHelper> ();
+		private Gee.List<Vtg.ProjectDescriptor> _projects = new Gee.ArrayList<Vtg.ProjectDescriptor> ();
 
 		private Vtg.ProjectDescriptor default_project = null;
 
 		private ProjectManager.PluginHelper _prj_man;
+
+		public Gee.List<Vtg.ProjectDescriptor> projects
+		{
+			get { return _projects; }
+		}
 
 		public override void activate (Gedit.Window window)
 		{
@@ -84,10 +89,10 @@ namespace Vtg
 		private void deactivate_plugins ()
 		{
 			GLib.debug ("deactvate");
-			foreach (BracketCompletion bc in bcs) {
+			foreach (BracketCompletion bc in _bcs) {
 				bc.deactivate ();
 			}
-			foreach (Vtg.SymbolCompletionHelper sc in scs) {
+			foreach (Vtg.SymbolCompletionHelper sc in _scs) {
 				sc.deactivate ();
 			}
 			GLib.debug ("deactvated");
@@ -119,7 +124,7 @@ namespace Vtg
 		private ProjectDescriptor project_descriptor_find_from_document (Gedit.Document document)
 		{
 			var file = document.get_uri ();
-			foreach (ProjectDescriptor project in projects) {
+			foreach (ProjectDescriptor project in _projects) {
 				if (project.project.contains_source_file (file)) {
 					return project;
 				}
@@ -141,7 +146,7 @@ namespace Vtg
 
 		private Vtg.SymbolCompletionHelper? scs_find_from_view (Gedit.View view)
 		{
-			foreach (Vtg.SymbolCompletionHelper sc in scs) {
+			foreach (Vtg.SymbolCompletionHelper sc in _scs) {
 				if (sc.view == view)
 					return sc;
 			}
@@ -155,7 +160,7 @@ namespace Vtg
 
 		private BracketCompletion? bcs_find_from_view (Gedit.View view)
 		{
-			foreach (BracketCompletion bc in bcs) {
+			foreach (BracketCompletion bc in _bcs) {
 				if (bc.view == view)
 					return bc;
 			}
@@ -167,14 +172,14 @@ namespace Vtg
 		{
 			if (!scs_contains (view)) {
 				var sc = new Vtg.SymbolCompletionHelper (this, view, project.completion);
-				scs.add (sc);
+				_scs.add (sc);
 			} else {
 				GLib.warning ("sc already initialized for view");
 			}
 
 			if (!bcs_contains (view)) {
 				var bc = new BracketCompletion (this, view);
-				bcs.add (bc);
+				_bcs.add (bc);
 			} else {
 				GLib.warning ("bc already initialized vor view");
 			}
@@ -190,7 +195,7 @@ namespace Vtg
 			var sc = scs_find_from_view (view);
 			if (sc != null) {
 				sc.deactivate ();
-				scs.remove (sc);
+				_scs.remove (sc);
 			} else {
 				GLib.warning ("sc not found");
 			}
@@ -198,7 +203,7 @@ namespace Vtg
 			var bc = bcs_find_from_view (view);
 			if (bc != null) {
 				bc.deactivate ();
-				bcs.remove (bc);
+				_bcs.remove (bc);
 			} else {
 				GLib.warning ("bc not found");
 			}
@@ -239,7 +244,7 @@ namespace Vtg
 			}
 			prj.completion = completion;
 			prj.project = project;
-			projects.add (prj);
+			_projects.add (prj);
 		}
 
 		~Plugin ()

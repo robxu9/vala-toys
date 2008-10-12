@@ -31,6 +31,7 @@ vtg_VALASOURCES = \
 	vtgsymbolcompletiontrigger.vala \
 	vtgsymbolcompletionhelper.vala \
 	vtgprojectmanager.vala \
+	vtgprojectmanagerview.vala \
 	vtgprojectmanagerproject.vala \
 	vtgprojectmanagerprojectmodule.vala \
 	vtgprojectmanagerprojectpackage.vala \
