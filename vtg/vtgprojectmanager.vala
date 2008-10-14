@@ -38,8 +38,8 @@ namespace Vtg.ProjectManager
                                                 </menu>
                                             </menubar>
                                             <menubar name="MenuBar">
-                                                <menu name="EditMenu" action="Edit">
-                                                    <placeholder name="EditOps_3">
+                                                <menu name="BuildMenu" action="ProjectBuildMenuAction">
+                                                    <placeholder name="BuildMenuOps_1">
                                                         <menuitem name="ProjectBuild" action="ProjectBuild"/>
                                                     </placeholder>
                                                 </menu>
@@ -47,10 +47,14 @@ namespace Vtg.ProjectManager
                                         </ui>""";
 		private uint _ui_id;
 
+//                                                    <placeholder name="EditOps_3">
+//                                                        <menuitem name="ProjectBuild" action="ProjectBuild"/>
+//                                                    </placeholder>
 		const ActionEntry[] _action_entries = {
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
 			{"ProjectSave", null, N_("S_ave Project..."), "<control><alt>S", N_("Save the current project"), on_project_save},
-			{"ProjectBuild", null, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build}
+			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
+			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build}
 		};
 
 

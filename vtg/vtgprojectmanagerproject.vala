@@ -68,6 +68,22 @@ namespace Vtg.ProjectManager
 			return false;
 		}
 
+		public string? source_uri_for_name (string name)
+		{
+			foreach (ProjectGroup group in groups) {
+				foreach (ProjectTarget target in group.targets) {
+					foreach (ProjectSource source in target.sources) {
+						if (source.name == name) {
+							GLib.debug ("source uri found for %s: %s", name, source.uri);
+							return source.uri;
+						}
+					}
+				}
+			}
+
+			return null;
+		}
+
 		public bool open (string project_filename) throws GLib.Error
 		{
 			this.filename = project_filename;

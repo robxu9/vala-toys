@@ -28,18 +28,21 @@ namespace Vtg.ProjectManager
 {
 	public class LogView : GLib.Object
 	{
-		private Vtg.Plugin _plugin;
+		protected Vtg.Plugin _plugin;
+		protected Project _project;
 
 		private IOChannel _stdout = null;
 		private IOChannel _stderr = null;
 		private TextBuffer _messages;
+		private TextView _textview;
 		private uint _stdout_watch_id = 0;
 		private uint _stderr_watch_id = 0;
 		private Gtk.ScrolledWindow _ui = null;
 		
+ 		public Project project { get { return _project; } construct { _project = value; } default = null; }
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 
-		public LogView(Vtg.Plugin plugin)
+		public LogView (Vtg.Plugin plugin, Project project)
 		{
 			this.plugin = plugin;
 		}
@@ -48,14 +51,15 @@ namespace Vtg.ProjectManager
 		{
 			var panel = _plugin.gedit_window.get_bottom_panel ();
 			_messages = new TextBuffer (null);
-			var textview = new TextView.with_buffer (_messages);
+			_textview = new TextView.with_buffer (_messages);
+			_textview.set_editable (false);
 			_ui = new Gtk.ScrolledWindow (null, null);
-			_ui.add (textview);
+			_ui.add (_textview);
 			_ui.show_all ();
-			panel.add_item (_ui, _("Build process"), null);
+			panel.add_item (_ui, _("Build activity log"), null);
 		}
 
-		public void watch (int stdo, int stde)
+		public virtual void watch (int stdo, int stde)
 		{
 			_stdout = new IOChannel.unix_new (stdo);
 			_stdout.add_watch (IOCondition.IN, this.on_messages);
@@ -65,7 +69,7 @@ namespace Vtg.ProjectManager
 			_plugin.gedit_window.get_bottom_panel ().activate_item (_ui);
 		}
 
-		public void stop_watch ()
+		public virtual void stop_watch ()
 		{
 			if (_stdout_watch_id != 0) {
 				Source.remove (_stdout_watch_id);
@@ -83,12 +87,148 @@ namespace Vtg.ProjectManager
 				string message;
 				size_t len = 0;
 				source.read_to_end (out message, out len);
-				if (len > 0)
-					_messages.insert_at_cursor (message, (int) len);
+				if (len > 0) {
+					log_message (message);
+				}
 			} catch (Error err) {
 				GLib.warning ("Error reading from process %s", err.message);
 			}
 			return true;
+		}
+
+		public void log_message (string message)
+		{
+			if (message_added (message)) {
+				_messages.insert_at_cursor (message, (int) message.length);
+				_textview.scroll_mark_onscreen (_messages.get_insert ());
+			}					
+		}
+
+		public virtual bool message_added (string message) { return true; }
+	}
+
+	public class BuildLogView : LogView
+	{
+		private Gtk.ScrolledWindow _ui = null;
+		private ListStore _model = null;
+		private TreeView _build_view = null;
+
+		public BuildLogView (Vtg.Plugin plugin, Project project)
+		{
+			this.plugin = plugin;
+			this.project = project;
+		}
+
+		construct 
+		{
+			var panel = _plugin.gedit_window.get_bottom_panel ();
+			var vbox = new Gtk.VBox (false, 8);
+			_model = new ListStore (6, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof(Project));
+			_build_view = new Gtk.TreeView.with_model (_model);
+			CellRenderer renderer = new CellRendererPixbuf ();
+			var column = new TreeViewColumn ();
+			column.title = _("Message");
+ 			column.pack_start (renderer, false);
+			column.add_attribute (renderer, "stock-id", 0);
+			renderer = new CellRendererText ();
+			column.pack_start (renderer, true);
+			column.add_attribute (renderer, "text", 1);
+			_build_view.append_column (column);
+			renderer = new CellRendererText ();
+			column = new TreeViewColumn ();
+			column.title = _("File");
+			column.pack_start (renderer, false);
+			column.add_attribute (renderer, "text", 2);
+			_build_view.append_column (column);
+			renderer = new CellRendererText ();
+			column = new TreeViewColumn ();
+			column.title = _("Line");
+			column.pack_start (renderer, false);
+			column.add_attribute (renderer, "text", 3);
+			_build_view.append_column (column);
+			renderer = new CellRendererText ();
+			column = new TreeViewColumn ();
+			column.title = _("Column");
+			column.pack_start (renderer, false);
+			column.add_attribute (renderer, "text", 4);
+			_build_view.append_column (column);
+			_build_view.row_activated += this.on_build_view_row_activated;
+			var scroll = new Gtk.ScrolledWindow (null, null);
+			scroll.add (_build_view);
+			vbox.pack_start (scroll, true, true, 4);
+			vbox.show_all ();
+			panel.add_item (vbox, _("Build results"), null);
+		}
+
+		public override void watch (int stdo, int stde)
+		{
+			_model.clear ();
+			base.watch (stdo, stde);
+		}
+
+		public override bool message_added (string message)
+		{
+			string[] lines = message.split ("\n");
+			int idx = 0;
+			while (lines[idx] != null) {
+				string[] tmp = lines[idx].split (":",2);
+				if (tmp[0] != null && (tmp[0].has_suffix (".vala") || tmp[0].has_suffix (".vapi"))) {
+					add_message (tmp[0], tmp[1]);
+				}
+				idx++;
+			}
+
+			return true;
+		}
+
+		public void on_build_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
+		{
+			var tw = (TreeView) sender;
+			var model = tw.get_model ();
+			TreeIter iter;
+			if (model.get_iter (out iter, path)) {
+				string name;
+				int line, col;
+				Project proj;
+
+				model.get (iter, 2, out name, 3, out line, 4, out col, 5, out proj);
+				string uri = proj.source_uri_for_name (name);
+				if (uri != null)
+					_plugin.activate_uri (uri, line, col);
+				else
+					GLib.warning ("Couldn't find uri for source: %s", name);
+			}
+		}
+
+		/* 
+		  Example valac output:
+
+		  vtgprojectmanagerbuilder.vala:37.3-37.16: error: missing return type in method `BuildLogView.LogView´
+		  public LogView(Vtg.Plugin plugin)
+		  ^^^^^^^^^^^^^^
+		  vtgprojectmanagerbuilder.vala:72.16-72.16: error: syntax error, expected `;'
+		  string lines[] = message.split ("\n");
+			            ^
+				    Compilation failed: 2 error(s), 0 warning(s)
+
+		 */
+		private void add_message (string file, string message)
+		{
+			string[] parts = message.split (":", 3);
+			string[] src_ref = parts[0].split ("-")[0].split (".");
+			int line = src_ref[0].to_int ();
+			int col = src_ref[1].to_int ();
+			string stock_id = null;
+
+			if (parts[1].has_suffix ("error")) {
+				stock_id = Gtk.STOCK_DIALOG_ERROR;
+			} else if (parts[1].has_suffix ("warning")) {
+				stock_id = Gtk.STOCK_DIALOG_WARNING;
+			}
+
+			TreeIter iter;
+			_model.append (out iter);
+			_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, _project);
 		}
 	}
 
@@ -97,7 +237,7 @@ namespace Vtg.ProjectManager
 		private const string MAKE = "make";
 
 		private Vtg.Plugin _plugin;
-		private LogView _log = null;
+		private BuildLogView _log = null;
 
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 
@@ -113,10 +253,13 @@ namespace Vtg.ProjectManager
 			int stdo, stde;
 			try {
 				if (_log == null) {
-					_log = new LogView (_plugin);
+					_log = new BuildLogView (_plugin, project);
 				}
 				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE }, null, SpawnFlags.SEARCH_PATH, null, out child_pid, null, out stdo, out stde);
 				_log.watch (stdo, stde);
+				var start_message = _("Start building project: %s\n").printf (project.name);
+				_log.log_message (start_message);
+				_log.log_message ("%s\n\n".printf (string.nfill (start_message.length, '-')));
 				return true;
 			} catch (SpawnError err) {
 				GLib.warning ("Error spawning build process: %s", err.message);

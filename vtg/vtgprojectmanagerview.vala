@@ -66,6 +66,7 @@ namespace Vtg.ProjectManager
 			vbox.pack_start (scroll, true, true, 4);
 			vbox.show_all ();
 			panel.add_item (vbox, _("Projects"), null);
+			panel.activate_item (vbox);
 			_project_count = 0;
 		}
 
@@ -85,28 +86,11 @@ namespace Vtg.ProjectManager
 				string name, id;
 				model.get (iter, 1, out name, 2, out id);
 				if (name != null && (name.has_suffix (".vala") || name.has_suffix (".vapi"))) {
-					activate_uri (id);
+					_plugin.activate_uri (id);
 				}
 			}
 		}
 
-		private void activate_uri (string uri)
-		{
-			Gedit.Tab tab = null;
-
-			foreach (Document doc in _plugin.gedit_window.get_documents ()) {
-				if (doc.get_uri () == uri) {
-					tab = Tab.get_from_document (doc);
-					break;
-				}
-			}
-
-			if (tab == null)
-				_plugin.gedit_window.create_tab_from_uri (uri, Encoding.get_utf8 (), 0, true, true);
-			else {
-				_plugin.gedit_window.set_active_tab (tab);
-			}
-		}
 
 		public void on_project_combobox_changed (Widget sender)
 		{

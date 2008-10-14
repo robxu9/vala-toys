@@ -231,6 +231,27 @@ namespace Vtg
 			}
 		}
 
+		public void activate_uri (string uri, int line = 0, int col = 0)
+		{
+			Gedit.Tab tab = null;
+			Document existing_doc = null;
+			foreach (Document doc in _window.get_documents ()) {
+				if (doc.get_uri () == uri) {
+					tab = Tab.get_from_document (doc);
+					existing_doc = doc;
+					break;
+				}
+			}
+
+			if (tab == null)
+				_window.create_tab_from_uri (uri, Encoding.get_utf8 (), line, true, true);
+			else {
+				_window.set_active_tab (tab);
+				if (existing_doc != null && line != 0)
+					existing_doc.goto_line (line);
+			}
+		}
+
 		internal void on_project_loaded (ProjectManager.PluginHelper sender, ProjectManager.Project project)
 		{
 			GLib.debug ("Project loaded");
