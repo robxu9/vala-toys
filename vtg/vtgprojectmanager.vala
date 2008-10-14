@@ -41,6 +41,7 @@ namespace Vtg.ProjectManager
                                                 <menu name="BuildMenu" action="ProjectBuildMenuAction">
                                                     <placeholder name="BuildMenuOps_1">
                                                         <menuitem name="ProjectBuild" action="ProjectBuild"/>
+                                                        <menuitem name="ProjectBuildClean" action="ProjectBuildClean"/>
                                                     </placeholder>
                                                     <placeholder name="BuildMenuOps_2">
                                                         <separator />
@@ -57,6 +58,7 @@ namespace Vtg.ProjectManager
 			{"ProjectSave", null, N_("S_ave Project..."), "<control><alt>S", N_("Save the current project"), on_project_save},
 			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
 			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
+			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project using 'make clean'"), on_project_clean},
 			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
 			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos}
 		};
@@ -133,6 +135,14 @@ namespace Vtg.ProjectManager
 				var project = this.get_project_manager_view.current_project;
 				GLib.debug ("building project %s", project.name);
 				_prj_builder.build (project);
+			}
+		}
+
+		private void on_project_clean (Gtk.Action action)
+		{
+			if (this.get_project_manager_view.current_project != null) {
+				var project = this.get_project_manager_view.current_project;
+				_prj_builder.clean (project);
 			}
 		}
 

@@ -304,6 +304,27 @@ namespace Vtg.ProjectManager
 			}
 		}
 
+		public bool clean (Project project, bool vala_stamp = false)
+		{
+			var working_dir = project.filename;
+			Pid child_pid;
+			int stdo, stde;
+			try {
+				if (_log == null) {
+					_log = new BuildLogView (_plugin, project);
+				}
+				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE, "clean" }, null, SpawnFlags.SEARCH_PATH, null, out child_pid, null, out stdo, out stde);
+				_log.watch (stdo, stde);
+				var start_message = _("Start cleaning project: %s\n").printf (project.name);
+				_log.log_message (start_message);
+				_log.log_message ("%s\n\n".printf (string.nfill (start_message.length, '-')));
+				return true;
+			} catch (SpawnError err) {
+				GLib.warning ("Error spawning clean command: %s", err.message);
+				return false;
+			}
+		}
+
 		public void next_error ()
 		{
 			_log.next_error ();

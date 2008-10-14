@@ -1,6 +1,12 @@
 2008-10-14    <sejerpz@tin.it>
 
-	* vtg/vtgprojectmanagerbuilder.vala: 
+	* vtg/vtgprojectmanagerbuilder.vala: 	
+
+	added make clean command
+
+2008-10-14    <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerbuilder.vala: 	
 
 	misc cosmetic fixes to the build grid error view
 	
