@@ -56,7 +56,7 @@ namespace Vtg.ProjectManager
 			_ui = new Gtk.ScrolledWindow (null, null);
 			_ui.add (_textview);
 			_ui.show_all ();
-			panel.add_item (_ui, _("Build activity log"), null);
+			panel.add_item (_ui, _("Output"), null);
 		}
 
 		public virtual void watch (int stdo, int stde)
@@ -156,6 +156,7 @@ namespace Vtg.ProjectManager
 			column.add_attribute (renderer, "text", 4);
 			_build_view.append_column (column);
 			_build_view.row_activated += this.on_build_view_row_activated;
+			_build_view.set_rules_hint (true);
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_build_view);
 			vbox.pack_start (scroll, true, true, 4);
