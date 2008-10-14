@@ -1,5 +1,11 @@
 2008-10-12    <sejerpz@tin.it>
 
+	* vapi/packages/gedit-2.20/gedit-2.20.metadata: 
+
+	added missing ellipsis and nullable type attributes
+	
+2008-10-12    <sejerpz@tin.it>
+	
 	* vtg/vtgprojectmanagerprojectmodule.vala: 
 	* vtg/vtgprojectmanagerprojecttarget.vala: 
 	* vtg/vtgprojectmanagerproject.vala: 

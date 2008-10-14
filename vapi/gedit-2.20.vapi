@@ -79,7 +79,7 @@ namespace Gedit {
 		ERROR,
 		SAVING_SESSION
 	}
-	[CCode (cheader_filename = "gedit/gedit-app.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-app.h")]
 	public class App : GLib.Object {
 		public weak Gedit.Window create_window (Gdk.Screen screen);
 		public weak Gedit.Window get_active_window ();
@@ -89,7 +89,7 @@ namespace Gedit {
 		public weak GLib.List<Gedit.View> get_views ();
 		public weak GLib.List<Gedit.Window> get_windows ();
 	}
-	[CCode (cheader_filename = "gedit/gedit-document.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-document.h")]
 	public class Document : Gtk.SourceBuffer {
 		public static GLib.Quark error_quark ();
 		public bool get_can_search_again ();
@@ -110,7 +110,6 @@ namespace Gedit {
 		public bool is_untouched ();
 		public void load (string uri, Gedit.Encoding encoding, int line_pos, bool create);
 		public bool load_cancel ();
-		[CCode (array_length_pos = 0, delegate_target_pos = 0)]
 		public Document ();
 		public int replace_all (string find, string replace, uint flags);
 		public void save (Gedit.DocumentSaveFlags flags);
@@ -121,7 +120,7 @@ namespace Gedit {
 		public void set_language (Gtk.SourceLanguage lang);
 		public void set_search_text (string text, uint flags);
 	}
-	[CCode (cheader_filename = "gedit/gedit-encodings.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-encodings.h")]
 	public class Encoding : GLib.Object {
 		public weak Gedit.Encoding copy ();
 		public weak string get_charset ();
@@ -132,42 +131,42 @@ namespace Gedit {
 		public static weak Gedit.Encoding get_utf8 ();
 		public weak string to_string ();
 	}
-	[CCode (cheader_filename = "gedit/gedit-encodings-option-menu.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-encodings-option-menu.h")]
 	public class EncodingsOptionMenu : GLib.Object {
 		public weak Gedit.Encoding get_selected_encoding ();
-		[CCode (array_length_pos = 0, delegate_target_pos = 0, type = "GtkWidget*")]
+		[CCode (type = "GtkWidget*")]
 		public EncodingsOptionMenu (bool save_mode);
 		public void set_selected_encoding (Gedit.Encoding encoding);
 	}
-	[CCode (cheader_filename = "gedit/gedit-file-chooser-dialog.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-file-chooser-dialog.h")]
 	public class FileChooserDialog : Gtk.FileChooserDialog {
 		public weak Gedit.Encoding get_encoding ();
-		[CCode (array_length_pos = 0, delegate_target_pos = 0, type = "GtkWidget*")]
+		[CCode (type = "GtkWidget*")]
 		public FileChooserDialog (string title, Gtk.FileChooserAction action, Gedit.Encoding encoding, ...);
 		public void set_encoding (Gedit.Encoding encoding);
 	}
-	[CCode (cheader_filename = "gedit/gedit-message-area.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-message-area.h")]
 	public class MessageArea : Gtk.HBox {
 		public void add_action_widget (Gtk.Widget child, int response_id);
 		public weak Gtk.Widget add_button (string button_text, int response_id);
 		public void add_buttons (...);
 		public weak Gtk.Widget add_stock_button_with_text (string text, string stock_id, int response_id);
-		[CCode (array_length_pos = 0, delegate_target_pos = 0, type = "GtkWidget*")]
+		[CCode (type = "GtkWidget*")]
 		public MessageArea ();
-		[CCode (array_length_pos = 0, delegate_target_pos = 0, type = "GtkWidget*")]
+		[CCode (type = "GtkWidget*")]
 		public MessageArea.with_buttons (...);
 		public void response (int response_id);
 		public void set_contents (Gtk.Widget contents);
 		public void set_default_response (int response_id);
 		public void set_response_sensitive (int response_id, bool setting);
 	}
-	[CCode (cheader_filename = "gedit/gedit-notebook.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-notebook.h")]
 	public class Notebook : Gtk.Notebook {
 		public void add_tab (Gedit.Tab tab, int position, bool jump_to);
 		public bool get_close_buttons_sensitive ();
 		public bool get_tab_drag_and_drop_enabled ();
 		public void move_tab (Gedit.Notebook dest, Gedit.Tab tab, int dest_position);
-		[CCode (array_length_pos = 0, delegate_target_pos = 0, type = "GtkWidget*")]
+		[CCode (type = "GtkWidget*")]
 		public Notebook ();
 		public void remove_all_tabs ();
 		public void remove_tab (Gedit.Tab tab);
@@ -176,19 +175,19 @@ namespace Gedit {
 		public void set_close_buttons_sensitive (bool sensitive);
 		public void set_tab_drag_and_drop_enabled (bool enable);
 	}
-	[CCode (cheader_filename = "gedit/gedit-panel.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-panel.h")]
 	public class Panel : Gtk.VBox {
 		public bool activate_item (Gtk.Widget item);
-		public void add_item (Gtk.Widget item, string name, Gtk.Widget image);
+		public void add_item (Gtk.Widget item, string name, Gtk.Widget? image);
 		public void add_item_with_stock_icon (Gtk.Widget item, string name, string stock_id);
 		public int get_n_items ();
 		public Gtk.Orientation get_orientation ();
 		public bool item_is_active (Gtk.Widget item);
-		[CCode (array_length_pos = 0, delegate_target_pos = 0, type = "GtkWidget*")]
+		[CCode (type = "GtkWidget*")]
 		public Panel (Gtk.Orientation orientation);
 		public bool remove_item (Gtk.Widget item);
 	}
-	[CCode (cheader_filename = "gedit/gedit-plugin.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-plugin.h")]
 	public class Plugin : GLib.Object {
 		public virtual void activate (Gedit.Window window);
 		public virtual weak Gtk.Widget? create_configure_dialog ();
@@ -196,9 +195,9 @@ namespace Gedit {
 		public virtual bool is_configurable ();
 		public virtual void update_ui (Gedit.Window window);
 	}
-	[CCode (cheader_filename = "gedit/gedit-progress-message-area.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-progress-message-area.h")]
 	public class ProgressMessageArea : Gedit.MessageArea {
-		[CCode (array_length_pos = 0, delegate_target_pos = 0, type = "GtkWidget*")]
+		[CCode (type = "GtkWidget*")]
 		public ProgressMessageArea (string stock_id, string markup, bool has_cancel);
 		public void pulse ();
 		public void set_fraction (double fraction);
@@ -206,17 +205,17 @@ namespace Gedit {
 		public void set_stock_image (string stock_id);
 		public void set_text (string text);
 	}
-	[CCode (cheader_filename = "gedit/gedit-statusbar.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-statusbar.h")]
 	public class Statusbar : Gtk.Statusbar {
 		public void clear_overwrite ();
 		public void flash_message (uint context_id, string format);
-		[CCode (array_length_pos = 0, delegate_target_pos = 0, type = "GtkWidget*")]
+		[CCode (type = "GtkWidget*")]
 		public Statusbar ();
 		public void set_cursor_position (int line, int col);
 		public void set_overwrite (bool overwrite);
 		public void set_window_state (Gedit.WindowState state, int num_of_errors);
 	}
-	[CCode (cheader_filename = "gedit/gedit-tab.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-tab.h")]
 	public class Tab : Gtk.VBox {
 		public weak Gtk.VBox vbox;
 		public bool get_auto_save_enabled ();
@@ -228,19 +227,19 @@ namespace Gedit {
 		public void set_auto_save_enabled (bool enable);
 		public void set_auto_save_interval (int interval);
 	}
-	[CCode (cheader_filename = "gedit/gedit-view.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-view.h")]
 	public class View : Gtk.SourceView {
 		public void copy_clipboard ();
 		public void cut_clipboard ();
 		public void delete_selection ();
-		[CCode (array_length_pos = 0, delegate_target_pos = 0, type = "GtkWidget*")]
+		[CCode (type = "GtkWidget*")]
 		public View (Gedit.Document doc);
 		public void paste_clipboard ();
 		public void scroll_to_cursor ();
 		public void select_all ();
 		public void set_font (bool def, string font_name);
 	}
-	[CCode (cheader_filename = "gedit/gedit-window.h")]
+	[CCode (param_spec_function = "g_param_spec_object", cheader_filename = "gedit/gedit-window.h")]
 	public class Window : Gtk.Window {
 		public void close_all_tabs ();
 		public void close_tab (Gedit.Tab tab);
@@ -339,7 +338,7 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
 	public static void debug_init ();
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
-	public static void debug_message (Gedit.DebugSection section, string file, int line, string function, string format);
+	public static void debug_message (Gedit.DebugSection section, string file, int line, string function, string format, ...);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static weak Gtk.Widget dialog_add_button (Gtk.Dialog dialog, string text, string stock_id, int response_id);
 	[CCode (cname = "g_utf8_caselessnmatch", cheader_filename = "gedit/gedit-utils.h")]
@@ -673,5 +672,5 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static bool utils_uri_has_writable_scheme (string uri);
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
-	public static void warning (string format);
+	public static void warning (string format, ...);
 }

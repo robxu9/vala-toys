@@ -1,4 +1,5 @@
 Gedit*Class hidden="1"
+Gtk*Class hidden="1"
 *.priv hidden="1"
 *.object hidden="1"
 *.parent_instance hidden="1"
@@ -37,6 +38,7 @@ GeditNotebook.notebook hidden="1"
 
 #Panel
 GeditPanel base_class="GtkVBox" cheader_filename="gedit/gedit-panel.h"
+gedit_panel_add_item.image nullable="1"
 GeditPanel.vbox hidden="1"
 
 #Plugin
@@ -49,6 +51,7 @@ GeditProgressMessageArea base_class="GeditMessageArea" cheader_filename="gedit/g
 
 #Statusbar
 GeditStatusbar base_class="GtkStatusbar" cheader_filename="gedit/gedit-statusbar.h"
+gedit_statusbar_flash_message cheader_filename="gedit/gedit-statusbar.h" ellypsis="1"
 
 #Tab
 GeditTab base_class="GtkVBox" cheader_filename="gedit/gedit-tab.h"
@@ -78,7 +81,8 @@ GeditConvertError cheader_filename="gedit/gedit-convert.h"
 
 #debug
 gedit_debug* cheader_filename="gedit/gedit-debug.h"
-gedit_warning cheader_filename="gedit/gedit-debug.h"
+gedit_debug_message cheader_filename="gedit/gedit-debug.h" ellipsis="1"
+gedit_warning cheader_filename="gedit/gedit-debug.h" ellipsis="1"
 GeditDebugSection cheader_filename="gedit/gedit-debug.h"
 
 #metadata_manager
