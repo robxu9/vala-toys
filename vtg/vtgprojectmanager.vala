@@ -42,19 +42,23 @@ namespace Vtg.ProjectManager
                                                     <placeholder name="BuildMenuOps_1">
                                                         <menuitem name="ProjectBuild" action="ProjectBuild"/>
                                                     </placeholder>
+                                                    <placeholder name="BuildMenuOps_2">
+                                                        <separator />
+                                                        <menuitem name="NextError" action="ProjectBuildNextError"/>
+                                                        <menuitem name="PreviousError" action="ProjectBuildPreviousError"/>
+                                                    </placeholder>
                                                 </menu>
                                             </menubar>
                                         </ui>""";
 		private uint _ui_id;
 
-//                                                    <placeholder name="EditOps_3">
-//                                                        <menuitem name="ProjectBuild" action="ProjectBuild"/>
-//                                                    </placeholder>
 		const ActionEntry[] _action_entries = {
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
 			{"ProjectSave", null, N_("S_ave Project..."), "<control><alt>S", N_("Save the current project"), on_project_save},
 			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
-			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build}
+			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
+			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
+			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos}
 		};
 
 
@@ -130,6 +134,18 @@ namespace Vtg.ProjectManager
 				GLib.debug ("building project %s", project.name);
 				_prj_builder.build (project);
 			}
+		}
+
+		private void on_project_error_next (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			_prj_builder.next_error ();
+		}
+
+		private void on_project_error_previuos (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			_prj_builder.previous_error ();
 		}
 
 		private void open_project (string name)

@@ -113,6 +113,9 @@ namespace Vtg.ProjectManager
 		private ListStore _model = null;
 		private TreeView _build_view = null;
 
+		private int current_error_row = 0;
+		private int error_count = 0;
+
 		public BuildLogView (Vtg.Plugin plugin, Project project)
 		{
 			this.plugin = plugin;
@@ -162,6 +165,8 @@ namespace Vtg.ProjectManager
 
 		public override void watch (int stdo, int stde)
 		{
+			current_error_row = 0;
+			error_count = 0;
 			_model.clear ();
 			base.watch (stdo, stde);
 		}
@@ -185,18 +190,49 @@ namespace Vtg.ProjectManager
 		{
 			var tw = (TreeView) sender;
 			var model = tw.get_model ();
+			activate_path (path);
+		}
+
+		private void activate_path (TreePath path)
+		{
 			TreeIter iter;
-			if (model.get_iter (out iter, path)) {
+			if (_model.get_iter (out iter, path)) {
 				string name;
 				int line, col;
 				Project proj;
 
-				model.get (iter, 2, out name, 3, out line, 4, out col, 5, out proj);
+				_model.get (iter, 2, out name, 3, out line, 4, out col, 5, out proj);
 				string uri = proj.source_uri_for_name (name);
 				if (uri != null)
 					_plugin.activate_uri (uri, line, col);
 				else
 					GLib.warning ("Couldn't find uri for source: %s", name);
+			}
+		}
+
+		public void next_error ()
+		{
+			TreePath path = new TreePath.from_string (current_error_row.to_string());
+			if (path != null) {
+				activate_path (path);
+				_build_view.get_selection ().select_path (path);
+				if (current_error_row < error_count - 1)
+					current_error_row++;
+				else
+					current_error_row = 0;
+			}
+		}
+
+		public void previuos_error ()
+		{
+			TreePath path = new TreePath.from_string (current_error_row.to_string());
+			if (path != null) {
+				activate_path (path);
+				_build_view.get_selection ().select_path (path);
+				if (current_error_row > 0)
+					current_error_row--;
+				else
+					current_error_row = error_count - 1;
 			}
 		}
 
@@ -210,7 +246,6 @@ namespace Vtg.ProjectManager
 		  string lines[] = message.split ("\n");
 			            ^
 				    Compilation failed: 2 error(s), 0 warning(s)
-
 		 */
 		private void add_message (string file, string message)
 		{
@@ -229,6 +264,7 @@ namespace Vtg.ProjectManager
 			TreeIter iter;
 			_model.append (out iter);
 			_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, _project);
+			error_count++;
 		}
 	}
 
@@ -248,7 +284,7 @@ namespace Vtg.ProjectManager
 
 		public bool build (Project project)
 		{
-			var working_dir = project.name;
+			var working_dir = project.filename;
 			Pid child_pid;
 			int stdo, stde;
 			try {
@@ -265,6 +301,16 @@ namespace Vtg.ProjectManager
 				GLib.warning ("Error spawning build process: %s", err.message);
 				return false;
 			}
+		}
+
+		public void next_error ()
+		{
+			_log.next_error ();
+		}
+
+		public void previous_error ()
+		{
+			_log.previuos_error ();
 		}
 	}
 }
