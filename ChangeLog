@@ -1,6 +1,13 @@
 2008-10-14    <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerbuilder.vala: 	
+	* vtg/vtgprojectmanager.vala: 
+	
+	added clean project + vala 'stamp' command
+
+2008-10-14    <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerbuilder.vala: 	
 
 	added make clean command
 

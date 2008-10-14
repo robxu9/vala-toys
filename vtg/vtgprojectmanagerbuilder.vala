@@ -53,6 +53,10 @@ namespace Vtg.ProjectManager
 			_messages = new TextBuffer (null);
 			_textview = new TextView.with_buffer (_messages);
 			_textview.set_editable (false);
+			/* Change default font throughout the widget */
+			weak Pango.FontDescription font_desc = Pango.FontDescription.from_string ("Monospace");
+			_textview.modify_font (font_desc);
+
 			_ui = new Gtk.ScrolledWindow (null, null);
 			_ui.add (_textview);
 			_ui.show_all ();
@@ -65,7 +69,6 @@ namespace Vtg.ProjectManager
 			_stdout.add_watch (IOCondition.IN, this.on_messages);
 			_stderr = new IOChannel.unix_new (stde);
 			_stderr.add_watch (IOCondition.IN, this.on_messages);
-			_messages.set_text ("", 0);
 			_plugin.gedit_window.get_bottom_panel ().activate_item (_ui);
 		}
 
@@ -79,6 +82,11 @@ namespace Vtg.ProjectManager
 			}
 			_stdout = null;
 			_stderr = null;
+		}
+
+		public void clean_output ()
+		{
+			_messages.set_text ("", 0);
 		}
 
 		private bool on_messages (IOChannel source, IOCondition condition)
@@ -275,6 +283,7 @@ namespace Vtg.ProjectManager
 
 		private Vtg.Plugin _plugin;
 		private BuildLogView _log = null;
+		private uint _child_watch_id = 0;
 
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 
@@ -285,18 +294,28 @@ namespace Vtg.ProjectManager
 
 		public bool build (Project project)
 		{
+			if (_child_watch_id != 0)
+				return false;
+
 			var working_dir = project.filename;
-			Pid child_pid;
+			Pid? child_pid;
 			int stdo, stde;
 			try {
 				if (_log == null) {
 					_log = new BuildLogView (_plugin, project);
 				}
-				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE }, null, SpawnFlags.SEARCH_PATH, null, out child_pid, null, out stdo, out stde);
-				_log.watch (stdo, stde);
+				_log.clean_output ();
 				var start_message = _("Start building project: %s\n").printf (project.name);
 				_log.log_message (start_message);
-				_log.log_message ("%s\n\n".printf (string.nfill (start_message.length, '-')));
+				_log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+				_log.log_message ("%s\n".printf (MAKE));
+				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
+				if (child_pid != null) {
+					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
+					_log.watch (stdo, stde);
+				} else {
+					_log.log_message ("error spawning 'make' process\n");
+				}
 				return true;
 			} catch (SpawnError err) {
 				GLib.warning ("Error spawning build process: %s", err.message);
@@ -306,18 +325,38 @@ namespace Vtg.ProjectManager
 
 		public bool clean (Project project, bool vala_stamp = false)
 		{
+			if (_child_watch_id != 0)
+				return false;
+
 			var working_dir = project.filename;
-			Pid child_pid;
+			Pid? child_pid;
 			int stdo, stde;
 			try {
 				if (_log == null) {
 					_log = new BuildLogView (_plugin, project);
 				}
-				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE, "clean" }, null, SpawnFlags.SEARCH_PATH, null, out child_pid, null, out stdo, out stde);
-				_log.watch (stdo, stde);
+				_log.clean_output ();
 				var start_message = _("Start cleaning project: %s\n").printf (project.name);
 				_log.log_message (start_message);
-				_log.log_message ("%s\n\n".printf (string.nfill (start_message.length, '-')));
+				_log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+
+				if (vala_stamp) {
+					_log.log_message (_("cleaning 'stamp' files for project: %s\n").printf (project.name));
+					string command = "find %s -name *.stamp -delete".printf(working_dir);
+					_log.log_message ("%s\n\n".printf (command));
+					if (!Process.spawn_command_line_sync (command)) {
+						_log.log_message (_("error cleaning 'stamp' files for project: %s\n").printf (project.name));
+						return false;
+					}
+				}
+				_log.log_message ("%s %s\n".printf (MAKE, "clean"));
+				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE, "clean" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
+				if (child_pid != null) {
+					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
+					_log.watch (stdo, stde);
+				} else {
+					_log.log_message ("error spawning 'make clean' process\n");
+				}
 				return true;
 			} catch (SpawnError err) {
 				GLib.warning ("Error spawning clean command: %s", err.message);
@@ -333,6 +372,13 @@ namespace Vtg.ProjectManager
 		public void previous_error ()
 		{
 			_log.previuos_error ();
+		}
+
+		private void on_child_watch (Pid pid, int status)
+		{
+			Process.close_pid (pid);
+
+			_child_watch_id = 0;
 		}
 	}
 }
