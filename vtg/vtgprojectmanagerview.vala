@@ -33,7 +33,9 @@ namespace Vtg.ProjectManager
 		private Gtk.TreeView _prj_view;
 		private Gtk.TreeModel _model;
 		private int _project_count = 0;
+		public Project _current_project = null;
 
+		public Project current_project { get { return _current_project; } }
 		public Vtg.Plugin plugin { construct { _plugin = value; } }
 
 		public View (Vtg.Plugin plugin)
@@ -111,9 +113,10 @@ namespace Vtg.ProjectManager
 			var project_name = ((ComboBox) sender).get_active_text ();
 			update_view (project_name);
 		}
-		
+
 		private void update_view (string project_name)
 		{
+			_current_project = null;
 			//find project
 			foreach (ProjectDescriptor item in _plugin.projects) {
 				GLib.debug ("%s vs %s", item.project.name, project_name);
@@ -121,6 +124,7 @@ namespace Vtg.ProjectManager
 					GLib.debug ("found!");
 					_prj_view.set_model (item.project.model);
 					_prj_view.expand_all ();
+					_current_project = item.project;
 					break;
 				}
 			}

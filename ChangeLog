@@ -1,5 +1,19 @@
+2008-10-13    <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerview.vala: 
+	* vtg/vtgprojectmanagerbuilder.vala: 
+	* vtg/vtgprojectmanager.vala: 
+
+	new project build functionality
+	
 2008-10-12    <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanager.vala: 
+
+	fixed uncheck return value erron opening a project
+
+2008-10-12    <sejerpz@tin.it>
+	
 	* vapi/packages/gedit-2.20/gedit-2.20.metadata: 
 
 	added missing ellipsis and nullable type attributes

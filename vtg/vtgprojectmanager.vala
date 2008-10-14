@@ -37,12 +37,20 @@ namespace Vtg.ProjectManager
                                                     </placeholder>
                                                 </menu>
                                             </menubar>
+                                            <menubar name="MenuBar">
+                                                <menu name="EditMenu" action="Edit">
+                                                    <placeholder name="EditOps_3">
+                                                        <menuitem name="ProjectBuild" action="ProjectBuild"/>
+                                                    </placeholder>
+                                                </menu>
+                                            </menubar>
                                         </ui>""";
 		private uint _ui_id;
 
 		const ActionEntry[] _action_entries = {
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
-			{"ProjectSave", null, N_("S_ave Project..."), "<control><alt>S", N_("Save the current project"), on_project_save}
+			{"ProjectSave", null, N_("S_ave Project..."), "<control><alt>S", N_("Save the current project"), on_project_save},
+			{"ProjectBuild", null, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build}
 		};
 
 
@@ -51,6 +59,7 @@ namespace Vtg.ProjectManager
 
 		private Vtg.Plugin _plugin;
 		private ProjectManager.View _prj_view = null;
+		private ProjectManager.Builder _prj_builder = null;
 
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 
@@ -64,6 +73,7 @@ namespace Vtg.ProjectManager
 		construct	
 		{
 			initialize_ui ();
+			_prj_builder = new ProjectManager.Builder (_plugin);
 		}
 
 		private void initialize_ui ()
@@ -108,16 +118,27 @@ namespace Vtg.ProjectManager
 			GLib.debug ("Action %s activated", action.name);
 		}
 
+		private void on_project_build (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			if (this.get_project_manager_view.current_project != null) {
+				var project = this.get_project_manager_view.current_project;
+				GLib.debug ("building project %s", project.name);
+				_prj_builder.build (project);
+			}
+		}
+
 		private void open_project (string name)
 		{
 			try {
 				var project = new Project ();
-				project.open (name);
-				_projects.add (project);
-				//HACK: why the signal isn't working?!?!
-				//this.project_loaded (project);
-				_plugin.on_project_loaded (this, project);
-				this.get_project_manager_view.add_project (project);
+				if (project.open (name)) {
+					_projects.add (project);
+					//HACK: why the signal isn't working?!?!
+					//this.project_loaded (project);
+					_plugin.on_project_loaded (this, project);
+					this.get_project_manager_view.add_project (project);
+				}
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
 			}
