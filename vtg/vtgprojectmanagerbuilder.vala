@@ -232,7 +232,7 @@ namespace Vtg.ProjectManager
 			}
 		}
 
-		public void previuos_error ()
+		public void previous_error ()
 		{
 			TreePath path = new TreePath.from_string (current_error_row.to_string());
 			if (path != null) {
@@ -371,7 +371,7 @@ namespace Vtg.ProjectManager
 
 		public void previous_error ()
 		{
-			_log.previuos_error ();
+			_log.previous_error ();
 		}
 
 		private void on_child_watch (Pid pid, int status)
