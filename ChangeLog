@@ -1,4 +1,10 @@
 2008-10-15    <sejerpz@tin.it>
+	
+	* vtg/vtgprojectmanagerbuilder.vala: 
+
+	better setup & handling of stderr, stdout channel in the building process
+	
+2008-10-15    <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerbuilder.vala: 
 

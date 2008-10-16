@@ -65,23 +65,35 @@ namespace Vtg.ProjectManager
 
 		public virtual void watch (int stdo, int stde)
 		{
-			_stdout = new IOChannel.unix_new (stdo);
-			_stdout.add_watch (IOCondition.IN, this.on_messages);
-			_stderr = new IOChannel.unix_new (stde);
-			_stderr.add_watch (IOCondition.IN, this.on_messages);
-			_plugin.gedit_window.get_bottom_panel ().activate_item (_ui);
+			try {
+				_stdout = new IOChannel.unix_new (stdo);
+				_stdout.add_watch (IOCondition.IN, this.on_messages);
+				_stdout.set_flags (_stdout.get_flags () | IOFlags.NONBLOCK);
+				_stderr = new IOChannel.unix_new (stde);
+				_stderr.add_watch (IOCondition.IN, this.on_messages);
+				_stderr.set_flags (_stderr.get_flags () | IOFlags.NONBLOCK);
+				_plugin.gedit_window.get_bottom_panel ().activate_item (_ui);
+			} catch (Error err) {
+				GLib.warning ("error during watch setup: %s", err.message);
+			}
 		}
 
 		public virtual void stop_watch ()
 		{
-			if (_stdout_watch_id != 0) {
-				Source.remove (_stdout_watch_id);
+			try {
+				_stdout.flush ();
+				_stderr.flush ();
+				if (_stdout_watch_id != 0) {
+					Source.remove (_stdout_watch_id);
+				}
+				if (_stderr_watch_id != 0) {
+					Source.remove (_stderr_watch_id);
+				}
+				_stdout = null;
+				_stderr = null;
+			} catch (Error err) {
+				GLib.warning ("error during stop_watch: %s", err.message);
 			}
-			if (_stderr_watch_id != 0) {
-				Source.remove (_stderr_watch_id);
-			}
-			_stdout = null;
-			_stderr = null;
 		}
 
 		public void clean_output ()
@@ -94,14 +106,17 @@ namespace Vtg.ProjectManager
 			try {
 				string message;
 				size_t len = 0;
-				source.read_to_end (out message, out len);
-				if (len > 0) {
+				size_t term_pos = 0;
+				source.read_line (out message, out len, out term_pos);
+				while (len > 0) {
 					log_message (message);
+					source.read_line (out message, out len, out term_pos);
 				}
+				return true;
 			} catch (Error err) {
 				GLib.warning ("Error reading from process %s", err.message);
+				return false;
 			}
-			return true;
 		}
 
 		public void log_message (string message)
@@ -112,12 +127,19 @@ namespace Vtg.ProjectManager
 			}					
 		}
 
+		public void activate_view ()
+		{
+			var panel = _plugin.gedit_window.get_bottom_panel ();
+			panel.activate_item (_ui);
+		}
+
 		public virtual bool message_added (string message) { return true; }
 	}
 
 	public class BuildLogView : LogView
 	{
-		private Gtk.ScrolledWindow _ui = null;
+		//private Gtk.ScrolledWindow _ui = null;
+		private Gtk.VBox _ui;
 		private ListStore _model = null;
 		private TreeView _build_view = null;
 
@@ -133,7 +155,7 @@ namespace Vtg.ProjectManager
 		construct 
 		{
 			var panel = _plugin.gedit_window.get_bottom_panel ();
-			var vbox = new Gtk.VBox (false, 8);
+			_ui = new Gtk.VBox (false, 8);
 			_model = new ListStore (6, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof(Project));
 			_build_view = new Gtk.TreeView.with_model (_model);
 			CellRenderer renderer = new CellRendererPixbuf ();
@@ -167,17 +189,24 @@ namespace Vtg.ProjectManager
 			_build_view.set_rules_hint (true);
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_build_view);
-			vbox.pack_start (scroll, true, true, 4);
-			vbox.show_all ();
-			panel.add_item (vbox, _("Build results"), null);
+			_ui.pack_start (scroll, true, true, 4);
+			_ui.show_all ();
+			panel.add_item (_ui, _("Build results"), null);
 		}
 
 		public override void watch (int stdo, int stde)
 		{
+			base.activate_view ();
 			current_error_row = 0;
 			error_count = 0;
 			_model.clear ();
 			base.watch (stdo, stde);
+		}
+
+		public void activate_view ()
+		{
+			var panel = _plugin.gedit_window.get_bottom_panel ();
+			panel.activate_item (this._ui);
 		}
 
 		public override bool message_added (string message)
@@ -379,6 +408,9 @@ namespace Vtg.ProjectManager
 			Process.close_pid (pid);
 
 			_child_watch_id = 0;
+			_log.stop_watch ();
+			_log.log_message (_("\ncompilation end with exit status %d\n").printf(status));
+			_log.activate_view ();
 		}
 	}
 }
