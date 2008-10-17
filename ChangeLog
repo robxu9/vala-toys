@@ -1,3 +1,9 @@
+2008-10-16  Andrea  <andrea@cipi>
+
+	* configure.ac: 
+
+	relaxed gnome-build required version
+
 2008-10-15    <sejerpz@tin.it>
 	
 	* vtg/vtgprojectmanagerbuilder.vala: 
