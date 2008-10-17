@@ -1,5 +1,14 @@
-2008-10-16  Andrea  <andrea@cipi>
+2008-10-16  Andrea  <sejerpz@tin.it>
 
+	* vtg/Makefile.am: 
+	* vtg/vtgprojectmanageroutputview.vala: 
+	* vtg/vtgprojectmanagerbuildlogview.vala: 
+	* vtg/vtgprojectmanagerbuilder.vala: 
+
+	source reorganization
+
+2008-10-16  Andrea  <sejerpz@tin.it>
+	
 	* configure.ac: 
 
 	relaxed gnome-build required version
