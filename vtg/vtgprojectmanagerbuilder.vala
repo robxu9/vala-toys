@@ -31,10 +31,15 @@ namespace Vtg.ProjectManager
 		private const string MAKE = "make";
 
 		private Vtg.Plugin _plugin;
-		private BuildLogView _log = null;
+		private BuildLogView _build_view = null;
 		private uint _child_watch_id = 0;
 
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
+
+		construct
+		{
+			this._build_view = new BuildLogView (_plugin);
+		}
 
 		public Builder (Vtg.Plugin plugin)
 		{
@@ -50,20 +55,21 @@ namespace Vtg.ProjectManager
 			Pid? child_pid;
 			int stdo, stde;
 			try {
-				if (_log == null) {
-					_log = new BuildLogView (_plugin, project);
-				}
-				_log.clean_output ();
+				var log = _plugin.output_view;
+
+				log.clean_output ();
 				var start_message = _("Start building project: %s\n").printf (project.name);
-				_log.log_message (start_message);
-				_log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
-				_log.log_message ("%s\n".printf (MAKE));
+				log.log_message (start_message);
+				log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+				log.log_message ("%s\n".printf (MAKE));
 				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
 				if (child_pid != null) {
 					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
-					_log.watch (stdo, stde);
+					_build_view.initialize (project);
+					log.start_watch (stdo, stde);
+					log.activate ();
 				} else {
-					_log.log_message ("error spawning 'make' process\n");
+					log.log_message ("error spawning 'make' process\n");
 				}
 				return true;
 			} catch (SpawnError err) {
@@ -81,30 +87,31 @@ namespace Vtg.ProjectManager
 			Pid? child_pid;
 			int stdo, stde;
 			try {
-				if (_log == null) {
-					_log = new BuildLogView (_plugin, project);
-				}
-				_log.clean_output ();
+				var log = _plugin.output_view;
+
+				log.clean_output ();
 				var start_message = _("Start cleaning project: %s\n").printf (project.name);
-				_log.log_message (start_message);
-				_log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+				log.log_message (start_message);
+				log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
 
 				if (vala_stamp) {
-					_log.log_message (_("cleaning 'stamp' files for project: %s\n").printf (project.name));
+					log.log_message (_("cleaning 'stamp' files for project: %s\n").printf (project.name));
 					string command = "find %s -name *.stamp -delete".printf(working_dir);
-					_log.log_message ("%s\n\n".printf (command));
+					log.log_message ("%s\n\n".printf (command));
 					if (!Process.spawn_command_line_sync (command)) {
-						_log.log_message (_("error cleaning 'stamp' files for project: %s\n").printf (project.name));
+						log.log_message (_("error cleaning 'stamp' files for project: %s\n").printf (project.name));
 						return false;
 					}
 				}
-				_log.log_message ("%s %s\n".printf (MAKE, "clean"));
+				log.log_message ("%s %s\n".printf (MAKE, "clean"));
 				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE, "clean" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
 				if (child_pid != null) {
 					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
-					_log.watch (stdo, stde);
+					_build_view.initialize (project);
+					log.start_watch (stdo, stde);
+					log.activate ();
 				} else {
-					_log.log_message ("error spawning 'make clean' process\n");
+					log.log_message ("error spawning 'make clean' process\n");
 				}
 				return true;
 			} catch (SpawnError err) {
@@ -115,22 +122,24 @@ namespace Vtg.ProjectManager
 
 		public void next_error ()
 		{
-			_log.next_error ();
+			_build_view.next_error ();
 		}
 
 		public void previous_error ()
 		{
-			_log.previous_error ();
+			_build_view.previous_error ();
 		}
 
 		private void on_child_watch (Pid pid, int status)
 		{
+			var log = _plugin.output_view;
+
 			Process.close_pid (pid);
 
 			_child_watch_id = 0;
-			_log.stop_watch ();
-			_log.log_message (_("\ncompilation end with exit status %d\n").printf(status));
-			_log.activate_view ();
+			log.stop_watch ();
+			log.log_message (_("\ncompilation end with exit status %d\n").printf(status));
+			_build_view.activate ();
 		}
 	}
 }

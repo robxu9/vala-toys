@@ -1,5 +1,14 @@
 2008-10-16  Andrea  <sejerpz@tin.it>
 
+	* vtg/vtgplugin.vala: 
+	* vtg/vtgprojectmanagerbuilder.vala: 
+	* vtg/vtgprojectmanagerbuildlogview.vala: 
+	* vtg/vtgprojectmanageroutputview.vala: 
+
+	splitted BuildLogView from OutputView
+	
+2008-10-16  Andrea  <sejerpz@tin.it>
+
 	* vtg/Makefile.am: 
 	* vtg/vtgprojectmanageroutputview.vala: 
 	* vtg/vtgprojectmanagerbuildlogview.vala: 

@@ -38,15 +38,16 @@ namespace Vtg
 		private Gee.List<Vtg.BracketCompletion> _bcs = new Gee.ArrayList<Vtg.BracketCompletion> ();
 		private Gee.List<Vtg.SymbolCompletionHelper> _scs = new Gee.ArrayList<Vtg.SymbolCompletionHelper> ();
 		private Gee.List<Vtg.ProjectDescriptor> _projects = new Gee.ArrayList<Vtg.ProjectDescriptor> ();
-
+		
 		private Vtg.ProjectDescriptor default_project = null;
-
 		private ProjectManager.PluginHelper _prj_man;
 
 		public Gee.List<Vtg.ProjectDescriptor> projects
 		{
 			get { return _projects; }
 		}
+
+		public ProjectManager.OutputView output_view { get; set; }
 
 		public override void activate (Gedit.Window window)
 		{
@@ -66,6 +67,7 @@ namespace Vtg
 				initialize_document (doc);
 			}
 
+			this.output_view = new ProjectManager.OutputView (this);
 			_prj_man = new ProjectManager.PluginHelper (this);
 			//_prj_man.project_loaded += this.on_project_loaded;
 		}

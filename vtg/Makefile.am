@@ -32,15 +32,15 @@ vtg_VALASOURCES = \
 	vtgsymbolcompletionhelper.vala \
 	vtgprojectmanager.vala \
 	vtgprojectmanagerview.vala \
+	vtgprojectmanagerbuilder.vala \
+	vtgprojectmanageroutputview.vala \
+	vtgprojectmanagerbuildlogview.vala \
 	vtgprojectmanagerproject.vala \
 	vtgprojectmanagerprojectmodule.vala \
 	vtgprojectmanagerprojectpackage.vala \
 	vtgprojectmanagerprojectgroup.vala \
 	vtgprojectmanagerprojecttarget.vala \
 	vtgprojectmanagerprojectsource.vala \
-	vtgprojectmanagerbuilder.vala \
-	vtgprojectmanageroutputview.vala \
-	vtgprojectmanagerbuildlogview.vala \
 	vtgplugin.vala \
 	vtgutils.vala \
 	$(NULL)
