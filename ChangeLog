@@ -1,5 +1,12 @@
 2008-10-16  Andrea  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerbuildlogview.vala: 
+	* vtg/vtgprojectmanageroutputview.vala: 
+
+	added missing files from the last commit
+
+2008-10-16  Andrea  <sejerpz@tin.it>
+
 	* vtg/vtgplugin.vala: 
 	* vtg/vtgprojectmanagerbuilder.vala: 
 	* vtg/vtgprojectmanagerbuildlogview.vala: 
