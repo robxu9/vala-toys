@@ -1,5 +1,11 @@
 2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala: 
+
+	first support for cast expressions, improved foreach type inference
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerprojectgroup.vala: 
 	* vtg/vtgprojectmanagerprojecttarget.vala: 
 	* vtg/vtgprojectmanagerproject.vala: 

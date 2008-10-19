@@ -464,6 +464,7 @@ namespace Vsc
 			return null;
 		}
 
+		//TODO: we need to iterate the statements present
 		private CodeNode? find_sub_codenode (CodeNode node, int line, int column)
 		{
 			CodeNode? result = null;
@@ -471,14 +472,9 @@ namespace Vsc
 			if (node is Method) {
 				var md = (Method) node;
 
-				foreach (CodeNode subnode in md.body.get_statements ()) {
-					debug ("checkin subnode %s: %s", Reflection.get_type_from_instance (subnode).name (), subnode.to_string ());
-		
-					result = find_sub_codenode (subnode, line, column);
-					if (result != null) {
-						return result;
-					}
-				}
+				result = find_sub_codenode (md.body, line, column);
+				if (result != null)
+					return result;
 
 				if (node_contains_position (md.body, line, column) ||
 				    node_contains_position (md, line, column)) {
@@ -499,22 +495,24 @@ namespace Vsc
 					return lambda;
 				}
 			} else if (node is Assignment) {
-
-					result = find_sub_codenode (((Assignment) node).right, line, column);
-					if (result != null) {
-						return result;
-					}
+				result = find_sub_codenode (((Assignment) node).right, line, column);
+				if (result != null) {
+					return result;
+				}
 
  				if (node_contains_position (((Assignment) node).right, line, column)) {
 					return node;
 				}
 			} else if (node is ForeachStatement) {
- 				if (node_contains_position (((ForeachStatement) node).body, line, column)) {
-					result = find_sub_codenode (((ForeachStatement) node).body, line, column);
-					if (result != null) {
-						return result;
-					}
-					return node;
+				var fe = (ForeachStatement) node;
+
+				result = find_sub_codenode (fe.body, line, column);
+			        if (result != null)
+					return result;
+
+				if (node_contains_position (fe.body, line, column) ||
+				    node_contains_position (fe, line, column)) {
+					return fe;
 				}
  			} else if (node is WhileStatement) {
  				if (node_contains_position (((WhileStatement) node).body, line, column)) {
@@ -527,17 +525,29 @@ namespace Vsc
  			} else if (node is ForStatement) {
 				if (node_contains_position (((ForStatement) node).body, line, column)) {
 					result = find_sub_codenode (((ForStatement) node).body, line, column);
-					if (result != null) {
+					if (result != null && result != ((ForStatement) node).body) {
 						return result;
 					}
 					return node;
 				}
  			} else if (node is Block) {
-				if (node_contains_position (node, line, column)) {
-					return node;
+				var block = (Block) node;
+
+				//check first in inner sub-nodes
+				foreach (CodeNode subnode in block.get_statements ()) {
+					debug ("checkin subnode %s: %s", Reflection.get_type_from_instance (subnode).name (), subnode.to_string ());
+		
+					result = find_sub_codenode (subnode, line, column);
+					if (result != null) {
+						return result;
+					}
 				}
 			} else if (node is ReturnStatement || node is DeclarationStatement || node is InvocationExpression) {
 				return null;
+			} else if (node is CastExpression) {
+				if (node_contains_position (node, line, column)) {
+					return node;
+				}
 			} else {
 				warning ("incomplete support for %s", Reflection.get_type_from_instance (node).name ());
 			}
@@ -883,6 +893,8 @@ namespace Vsc
 
  		private DataType? get_datatype_for_name_with_context (CodeContext context, string symbolname, SourceFile? source = null, int line = 0, int column = 0) throws SymbolCompletionError
 		{
+			DataType type = null;
+
 			debug ("find datatype");
 			Class cl = null;
 			var codenode = find_codenode (source, line, column, out cl);
@@ -930,61 +942,9 @@ namespace Vsc
 							debug ("decl %s %s",  Reflection.get_type_from_instance (decl.declaration).name (), decl.declaration.name);	
 							if (decl.declaration.name == symbolname) {
 								if (decl.declaration is LocalVariable) {
-									var lv = (LocalVariable) (decl.declaration);
-									if (lv.variable_type == null && lv.initializer != null) {
-										DataType vt = lv.initializer.value_type;
-										Expression initializer = lv.initializer;
-
-										if (initializer is ObjectCreationExpression) {
-											var oce = (((ObjectCreationExpression) (lv.initializer)));
-											if (oce.member_name is MemberAccess) {
-												initializer = oce.member_name;
-											}
-										} else if (initializer is InvocationExpression) {
-											var invoc = (InvocationExpression) initializer;
-											debug ("invocation %s", Reflection.get_type_from_instance (invoc.call).name ());
-											initializer = invoc.call;
-										}
-
-										if (initializer is MemberAccess) {
-											Namespace dummy;
-											string class_name;
-											var ma = (MemberAccess) initializer;
-
-											class_name = ma.member_name;
-											if (ma.inner != null) {
-												class_name = ma.inner.to_string ();
-											}
-
-											debug ("class name: %s", class_name);
-											var cl = resolve_class_name (context, class_name, out dummy);
-											
-											//don't parse twice the primary context
-											if (cl == null && context != _pri_context) { 
-												cl = resolve_class_name (_pri_context, class_name, out dummy);
-											}
-											if (cl != null) {
-												debug ("class type %s", cl.name);
-												vt = new ClassType (cl);
-											} else {
-												//not solved!
-												var mdt = get_datatype_for_name_with_context (context, class_name, source, line, column);
-												if (mdt == null) {
-													//try to see if is a namespace
-													vt = get_datatype_for_symbol_name ("%s.%s".printf (class_name, ma.member_name), source);
-												} else {
-													//now locking for the inner datatype
-													debug ("find inner for: %s", ma.member_name);
-													vt = get_inner_datatype (mdt, ma.member_name, source);
-												}
-											}
-										} else {
-											warning ("Type '%s' is not yet supported", Reflection.get_type_from_instance (initializer).name ());
-										}
-										return vt;
-									} else if (lv.variable_type != null) {
-										return lv.variable_type;;
-									}
+									type = datatype_for_localvariable (context, source, line, column, (LocalVariable) (decl.declaration));
+									if (type != null)
+										return type;
 								} else {
 									throw new SymbolCompletionError.UNSUPPORTED_TYPE ("unsupported type exception");
 								}
@@ -998,6 +958,12 @@ namespace Vsc
 							if (par.name == symbolname) {
 								return par.parameter_type;
 							}
+						}
+					} else if (codenode is ForeachStatement) {
+						var fe = (ForeachStatement) codenode;
+						//foreach statement iterator
+						if (fe.variable_name == symbolname) {
+							return fe.type_reference;
 						}
 					}
 				}
@@ -1047,6 +1013,77 @@ namespace Vsc
 			}
 			
 			return null;
+		}
+
+		private DataType datatype_for_localvariable (CodeContext context,  SourceFile? source = null, int line = 0, int column = 0, LocalVariable lv)
+		{
+			DataType vt = null;
+			if (lv.variable_type == null && lv.initializer != null) {
+				vt = lv.initializer.value_type;
+				if (vt == null) {
+					Expression initializer = lv.initializer;
+					string class_name = null;
+					string member_name = null;
+
+					if (initializer is ObjectCreationExpression) {
+						var oce = (((ObjectCreationExpression) (lv.initializer)));
+						if (oce.member_name is MemberAccess) {
+							initializer = oce.member_name;
+						}
+					} else if (initializer is InvocationExpression) {
+						var invoc = (InvocationExpression) initializer;
+						debug ("invocation %s", Reflection.get_type_from_instance (invoc.call).name ());
+						initializer = invoc.call;
+					}
+
+					if (initializer is MemberAccess) {
+						var ma = (MemberAccess) initializer;
+
+						if (ma.inner != null) {
+							class_name = ma.inner.to_string ();
+						} else {
+							class_name = ma.member_name;
+						}
+
+						member_name = ma.member_name;
+					} else if (initializer is CastExpression) {
+						var ce = (CastExpression) initializer;
+						vt = ce.type_reference;
+					} else {
+						warning ("Initializer of type '%s' is not yet supported", Reflection.get_type_from_instance (initializer).name ());
+					}
+
+					if (class_name != null) {
+						debug ("find datatype for class name: %s", class_name);
+						Namespace dummy;
+						var cl = resolve_class_name (context, class_name, out dummy);
+											
+						//don't parse twice the primary context
+						if (cl == null && context != _pri_context) { 
+							cl = resolve_class_name (_pri_context, class_name, out dummy);
+						}
+						if (cl != null) {
+							debug ("class type %s", cl.name);
+							vt = new ClassType (cl);
+						} else if (member_name != null) {
+							//not solved!
+							var mdt = get_datatype_for_name_with_context (context, class_name, source, line, column);
+							if (mdt == null) {
+								//try to see if is a namespace
+								vt = get_datatype_for_symbol_name ("%s.%s".printf (class_name, member_name), source);
+							} else {
+								//now locking for the inner datatype
+								debug ("find inner for: %s", member_name);
+								vt = get_inner_datatype (mdt, member_name, source);
+							}
+						} 
+					}
+				}
+			} else if (lv.variable_type != null) {
+				vt = lv.variable_type;;
+			}
+
+			return vt;
 		}
 
 		private bool node_contains_position (CodeNode node, int line, int column)
