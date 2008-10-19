@@ -1,5 +1,11 @@
 2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+
+	fixed all changelog entries
+	
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala: 
 
 	new api for adding custom directory to the vapidir search path
@@ -21,14 +27,14 @@
 
 	moved the build menu
 
-2008-10-16  Andrea  <sejerpz@tin.it>
+2008-10-16  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerbuildlogview.vala: 
 	* vtg/vtgprojectmanageroutputview.vala: 
 
 	added missing files from the last commit
 
-2008-10-16  Andrea  <sejerpz@tin.it>
+2008-10-16  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgplugin.vala: 
 	* vtg/vtgprojectmanagerbuilder.vala: 
@@ -37,7 +43,7 @@
 
 	splitted BuildLogView from OutputView
 	
-2008-10-16  Andrea  <sejerpz@tin.it>
+2008-10-16  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/Makefile.am: 
 	* vtg/vtgprojectmanageroutputview.vala: 
@@ -46,44 +52,44 @@
 
 	source reorganization
 
-2008-10-16  Andrea  <sejerpz@tin.it>
+2008-10-16  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* configure.ac: 
 
 	relaxed gnome-build required version
 
-2008-10-15    <sejerpz@tin.it>
+2008-10-15  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vtg/vtgprojectmanagerbuilder.vala: 
 
 	better setup & handling of stderr, stdout channel in the building process
 	
-2008-10-15    <sejerpz@tin.it>
+2008-10-15  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerbuilder.vala: 
 
 	fixed some typos
 
-2008-10-14    <sejerpz@tin.it>
+2008-10-14  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerbuilder.vala: 	
 	* vtg/vtgprojectmanager.vala: 
 	
 	added clean project + vala 'stamp' command
 
-2008-10-14    <sejerpz@tin.it>
+2008-10-14  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerbuilder.vala: 	
 
 	added make clean command
 
-2008-10-14    <sejerpz@tin.it>
+2008-10-14  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerbuilder.vala: 	
 
 	misc cosmetic fixes to the build grid error view
 	
-2008-10-14    <sejerpz@tin.it>	
+2008-10-14  Andrea Del Signore  <sejerpz@tin.it>	
 
 	* vtg/vtgprojectmanagerbuilder.vala: 
 
@@ -93,7 +99,7 @@
 
 	added next / previous error commands
 
-2008-10-13    <sejerpz@tin.it>
+2008-10-13  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerproject.vala: 
 	* vtg/vtgplugin.vala: 
@@ -103,7 +109,7 @@
 
 	more bug fix and added functionality for the project build module
 	
-2008-10-13    <sejerpz@tin.it>
+2008-10-13  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vtg/vtgprojectmanagerview.vala: 
 	* vtg/vtgprojectmanagerbuilder.vala: 
@@ -111,19 +117,19 @@
 
 	new project build functionality
 	
-2008-10-12    <sejerpz@tin.it>
+2008-10-12  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanager.vala: 
 
 	fixed uncheck return value erron opening a project
 
-2008-10-12    <sejerpz@tin.it>
+2008-10-12  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vapi/packages/gedit-2.20/gedit-2.20.metadata: 
 
 	added missing ellipsis and nullable type attributes
 	
-2008-10-12    <sejerpz@tin.it>
+2008-10-12  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vtg/vtgprojectmanagerprojectmodule.vala: 
 	* vtg/vtgprojectmanagerprojecttarget.vala: 
@@ -141,7 +147,7 @@
 
 	fix return value of open method
 	
-2008-10-12    <sejerpz@tin.it>
+2008-10-12  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vsc/vscsymbolcompletionresult.vala: 
 
@@ -156,7 +162,7 @@
 
 	little api refactor
 	
-2008-10-12    <sejerpz@tin.it>
+2008-10-12  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vtg/vtgprojectmanager.vala:
 
@@ -166,26 +172,26 @@
 
 	moved attribute parse pass to the analyze function
 	
-2008-10-10    <sejerpz@tin.it>
+2008-10-10  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala: 
 
 	added the attribute parse pass to the codecontext parse routine
 
-2008-10-09    <sejerpz@tin.it>
+2008-10-09  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala: 
 
 	using atomic int operation to avoid thread locking and to implement
 	in multiple parse passages
 
-2008-10-09    <sejerpz@tin.it>
+2008-10-09  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala: 
 
 	added try_add_package method
 
-2008-10-08    <sejerpz@tin.it>
+2008-10-08  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure.ac: 
 
@@ -202,7 +208,7 @@
 
 	added project manager model classes, and first autotools loading code
 
-2008-10-08    <sejerpz@tin.it>
+2008-10-08  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vtg/vtgprojectmanager.vala: 
 	* vtg/vtgplugin.vala: 
@@ -210,34 +216,34 @@
 	first integration (not done yet) of the project manager plugin
 	with the gedit ui
 	
-2008-10-08    <sejerpz@tin.it>
+2008-10-08  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vtg/vtgprojectmanager.vala: 
 	* vtg/Makefile.am:
 
 	added a stub for the project manager plugin
 
-2008-10-07    <sejerpz@tin.it>
+2008-10-07  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbracketcompletion.vala: 
 
 	added a workaround for a bug introduced by the previous commit 
 	when no trimming is needed.
 
-2008-10-05    <sejerpz@tin.it>
+2008-10-05  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbracketcompletion.vala: 
 
 	trimmed line end space when adding ';'
 
-2008-10-02    <sejerpz@tin.it>
+2008-10-02  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala: 
 	* vsc-shell/vsccompletionshell.vala: 
 
 	implemented 'reparse' command
 
-2008-10-01    <sejerpz@tin.it>
+2008-10-01  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vapi/gnome-build-1.0.vapi:
 	* vapi/packages/gnome-build-1.0/gnome-build-1.0-custom.vala:
@@ -245,20 +251,20 @@
 
 	more gnome-build-1.0 vapi fixes
 
-2008-10-01    <sejerpz@tin.it>
+2008-10-01  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vapi/gnome-build-1.0.vapi:
 	* vapi/packages/gnome-build-1.0/gnome-build-1.0.metadata:
 
 	added gnome-build-1.0 vapi with some more fixes
 
-2008-09-30    <sejerpz@tin.it>
+2008-09-30  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletionitem.vala: 
 
 	changed 'formal_parameters_to_string' method visibility from public to private
 
-2008-09-30    <sejerpz@tin.it>
+2008-09-30  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vtg/vtgsymbolcompletionprovider.vala: 
 
@@ -269,26 +275,26 @@
 
 	more work on symbol info pane
 
-2008-09-29    <sejerpz@tin.it>
+2008-09-29  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletionitem.vala: 
 	* vsc/vscsymbolcompletion.vala: 
 
 	prepared SymbolCompletionItem to incorporate some info for parameters and return values
 
-2008-09-29    <sejerpz@tin.it>
+2008-09-29  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vsc/Makefile.am: 
 
 	fixed missing license files
 	
-2008-09-29    <sejerpz@tin.it>
+2008-09-29  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala: 
 
 	wrong function name fixes
 
-2008-09-28    <sejerpz@tin.it>
+2008-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala: 
 
