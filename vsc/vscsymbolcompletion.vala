@@ -506,29 +506,35 @@ namespace Vsc
 			} else if (node is ForeachStatement) {
 				var fe = (ForeachStatement) node;
 
-				result = find_sub_codenode (fe.body, line, column);
-			        if (result != null)
-					return result;
-
 				if (node_contains_position (fe.body, line, column) ||
 				    node_contains_position (fe, line, column)) {
+					result = find_sub_codenode (fe.body, line, column);
+					if (result != null)
+						return result;
+
 					return fe;
 				}
  			} else if (node is WhileStatement) {
- 				if (node_contains_position (((WhileStatement) node).body, line, column)) {
-					result = find_sub_codenode (((WhileStatement) node).body, line, column);
-					if (result != null) {
+				var ws = (WhileStatement) node;
+
+				if (node_contains_position (ws.body, line, column) ||
+				    node_contains_position (ws, line, column)) {
+					result = find_sub_codenode (ws.body, line, column);
+					if (result != null)
 						return result;
-					}
-					return node;
+
+					return ws;
 				}
  			} else if (node is ForStatement) {
-				if (node_contains_position (((ForStatement) node).body, line, column)) {
-					result = find_sub_codenode (((ForStatement) node).body, line, column);
-					if (result != null && result != ((ForStatement) node).body) {
+				var fs = (ForStatement) node;
+
+				if (node_contains_position (fs.body, line, column) ||
+				    node_contains_position (fs, line, column)) {
+					result = find_sub_codenode (fs.body, line, column);
+					if (result != null)
 						return result;
-					}
-					return node;
+
+					return fs;
 				}
  			} else if (node is Block) {
 				var block = (Block) node;
@@ -935,7 +941,6 @@ namespace Vsc
 						}
 					}
 
-
 					foreach (Statement st in body.get_statements ()) {
 						if (st is DeclarationStatement) {
 							var decl = (DeclarationStatement) st;
@@ -1006,7 +1011,6 @@ namespace Vsc
 							return clmt.return_type;
 						}
 					}
-
 				}
 			} else {
 				var cl = find_class (source, line, column);

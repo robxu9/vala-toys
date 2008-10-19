@@ -2,6 +2,12 @@
 
 	* vsc/vscsymbolcompletion.vala: 
 
+	simple optimization in find_sub_codenode
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
 	first support for cast expressions, improved foreach type inference
 
 2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
