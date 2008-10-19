@@ -157,6 +157,12 @@ namespace Vtg.ProjectManager
 				foreach (ProjectTarget target in group.targets) {
 					if (target.simple || target.vala_sources) {
 						foreach (ProjectSource source in target.sources) {
+							if (source.name.has_prefix (".") ||
+							    source.name.has_suffix (".c") ||
+							    source.name.has_suffix (".h") ||
+							    source.name.has_suffix (".stamp"))
+								continue;
+
 							TreeIter source_iter;
 							_model.append (out source_iter, group_iter);
 							_model.set (source_iter, 0, Gtk.STOCK_FILE, 1, source.name, 2, source.uri);

@@ -1,5 +1,19 @@
 2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala: 
+
+	fixed some glib missing references
+	
+	* vtg/vtgprojectmanagerbuildlogview.vala: 
+
+	changed bottom pane icon
+	
+	* vtg/vtgprojectmanagerproject.vala: 
+
+	cleanup some unwanted source entries from the project manager
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 
 	fixed all changelog entries

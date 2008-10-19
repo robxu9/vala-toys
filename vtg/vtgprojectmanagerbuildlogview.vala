@@ -83,7 +83,7 @@ namespace Vtg.ProjectManager
 			scroll.add (_build_view);
 			_ui.pack_start (scroll, true, true, 4);
 			_ui.show_all ();
-			panel.add_item (_ui, _("Build results"), null);
+			panel.add_item_with_stock_icon (_ui, _("Build results"), Gtk.STOCK_EXECUTE);
 			_plugin.output_view.message_added += this.on_message_added;
 		}
 

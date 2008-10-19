@@ -380,13 +380,20 @@ namespace Vsc
 
 			lock (_pri_context) {
 				SourceFile source;
+
+				source = new SourceFile (current_context, glib_file, true);
+				current_context.add_source_file (source);
+
 				foreach (string item in _packages) {
-					debug ("adding package %s", item);
-					source = new SourceFile (current_context, item, true);
-					current_context.add_source_file (source);
+					if (item != null && item != glib_file) {
+						debug ("adding package %s", item);					
+						source = new SourceFile (current_context, item, true);
+						current_context.add_source_file (source);
+					}
 				}
 				foreach (string item in _sources) {
 					source = new SourceFile (current_context, item, false);
+					source.add_using_directive (new UsingDirective (new UnresolvedSymbol (null, "GLib", null)));
 					current_context.add_source_file (source);
 				}
 			}
