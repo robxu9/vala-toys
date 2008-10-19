@@ -37,7 +37,9 @@ namespace Vtg.ProjectManager
                                                     </placeholder>
                                                 </menu>
                                             </menubar>
+
                                             <menubar name="MenuBar">
+                                              <placeholder name="ExtraMenu_1">
                                                 <menu name="BuildMenu" action="ProjectBuildMenuAction">
                                                     <placeholder name="BuildMenuOps_1">
                                                         <menuitem name="ProjectBuild" action="ProjectBuild"/>
@@ -51,6 +53,7 @@ namespace Vtg.ProjectManager
                                                         <menuitem name="PreviousError" action="ProjectBuildPreviousError"/>
                                                     </placeholder>
                                                 </menu>
+                                              </placeholder>
                                             </menubar>
                                         </ui>""";
 		private uint _ui_id;

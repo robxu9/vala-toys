@@ -1,3 +1,9 @@
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala: 
+
+	moved the build menu
+
 2008-10-16  Andrea  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerbuildlogview.vala: 
