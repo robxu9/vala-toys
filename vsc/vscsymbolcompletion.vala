@@ -57,8 +57,6 @@ namespace Vsc
 		{
 			_vapidirs.append ("/usr/share/vala/vapi");
 			_vapidirs.append ("/usr/local/share/vala/vapi");
-			_vapidirs.append ("./");
-			_vapidirs.append ("../vapi");
 			try {
 				var file = find_vala_package_name ("GLib");
 				glib_file = find_vala_package_filename (file)[0];

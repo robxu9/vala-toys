@@ -23,6 +23,7 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
+using Vtg.ProjectManager;
 
 namespace Vtg
 {
@@ -55,7 +56,7 @@ namespace Vtg
 			Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
 			Signal.connect_after (this._window, "tab-removed", (GLib.Callback) on_tab_removed, this);
 
-			foreach (View view in this._window.get_views ()) {
+			foreach (Gedit.View view in this._window.get_views ()) {
 				var doc = (Gedit.Document) (view.get_buffer ());
 				if (doc.language != null && doc.language.id == "vala") {
 					var project = project_descriptor_find_from_document (doc);
@@ -220,7 +221,7 @@ namespace Vtg
 		{
 			//search the view
 			var app = App.get_default ();
-			foreach (View view in app.get_views ()) {
+			foreach (Gedit.View view in app.get_views ()) {
 				if (view.get_buffer () == sender) {
 					if (sender.language  == null || sender.language.id != "vala") {
 						instance.uninitialize_view (view);
@@ -261,8 +262,20 @@ namespace Vtg
 			var completion = new Vsc.SymbolCompletion ();
 			foreach (ProjectManager.ProjectModule module in project.modules) {
 				foreach (ProjectManager.ProjectPackage package in module.packages) {
-					GLib.debug ("added package %s from project %s", package.name, project.name);
-					completion.try_add_package (package.name);
+					GLib.debug ("adding package %s from project %s", package.name, project.name);
+					if (!completion.try_add_package (package.name))
+						GLib.debug ("package %s not added", package.name);
+				}
+			}
+			foreach (ProjectGroup group in project.groups) {
+				foreach (ProjectTarget target in group.targets) {
+					foreach (ProjectSource source in target.sources) {
+						if (source.uri.has_suffix (".vala") && source.uri.has_prefix ("file://")) {
+							string filename = source.uri.substring (7, source.uri.length - 7);
+							GLib.debug ("adding source %s", filename);
+							completion.add_source (filename);
+						}
+					}
 				}
 			}
 			prj.completion = completion;

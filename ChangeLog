@@ -1,5 +1,11 @@
 2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugin.vala: 
+
+	adding project source file to the completion library
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanager.vala: 
 
 	moved the build menu
