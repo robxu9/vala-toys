@@ -472,12 +472,14 @@ namespace Vsc
 			if (node is Method) {
 				var md = (Method) node;
 
+				debug ("Method: %s", md.name);
 				result = find_sub_codenode (md.body, line, column);
 				if (result != null)
 					return result;
 
 				if (node_contains_position (md.body, line, column) ||
 				    node_contains_position (md, line, column)) {
+					debug ("RETURN Method: %s", md.name);
 					return md;
 				}
 			} else if (node is ExpressionStatement) {
@@ -563,15 +565,14 @@ namespace Vsc
 
 		private CodeNode? find_codenode (SourceFile source, int line, int column, out Class cl) throws SymbolCompletionError
 		{
-			CodeNode? result = null;
 			cl = null;
 			foreach (CodeNode node in source.get_nodes ()) {
+				CodeNode? result = null;
 				if (node is Method) {
 					result = find_sub_codenode (node, line, column);
 					if (result != null)
-						break;
+						return result;
 				} else if (node is Class) {
-					debug ("class ehererere");
 					cl = (Class) node;
 					if (cl.constructor != null) {
 						if (node_contains_position (cl.constructor, line, column)) {
@@ -594,11 +595,12 @@ namespace Vsc
 					foreach (Method md in cl.get_methods ()) {
 						result = find_sub_codenode (md, line, column);
 						if (result != null)
-							break;
+							return result;
 					}
 				}
 			}
-			return result;
+			cl = null;
+			return null;
 		}
 
 		public DataType? get_datatype_for_name (string symbolname, string sourcefile, int line, int column) throws SymbolCompletionError
@@ -914,6 +916,8 @@ namespace Vsc
 
 					if (codenode is Method) {
 						body = ((Method) codenode).body;
+					} else if (codenode is CreationMethod) {
+						body = ((Constructor) codenode).body;
 					} else if (codenode is Constructor) {
 						body = ((Constructor) codenode).body;
 					} else if (codenode is Destructor) {
@@ -1271,7 +1275,7 @@ namespace Vsc
 			foreach (Vala.Method method in item.get_methods ()) {
 				if (test_symbol (options, name, method) &&
 				    (options.static_symbols || (options.static_symbols == false && method.binding != MemberBinding.STATIC))) {
-					if (options.only_constructors && (method is Constructor || method.name.has_prefix(".new"))) {
+					if (options.only_constructors && (method is CreationMethod || method.name.has_prefix(".new"))) {
 						result.methods.add (new SymbolCompletionItem.with_method (method));
 					} else if (!options.only_constructors) {
 						result.methods.add (new SymbolCompletionItem.with_method (method));
@@ -1397,7 +1401,7 @@ namespace Vsc
 
 		private bool test_symbol (SymbolCompletionFilterOptions options, string? name, Symbol symbol)
 		{
-			if ((name == null || symbol.name.has_prefix (name)) &&
+			if ((name == null || name == "" || symbol.name.has_prefix (name)) &&
 			    ((options.public_symbols && symbol.access == Vala.SymbolAccessibility.PUBLIC) ||
 				(options.private_symbols && symbol.access == Vala.SymbolAccessibility.PRIVATE) ||
 				(options.protected_symbols && symbol.access == Vala.SymbolAccessibility.PROTECTED) ||
@@ -1412,7 +1416,7 @@ namespace Vsc
 		{
 			foreach (Vala.Method method in item.get_methods ()) {
 				if (test_symbol (options, name, method)) {
-					if (options.only_constructors && (method is Constructor || method.name.has_prefix (".new"))) {
+					if (options.only_constructors && (method is CreationMethod || method.name.has_prefix (".new"))) {
 						result.methods.add (new SymbolCompletionItem (method.name));
 					} else if (!options.only_constructors) {
 						result.methods.add (new SymbolCompletionItem (method.name));

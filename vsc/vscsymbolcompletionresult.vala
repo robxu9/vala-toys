@@ -72,7 +72,7 @@ namespace Vsc
 				return false;
 
 			foreach (Vala.Symbol item in data) {
-				if (item.name == name) {
+				if (item is Symbol && item.name == name) {
 					return true;
 				}
 			}

@@ -1,5 +1,14 @@
 2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletionitem.vala: 
+	* vsc/vscsymbolcompletionresult.vala: 
+	* vsc/vscsymbolcompletion.vala: 
+
+	fixed completion list with creation methods
+	more fixes on method searching function
+	
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala: 
 
 	simple optimization in find_sub_codenode

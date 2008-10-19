@@ -96,8 +96,8 @@ namespace Vsc
 		{
 			this.name = item.name;
 			
-			if (name.has_prefix (".new")) {
-				name = name.substring (4, name.length - 4);
+			if (name.has_prefix ("new")) {
+				name = name.substring (3, name.length - 3);
 				if (name == "") {
 					name = item.parent_symbol.name;
 				} else if (name.has_prefix (".")) {
