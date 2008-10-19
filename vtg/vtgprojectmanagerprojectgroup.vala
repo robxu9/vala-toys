@@ -69,7 +69,6 @@ namespace Vtg.ProjectManager
 			string buffer;
 			foreach (string file in files_to_scan) {
 				string filename = Path.build_filename (project_path, id, file);
-				GLib.debug ("READING!!!!!!!!!!!!!!!! reading makefile: %s", filename);					
 				//find user referenced vapi & vapidir from Makefile
 				try {
 					if (FileUtils.get_contents (filename, out buffer)) {

@@ -1,3 +1,10 @@
+2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerprojectgroup.vala: 
+	* vsc/vscsymbolcompletion.vala: 
+	
+	minor code cleanups
+
 2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletionitem.vala: 

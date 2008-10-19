@@ -464,7 +464,6 @@ namespace Vsc
 			return null;
 		}
 
-		//TODO: we need to iterate the statements present
 		private CodeNode? find_sub_codenode (CodeNode node, int line, int column)
 		{
 			CodeNode? result = null;
@@ -472,14 +471,12 @@ namespace Vsc
 			if (node is Method) {
 				var md = (Method) node;
 
-				debug ("Method: %s", md.name);
 				result = find_sub_codenode (md.body, line, column);
 				if (result != null)
 					return result;
 
 				if (node_contains_position (md.body, line, column) ||
 				    node_contains_position (md, line, column)) {
-					debug ("RETURN Method: %s", md.name);
 					return md;
 				}
 			} else if (node is ExpressionStatement) {
@@ -543,8 +540,6 @@ namespace Vsc
 
 				//check first in inner sub-nodes
 				foreach (CodeNode subnode in block.get_statements ()) {
-					debug ("checkin subnode %s: %s", Reflection.get_type_from_instance (subnode).name (), subnode.to_string ());
-		
 					result = find_sub_codenode (subnode, line, column);
 					if (result != null) {
 						return result;
@@ -1040,7 +1035,6 @@ namespace Vsc
 						}
 					} else if (initializer is InvocationExpression) {
 						var invoc = (InvocationExpression) initializer;
-						debug ("invocation %s", Reflection.get_type_from_instance (invoc.call).name ());
 						initializer = invoc.call;
 					}
 
