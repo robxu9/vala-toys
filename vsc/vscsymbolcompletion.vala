@@ -83,6 +83,15 @@ namespace Vsc
 			}
 		}
 
+		public bool add_path_to_vapi_search_dir (string path)
+		{
+			if (!FileUtils.test (path, FileTest.IS_DIR) || _vapidirs.find_custom (path, GLib.strcmp) != null)
+				return false;
+
+			_vapidirs.append (path);
+			return true;
+		}
+
 		public bool add_package_from_namespace (string @namespace, bool auto_schedule_parse = true) throws Error
 		{
 			var package_name = find_vala_package_name (@namespace);
@@ -1469,8 +1478,12 @@ namespace Vsc
 					string buffer;
 					FileUtils.get_contents (dep_file, out buffer, out len);
 					foreach (string dep_name in buffer.split("\n")) {
-						if (dep_name.length > 1)
-							results.insert (0, "%s/%s.vapi".printf (found_vapidir, dep_name));
+						if (dep_name.length > 1) {
+							var deps = find_vala_package_filename (dep_name);
+							foreach (string dep in deps) {
+								results.insert (0, dep);
+							}
+						}
 					}
 				}
 			}

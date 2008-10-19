@@ -1,5 +1,16 @@
 2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala: 
+
+	new api for adding custom directory to the vapidir search path
+	fixed dependency handling
+	
+	* vtg/vtgplugin.vala: 
+
+	added projectname/vapi to the vapi search directory list
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugin.vala: 
 
 	adding project source file to the completion library

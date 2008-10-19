@@ -23,6 +23,7 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
+using Vsc;
 using Vtg.ProjectManager;
 
 namespace Vtg
@@ -260,6 +261,9 @@ namespace Vtg
 			GLib.debug ("Project loaded");
 			var prj = new ProjectDescriptor ();
 			var completion = new Vsc.SymbolCompletion ();
+			var dir = Path.build_filename (project.filename, "vapi");
+			add_vapi_from_dir (dir, completion);
+
 			foreach (ProjectManager.ProjectModule module in project.modules) {
 				foreach (ProjectManager.ProjectPackage package in module.packages) {
 					GLib.debug ("adding package %s from project %s", package.name, project.name);
@@ -281,6 +285,33 @@ namespace Vtg
 			prj.completion = completion;
 			prj.project = project;
 			_projects.add (prj);
+		}
+
+		internal void add_vapi_from_dir (string path, SymbolCompletion completion)
+		{
+			GLib.debug ("scanning dir for vapis: %s", path);
+			try {
+				bool path_added = false;
+				var dir = File.new_for_path (path);
+				var enm = dir.enumerate_children (FILE_ATTRIBUTE_STANDARD_NAME, FileQueryInfoFlags.NONE, null);
+				FileInfo fi = null;
+				while ( (fi = enm.next_file (null)) != null) {
+					if (fi.get_name ().has_suffix (".vapi")) {
+						if (!path_added) {
+							path_added = completion.add_path_to_vapi_search_dir (path);
+							
+						}
+
+						GLib.debug ("adding package %s from %s", fi.get_name (), path);
+						if (!completion.try_add_package (fi.get_name ()))
+							GLib.debug ("package %s not added", fi.get_name ());
+
+					}
+				}
+				enm.close (null);
+			} catch (Error err) {
+				GLib.warning ("error reading %s: %s", path, err.message);
+			}
 		}
 
 		~Plugin ()
