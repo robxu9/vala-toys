@@ -52,6 +52,19 @@ namespace Vtg.ProjectManager
 			return null;
 		}
 
+		public bool contains_built_library (string library)
+		{
+			foreach (ProjectGroup group in groups) {
+				foreach (string item in group.built_libraries) {
+					if (item == library) {
+						return true;
+					}
+				}
+			}
+			
+			return false;
+		}
+
 		public bool contains_source_file (string uri)
 		{
 			foreach (ProjectGroup group in groups) {
@@ -213,7 +226,7 @@ namespace Vtg.ProjectManager
 					string grp_name = normalize_path (grp_id);
 					ProjectGroup group = this.find_group (grp_name);
 					if (group == null) {
-						group = new ProjectGroup (grp_name);
+						group = new ProjectGroup (this, grp_name);
 						this.groups.add (group);
 						foreach (string tgt_id in _gbf_project.get_group (grp_id).targets) {
 							string[] tgt_parts = tgt_id.split (":");

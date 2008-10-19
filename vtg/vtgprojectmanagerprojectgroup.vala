@@ -31,8 +31,13 @@ namespace Vtg.ProjectManager
 		public string name;
 		public string id;
 		public Gee.List<ProjectTarget> targets = new Gee.ArrayList<ProjectTarget> ();
-		
-		public ProjectGroup (string id)
+		public Gee.List<string> vapidirs = new Gee.ArrayList<string> ();
+		public Gee.List<string> packages = new Gee.ArrayList<string> ();
+		public Gee.List<string> built_libraries = new Gee.ArrayList<string> ();
+
+		private const string[] files_to_scan = {"Makefile.am", "Makefile"};
+
+		public ProjectGroup (Project parent, string id)
 		{
 			if (id == null || id.length == 0) {
 				this.id = _("other");
@@ -44,6 +49,7 @@ namespace Vtg.ProjectManager
 				else
 					this.name = id;
 			}
+			initialize_vapis (parent.filename);
 		}
 		
 		public ProjectTarget? find_target (string id)
@@ -55,6 +61,48 @@ namespace Vtg.ProjectManager
 			}
 			
 			return null;
+		}
+
+
+		private void initialize_vapis (string project_path)
+		{
+			string buffer;
+			foreach (string file in files_to_scan) {
+				string filename = Path.build_filename (project_path, id, file);
+				GLib.debug ("READING!!!!!!!!!!!!!!!! reading makefile: %s", filename);					
+				//find user referenced vapi & vapidir from Makefile
+				try {
+					if (FileUtils.get_contents (filename, out buffer)) {
+						string[] lines = buffer.split ("\n");
+						buffer = null; //this frees some memory
+						foreach (string line in lines) {
+							string[] tmps = line.split (" ");
+							int count = 0;
+							while (tmps[count] != null)
+								count++;
+						
+							for(int idx=0; idx < count; idx++) {
+								if (tmps[idx] == "--vapidir" && (idx + 1) < count) {									
+									var tmp = Path.build_filename (project_path, id, tmps[idx+1]);
+									GLib.debug ("vapidir reference: %s", tmp);
+									vapidirs.add (tmp);
+								} else if (tmps[idx] == "--pkg" && (idx + 1) < count) {
+									var tmp = tmps[idx+1];
+									GLib.debug ("package reference: %s", tmp);
+									packages.add (tmp);
+								} else if (tmps[idx] == "--library") {
+									var tmp = tmps[idx+1];
+									GLib.debug ("library generated: %s", tmp);
+									built_libraries.add (tmp);
+								}
+							}
+						}
+						return;
+					}
+				} catch (FileError err) {
+					GLib.warning ("Error reading file %s: %s", this.id, err.message);
+				}
+			}
 		}
 	}
 }

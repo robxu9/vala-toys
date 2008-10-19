@@ -261,8 +261,6 @@ namespace Vtg
 			GLib.debug ("Project loaded");
 			var prj = new ProjectDescriptor ();
 			var completion = new Vsc.SymbolCompletion ();
-			var dir = Path.build_filename (project.filename, "vapi");
-			add_vapi_from_dir (dir, completion);
 
 			foreach (ProjectManager.ProjectModule module in project.modules) {
 				foreach (ProjectManager.ProjectPackage package in module.packages) {
@@ -272,12 +270,27 @@ namespace Vtg
 				}
 			}
 			foreach (ProjectGroup group in project.groups) {
+				bool source_added = false;
+
 				foreach (ProjectTarget target in group.targets) {
 					foreach (ProjectSource source in target.sources) {
 						if (source.uri.has_suffix (".vala") && source.uri.has_prefix ("file://")) {
 							string filename = source.uri.substring (7, source.uri.length - 7);
 							GLib.debug ("adding source %s", filename);
 							completion.add_source (filename);
+							source_added = true;
+						}
+					}
+				}
+
+				if (source_added) {
+					foreach(string path in group.vapidirs) {
+						completion.add_path_to_vapi_search_dir (path);
+					}
+
+					foreach(string package in group.packages) {
+						if (!project.contains_built_library (package)) {
+							    completion.try_add_package (package);
 						}
 					}
 				}
@@ -285,33 +298,6 @@ namespace Vtg
 			prj.completion = completion;
 			prj.project = project;
 			_projects.add (prj);
-		}
-
-		internal void add_vapi_from_dir (string path, SymbolCompletion completion)
-		{
-			GLib.debug ("scanning dir for vapis: %s", path);
-			try {
-				bool path_added = false;
-				var dir = File.new_for_path (path);
-				var enm = dir.enumerate_children (FILE_ATTRIBUTE_STANDARD_NAME, FileQueryInfoFlags.NONE, null);
-				FileInfo fi = null;
-				while ( (fi = enm.next_file (null)) != null) {
-					if (fi.get_name ().has_suffix (".vapi")) {
-						if (!path_added) {
-							path_added = completion.add_path_to_vapi_search_dir (path);
-							
-						}
-
-						GLib.debug ("adding package %s from %s", fi.get_name (), path);
-						if (!completion.try_add_package (fi.get_name ()))
-							GLib.debug ("package %s not added", fi.get_name ());
-
-					}
-				}
-				enm.close (null);
-			} catch (Error err) {
-				GLib.warning ("error reading %s: %s", path, err.message);
-			}
 		}
 
 		~Plugin ()

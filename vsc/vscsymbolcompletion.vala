@@ -89,6 +89,7 @@ namespace Vsc
 				return false;
 
 			_vapidirs.append (path);
+			schedule_parse ();
 			return true;
 		}
 

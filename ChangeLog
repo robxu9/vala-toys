@@ -1,5 +1,14 @@
 2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerprojectgroup.vala: 
+	* vtg/vtgprojectmanagerprojecttarget.vala: 
+	* vtg/vtgprojectmanagerproject.vala: 
+	* vtg/vtgplugin.vala: 
+
+	Makefile scanning to infer vapidir / vapi really used by the project
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala: 
 
 	fixed some glib missing references

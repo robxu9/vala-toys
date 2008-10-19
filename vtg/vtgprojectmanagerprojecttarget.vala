@@ -34,7 +34,7 @@ namespace Vtg.ProjectManager
 		private bool _simple = false;
 		public bool vala_sources = false;
 		public bool generated_sources = false;
-		
+
 		public ProjectTarget (string name)
 		{
 			this.id = name;
@@ -81,6 +81,5 @@ namespace Vtg.ProjectManager
 
 			return null;
 		}
-		
 	}
 }
