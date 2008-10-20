@@ -95,6 +95,8 @@ namespace Vsc
 
 		public bool add_package_from_namespace (string @namespace, bool auto_schedule_parse = true) throws Error
 		{
+			if (@namespace == null)
+				return false;
 			var package_name = find_vala_package_name (@namespace);
 			return add_package (package_name, auto_schedule_parse);
 		}
