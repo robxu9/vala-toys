@@ -277,8 +277,12 @@ namespace Vtg
 						if (source.uri.has_suffix (".vala") && source.uri.has_prefix ("file://")) {
 							string filename = source.uri.substring (7, source.uri.length - 7);
 							GLib.debug ("adding source %s", filename);
-							completion.add_source (filename);
-							source_added = true;
+							try {
+								completion.add_source (filename);
+								source_added = true;
+							} catch (Error err) {
+								GLib.warning ("Error adding source %s: %s", filename, err.message);
+							}
 						}
 					}
 				}

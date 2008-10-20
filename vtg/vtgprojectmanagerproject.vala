@@ -83,12 +83,37 @@ namespace Vtg.ProjectManager
 
 		public string? source_uri_for_name (string name)
 		{
+			string[] name_parts = name.split ("/");
+			int name_count = 0;
+			while (name_parts[name_count] != null)
+				name_count++;
+
 			foreach (ProjectGroup group in groups) {
 				foreach (ProjectTarget target in group.targets) {
 					foreach (ProjectSource source in target.sources) {
-						if (source.name == name) {
-							GLib.debug ("source uri found for %s: %s", name, source.uri);
-							return source.uri;
+						if (name_count == 1) {
+							if (source.name == name) {
+								return source.uri;
+							}
+						} else {
+							string[] src_parts = source.uri.split ("/");
+							int src_count = 0;
+							while (src_parts[src_count] != null)
+								src_count++;
+							
+							if (name_count <= src_count) {
+								bool equals = true;
+								for(int idx=0; idx < name_count; idx++) {
+									if (src_parts[src_count - idx] != name_parts[name_count - idx]) {
+										equals = false;
+										break;
+									}
+								}
+								
+								if (equals) {
+									return source.uri;
+								}
+							}
 						}
 					}
 				}

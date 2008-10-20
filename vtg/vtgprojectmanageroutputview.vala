@@ -108,7 +108,8 @@ namespace Vtg.ProjectManager
 				size_t term_pos = 0;
 				source.read_line (out message, out len, out term_pos);
 				while (len > 0) {
-					log_message (message);
+					if (message != null)
+						log_message (message);
 					source.read_line (out message, out len, out term_pos);
 				}
 				return true;
