@@ -1111,10 +1111,14 @@ namespace Vsc
 			return false;
 		}
 
-		public SymbolCompletionResult get_completions_for_name (SymbolCompletionFilterOptions options, string symbolname) throws GLib.Error
+		public SymbolCompletionResult get_completions_for_name (SymbolCompletionFilterOptions options, string symbolname, string? sourcefile = null) throws GLib.Error
 		{
 			SymbolCompletionResult result;
+			SourceFile source = null;
 
+			if (sourcefile != null) {
+					source = find_sourcefile (_sec_context, sourcefile);
+			}
 			lock (_sec_context) {
 				result = get_completions_for_name_with_context (options, _sec_context, symbolname);
 			}
@@ -1122,6 +1126,58 @@ namespace Vsc
 			if (result.is_empty) {
 				lock (_pri_context) {
 					result = get_completions_for_name_with_context (options, _pri_context, symbolname);
+
+					//search it in referenced namespaces
+					if (source != null && result.is_empty) {
+						foreach(UsingDirective item in source.get_using_directives ()) {
+							if (item.namespace_symbol.name != "GLib") {
+								var symbol = "%s.%s".printf (item.namespace_symbol.name, symbolname);
+								result = get_completions_for_name_with_context (options, _pri_context, symbol);
+								if (!result.is_empty) {
+									break;
+								}
+							}
+						}
+
+						//TODO: optimize it!
+						if (result.is_empty) {
+							foreach (CodeNode node in source.get_nodes ()) {
+								if (node is Namespace) {
+									var symbol = "%s.%s".printf (((Namespace) node).name, symbolname);
+									result = get_completions_for_name_with_context (options, _pri_context, symbol);
+									if (!result.is_empty) {
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return result;
+		}
+
+		private Namespace get_namespace_for_name (Namespace root, string name, ref int level)
+		{
+			Namespace result = null;
+			string[] parts = name.split (".",2);
+			int count = 0;
+			while (parts[count] != null)
+				count++;
+
+			if (parts[0] == null || parts[0] == "")
+				return null;
+
+			foreach (Namespace ns in root.get_namespaces ()) {
+				if (ns.name == parts[0]) {
+					level++;
+					if (count > 1) {
+						result = get_namespace_for_name (ns, parts[1], ref level);
+					}
+					if (result == null)
+						result = ns;
+					break;
 				}
 			}
 
@@ -1135,23 +1191,16 @@ namespace Vsc
 				critical ("context is null");
 				return result;
 			}
+
+			int baseidx = 0;
+			Namespace root_ns = get_namespace_for_name (context.root, symbolname, ref baseidx);
+
 			string[] toks = symbolname.split (".");
 			int count = 0;
 			while (toks[count] != null)
 				count++;
 
 			string to_find;
-			int baseidx = 0;
-			Namespace root_ns = null;
-
-			//first try to see if the first token is a namespace name
-			foreach (Namespace ns in context.root.get_namespaces ()) {
-				if (ns.name == toks[0]) {
-					baseidx = 1;
-					root_ns = ns;
-					break;
-				}
-			}
 
 			count -= baseidx;
 

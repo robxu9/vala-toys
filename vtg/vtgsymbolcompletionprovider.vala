@@ -371,7 +371,7 @@ namespace Vtg
 							}
 							options.exclude_type = typename;
 							timer.start ();
-							result = _completion.get_completions_for_name (options, "%s.".printf(typename));
+							result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
 							timer.stop ();
 							GLib.debug ("find_by_name: %f", timer.elapsed ());
 						} else {
@@ -381,7 +381,7 @@ namespace Vtg
 								options.interface_symbols = false;
 								options.public_only ();
 								timer.start ();
-								result = _completion.get_completions_for_name (options, "%s.".printf(word));
+								result = _completion.get_completions_for_name (options, "%s.".printf(word), _sb.name);
 								timer.stop ();
 								GLib.debug ("find_by_name (static): %f, count %d", timer.elapsed (), result.count);
 							}

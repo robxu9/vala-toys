@@ -1,5 +1,12 @@
 2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala: 
+	* vsc/vscsymbolcompletionprovider.vala: 
+
+	implemented symbol search in all referenced namespaces
+
+2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerprojectgroup.vala: 
 	* vsc/vscsymbolcompletion.vala: 
 	
