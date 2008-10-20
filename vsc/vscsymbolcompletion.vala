@@ -1023,70 +1023,73 @@ namespace Vsc
 		private DataType datatype_for_localvariable (CodeContext context,  SourceFile? source = null, int line = 0, int column = 0, LocalVariable lv)
 		{
 			DataType vt = null;
-			if (lv.variable_type == null && lv.initializer != null) {
-				vt = lv.initializer.value_type;
-				if (vt == null) {
-					Expression initializer = lv.initializer;
-					string class_name = null;
-					string member_name = null;
+			try {
+				if (lv.variable_type == null && lv.initializer != null) {
+					vt = lv.initializer.value_type;
+					if (vt == null) {
+						Expression initializer = lv.initializer;
+						string class_name = null;
+						string member_name = null;
 
-					if (initializer is ObjectCreationExpression) {
-						var oce = (((ObjectCreationExpression) (lv.initializer)));
-						if (oce.member_name is MemberAccess) {
-							initializer = oce.member_name;
-						}
-					} else if (initializer is InvocationExpression) {
-						var invoc = (InvocationExpression) initializer;
-						initializer = invoc.call;
-					}
-
-					if (initializer is MemberAccess) {
-						var ma = (MemberAccess) initializer;
-
-						if (ma.inner != null) {
-							class_name = ma.inner.to_string ();
-						} else {
-							class_name = ma.member_name;
-						}
-
-						member_name = ma.member_name;
-					} else if (initializer is CastExpression) {
-						var ce = (CastExpression) initializer;
-						vt = ce.type_reference;
-					} else {
-						warning ("Initializer of type '%s' is not yet supported", Reflection.get_type_from_instance (initializer).name ());
-					}
-
-					if (class_name != null) {
-						debug ("find datatype for class name: %s", class_name);
-						Namespace dummy;
-						var cl = resolve_class_name (context, class_name, out dummy);
-											
-						//don't parse twice the primary context
-						if (cl == null && context != _pri_context) { 
-							cl = resolve_class_name (_pri_context, class_name, out dummy);
-						}
-						if (cl != null) {
-							debug ("class type %s", cl.name);
-							vt = new ClassType (cl);
-						} else if (member_name != null) {
-							//not solved!
-							var mdt = get_datatype_for_name_with_context (context, class_name, source, line, column);
-							if (mdt == null) {
-								//try to see if is a namespace
-								vt = get_datatype_for_symbol_name ("%s.%s".printf (class_name, member_name), source);
-							} else {
-								//now locking for the inner datatype
-								debug ("find inner for: %s", member_name);
-								vt = get_inner_datatype (mdt, member_name, source);
+						if (initializer is ObjectCreationExpression) {
+							var oce = (((ObjectCreationExpression) (lv.initializer)));
+							if (oce.member_name is MemberAccess) {
+								initializer = oce.member_name;
 							}
-						} 
+						} else if (initializer is InvocationExpression) {
+							var invoc = (InvocationExpression) initializer;
+							initializer = invoc.call;
+						}
+						
+						if (initializer is MemberAccess) {
+							var ma = (MemberAccess) initializer;
+							
+							if (ma.inner != null) {
+								class_name = ma.inner.to_string ();
+							} else {
+								class_name = ma.member_name;
+							}
+							
+							member_name = ma.member_name;
+						} else if (initializer is CastExpression) {
+							var ce = (CastExpression) initializer;
+							vt = ce.type_reference;
+						} else {
+							warning ("Initializer of type '%s' is not yet supported", Reflection.get_type_from_instance (initializer).name ());
+						}
+						
+						if (class_name != null) {
+							debug ("find datatype for class name: %s", class_name);
+							Namespace dummy;
+							var cl = resolve_class_name (context, class_name, out dummy);
+							
+							//don't parse twice the primary context
+							if (cl == null && context != _pri_context) { 
+								cl = resolve_class_name (_pri_context, class_name, out dummy);
+							}
+							if (cl != null) {
+								debug ("class type %s", cl.name);
+								vt = new ClassType (cl);
+							} else if (member_name != null) {
+								//not solved!
+								var mdt = get_datatype_for_name_with_context (context, class_name, source, line, column);
+								if (mdt == null) {
+									//try to see if is a namespace
+									vt = get_datatype_for_symbol_name ("%s.%s".printf (class_name, member_name), source);
+								} else {
+									//now locking for the inner datatype
+									debug ("find inner for: %s", member_name);
+									vt = get_inner_datatype (mdt, member_name, source);
+								}
+							} 
+						}
 					}
+				} else if (lv.variable_type != null) {
+					vt = lv.variable_type;;
 				}
-			} else if (lv.variable_type != null) {
-				vt = lv.variable_type;;
+			} catch (Error err) {
+				warning ("error in datatype_for_localvariable: %s", err.message);
 			}
-
 			return vt;
 		}
 
@@ -1160,7 +1163,7 @@ namespace Vsc
 			return result;
 		}
 
-		private Namespace get_namespace_for_name (Namespace root, string name, ref int level)
+		private Namespace? get_namespace_for_name (Namespace root, string name, ref int level)
 		{
 			Namespace result = null;
 			string[] parts = name.split (".",2);

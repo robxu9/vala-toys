@@ -2,6 +2,12 @@
 
 	* vsc/vscsymbolcompletion.vala: 
 
+	fixed some compiler warnings
+
+2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
 	checked for null namespace name in add_package
 
 2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
