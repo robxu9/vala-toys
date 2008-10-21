@@ -169,8 +169,8 @@ namespace Vtg
 				if (evt.keyval == Gdk.Key_BackSpace || 
 				    evt.keyval == Gdk.Key_Return ||
 				    (ch != 0 && ch != '.' && ch != ':')) {
-					this.hide_calltip ();
 					if (evt.keyval == Gdk.Key_Return || ch == ';') {
+						this.hide_calltip ();
 						this.all_doc = true;
 						counter = 0; //immediatly (0.1sec)
 					} else {
@@ -191,7 +191,6 @@ namespace Vtg
 			return false;
 		}
 
-		//TODO: check if it's a memberaccess
 		private void show_calltip ()
 		{
 			SymbolCompletionItem result = find_method_signature ();
@@ -215,9 +214,10 @@ namespace Vtg
 
 				calltip_text = result.info;
 				if (calltip_text != null) {
+					_calltip_window.resize (20, 20);
 					_calltip_label.set_markup (calltip_text);
 					_calltip_window.show_all ();
-					_calltip_window.move (x + 20, y + 30);
+					_calltip_window.move (x + 32, y + 20);
 				}
 			} else {
 				GLib.debug ("calltip no proposal found");
@@ -234,9 +234,11 @@ namespace Vtg
 
 		private void initialize_calltip_window ()
 		{
+			var box = new Gtk.HBox (true, 8);
 			_calltip_window = new Gtk.Window (Gtk.WindowType.POPUP);
-			_calltip_label = new Gtk.Label ("test calltip");
-			_calltip_window.add (_calltip_label);
+			_calltip_label = new Gtk.Label ("");
+			box.pack_start (_calltip_label, true, true, 8);
+			_calltip_window.add (box);
 		}
 
 		private void parse (Gedit.Document doc)
@@ -403,10 +405,10 @@ namespace Vtg
 				return null;
 
 			/* 
-               strip last type part. 
-               eg. for demons.demo.demo_method optains
-               demons.demo + demo_method
-             */
+			  strip last type part. 
+			  eg. for demons.demo.demo_method optains
+			  demons.demo + demo_method
+			*/
 
 			string[] tmp = word.split (".");
 			int count = 0;
@@ -466,7 +468,6 @@ namespace Vtg
 					}
 				}
 			}
-
 			return null;
 		}
 

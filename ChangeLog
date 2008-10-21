@@ -2,6 +2,12 @@
 
 	* vtg/vtgsymbolcompletionprovider.vala: 
 
+	call tip fixes
+
+2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala: 
+
 	first rough support for call tips
 
 2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
