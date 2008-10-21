@@ -698,7 +698,6 @@ namespace Vsc
 			return null;
 		}
 
-
 		private bool using_contains (SourceFile source, string name)
 		{
 			foreach (UsingDirective ns in source.get_using_directives ()) {

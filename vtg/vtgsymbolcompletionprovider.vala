@@ -58,6 +58,8 @@ namespace Vtg
 		private uint sb_context_id = 0;
 
 		private Vtg.Plugin _plugin;
+		private Gtk.Window _calltip_window = null;
+		private Gtk.Label _calltip_label = null;
 
 		public SymbolCompletion completion { construct { _completion = value;} }
 		public Gedit.View view { construct { _view = value; } }
@@ -158,10 +160,16 @@ namespace Vtg
 		private bool on_view_key_press (Gtk.TextView view, Gdk.EventKey evt)
 		{
 			unichar ch = Gdk.keyval_to_unicode (evt.keyval);
+			if (ch == '(') {
+				this.show_calltip ();
+			} else if (evt.keyval == Gdk.Key_Escape) {
+				this.hide_calltip ();
+			}
 			if (counter <= 0) {
 				if (evt.keyval == Gdk.Key_BackSpace || 
 				    evt.keyval == Gdk.Key_Return ||
 				    (ch != 0 && ch != '.' && ch != ':')) {
+					this.hide_calltip ();
 					if (evt.keyval == Gdk.Key_Return || ch == ';') {
 						this.all_doc = true;
 						counter = 0; //immediatly (0.1sec)
@@ -181,6 +189,54 @@ namespace Vtg
 				}
 			}
 			return false;
+		}
+
+		//TODO: check if it's a memberaccess
+		private void show_calltip ()
+		{
+			SymbolCompletionItem result = find_method_signature ();
+			if (result != null) {
+				weak Gedit.Document doc = (Gedit.Document) _view.get_buffer ();
+				weak TextMark mark = (TextMark) doc.get_insert ();
+				TextIter pos;
+				doc.get_iter_at_mark (out pos, mark);
+				Gdk.Rectangle rect;
+				_view.get_iter_location (pos, out rect);
+				int x,y;
+				_view.buffer_to_window_coords (TextWindowType.TEXT, rect.x, rect.y, out x, out y);
+				if (_calltip_window == null) {
+					initialize_calltip_window ();
+				}
+				int wx,wy;
+				_view.window.get_origin (out wx, out wy);
+				x += wx;
+				y += wy;
+				string calltip_text = null;
+
+				calltip_text = result.info;
+				if (calltip_text != null) {
+					_calltip_label.set_markup (calltip_text);
+					_calltip_window.show_all ();
+					_calltip_window.move (x + 20, y + 30);
+				}
+			} else {
+				GLib.debug ("calltip no proposal found");
+			}
+		}
+
+		private void hide_calltip ()
+		{
+			if (_calltip_window == null)
+				return;
+
+			_calltip_window.hide ();
+		}
+
+		private void initialize_calltip_window ()
+		{
+			_calltip_window = new Gtk.Window (Gtk.WindowType.POPUP);
+			_calltip_label = new Gtk.Label ("test calltip");
+			_calltip_window.add (_calltip_label);
 		}
 
 		private void parse (Gedit.Document doc)
@@ -280,25 +336,27 @@ namespace Vtg
 			}
 
 			timer.stop ();
-			GLib.debug ("     TRASFORM TOTAL TIME ELAPSED: %f", timer.elapsed ());
+			GLib.debug ("     TRANSFORM TOTAL TIME ELAPSED: %f", timer.elapsed ());
 		}
 
-		private SymbolCompletionResult? find_proposals ()
+		private void parse_current_line (out string word, out string line, out int lineno, out int colno)
 		{
-			SymbolCompletionResult result = null;
-
-			weak Gedit.Document doc = (Gedit.Document) _view.get_buffer ();
+ 			weak Gedit.Document doc = (Gedit.Document) _view.get_buffer ();
 			weak TextMark mark = (TextMark) doc.get_insert ();
 			TextIter end;
-			TextIter start;			
-			string line;
+			TextIter start;
 
 			doc.get_iter_at_mark (out start, mark);
-			int lineno = start.get_line ();
-			int colno = start.get_line_offset ();
+
+			lineno = start.get_line ();
+			colno = start.get_line_offset ();
+			word = "";
+			line = "";
+
 			end = start;
 			start.set_line_offset (0);
 			line = start.get_text (end);
+
 			if (colno > 1) {
 				start = end;
 				start.backward_char ();
@@ -329,69 +387,159 @@ namespace Vtg
 					}
 				}
 
-				string word = start.get_text (end).strip ();
-				if (word != null) {
-					try {
-						string typename = null;
-						var timer = new Timer ();
-						timer.stop ();
-						if (word.has_prefix ("\"") && word.has_suffix ("\"")) {
-							typename = "string";
-						} else {
-							timer.start ();
-							var dt = _completion.get_datatype_for_name (word, _sb.name, lineno + 1, colno);
-							timer.stop ();
-							GLib.debug ("find_datatype_for_name: %f", timer.elapsed ());
-							if (dt != null) {
-								if (dt is Vala.ClassType) {
-									typename = ((Vala.ClassType) dt).class_symbol.name;
-								} else {
-									typename = dt.to_qualified_string ();
-								}
-								if (typename.has_suffix ("?")) {
-									typename = typename.substring (0, typename.length - 1);
-								}
+				word = start.get_text (end).strip ();
+			}
+		}
 
-							}
-						}
+		private SymbolCompletionItem? find_method_signature ()
+		{
+			SymbolCompletionResult result = null;
+			string line, word;
+			int lineno, colno;
 
-						SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
-						if (line.str ("= new ") != null || line.str ("=new ") != null) {
-							options.only_constructors = true;
-						}
-						if (typename != null) {
-							GLib.debug ("datatype '%s' for: %s",typename, word);
-							options.static_symbols = false;
-							options.public_only ();
-							if (word == "this") {
-								options.private_symbols = true;
-								options.protected_symbols = true;
-							} else if (word == "base") {
-								options.protected_symbols = true;
-							}
-							options.exclude_type = typename;
-							timer.start ();
-							result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
-							timer.stop ();
-							GLib.debug ("find_by_name: %f", timer.elapsed ());
-						} else {
-							GLib.debug ("data type not found for: %s", word);
-							if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
-								options.static_symbols = true;
-								options.interface_symbols = false;
-								options.public_only ();
-								timer.start ();
-								result = _completion.get_completions_for_name (options, "%s.".printf(word), _sb.name);
-								timer.stop ();
-								GLib.debug ("find_by_name (static): %f, count %d", timer.elapsed (), result.count);
-							}
-						}
-					} catch (GLib.Error err) {
-						GLib.warning ("%s", err.message);
+			parse_current_line (out word, out line, out lineno, out colno);
+
+			if (word == null || word == "")
+				return null;
+
+			/* 
+               strip last type part. 
+               eg. for demons.demo.demo_method optains
+               demons.demo + demo_method
+             */
+
+			string[] tmp = word.split (".");
+			int count = 0;
+			while (tmp[count] != null)
+				count++;
+
+			string parent = "";
+			string method = tmp[count-1];
+			if (count > 1) {
+				for(int idx=0; idx < count-1; idx++) {
+					parent += tmp[idx];
+				}
+			}
+			//TODO: set to the current namespace (the namespace containing it line/col)
+			if (parent == "") {
+			}
+			
+			string typename = null;
+			var dt = _completion.get_datatype_for_name (parent, _sb.name, lineno + 1, colno);
+			if (dt != null) {
+				if (dt is Vala.ClassType) {
+					typename = ((Vala.ClassType) dt).class_symbol.name;
+				} else {
+					typename = dt.to_qualified_string ();
+				}
+				if (typename.has_suffix ("?")) {
+					typename = typename.substring (0, typename.length - 1);
+				}
+			}
+
+			SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
+			if (typename != null) {
+				GLib.debug ("datatype '%s' for: %s",typename, word);
+				options.static_symbols = false;
+				options.public_only ();
+				if (word == "this") {
+					options.private_symbols = true;
+					options.protected_symbols = true;
+				} else if (word == "base") {
+					options.protected_symbols = true;
+				}
+				options.exclude_type = typename;
+				result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
+			} else {
+				if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
+					options.static_symbols = true;
+					options.interface_symbols = false;
+					options.public_only ();
+					result = _completion.get_completions_for_name (options, "%s.".printf(word), _sb.name);
+				}
+			}
+
+			if (result != null && result.methods.size > 0) {
+				foreach (SymbolCompletionItem item in result.methods) {
+					if (item.name == method) {
+						return item;
 					}
 				}
 			}
 
+			return null;
+		}
+
+		private SymbolCompletionResult? find_proposals ()
+		{
+			SymbolCompletionResult result = null;
+			string line, word;
+			int lineno, colno;
+
+			parse_current_line (out word, out line, out lineno, out colno);
+
+			if (word == null && word == "")
+				return null;
+
+			try {
+				string typename = null;
+				var timer = new Timer ();
+				timer.stop ();
+				if (word.has_prefix ("\"") && word.has_suffix ("\"")) {
+					typename = "string";
+				} else {
+					timer.start ();
+					var dt = _completion.get_datatype_for_name (word, _sb.name, lineno + 1, colno);
+					timer.stop ();
+					GLib.debug ("find_datatype_for_name: %f", timer.elapsed ());
+					if (dt != null) {
+						if (dt is Vala.ClassType) {
+							typename = ((Vala.ClassType) dt).class_symbol.name;
+						} else {
+							typename = dt.to_qualified_string ();
+						}
+						if (typename.has_suffix ("?")) {
+							typename = typename.substring (0, typename.length - 1);
+						}
+						
+					}
+				}
+				
+				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
+				if (line.str ("= new ") != null || line.str ("=new ") != null) {
+					options.only_constructors = true;
+				}
+				if (typename != null) {
+					GLib.debug ("datatype '%s' for: %s",typename, word);
+					options.static_symbols = false;
+					options.public_only ();
+					if (word == "this") {
+						options.private_symbols = true;
+						options.protected_symbols = true;
+					} else if (word == "base") {
+						options.protected_symbols = true;
+					}
+					options.exclude_type = typename;
+					timer.start ();
+					result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
+					timer.stop ();
+					GLib.debug ("find_by_name: %f", timer.elapsed ());
+				} else {
+					GLib.debug ("data type not found for: %s", word);
+					if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
+						options.static_symbols = true;
+						options.interface_symbols = false;
+						options.public_only ();
+						timer.start ();
+						result = _completion.get_completions_for_name (options, "%s.".printf(word), _sb.name);
+						timer.stop ();
+						GLib.debug ("find_by_name (static): %f, count %d", timer.elapsed (), result.count);
+					}
+				}
+			} catch (GLib.Error err) {
+				GLib.warning ("%s", err.message);
+			}
+			
 			return result;
 		}
 
