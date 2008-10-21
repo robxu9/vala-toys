@@ -251,8 +251,10 @@ namespace Vtg
 				_window.create_tab_from_uri (uri, Encoding.get_utf8 (), line, true, true);
 			else {
 				_window.set_active_tab (tab);
-				if (existing_doc != null && line != 0)
+				if (existing_doc != null && line != 0) {
 					existing_doc.goto_line (line);
+					tab.get_view ().scroll_to_cursor ();
+				}
 			}
 		}
 

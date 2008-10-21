@@ -1,5 +1,11 @@
 2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugin.vala: 
+
+	fixed goto error line function now scroll to cursor position
+
+2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala: 
 
 	call tip fixes
