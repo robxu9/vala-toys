@@ -151,6 +151,31 @@ namespace Vtg
 			return text;
 		}
 
+		private bool find_char (TextIter start, unichar char_to_find, unichar complementary_char, unichar stop_to_char)
+		{
+			bool result = false;
+			int level = 0;
+
+			TextIter curr = start;
+			do {
+				unichar ch = curr.get_char ();
+				if (ch == stop_to_char) {
+					break;
+				} else if (ch == char_to_find) {
+					if (level == 0) {
+						result = true;
+						break;
+					} else {
+						level--;
+					}
+				} else if (ch == complementary_char) {
+					level++;
+				}
+			} while (curr.forward_char ());
+
+			return result;
+		}
+
 		private static bool on_view_key_press (Gedit.View sender, Gdk.EventKey evt, BracketCompletion instance)
 		{
 			bool result = false;
@@ -172,15 +197,17 @@ namespace Vtg
 							result = true;
 						}
 					} else {
-						instance.insert_chars (src, ")");
-						instance.move_backwards (src, 1);
+						if (!instance.find_char (pos, ')', '(', ';')) {
+							instance.insert_chars (src, ")");
+							instance.move_backwards (src, 1);
+						}
 					}
 
 				} else if (ch == '[') {
-					instance.insert_chars (src, "]");
-					instance.move_backwards (src, 1);
-//				} else if (evt.keyval == '/') {
-//					instance.insert_chars (src, "/ ");
+					if (!instance.find_char (pos, ']', '[', ';')) {
+						instance.insert_chars (src, "]");
+						instance.move_backwards (src, 1);
+					}
 				} else if (ch == '*') {
 					pos.backward_char ();
 					if (pos.get_char () == '/') {
@@ -254,8 +281,10 @@ namespace Vtg
 							result = true;
 						}
 					} else {
-						instance.insert_chars (src, "\"");
-						instance.move_backwards (src, 1);
+						if (!instance.find_char (pos, '\"', '\"', ';')) {
+							instance.insert_chars (src, "\"");
+							instance.move_backwards (src, 1);
+						}
 					}
 				}
 			}
