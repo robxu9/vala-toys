@@ -37,20 +37,38 @@ namespace Vsc
 
 		private string data_type_to_string (DataType type)
 		{
-			string result = type.data_type.name;
+			string result;
 
-			if (result == null)
+			result = type.to_qualified_string ();
+			if (result == null) {
 				result = "void";
-
-			if (type.is_array ()) {
-				result += "[]";
 			}
+
+			var type_args = type.get_type_arguments ();
+			if (type_args.size > 0) {
+				result += "&lt;";
+				bool first = true;
+				foreach (DataType type_arg in type_args) {
+					if (!first) {
+						result += ",";
+					} else {
+						first = false;
+					}
+					if (!type_arg.value_owned) {
+						result += "weak ";
+					}
+					result += data_type_to_string (type_arg);
+				}
+				result += "&gt;";
+			}
+
 			if (type.nullable ) {
 				result += "?";
 			}
 			if (type.is_dynamic) {
 				result = "dynamic " + result;
 			}
+
 			return result;
 		}
 

@@ -1,5 +1,11 @@
 2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletionitem.vala: 
+
+	improved datatype to string description conversion
+
+2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerbuildlogview.vala: 
 
 	error list view scroll according to current selected error
