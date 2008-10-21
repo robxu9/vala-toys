@@ -1,5 +1,19 @@
 2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerbuildlogview.vala: 
+
+	error list view scroll according to current selected error
+	
+	* vtg/vtgplugin.vala: 
+
+	fixed a +1 offset error in goto source line function
+	
+	* vtg/vtgprojectmanager.vala: 
+
+	implemented save all before build function
+	
+2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugin.vala: 
 
 	fixed goto error line function now scroll to cursor position

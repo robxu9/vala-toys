@@ -140,6 +140,7 @@ namespace Vtg.ProjectManager
 			if (this.get_project_manager_view.current_project != null) {
 				var project = this.get_project_manager_view.current_project;
 				GLib.debug ("building project %s", project.name);
+				project_save_all (project);
 				_prj_builder.build (project);
 			}
 		}
@@ -187,6 +188,15 @@ namespace Vtg.ProjectManager
 				}
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
+			}
+		}
+
+		private void project_save_all (Project project)
+		{
+			foreach (Gedit.Document doc in _plugin.gedit_window.get_unsaved_documents ()) {
+				if (project.contains_source_file (doc.get_uri ())) {
+					doc.save (DocumentSaveFlags.IGNORE_MTIME);
+				}
 			}
 		}
 

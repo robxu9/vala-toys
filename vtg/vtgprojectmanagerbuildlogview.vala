@@ -145,6 +145,7 @@ namespace Vtg.ProjectManager
 			TreePath path = new TreePath.from_string (current_error_row.to_string());
 			if (path != null) {
 				activate_path (path);
+				_build_view.scroll_to_cell (path, null, false, 0, 0);
 				_build_view.get_selection ().select_path (path);
 				if (current_error_row < error_count - 1)
 					current_error_row++;
@@ -158,6 +159,7 @@ namespace Vtg.ProjectManager
 			TreePath path = new TreePath.from_string (current_error_row.to_string());
 			if (path != null) {
 				activate_path (path);
+				_build_view.scroll_to_cell (path, null, false, 0, 0);
 				_build_view.get_selection ().select_path (path);
 				if (current_error_row > 0)
 					current_error_row--;
