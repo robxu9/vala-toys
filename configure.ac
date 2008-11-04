@@ -49,6 +49,7 @@ AC_CONFIG_FILES([
 	vsc/Makefile
 	vsc-shell/Makefile
 	vtg/Makefile
+	ui/Makefile
 	images/Makefile
 	po/Makefile.in])
 

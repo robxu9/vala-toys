@@ -1,3 +1,9 @@
+2008-11-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/*: 
+
+	added first support for glade -> gtk builder files to the build system
+
 2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbracketcompletion.vala: 
