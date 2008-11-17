@@ -1,237 +1,233 @@
 <?xml version="1.0"?>
-<glade-interface>
+<interface>
   <requires-version lib="gtk+" version="2.12"/>
-  <widget class="GtkDialog" id="dialog-lm">
+  <object class="GtkDialog" id="dialog-lm">
     <property name="border_width">5</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
-      <widget class="GtkVBox" id="dialog-vbox-lm">
+      <object class="GtkVBox" id="dialog-vbox-lm">
         <property name="visible">True</property>
         <property name="spacing">2</property>
         <child>
           <placeholder/>
         </child>
         <child internal-child="action_area">
-          <widget class="GtkHButtonBox" id="dialog-action-area-lm">
+          <object class="GtkHButtonBox" id="dialog-action-area-lm">
             <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
             <child>
-              <widget class="GtkButton" id="button-lm-ok">
+              <object class="GtkButton" id="button-lm-ok">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="label" translatable="yes">gtk-ok</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">0</property>
-              </widget>
+              </object>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="pack_type">GTK_PACK_END</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-  <widget class="GtkWindow" id="window_settings">
+    <action-widgets>
+      <action-widget response="0">button-lm-ok</action-widget>
+    </action-widgets>
+  </object>
+  <object class="GtkWindow" id="window_settings">
     <property name="border_width">8</property>
     <child>
-      <widget class="GtkVBox" id="vbox_settings_main">
+      <object class="GtkVBox" id="vbox_settings_main">
         <property name="visible">True</property>
         <property name="spacing">8</property>
         <child>
-          <widget class="GtkNotebook" id="notebook_settings">
+          <object class="GtkNotebook" id="notebook_settings">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child>
-              <widget class="GtkVBox" id="vbox_settings_general">
+              <object class="GtkVBox" id="vbox_settings_general">
                 <property name="visible">True</property>
                 <child>
-                  <widget class="GtkVBox" id="vbox2">
+                  <object class="GtkVBox" id="vbox2">
                     <property name="visible">True</property>
                     <child>
-                      <widget class="GtkLabel" id="label_modules">
+                      <object class="GtkLabel" id="label_modules">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
                         <property name="xpad">4</property>
                         <property name="label" translatable="yes">&lt;b&gt;Modules&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
-                      </widget>
+                      </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="padding">8</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="checkbutton_bracket">
+                      <object class="GtkCheckButton" id="checkbutton_bracket">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="border_width">12</property>
                         <property name="label" translatable="yes">Enable bracket completion</property>
-                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
-                      </widget>
+                      </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkCheckButton" id="checkbutton_symbol_completion">
+                      <object class="GtkCheckButton" id="checkbutton_symbol_completion">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="border_width">12</property>
                         <property name="resize_mode">GTK_RESIZE_IMMEDIATE</property>
                         <property name="label" translatable="yes">Enable symbol completion</property>
-                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
-                      </widget>
+                      </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
-                  </widget>
+                  </object>
                 </child>
-              </widget>
+              </object>
             </child>
-            <child>
-              <widget class="GtkLabel" id="label_page_general">
+            <child type="tab">
+              <object class="GtkLabel" id="label_page_general">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_General</property>
                 <property name="use_underline">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="tab_fill">False</property>
-                <property name="type">tab</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="padding">8</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkHButtonBox" id="hbuttonbox_settings_actions">
+          <object class="GtkHButtonBox" id="hbuttonbox_settings_actions">
             <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
             <child>
-              <widget class="GtkButton" id="button_close">
+              <object class="GtkButton" id="button_close">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="label" translatable="yes">gtk-close</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">0</property>
-              </widget>
+              </object>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="position">1</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-  <widget class="GtkWindow" id="window_run">
+  </object>
+  <object class="GtkWindow" id="window_run">
     <property name="extension_events">GDK_EXTENSION_EVENTS_ALL</property>
     <property name="border_width">8</property>
     <child>
-      <widget class="GtkVBox" id="vbox_run_main">
+      <object class="GtkVBox" id="vbox_run_main">
         <property name="visible">True</property>
         <property name="spacing">8</property>
         <child>
-          <widget class="GtkLabel" id="label_project_run">
+          <object class="GtkLabel" id="label_project_run">
             <property name="visible">True</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">Run project</property>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkTreeView" id="treeview_executables">
+          <object class="GtkTreeView" id="treeview_executables">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="headers_clickable">True</property>
-          </widget>
+          </object>
           <packing>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkExpander" id="expander_custom_command">
+          <object class="GtkExpander" id="expander_custom_command">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child>
-              <widget class="GtkHBox" id="hbox_command">
+              <object class="GtkHBox" id="hbox_command">
                 <property name="visible">True</property>
                 <property name="spacing">8</property>
                 <child>
-                  <widget class="GtkLabel" id="label_command">
+                  <object class="GtkLabel" id="label_command">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">Command</property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">False</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkEntry" id="entry_custom_command">
+                  <object class="GtkEntry" id="entry_custom_command">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="position">1</property>
                   </packing>
                 </child>
-              </widget>
+              </object>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="position">2</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkHButtonBox" id="hbuttonbox_run_actions">
+          <object class="GtkHButtonBox" id="hbuttonbox_run_actions">
             <property name="visible">True</property>
             <property name="spacing">8</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
             <child>
-              <widget class="GtkButton" id="button_execute">
+              <object class="GtkButton" id="button_execute">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="label" translatable="yes">gtk-execute</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">0</property>
-              </widget>
+              </object>
             </child>
             <child>
-              <widget class="GtkButton" id="button_cancel">
+              <object class="GtkButton" id="button_cancel">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="label" translatable="yes">gtk-cancel</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">0</property>
-              </widget>
+              </object>
               <packing>
                 <property name="position">1</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="position">3</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+  </object>
+</interface>

@@ -40,6 +40,7 @@ namespace Vtg.ProjectManager
 		public Gee.List<ProjectGroup> groups = new Gee.ArrayList<ProjectGroup> ();
 
 		public Gtk.TreeModel model { get { return _model; } }
+		public Gbf.Project gbf_project { get { return _gbf_project; } }
 
 		public ProjectGroup? find_group (string id)
 		{
@@ -171,7 +172,7 @@ namespace Vtg.ProjectManager
 			TreeIter modules_iter;
 			TreeIter groups_iter;
 
-			_model = new Gtk.TreeStore (3, typeof(string), typeof(string), typeof(string));
+			_model = new Gtk.TreeStore (4, typeof(string), typeof(string), typeof(string), typeof(GLib.Object));
 			_model.append (out project_iter, null);
 			_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, name, 2, "project-root");
 			_model.append (out modules_iter, project_iter);
@@ -179,11 +180,11 @@ namespace Vtg.ProjectManager
 			foreach (ProjectModule module in modules) {
 				TreeIter module_iter;
 				_model.append (out module_iter, modules_iter);
-				_model.set (module_iter, 0, Gtk.STOCK_DIRECTORY, 1, module.name, 2, module.id);
+				_model.set (module_iter, 0, Gtk.STOCK_DIRECTORY, 1, module.name, 2, module.id, 3, module);
 				foreach (ProjectPackage package in module.packages) {
 					TreeIter package_iter;
 					_model.append (out package_iter, module_iter);
-					_model.set (package_iter, 0, Gtk.STOCK_FILE, 1, package.name, 2, package.id);
+					_model.set (package_iter, 0, Gtk.STOCK_FILE, 1, package.name, 2, package.id, 3, package);
 				}
 			}
 			_model.append (out groups_iter, project_iter);
@@ -191,7 +192,7 @@ namespace Vtg.ProjectManager
 			foreach (ProjectGroup group in groups) {
 				TreeIter group_iter;
 				_model.append (out group_iter, groups_iter);
-				_model.set (group_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, group.id);
+				_model.set (group_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, group.id, 3, group);
 				foreach (ProjectTarget target in group.targets) {
 					if (target.simple || target.vala_sources) {
 						foreach (ProjectSource source in target.sources) {
@@ -203,7 +204,7 @@ namespace Vtg.ProjectManager
 
 							TreeIter source_iter;
 							_model.append (out source_iter, group_iter);
-							_model.set (source_iter, 0, Gtk.STOCK_FILE, 1, source.name, 2, source.uri);
+							_model.set (source_iter, 0, Gtk.STOCK_FILE, 1, source.name, 2, source.uri, 3, source);
 						}
 					}
 				}
@@ -240,7 +241,7 @@ namespace Vtg.ProjectManager
 		{
 			try {
 				foreach (string mod_id in _gbf_project.get_config_modules ()) {
-					var module = new ProjectModule (mod_id);
+					var module = new ProjectModule (this, mod_id);
 					this.modules.add (module);
 					foreach (string pkg_id in _gbf_project.get_config_packages (mod_id)) {
 						module.packages.add (new ProjectPackage(pkg_id));

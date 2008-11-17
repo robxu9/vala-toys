@@ -33,8 +33,25 @@ namespace Vtg.ProjectManager
 		private Gtk.TreeView _prj_view;
 		private Gtk.TreeModel _model;
 		private int _project_count = 0;
-		public Project _current_project = null;
 
+		private ProjectModule _last_selected_module;
+
+		private Gtk.Menu _popup_modules;
+		private uint _popup_modules_ui_id;
+		private string _popup_modules_ui_def = """
+                                        <ui>
+                                        <popup name='ProjectManagerPopupPackagesEdit'>
+                                            <menuitem action='packages-edit'/>
+                                        </popup>
+                                        </ui>""";
+
+
+
+		const ActionEntry[] _action_entries = {
+			{"packages-edit", null, N_("Add/Remove Packages..."), "<control><shift>P", N_("Manage packages references"), on_packages_edit}
+		};
+
+		public Project _current_project = null;
 		public Project current_project { get { return _current_project; } }
 		public Vtg.Plugin plugin { construct { _plugin = value; } }
 
@@ -60,6 +77,7 @@ namespace Vtg.ProjectManager
 			_prj_view.append_column (column);
 			_prj_view.set_headers_visible (false);
 			_prj_view.row_activated += this.on_project_view_row_activated;
+			_prj_view.button_press_event += this.on_project_view_button_press;
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_prj_view);
 			vbox.pack_start (_prjs_combo, false, false, 4);
@@ -68,6 +86,18 @@ namespace Vtg.ProjectManager
 			panel.add_item (vbox, _("Projects"), null);
 			panel.activate_item (vbox);
 			_project_count = 0;
+
+			var prj_agrp = new ActionGroup ("ProjectManagerActionGroup");
+			prj_agrp.add_actions (_action_entries, this);
+			var manager = _plugin.gedit_window.get_ui_manager ();
+			manager.insert_action_group (prj_agrp, -1);
+			try {
+				_popup_modules_ui_id = manager.add_ui_from_string (_popup_modules_ui_def, -1);
+				_popup_modules = (Gtk.Menu) manager.get_widget ("/ProjectManagerPopupPackagesEdit");
+				assert (_popup_modules != null);
+			} catch (Error err) {
+				GLib.warning ("Error %s", err.message);
+			}
 		}
 
 		public void add_project (Project project)
@@ -91,11 +121,39 @@ namespace Vtg.ProjectManager
 			}
 		}
 
+		public bool on_project_view_button_press (Gtk.Widget sender, Gdk.EventButton event)
+		{
+			if (event.button == 3) {
+				weak TreeModel model;
+
+				var rows =  _prj_view.get_selection ().get_selected_rows (out model);
+				if (rows.length () == 1) {
+					TreeIter iter;
+					string name, id;
+					GLib.Object obj;
+					weak TreePath path = rows.nth_data (0);
+
+					model.get_iter (out iter, path);
+					model.get (iter, 3, out obj);
+					if (obj is ProjectModule) {
+						_last_selected_module = (ProjectModule) obj;
+						_popup_modules.popup (null, null, null, event.button, event.time);
+					}
+				}
+			}
+			return false;
+		}
 
 		public void on_project_combobox_changed (Widget sender)
 		{
 			var project_name = ((ComboBox) sender).get_active_text ();
 			update_view (project_name);
+		}
+
+		private void show_packages_dialog (ProjectModule module)
+		{
+			var dialog = new PackagesDialog (module, _current_project.modules);
+			dialog.show ();
 		}
 
 		private void update_view (string project_name)
@@ -112,6 +170,11 @@ namespace Vtg.ProjectManager
 					break;
 				}
 			}
+		}
+
+		private void on_packages_edit (Gtk.Action action)
+		{
+			show_packages_dialog (_last_selected_module);
 		}
 	}
 }

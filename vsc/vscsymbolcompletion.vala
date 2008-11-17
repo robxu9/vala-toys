@@ -427,9 +427,6 @@ namespace Vsc
 
 		private void analyze_context (CodeContext context)
 		{
-			var attributeprocessor = new AttributeProcessor ();
-			attributeprocessor.process (context);
-
 			var symbol_resolver = new SymbolResolver ();
 			symbol_resolver.resolve (context);
 

@@ -26,16 +26,30 @@ using Gtk;
 
 namespace Vtg.ProjectManager
 {
-	public class ProjectModule
+	public class ProjectModule : GLib.Object
 	{
 		public string name;
-		public string id;
+		public string id;		
 		public Gee.List<ProjectPackage> packages = new Gee.ArrayList<ProjectPackage> ();
 
-		public ProjectModule (string name)
+		private Project _project;
+
+		public Project project { get { return _project; } }
+
+		public ProjectModule (Project project, string name)
 		{
 			this.name = name;
 			this.id = name;
+			this._project = project;
+		}
+
+		public void add_package (string id)
+		{
+			try {
+				//_project.gbf_project.
+			} catch (Error err) {
+				GLib.warning ("error adding package: %s", id);
+			}
 		}
 	}
 }

@@ -23,14 +23,16 @@ using GLib;
 using Gsc;
 using Gtk;
 using Vsc;
+using Vtg.ProjectManager;
 
 namespace Vtg
 {
 	public class Utils : GLib.Object
 	{
 		private static bool _initialized = false;
-
 		private static Proposal[] _proposals = null;
+		private static Gee.List<ProjectPackage> _available_packages = null;
+
 		public const int prealloc_count = 500;
 
 		public static weak Proposal[] get_proposal_cache ()
@@ -47,6 +49,12 @@ namespace Vtg
 			return result;
 		}
 
+		public static string get_ui_path (string id) {
+			var result = Path.build_filename (Config.PACKAGE_DATA_DIR, "ui", id);
+			debug ("ui: %s", result);
+			return result;
+		}
+
 		private static void initialize ()
 		{
 			try {
@@ -59,6 +67,41 @@ namespace Vtg
 				_initialized = true;
 			} catch (Error err) {
 				warning (err.message);
+			}
+		}
+
+		public static Gee.List<ProjectPackage> get_available_packages ()
+		{
+			if (_available_packages == null) {
+				initialize_packages_cache ();
+			}
+			return _available_packages;
+		}
+
+		private static void initialize_packages_cache ()
+		{
+			List<string> vapidirs = new List<string> ();
+		        vapidirs.append ("/usr/share/vala/vapi");
+			vapidirs.append ("/usr/local/share/vala/vapi");
+
+			_available_packages = new Gee.ArrayList<ProjectPackage> ();
+
+			foreach (string vapidir in vapidirs) {
+				Dir dir;
+				try {					      
+					dir = Dir.open (vapidir);
+				} catch (FileError err) {
+					//do nothing
+					continue;
+				}
+				string? filename = dir.read_name ();
+				while (filename != null) {
+					if (filename.has_suffix (".vapi")) {
+						filename = filename.down ();
+						_available_packages.add (new ProjectPackage (filename.substring (0, filename.length - 5)));
+					}
+					filename = dir.read_name ();
+				}
 			}
 		}
 	}

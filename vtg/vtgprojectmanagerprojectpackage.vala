@@ -26,7 +26,7 @@ using Gtk;
 
 namespace Vtg.ProjectManager
 {
-	public class ProjectPackage
+	public class ProjectPackage : GLib.Object
 	{
 		public string name;
 		public string id;
