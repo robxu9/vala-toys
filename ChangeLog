@@ -1,5 +1,11 @@
 2008-11-17  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerpackagesdialog.vala: 
+	
+	delete some dead code
+	
+2008-11-17  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerprojectpackage.vala: 
 
 	derives from GLib.Object
