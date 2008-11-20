@@ -79,8 +79,7 @@ namespace Vsc
 					count++;
 
 				switch (toks[0]) {
-				    case "\n":
-						debug ("p");
+					case "\n":
 						this._pause_execution = false;
 						break;
 					case "quit":

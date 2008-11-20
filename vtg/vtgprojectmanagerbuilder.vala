@@ -1,5 +1,5 @@
 /*
- *  vtgprojectmanager.vala - Vala developer toys for GEdit
+ *  vtgprojectmanagerbuilder.vala - Vala developer toys for GEdit
  *  
  *  Copyright (C) 2008 - Andrea Del Signore <sejerpz@tin.it>
  *  
@@ -66,7 +66,7 @@ namespace Vtg.ProjectManager
 				if (child_pid != null) {
 					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
 					_build_view.initialize (project);
-					log.start_watch (stdo, stde);
+					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
 				} else {
 					log.log_message ("error spawning 'make' process\n");
@@ -108,7 +108,7 @@ namespace Vtg.ProjectManager
 				if (child_pid != null) {
 					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
 					_build_view.initialize (project);
-					log.start_watch (stdo, stde);
+					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
 				} else {
 					log.log_message ("error spawning 'make clean' process\n");
@@ -136,10 +136,10 @@ namespace Vtg.ProjectManager
 
 			Process.close_pid (pid);
 
-			_child_watch_id = 0;
-			log.stop_watch ();
+			log.stop_watch (_child_watch_id);
 			log.log_message (_("\ncompilation end with exit status %d\n").printf(status));
 			_build_view.activate ();
+			_child_watch_id = 0;
 		}
 	}
 }

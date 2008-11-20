@@ -26,6 +26,14 @@ using Gtk;
 
 namespace Vtg.ProjectManager
 {
+	public enum TargetTypes
+	{
+		UNKNOWN,
+		SHARED_LIBRARY,
+		STATIC_LIBRARY,
+		EXECUTABLE
+	}
+
 	public class ProjectTarget
 	{
 		public string name;
@@ -34,11 +42,12 @@ namespace Vtg.ProjectManager
 		private bool _simple = false;
 		public bool vala_sources = false;
 		public bool generated_sources = false;
+		public TargetTypes type = TargetTypes.UNKNOWN;
 
-		public ProjectTarget (string name)
+		public ProjectTarget (string id)
 		{
-			this.id = name;
-			this.name = name;
+			this.id = id;
+			this.name = id;
 		}
 
 		public bool simple
@@ -80,6 +89,21 @@ namespace Vtg.ProjectManager
 			}
 
 			return null;
+		}
+
+		public void set_type_from_string (string data)
+		{
+			string type = data.down ();
+
+			if (type == "shared_lib") {
+				this.type = TargetTypes.SHARED_LIBRARY;
+			} else if (type == "static_lib") {
+				this.type = TargetTypes.STATIC_LIBRARY;
+			} else if (type == "program") {
+				this.type = TargetTypes.EXECUTABLE;
+			} else {
+				this.type = TargetTypes.UNKNOWN;
+			}
 		}
 	}
 }

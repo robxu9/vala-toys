@@ -52,6 +52,11 @@ namespace Vtg.ProjectManager
                                                         <menuitem name="NextError" action="ProjectBuildNextError"/>
                                                         <menuitem name="PreviousError" action="ProjectBuildPreviousError"/>
                                                     </placeholder>
+                                                    <placeholder name="BuildMenuOps_3">
+                                                        <separator />
+                                                        <menuitem name="Execute" action="ProjectBuildExecute"/>
+                                                        <menuitem name="KillProcess" action="ProjectBuildKill"/>
+                                                    </placeholder>
                                                 </menu>
                                               </placeholder>
                                             </menubar>
@@ -66,7 +71,9 @@ namespace Vtg.ProjectManager
 			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project using 'make clean'"), on_project_clean},
 			{"ProjectBuildCleanStamps", null, N_("_Clean Project and Vala 'Stamp' Files"), null, N_("Clean the current project stamp files"), on_project_clean_stamps},
 			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
-			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos}
+			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
+			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute built program"), on_project_execute_process},
+			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process}
 		};
 
 
@@ -76,6 +83,7 @@ namespace Vtg.ProjectManager
 		private Vtg.Plugin _plugin;
 		private ProjectManager.View _prj_view = null;
 		private ProjectManager.Builder _prj_builder = null;
+		private ProjectManager.Executer _prj_executer = null;
 
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 
@@ -90,6 +98,7 @@ namespace Vtg.ProjectManager
 		{
 			initialize_ui ();
 			_prj_builder = new ProjectManager.Builder (_plugin);
+			_prj_executer = new ProjectManager.Executer (_plugin);
 		}
 
 		private void initialize_ui ()
@@ -153,6 +162,24 @@ namespace Vtg.ProjectManager
 		private void on_project_clean_stamps (Gtk.Action action)
 		{
 			clean_project (true);
+		}
+
+
+		private void on_project_execute_process (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			if (this.get_project_manager_view.current_project != null) {
+				var project = this.get_project_manager_view.current_project;
+				GLib.debug ("executing project %s", project.name);
+				_prj_executer.execute (project);
+			}
+		}
+
+		private void on_project_kill_process (Gtk.Action action)
+		{
+			GLib.debug ("killing last executed process");
+			//TODO: implement a kill (project);
+			_prj_executer.kill_last ();
 		}
 
 		private void clean_project (bool stamps = false)

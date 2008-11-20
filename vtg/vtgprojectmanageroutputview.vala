@@ -29,17 +29,14 @@ namespace Vtg.ProjectManager
 	public class OutputView : GLib.Object
 	{
 		protected Vtg.Plugin _plugin;
-		//protected Project _project;
 
-		private IOChannel _stdout = null;
-		private IOChannel _stderr = null;
+		private Gee.List<ProcessWatchInfo> _processes = new Gee.ArrayList<ProcessWatchInfo> ();
+		private StringBuilder line = new StringBuilder ();
 		private TextBuffer _messages;
 		private TextView _textview;
-		private uint _stdout_watch_id = 0;
-		private uint _stderr_watch_id = 0;
+
 		private Gtk.ScrolledWindow _ui = null;
 		
- 		//public Project project { get { return _project; } construct { _project = value; } default = null; }
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 
 		public OutputView (Vtg.Plugin plugin)
@@ -52,7 +49,8 @@ namespace Vtg.ProjectManager
 			var panel = _plugin.gedit_window.get_bottom_panel ();
 			_messages = new TextBuffer (null);
 			_textview = new TextView.with_buffer (_messages);
-			_textview.set_editable (false);
+			_textview.key_press_event += this.on_textview_key_press;
+
 			/* Change default font throughout the widget */
 			weak Pango.FontDescription font_desc = Pango.FontDescription.from_string ("Monospace");
 			_textview.modify_font (font_desc);
@@ -63,36 +61,94 @@ namespace Vtg.ProjectManager
 			panel.add_item (_ui, _("Output"), null);
 		}
 
-		public virtual void start_watch (int stdo, int stde)
+
+		private bool on_textview_key_press (Gtk.TextView sender, Gdk.EventKey evt)
+		{
+			if (evt.keyval == Gdk.Key_Return) {
+				string buffer;
+
+				if (line.len == 0)
+					buffer = "\n";
+				else
+					buffer = "%s\n".printf(line.str);
+
+				//TODO: find a way to select the target process
+				foreach (ProcessWatchInfo item in _processes) {
+					if (item.stdin != null) {
+						size_t bw;
+						try {
+							item.stdin.write_chars ((char[]) buffer, out bw);
+							item.stdin.flush ();
+							GLib.debug ("sent: %s, %d", buffer, (int) bw);
+						} catch (Error err) {
+							GLib.warning ("on_textview_key_press - error: %s", err.message);
+						}
+					}
+				}
+				line.erase (0, -1);
+			} else {
+				unichar ch = Gdk.keyval_to_unicode (evt.keyval);
+				line.append_unichar (ch);
+			}
+
+			return false;
+		}
+
+		private ProcessWatchInfo? find_process_by_id (uint id)
+		{
+			foreach (ProcessWatchInfo target in _processes) {
+				if (target.id == id) {
+					return target;
+				}
+			}
+
+			return null;
+		}
+
+		private ProcessWatchInfo add_process_view (uint id)
+		{
+			var result = new ProcessWatchInfo (id);
+			_processes.add (result);
+			return result;
+		}
+
+		public virtual void start_watch (uint id, int stdo, int stde, int stdi = -1)
 		{
 			try {
-				_stdout = new IOChannel.unix_new (stdo);
-				_stdout.add_watch (IOCondition.IN, this.on_messages);
-				_stdout.set_flags (_stdout.get_flags () | IOFlags.NONBLOCK);
-				_stderr = new IOChannel.unix_new (stde);
-				_stderr.add_watch (IOCondition.IN, this.on_messages);
-				_stderr.set_flags (_stderr.get_flags () | IOFlags.NONBLOCK);
+				ProcessWatchInfo? target = find_process_by_id (id);
+
+				if (target != null) {
+					stop_watch (id);
+				}
+				target = add_process_view (id);
+
+				if (stdi != -1) {
+					target.stdin = new IOChannel.unix_new (stdi);
+				}
+				target.stdout = new IOChannel.unix_new (stdo);
+				target.stdout_watch_id =  target.stdout.add_watch (IOCondition.IN, this.on_messages);
+				target.stdout.set_flags (target.stdout.get_flags () | IOFlags.NONBLOCK);
+				target.stdout.set_buffered (false);
+			        target.stderr = new IOChannel.unix_new (stde);
+				target.stderr_watch_id = target.stderr.add_watch (IOCondition.IN, this.on_messages);
+				target.stderr.set_flags (target.stderr.get_flags () | IOFlags.NONBLOCK);
+				target.stderr.set_buffered (false);
+				line.erase (0, -1);
 			} catch (Error err) {
 				GLib.warning ("error during watch setup: %s", err.message);
 			}
 		}
 
-		public virtual void stop_watch ()
+		public virtual void stop_watch (uint id)
 		{
-			try {
-				_stdout.flush ();
-				_stderr.flush ();
-				if (_stdout_watch_id != 0) {
-					Source.remove (_stdout_watch_id);
-				}
-				if (_stderr_watch_id != 0) {
-					Source.remove (_stderr_watch_id);
-				}
-				_stdout = null;
-				_stderr = null;
-			} catch (Error err) {
-				GLib.warning ("error during stop_watch: %s", err.message);
+			ProcessWatchInfo? target = find_process_by_id (id);
+			
+			if (target == null) {
+				GLib.warning ("stop_watch: no target with id %u found", id);
+				return;
 			}
+			target.cleanup ();
+			_processes.remove_at (_processes.index_of (target));
 		}
 
 		public void clean_output ()
@@ -103,14 +159,26 @@ namespace Vtg.ProjectManager
 		private bool on_messages (IOChannel source, IOCondition condition)
 		{
 			try {
-				string message;
-				size_t len = 0;
-				size_t term_pos = 0;
-				source.read_line (out message, out len, out term_pos);
-				while (len > 0) {
-					if (message != null)
+				if (condition == IOCondition.IN) {
+					string message = null;
+					size_t len = 0;
+					size_t term_pos = 0;
+					char[] buff = new char[1024];
+					source.read_chars (buff, out len);
+					while (len > 0) {
+						if (message == null) {
+							message = (string) buff;
+						} else {
+							message = message.concat ((string) buff);
+						}
+						source.read_chars (buff, out len);
+					}
+
+					if (message != "") {
 						log_message (message);
-					source.read_line (out message, out len, out term_pos);
+					}
+				} else {
+					GLib.debug ("IOCondition: %d", (int) condition);
 				}
 				return true;
 			} catch (Error err) {
@@ -121,6 +189,7 @@ namespace Vtg.ProjectManager
 
 		public void log_message (string message)
 		{
+			GLib.debug ("LOG message: %s", message);
 			if (message != null && message_added (message)) {
 				_messages.insert_at_cursor (message, (int) message.length);
 				_textview.scroll_mark_onscreen (_messages.get_insert ());

@@ -33,7 +33,9 @@ vtg_VALASOURCES = \
 	vtgprojectmanager.vala \
 	vtgprojectmanagerview.vala \
 	vtgprojectmanagerbuilder.vala \
+	vtgprojectmanagerexecuter.vala \
 	vtgprojectmanageroutputview.vala \
+	vtgprojectmanagerprocesswatchinfo.vala \
 	vtgprojectmanagerbuildlogview.vala \
 	vtgprojectmanagerproject.vala \
 	vtgprojectmanagerprojectmodule.vala \
@@ -53,7 +55,7 @@ libvtg_la_SOURCES = \
 	$(NULL)
 
 libvtg.vala.stamp: $(vtg_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --vapidir . --vapidir ../vapi --vapidir ../vsc --pkg config --pkg vsc-1.0 --pkg vala-1.0 --pkg gtksourcecompletion-1.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg reflection --pkg gdkkeysyms --pkg gnome-build-1.0 $^
+	$(VALAC) $(DEBUG) -C  --vapidir . --vapidir ../vapi --vapidir ../vsc --pkg config --pkg vsc-1.0 --pkg vala-1.0 --pkg gtksourcecompletion-1.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms --pkg gnome-build-1.0 $^
 # --basedir $(top_srcdir) $^
 	touch $@
 

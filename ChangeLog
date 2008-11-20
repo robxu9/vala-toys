@@ -1,3 +1,30 @@
+2008-11-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/Makefile.am
+	* vapi/utils.vapi: 
+
+	renamed reflection to utils and added Posix namespace with kill function
+	
+	* vtg/vtgprojectmanageroutputview.vala: 
+	* vtg/vtgprojectmanagerprojecttarget.vala: 
+	* vtg/vtgprojectmanagerproject.vala: 
+	* vtg/vtgprojectmanagerexecuter.vala:
+	* vtg/vtgprojectmanagerprocesswatchinfo.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgprojectmanagerexecuter.vala:
+	* vtg/vtgprojectmanageroutputview.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerprojectmodule.vala:
+	* vtg/vtgprojectmanagerprojecttarget.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	
+	added first support for single project executer
+
+	* vtg/vtgprojectmanagerbuildlogview.vala:
+
+	fixed a crash when parsing gcc warning messages
+
 2008-11-17  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerpackagesdialog.vala: 

@@ -36,6 +36,7 @@ namespace Vtg.ProjectManager
 		public string name = null;
 		public string filename = null;
 
+		public Gee.List<string> exec_targets = new Gee.ArrayList<string> ();
 		public Gee.List<ProjectModule> modules = new Gee.ArrayList<ProjectModule> ();
 		public Gee.List<ProjectGroup> groups = new Gee.ArrayList<ProjectGroup> ();
 
@@ -259,9 +260,15 @@ namespace Vtg.ProjectManager
 							var tgt_name = tgt_parts[0].substring (grp_id.length, tgt_id.length - grp_id.length);
 							ProjectTarget target = group.find_target (tgt_name);
 							if (target == null) {
+								weak Gbf.ProjectTarget tgt = _gbf_project.get_target(tgt_id);
 								target = new ProjectTarget (tgt_id);
+								target.set_type_from_string (tgt.type);
+								if (target.type == TargetTypes.EXECUTABLE) {
+									string[] tmp = tgt_id.split (":");
+									exec_targets.add (tmp[0]);
+								}
 								group.targets.add (target);
-								foreach (string src_id in _gbf_project.get_target(tgt_id).sources) {
+								foreach (string src_id in tgt.sources) {
 									var src_name = src_id.substring (tgt_id.length + 1, src_id.length - tgt_id.length);
 									ProjectSource src = target.find_source (src_name);
 									if (src == null) {

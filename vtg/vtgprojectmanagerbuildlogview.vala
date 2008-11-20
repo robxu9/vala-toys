@@ -184,19 +184,28 @@ namespace Vtg.ProjectManager
 			string[] parts = message.split (":", 3);
 			string[] src_ref = parts[0].split ("-")[0].split (".");
 			int line = src_ref[0].to_int ();
-			int col = src_ref[1].to_int ();
+			int col = 0;
+
+			if (src_ref[1] != null)
+				col = src_ref[1].to_int ();
+
 			string stock_id = null;
 
-			if (parts[1].has_suffix ("error")) {
-				stock_id = Gtk.STOCK_DIALOG_ERROR;
-			} else if (parts[1].has_suffix ("warning")) {
-				stock_id = Gtk.STOCK_DIALOG_WARNING;
-			}
+			if (parts[1] != null) {
+				if (parts[1].has_suffix ("error")) {
+					stock_id = Gtk.STOCK_DIALOG_ERROR;
+				} else if (parts[1].has_suffix ("warning")) {
+					stock_id = Gtk.STOCK_DIALOG_WARNING;
+				}
 
-			TreeIter iter;
-			_model.append (out iter);
-			_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, _project);
-			error_count++;
+
+				if (parts[2] != null) {
+					TreeIter iter;
+					_model.append (out iter);
+					_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, _project);
+					error_count++;
+				}
+			}
 		}
 	}
 }

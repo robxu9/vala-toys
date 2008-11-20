@@ -425,42 +425,46 @@ namespace Vtg
 			//TODO: set to the current namespace (the namespace containing it line/col)
 			if (parent == "") {
 			}
-			
-			string typename = null;
-			var dt = _completion.get_datatype_for_name (parent, _sb.name, lineno + 1, colno);
-			if (dt != null) {
-				if (dt is Vala.ClassType) {
-					typename = ((Vala.ClassType) dt).class_symbol.name;
-				} else {
-					typename = dt.to_qualified_string ();
-				}
-				if (typename.has_suffix ("?")) {
-					typename = typename.substring (0, typename.length - 1);
-				}
-			}
 
-			SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
-			if (typename != null) {
-				GLib.debug ("datatype '%s' for: %s",typename, word);
-				options.static_symbols = false;
-				options.public_only ();
-				if (word == "this") {
-					options.private_symbols = true;
-					options.protected_symbols = true;
-				} else if (word == "base") {
-					options.protected_symbols = true;
+			try {			
+				string typename = null;
+				var dt = _completion.get_datatype_for_name (parent, _sb.name, lineno + 1, colno);
+				if (dt != null) {
+					if (dt is Vala.ClassType) {
+						typename = ((Vala.ClassType) dt).class_symbol.name;
+					} else {
+						typename = dt.to_qualified_string ();
+					}
+					if (typename.has_suffix ("?")) {
+						typename = typename.substring (0, typename.length - 1);
+					}
 				}
-				options.exclude_type = typename;
-				result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
-			} else {
-				if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
-					options.static_symbols = true;
-					options.interface_symbols = false;
+
+				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
+				if (typename != null) {
+					GLib.debug ("datatype '%s' for: %s",typename, word);
+					options.static_symbols = false;
 					options.public_only ();
-					result = _completion.get_completions_for_name (options, "%s.".printf(word), _sb.name);
+					if (word == "this") {
+						options.private_symbols = true;
+						options.protected_symbols = true;
+					} else if (word == "base") {
+						options.protected_symbols = true;
+					}
+					options.exclude_type = typename;
+					result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
+				} else {
+					if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
+						options.static_symbols = true;
+						options.interface_symbols = false;
+						options.public_only ();
+					
+						result = _completion.get_completions_for_name (options, "%s.".printf(word), _sb.name);
+					}
 				}
+			} catch (Error err) {
+				GLib.warning ("error: %s", err.message);
 			}
-
 			if (result != null && result.methods.size > 0) {
 				foreach (SymbolCompletionItem item in result.methods) {
 					if (item.name == method) {
