@@ -141,8 +141,6 @@ namespace Vtg.ProjectManager
 			GLib.debug ("initializing gbf backends...");
 			Gbf.Backend.init ();
 		
-			weak Gbf.Backend found = null;
-
 			GLib.debug ("looking for a backend for: %s", project_filename);
 			foreach (weak Gbf.Backend item in Backend.get_backends ()) {
 				var proj = Backend.new_project (item.id);

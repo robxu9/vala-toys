@@ -42,7 +42,6 @@ namespace Vtg
 		private Gdk.Pixbuf _icon_property;
 		private Gdk.Pixbuf _icon_signal;
 		private Gdk.Pixbuf _icon_iface;
-		private bool need_reparse = false;
 		private uint timeout_id = 0;
 		private bool all_doc = false; //this is a hack!!!
 
@@ -523,8 +522,9 @@ namespace Vtg
 						options.protected_symbols = true;
 					} else if (word == "base") {
 						options.protected_symbols = true;
+					} else {
+						options.exclude_type = typename;						
 					}
-					options.exclude_type = typename;
 					timer.start ();
 					result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
 					timer.stop ();

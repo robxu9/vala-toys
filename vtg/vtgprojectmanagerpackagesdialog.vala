@@ -31,7 +31,6 @@ namespace Vtg.ProjectManager
 		private ProjectModule _module;
 		private Gee.List<ProjectModule> _modules;
 		private Gtk.Dialog _dialog;
-		private Gtk.TreeView _treeview;
 
 		public PackagesDialog (ProjectModule module, Gee.List<ProjectModule> modules)
 		{

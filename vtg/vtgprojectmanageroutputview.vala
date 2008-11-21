@@ -162,7 +162,6 @@ namespace Vtg.ProjectManager
 				if (condition == IOCondition.IN) {
 					string message = null;
 					size_t len = 0;
-					size_t term_pos = 0;
 					char[] buff = new char[1024];
 					source.read_chars (buff, out len);
 					while (len > 0) {

@@ -118,8 +118,6 @@ namespace Vtg.ProjectManager
 
 		public void on_build_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
 		{
-			var tw = (TreeView) sender;
-			var model = tw.get_model ();
 			activate_path (path);
 		}
 

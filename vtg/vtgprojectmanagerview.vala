@@ -31,11 +31,11 @@ namespace Vtg.ProjectManager
 		private Vtg.Plugin _plugin = null;
 		private Gtk.ComboBox _prjs_combo;
 		private Gtk.TreeView _prj_view;
-		private Gtk.TreeModel _model;
 		private int _project_count = 0;
 
 		private ProjectModule _last_selected_module;
-
+		private ProjectTarget _last_selected_target;
+		
 		private Gtk.Menu _popup_modules;
 		private uint _popup_modules_ui_id;
 		private string _popup_modules_ui_def = """
@@ -45,13 +45,25 @@ namespace Vtg.ProjectManager
                                         </popup>
                                         </ui>""";
 
+		private Gtk.Menu _popup_targets;
+		private uint _popup_targets_ui_id;
+		private string _popup_targets_ui_def = """
+                                        <ui>
+                                        <popup name='ProjectManagerPopupTargets'>
+                                            <menuitem action='target-new-source'/>
+                                            <menuitem action='target-add-source'/>
+                                        </popup>
+                                        </ui>""";
 
 
 		const ActionEntry[] _action_entries = {
-			{"packages-edit", null, N_("Add/Remove Packages..."), "<control><shift>P", N_("Manage packages references"), on_packages_edit}
+			{"packages-edit", null, N_("Add/Remove Packages..."), "<control><shift>P", N_("Manage packages references"), on_packages_edit},
+			{"target-add-source", null, N_("Add existing source..."), "<control><shift>A", N_("Add an existing vala source file"), on_target_add_source},
+			{"target-new-source", null, N_("Add new source..."), "<control><shift>N", N_("Add an new vala source file"), on_target_new_source}
 		};
 
-		public Project _current_project = null;
+		private Project _current_project = null;
+		
 		public Project current_project { get { return _current_project; } }
 		public Vtg.Plugin plugin { construct { _plugin = value; } }
 
@@ -95,6 +107,9 @@ namespace Vtg.ProjectManager
 				_popup_modules_ui_id = manager.add_ui_from_string (_popup_modules_ui_def, -1);
 				_popup_modules = (Gtk.Menu) manager.get_widget ("/ProjectManagerPopupPackagesEdit");
 				assert (_popup_modules != null);
+				_popup_targets_ui_id = manager.add_ui_from_string (_popup_targets_ui_def, -1);
+				_popup_targets = (Gtk.Menu) manager.get_widget ("/ProjectManagerPopupTargets");
+				assert (_popup_targets != null);
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
 			}
@@ -129,7 +144,6 @@ namespace Vtg.ProjectManager
 				var rows =  _prj_view.get_selection ().get_selected_rows (out model);
 				if (rows.length () == 1) {
 					TreeIter iter;
-					string name, id;
 					GLib.Object obj;
 					weak TreePath path = rows.nth_data (0);
 
@@ -138,6 +152,9 @@ namespace Vtg.ProjectManager
 					if (obj is ProjectModule) {
 						_last_selected_module = (ProjectModule) obj;
 						_popup_modules.popup (null, null, null, event.button, event.time);
+					} else if (obj is ProjectTarget) {
+						_last_selected_target = (ProjectTarget) obj;
+						_popup_targets.popup (null, null, null, event.button, event.time);
 					}
 				}
 			}
@@ -175,6 +192,32 @@ namespace Vtg.ProjectManager
 		private void on_packages_edit (Gtk.Action action)
 		{
 			show_packages_dialog (_last_selected_module);
+		}
+		
+		private void on_target_new_source (Gtk.Action action)
+		{
+
+		}
+
+		private void on_target_add_source (Gtk.Action action)
+		{
+			var dialog = new Gtk.FileChooserDialog (_("Add Vala Source"),
+				      _plugin.gedit_window,
+				      Gtk.FileChooserAction.SELECT_FOLDER,
+				      Gtk.STOCK_CANCEL, ResponseType.CANCEL,
+				      Gtk.STOCK_OPEN, ResponseType.ACCEPT,
+				      null);
+
+			if (dialog.run () == ResponseType.ACCEPT) {
+				var filename = dialog.get_filename ();
+				add_source (filename);				
+			}
+			dialog.destroy ();
+		}
+		
+		private void add_source (string filename)
+		{
+			return_if_fail (this._last_selected_target != null);
 		}
 	}
 }

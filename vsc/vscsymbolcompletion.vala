@@ -885,11 +885,11 @@ namespace Vsc
 		{
 			DataType type = null;
 
-			debug ("find datatype");
+			debug ("find datatype %s", symbolname);
 			Class cl = null;
 			var codenode = find_codenode (source, line, column, out cl);
 			if (cl != null) {
-				debug ("class is %s", cl.name);
+				debug ("class is %s, %s", cl.name, cl.get_full_name ());
 			}
 			if (codenode != null) {
 				debug ("node found %s", codenode.to_string ());
@@ -1101,6 +1101,24 @@ namespace Vsc
 			return false;
 		}
 
+
+		private SymbolCompletionResult get_completions_with_namespace (SymbolCompletionFilterOptions options, Namespace namespc, string symbolprefix, string symbolname) throws GLib.Error
+		{
+			SymbolCompletionResult result;
+			var symbol = "%s.%s".printf (symbolprefix, symbolname);
+			GLib.debug ("get_completions_with_namespace: %s", symbol);
+			result = get_completions_for_name_with_context (options, _sec_context, symbol);
+			if (result.is_empty) {
+				foreach (Namespace ns in namespc.get_namespaces ()) {
+					result = get_completions_with_namespace (options, ns,  "%s.%s".printf (symbolprefix, ns.name), symbolname);
+					if (!result.is_empty) {
+						break;
+					}
+				}
+			}
+			return result;
+		}
+		
 		public SymbolCompletionResult get_completions_for_name (SymbolCompletionFilterOptions options, string symbolname, string? sourcefile = null) throws GLib.Error
 		{
 			SymbolCompletionResult result;
@@ -1111,6 +1129,17 @@ namespace Vsc
 			}
 			lock (_sec_context) {
 				result = get_completions_for_name_with_context (options, _sec_context, symbolname);
+				if (source != null && result.is_empty) {
+					foreach (CodeNode node in source.get_nodes ()) {
+						if (node is Namespace) {
+							var ns = (Namespace) node;
+							result = get_completions_with_namespace (options, ns, ns.name, symbolname);
+							if (!result.is_empty) {
+								break;
+							}
+						}
+					}					
+				}
 			}
 
 			if (result.is_empty) {
@@ -1119,25 +1148,13 @@ namespace Vsc
 
 					//search it in referenced namespaces
 					if (source != null && result.is_empty) {
-						foreach(UsingDirective item in source.get_using_directives ()) {
-							if (item.namespace_symbol.name != "GLib") {
+						if (result.is_empty) {
+							foreach(UsingDirective item in source.get_using_directives ()) {
+								GLib.debug ("search in using for: %s.%s", item.namespace_symbol.name , symbolname);
 								var symbol = "%s.%s".printf (item.namespace_symbol.name, symbolname);
 								result = get_completions_for_name_with_context (options, _pri_context, symbol);
 								if (!result.is_empty) {
 									break;
-								}
-							}
-						}
-
-						//TODO: optimize it!
-						if (result.is_empty) {
-							foreach (CodeNode node in source.get_nodes ()) {
-								if (node is Namespace) {
-									var symbol = "%s.%s".printf (((Namespace) node).name, symbolname);
-									result = get_completions_for_name_with_context (options, _pri_context, symbol);
-									if (!result.is_empty) {
-										break;
-									}
 								}
 							}
 						}
