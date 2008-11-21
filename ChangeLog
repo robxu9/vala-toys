@@ -1,5 +1,11 @@
 2008-11-20  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala: 
+
+	fixed to follow libvala trunk
+
+2008-11-20  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/Makefile.am
 	* vapi/utils.vapi: 
 

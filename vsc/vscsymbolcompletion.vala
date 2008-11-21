@@ -544,7 +544,7 @@ namespace Vsc
 						return result;
 					}
 				}
-			} else if (node is ReturnStatement || node is DeclarationStatement || node is InvocationExpression) {
+			} else if (node is ReturnStatement || node is DeclarationStatement || node is MethodCall) {
 				return null;
 			} else if (node is CastExpression) {
 				if (node_contains_position (node, line, column)) {
@@ -693,17 +693,6 @@ namespace Vsc
 			}
 
 			return null;
-		}
-
-		private bool using_contains (SourceFile source, string name)
-		{
-			foreach (UsingDirective ns in source.get_using_directives ()) {
-				if (ns.namespace_symbol.name == name) {
-					return true;
-				}
-			}
-
-			return false;
 		}
 
 		private Symbol? get_symbol_with_context (CodeContext context, string name, SourceFile source, Symbol? parent = null) throws SymbolCompletionError
@@ -1010,7 +999,7 @@ namespace Vsc
 					}
 				}
 			} else {
-				var cl = find_class (source, line, column);
+				cl = find_class (source, line, column);
 			}
 			
 			return null;
@@ -1032,8 +1021,8 @@ namespace Vsc
 							if (oce.member_name is MemberAccess) {
 								initializer = oce.member_name;
 							}
-						} else if (initializer is InvocationExpression) {
-							var invoc = (InvocationExpression) initializer;
+						} else if (initializer is MethodCall) {
+							var invoc = (MethodCall) initializer;
 							initializer = invoc.call;
 						}
 						
@@ -1118,7 +1107,7 @@ namespace Vsc
 			SourceFile source = null;
 
 			if (sourcefile != null) {
-					source = find_sourcefile (_sec_context, sourcefile);
+				source = find_sourcefile (_sec_context, sourcefile);
 			}
 			lock (_sec_context) {
 				result = get_completions_for_name_with_context (options, _sec_context, symbolname);
@@ -1201,7 +1190,6 @@ namespace Vsc
 			while (toks[count] != null)
 				count++;
 
-			string to_find;
 
 			count -= baseidx;
 
@@ -1224,11 +1212,11 @@ namespace Vsc
 
 		private void get_completions_in_namespace (CodeContext context, SymbolCompletionFilterOptions options, string[] toks, int count, int baseidx, Namespace ns, SymbolCompletionResult result) //throws GLib.Error
 		{
-			Struct last_st;
-			Class last_cl;
-			Interface last_if;
-			Method last_md;
-			Field last_fd;
+			Struct last_st = null;
+			Class last_cl = null;
+			Interface last_if = null;
+			Method last_md = null;
+			Field last_fd = null;
 
 			foreach (Vala.Struct st in ns.get_structs ()) {
 				if (count <= 1 && st.name.has_prefix (toks[baseidx])) {

@@ -7,7 +7,7 @@ vtgdoc_DATA = \
         README\
         COPYING-GPL\
         COPYING-LGPL\
-	LICENSE-NOTE \
+	COPYING \
         AUTHORS\
         ChangeLog\
         INSTALL\
