@@ -42,6 +42,7 @@ namespace Vtg.ProjectManager
                                         <ui>
                                         <popup name='ProjectManagerPopupPackagesEdit'>
                                             <menuitem action='packages-edit'/>
+                                            <menuitem action='packages-open-configure'/>
                                         </popup>
                                         </ui>""";
 
@@ -50,16 +51,15 @@ namespace Vtg.ProjectManager
 		private string _popup_targets_ui_def = """
                                         <ui>
                                         <popup name='ProjectManagerPopupTargets'>
-                                            <menuitem action='target-new-source'/>
-                                            <menuitem action='target-add-source'/>
+                                            <menuitem action='target-open-makefile'/>
                                         </popup>
                                         </ui>""";
 
 
 		const ActionEntry[] _action_entries = {
-			{"packages-edit", null, N_("Add/Remove Packages..."), "<control><shift>P", N_("Manage packages references"), on_packages_edit},
-			{"target-add-source", null, N_("Add existing source..."), "<control><shift>A", N_("Add an existing vala source file"), on_target_add_source},
-			{"target-new-source", null, N_("Add new source..."), "<control><shift>N", N_("Add an new vala source file"), on_target_new_source}
+			{"packages-edit", Gtk.STOCK_ADD, N_("Add/Remove Packages..."), "<control><shift>P", N_("Manage packages references"), on_packages_edit},
+			{"packages-open-configure", Gtk.STOCK_OPEN, N_("Open configure file..."), "<control><shift>C", N_("Open configure.ac file"), on_packages_open_configure},
+			{"target-open-makefile", Gtk.STOCK_OPEN, N_("Open makefile"), "<control><shift>M", N_("Open makefile.am file"), on_target_open_makefile}
 		};
 
 		private Project _current_project = null;
@@ -146,15 +146,22 @@ namespace Vtg.ProjectManager
 					TreeIter iter;
 					GLib.Object obj;
 					weak TreePath path = rows.nth_data (0);
-
+					string name;
 					model.get_iter (out iter, path);
-					model.get (iter, 3, out obj);
+					model.get (iter, 1, out name, 3, out obj);
+					GLib.debug ("activated: %s", name);
 					if (obj is ProjectModule) {
 						_last_selected_module = (ProjectModule) obj;
 						_popup_modules.popup (null, null, null, event.button, event.time);
 					} else if (obj is ProjectTarget) {
 						_last_selected_target = (ProjectTarget) obj;
 						_popup_targets.popup (null, null, null, event.button, event.time);
+					} else {
+						if (obj == null) {
+							GLib.debug ("obj is null");
+						} else {
+							GLib.debug ("activated: %s - %s", name, Reflection.get_type_from_instance (obj).name ());
+						}
 					}
 				}
 			}
@@ -175,6 +182,9 @@ namespace Vtg.ProjectManager
 
 		private void update_view (string project_name)
 		{
+			if (_current_project != null)
+				_current_project.updated -= this.on_current_project_updated;
+
 			_current_project = null;
 			//find project
 			foreach (ProjectDescriptor item in _plugin.projects) {
@@ -184,9 +194,16 @@ namespace Vtg.ProjectManager
 					_prj_view.set_model (item.project.model);
 					_prj_view.expand_all ();
 					_current_project = item.project;
+					_current_project.updated += this.on_current_project_updated;
 					break;
 				}
 			}
+		}
+
+		private void on_current_project_updated (Project sender)
+		{
+			_prj_view.set_model (sender.model);
+			_prj_view.expand_all ();
 		}
 
 		private void on_packages_edit (Gtk.Action action)
@@ -194,30 +211,26 @@ namespace Vtg.ProjectManager
 			show_packages_dialog (_last_selected_module);
 		}
 		
-		private void on_target_new_source (Gtk.Action action)
+		private void on_packages_open_configure (Gtk.Action action)
 		{
-
-		}
-
-		private void on_target_add_source (Gtk.Action action)
-		{
-			var dialog = new Gtk.FileChooserDialog (_("Add Vala Source"),
-				      _plugin.gedit_window,
-				      Gtk.FileChooserAction.SELECT_FOLDER,
-				      Gtk.STOCK_CANCEL, ResponseType.CANCEL,
-				      Gtk.STOCK_OPEN, ResponseType.ACCEPT,
-				      null);
-
-			if (dialog.run () == ResponseType.ACCEPT) {
-				var filename = dialog.get_filename ();
-				add_source (filename);				
+			return_if_fail (_last_selected_module != null);
+			string file = Path.build_filename (_last_selected_module.project.filename, "configure.ac");
+			
+			GLib.debug ("Opening: %s", file);
+			if (FileUtils.test (file, FileTest.EXISTS)) {
+				_plugin.activate_uri ("file://%s".printf (file));
 			}
-			dialog.destroy ();
 		}
-		
-		private void add_source (string filename)
+
+		private void on_target_open_makefile (Gtk.Action action)
 		{
-			return_if_fail (this._last_selected_target != null);
+			return_if_fail (_last_selected_target != null);
+			string file = Path.build_filename (_last_selected_target.group.project.filename, _last_selected_target.group.id, "Makefile.am");
+			
+			GLib.debug ("Opening: %s", file);
+			if (FileUtils.test (file, FileTest.EXISTS)) {
+				_plugin.activate_uri ("file://%s".printf (file));
+			}
 		}
 	}
 }

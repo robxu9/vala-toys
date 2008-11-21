@@ -26,7 +26,7 @@ using Gtk;
 
 namespace Vtg.ProjectManager
 {
-	public class ProjectGroup
+	public class ProjectGroup : GLib.Object
 	{
 		public string name;
 		public string id;
@@ -34,11 +34,13 @@ namespace Vtg.ProjectManager
 		public Gee.List<string> vapidirs = new Gee.ArrayList<string> ();
 		public Gee.List<string> packages = new Gee.ArrayList<string> ();
 		public Gee.List<string> built_libraries = new Gee.ArrayList<string> ();
+		public Project project;
 
 		private const string[] files_to_scan = {"Makefile.am", "Makefile"};
 
-		public ProjectGroup (Project parent, string id)
+		public ProjectGroup (string id, Project project)
 		{
+			this.project = project;
 			if (id == null || id.length == 0) {
 				this.id = _("other");
 				this.name = this.id;
@@ -49,7 +51,7 @@ namespace Vtg.ProjectManager
 				else
 					this.name = id;
 			}
-			initialize_vapis (parent.filename);
+			initialize_vapis (project.filename);
 		}
 		
 		public ProjectTarget? find_target (string id)

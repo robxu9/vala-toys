@@ -25,7 +25,7 @@ libvtgdir = $(libdir)/gedit-2/plugins
 libvtg_LTLIBRARIES = libvtg.la
 
 
-vtg_VALASOURCES = \
+libvtg_la_VALASOURCES = \
 	vtgbracketcompletion.vala \
 	vtgsymbolcompletionprovider.vala \
 	vtgsymbolcompletiontrigger.vala \
@@ -50,11 +50,11 @@ vtg_VALASOURCES = \
 
 
 libvtg_la_SOURCES = \
-	$(vtg_VALASOURCES:.vala=.c) \
-	$(vtg_VALASOURCES:.vala=.h) \
+	$(libvtg_la_VALASOURCES:.vala=.c) \
+	$(libvtg_la_VALASOURCES:.vala=.h) \
 	$(NULL)
 
-libvtg.vala.stamp: $(vtg_VALASOURCES)
+libvtg.vala.stamp: $(libvtg_la_VALASOURCES)
 	$(VALAC) $(DEBUG) -C  --vapidir . --vapidir ../vapi --vapidir ../vsc --pkg config --pkg vsc-1.0 --pkg vala-1.0 --pkg gtksourcecompletion-1.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms --pkg gnome-build-1.0 $^
 # --basedir $(top_srcdir) $^
 	touch $@

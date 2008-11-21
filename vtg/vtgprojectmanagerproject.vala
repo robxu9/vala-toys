@@ -32,7 +32,9 @@ namespace Vtg.ProjectManager
 		private weak Backend _backend = null;
 		private Gbf.Project _gbf_project = null;
 		private Gtk.TreeStore _model;
+		private bool in_update = false;
 
+		public virtual signal void updated ();
 		public string name = null;
 		public string filename = null;
 
@@ -158,11 +160,33 @@ namespace Vtg.ProjectManager
 				_gbf_project.load (filename);
 				parse_project ();
 				build_tree_model ();
+				_gbf_project.project_updated += this.on_project_updated;
 				return true;
 			} else {
 				GLib.warning ("Can't load project, no suitable backend found");
 				return false;
 			}
+		}
+
+		private void on_project_updated (Gbf.Project sender)
+		{
+			GLib.debug ("project updated");
+			if (in_update)
+				return;
+
+			in_update = true;
+			try {
+				_gbf_project.refresh ();
+			} catch (Error err) {
+				GLib.warning ("on_project_upadted: error: %s", err.message);
+			}
+			GLib.debug ("project reloaded");
+			parse_project ();
+			GLib.debug ("project reparsed");
+			build_tree_model ();
+			GLib.debug ("project build model regenerated");
+			this.updated ();
+			in_update = false;
 		}
 
 		private void build_tree_model ()
@@ -189,11 +213,11 @@ namespace Vtg.ProjectManager
 			_model.append (out groups_iter, project_iter);
 			_model.set (groups_iter, 0, Gtk.STOCK_DIRECTORY, 1, _("Files"), 2, "project-files");
 			foreach (ProjectGroup group in groups) {
-				TreeIter group_iter;
-				_model.append (out group_iter, groups_iter);
-				_model.set (group_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, group.id, 3, group);
 				foreach (ProjectTarget target in group.targets) {
 					if (target.simple || target.vala_sources) {
+						TreeIter target_iter = groups_iter;
+						bool target_added = false;
+
 						foreach (ProjectSource source in target.sources) {
 							if (source.name.has_prefix (".") ||
 							    source.name.has_suffix (".c") ||
@@ -201,8 +225,13 @@ namespace Vtg.ProjectManager
 							    source.name.has_suffix (".stamp"))
 								continue;
 
+							if (!target_added) {
+								_model.append (out target_iter, groups_iter);
+								_model.set (target_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, target.id, 3, target);
+								target_added = true;
+							}
 							TreeIter source_iter;
-							_model.append (out source_iter, group_iter);
+							_model.append (out source_iter, target_iter);
 							_model.set (source_iter, 0, Gtk.STOCK_FILE, 1, source.name, 2, source.uri, 3, source);
 						}
 					}
@@ -239,6 +268,9 @@ namespace Vtg.ProjectManager
 		private void parse_project ()
 		{
 			try {
+				this.modules.clear ();
+				this.groups.clear ();
+				this.exec_targets.clear ();
 				foreach (string mod_id in _gbf_project.get_config_modules ()) {
 					var module = new ProjectModule (this, mod_id);
 					this.modules.add (module);
@@ -246,12 +278,12 @@ namespace Vtg.ProjectManager
 						module.packages.add (new ProjectPackage(pkg_id));
 					}
 				}
-
+				
 				foreach (string grp_id in _gbf_project.get_all_groups ()) {
 					string grp_name = normalize_path (grp_id);
 					ProjectGroup group = this.find_group (grp_name);
 					if (group == null) {
-						group = new ProjectGroup (this, grp_name);
+						group = new ProjectGroup (grp_name, this);
 						this.groups.add (group);
 						foreach (string tgt_id in _gbf_project.get_group (grp_id).targets) {
 							string[] tgt_parts = tgt_id.split (":");
@@ -259,7 +291,7 @@ namespace Vtg.ProjectManager
 							ProjectTarget target = group.find_target (tgt_name);
 							if (target == null) {
 								weak Gbf.ProjectTarget tgt = _gbf_project.get_target(tgt_id);
-								target = new ProjectTarget (tgt_id);
+								target = new ProjectTarget (tgt_id, group);
 								target.set_type_from_string (tgt.type);
 								if (target.type == TargetTypes.EXECUTABLE) {
 									string[] tmp = tgt_id.split (":");

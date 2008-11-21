@@ -34,20 +34,24 @@ namespace Vtg.ProjectManager
 		EXECUTABLE
 	}
 
-	public class ProjectTarget
+	public class ProjectTarget : GLib.Object
 	{
 		public string name;
 		public string id;
 		public Gee.List<ProjectSource> sources = new Gee.ArrayList<ProjectSource> ();
-		private bool _simple = false;
 		public bool vala_sources = false;
 		public bool generated_sources = false;
 		public TargetTypes type = TargetTypes.UNKNOWN;
+		public ProjectGroup group = null;
 
-		public ProjectTarget (string id)
+		private bool _simple = false;
+
+
+		public ProjectTarget (string id, ProjectGroup group)
 		{
 			this.id = id;
 			this.name = id;
+			this.group = group;
 		}
 
 		public bool simple
@@ -56,7 +60,7 @@ namespace Vtg.ProjectManager
 				return _simple && !generated_sources;
 			}
 		}
-		
+
 		public void add_source (ProjectSource source)
 		{
 			if (sources.size == 0) {
