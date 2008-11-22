@@ -23,12 +23,13 @@ using Vala;
 
 namespace Vsc
 {
-	public class SymbolCompletionItem
+	public class SymbolCompletionItem : GLib.Object
 	{
 		public string name;
 		public string type_name = null;
 		public string info;
-
+		public int line = 0;
+		
 		public SymbolCompletionItem (string name) 
 		{
 			this.name = name;
@@ -62,7 +63,7 @@ namespace Vsc
 				result += "&gt;";
 			}
 
-			if (type.nullable ) {
+			if (type.nullable && !result.has_suffix ("?")) {
 				result += "?";
 			}
 			if (type.is_dynamic) {
@@ -113,6 +114,7 @@ namespace Vsc
 		public SymbolCompletionItem.with_method (Method item)
 		{
 			this.name = item.name;
+			this.line = item.source_reference.first_line;
 			
 			if (name.has_prefix ("new")) {
 				name = name.substring (3, name.length - 3);
@@ -138,7 +140,8 @@ namespace Vsc
 		public SymbolCompletionItem.with_field (Field item)
 		{
 			this.name = item.name;
-
+			this.line = item.source_reference.first_line;
+			
 			string default_expr = "";
 			if (item.initializer != null) {
 				default_expr = " = " + item.initializer.to_string ();
@@ -168,24 +171,28 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Struct: %s".printf (item.name);
+			this.line = item.source_reference.first_line;
 		}
 
  		public SymbolCompletionItem.with_class (Class item)
 		{
 			this.name = item.name;
 			this.info = "Class: %s".printf (item.name);
+			this.line = item.source_reference.first_line;
 		}
 
  		public SymbolCompletionItem.with_interface (Interface item)
 		{
 			this.name = item.name;
 			this.info = "Interface: %s".printf (item.name);
+			this.line = item.source_reference.first_line;
 		}
 
  		public SymbolCompletionItem.with_signal (Vala.Signal item)
 		{
 			this.name = item.name;
 			this.info = "Signal: %s".printf (item.name);
+			this.line = item.source_reference.first_line;
 			int param_count = item.get_parameters ().size;
 			var params = formal_parameters_to_string (item.get_parameters ());
 

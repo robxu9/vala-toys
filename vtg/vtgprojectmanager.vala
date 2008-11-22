@@ -69,6 +69,16 @@ namespace Vtg.ProjectManager
                                                     </placeholder>
                                                 </menu>
                                             </menubar>
+
+                                             <menubar name="MenuBar">
+                                                <menu name="SearchMenu" action="Search">
+                                                    <placeholder name="SearchOps_8">
+                                                    	<separator />
+                                                        <menuitem name="GotoMethod" action="ProjectGotoMethod"/>
+
+                                                    </placeholder>
+                                                </menu>
+                                            </menubar>
                                             
                                         </ui>""";
 		private uint _ui_id;
@@ -84,7 +94,8 @@ namespace Vtg.ProjectManager
 			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
 			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute built program"), on_project_execute_process},
 			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process},
-			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document}
+			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
+			{"ProjectGotoMethod", null, N_("_Go To Method..."), "<control>M", N_("Goto to a specific method in the current source document"), on_project_goto_method}
 		};
 
 
@@ -165,8 +176,7 @@ namespace Vtg.ProjectManager
 				model.append (out iter);
 				model.set (iter, 0, src.name, 1, src);
 			}
-			model.set_sort_column_id (0, SortType.ASCENDING);
-			
+						
 			var dialog = new FilteredListDialog (model);
 			if (dialog.run ()) {
 				ProjectSource src;
@@ -175,6 +185,54 @@ namespace Vtg.ProjectManager
 			}
 		}
 
+		private void on_project_goto_method (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			
+			var project = this.get_project_manager_view.current_project;
+			return_if_fail (project != null);
+			
+			var pdes = get_projectdescriptor_for_project (project);
+			return_if_fail (pdes != null);
+			
+			var view = _plugin.gedit_window.get_active_view ();
+			if (view == null)
+				return;
+				
+			var doc = (Gedit.Document) view.get_buffer ();
+			return_if_fail (doc != null);
+			
+			var methods = pdes.completion.get_methods_for_source (doc.get_uri () );
+			if (methods.size <= 0)
+				return;
+				
+			TreeIter iter;
+			Gtk.ListStore model = new Gtk.ListStore (2, typeof(string), typeof (Vsc.SymbolCompletionItem));
+			foreach (Vsc.SymbolCompletionItem method in methods) {
+				model.append (out iter);
+				model.set (iter, 0, method.name, 1, method);
+			}
+			
+			var dialog = new FilteredListDialog (model);
+			if (dialog.run ()) {
+				Vsc.SymbolCompletionItem method;
+				model.get (dialog.selected_iter , 1, out method);
+				doc.goto_line (method.line - 1);
+				view.scroll_to_cursor ();
+			}
+		}
+
+
+		private ProjectDescriptor? get_projectdescriptor_for_project (Project project)
+		{
+			foreach (ProjectDescriptor current in _plugin.projects) {
+				if (current.project == project)
+					return current;
+			}
+			
+			return null;
+		}
+		
 		private void on_project_build (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);

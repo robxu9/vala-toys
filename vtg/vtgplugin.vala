@@ -28,7 +28,7 @@ using Vtg.ProjectManager;
 
 namespace Vtg
 {
-	internal class ProjectDescriptor
+	internal class ProjectDescriptor : GLib.Object
 	{
 		public Vsc.SymbolCompletion completion;
 		public ProjectManager.Project project;

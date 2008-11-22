@@ -31,6 +31,7 @@ vsc_VALASOURCES = \
 	vscsymbolcompletionitem.vala \
 	vscsymbolcompletionresult.vala \
 	vscsourcebuffer.vala \
+	vscmethodlistvisitor.vala \
 	$(NULL)
 
 

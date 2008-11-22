@@ -23,7 +23,6 @@ using Vala;
 
 namespace Vsc
 {
-	[Compact]
 	public class SymbolCompletionResult
 	{
 		public Gee.List<SymbolCompletionItem> properties = new Gee.ArrayList<SymbolCompletionItem> ();

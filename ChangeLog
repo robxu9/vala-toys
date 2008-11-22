@@ -1,5 +1,17 @@
 2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/Makefile.am:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+	* vsc/vscsymbolcompletionresult.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerprocesswatchinfo.vala:
+
+	added a go to method function
+	
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ui/Makefile.am:
 	* ui/vtg.glade:
 	* ui/vtg.ui:

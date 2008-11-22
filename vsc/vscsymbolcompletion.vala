@@ -619,6 +619,26 @@ namespace Vsc
 			return typename;
 		}
 		
+		public Gee.List<SymbolCompletionItem> get_methods_for_source (string sourcefile)
+		{
+			SourceFile source = null;
+			var results = new Gee.ArrayList<SymbolCompletionItem> ();
+			
+			lock (_sec_context) {
+				lock (_pri_context) {
+					source = find_sourcefile (_sec_context, sourcefile);
+					if (source == null)
+						source = find_sourcefile (_sec_context, sourcefile);
+						
+					if (source != null) {
+						var ml = new MethodList (results);
+						source.accept (ml);
+					}
+				}
+			}
+			return results;
+		}
+		
 		public string get_datatype_name_for_name (string symbolname, string sourcefile, int line, int column) throws SymbolCompletionError
 		{
 			string typename = null;
