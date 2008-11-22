@@ -1,3 +1,11 @@
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed some completion bugs on local variabile type inference
+
+
 2008-11-21  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerprojectgroup.vala: 

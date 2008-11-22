@@ -488,25 +488,10 @@ namespace Vtg
 			try {
 				string typename = null;
 				var timer = new Timer ();
-				timer.stop ();
 				if (word.has_prefix ("\"") && word.has_suffix ("\"")) {
 					typename = "string";
 				} else {
-					timer.start ();
-					var dt = _completion.get_datatype_for_name (word, _sb.name, lineno + 1, colno);
-					timer.stop ();
-					GLib.debug ("find_datatype_for_name: %f", timer.elapsed ());
-					if (dt != null) {
-						if (dt is Vala.ClassType) {
-							typename = ((Vala.ClassType) dt).class_symbol.name;
-						} else {
-							typename = dt.to_qualified_string ();
-						}
-						if (typename.has_suffix ("?")) {
-							typename = typename.substring (0, typename.length - 1);
-						}
-						
-					}
+					typename = _completion.get_datatype_name_for_name (word, _sb.name, lineno + 1, colno);
 				}
 				
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
@@ -522,9 +507,9 @@ namespace Vtg
 						options.protected_symbols = true;
 					} else if (word == "base") {
 						options.protected_symbols = true;
-					} else {
-						options.exclude_type = typename;						
 					}
+					options.exclude_type = typename;						
+
 					timer.start ();
 					result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
 					timer.stop ();

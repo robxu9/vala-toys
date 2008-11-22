@@ -452,11 +452,18 @@ namespace Vsc
 			return null;
 		}
 
-		private Class? find_class (SourceFile source, int line, int column) throws SymbolCompletionError
+		private Class? get_class (SourceFile source, int line, int column) throws SymbolCompletionError
 		{
 			foreach (CodeNode node in source.get_nodes ()) {
-				if (node is Class && node_contains_position (node, line, column)) {
-					return (Class) node;
+				debug ("(find_class) node: %s - %s", Reflection.get_type_from_instance (node).name (), node.to_string());
+				if (node is Class) {
+					var cl = (Class) node;
+					//TODO: fields, signal subclasses
+					foreach (Method md in cl.get_methods ()) {
+						if (find_sub_codenode (md, line, column) != null) {
+							return cl;
+						}
+					}
 				}
 			}
 
@@ -551,7 +558,7 @@ namespace Vsc
 					return node;
 				}
 			} else {
-				warning ("incomplete support for %s", Reflection.get_type_from_instance (node).name ());
+				//warning ("incomplete support for %s", Reflection.get_type_from_instance (node).name ());
 			}
 
 			return null;
@@ -597,6 +604,37 @@ namespace Vsc
 			return null;
 		}
 
+		private string get_qualified_name_for_datatype (DataType dt)
+		{
+			string typename;
+			
+			if (dt is Vala.ClassType) {
+				typename = ((Vala.ClassType) dt).class_symbol.get_full_name ();
+			} else {
+				typename = dt.to_qualified_string ();
+			}
+			if (typename.has_suffix ("?")) {
+				typename = typename.substring (0, typename.length - 1);
+			}
+			return typename;
+		}
+		
+		public string get_datatype_name_for_name (string symbolname, string sourcefile, int line, int column) throws SymbolCompletionError
+		{
+			string typename = null;
+			var timer = new Timer ();
+			timer.start ();
+			var dt = get_datatype_for_name (symbolname, sourcefile, line, column);
+			timer.stop ();
+			
+			GLib.debug ("(get_datatype_name_for_name) time elapsed: %f", timer.elapsed ());
+			if (dt != null) {
+				typename = get_qualified_name_for_datatype (dt);
+				debug ("(get_datatype_name_for_name) found DataType: %s", typename);
+			}
+			return typename;
+		}
+		
 		public DataType? get_datatype_for_name (string symbolname, string sourcefile, int line, int column) throws SymbolCompletionError
 		{
 			DataType? result = null;
@@ -615,7 +653,7 @@ namespace Vsc
 						//first local
 						result = get_datatype_for_name_with_context (_sec_context, toks[0], source, line, column);
 					} else {
-						warning ("no sourcefile found %s", sourcefile);
+						warning ("(get_datatype_for_name) no sourcefile found %s", sourcefile);
 					}
 
 					if (result != null && source != null && count > 1) {
@@ -628,18 +666,8 @@ namespace Vsc
 
 		private DataType? get_inner_datatype (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
 		{
-			string typename;
-
-			if (datatype is Vala.ClassType) {
-				typename = ((Vala.ClassType) datatype).class_symbol.name;
-			} else {
-				typename = datatype.to_qualified_string ();
-			}
-			if (typename.has_suffix ("?")) {
-				typename = typename.substring (0, typename.length - 1);
-			}
-
-			string qualified_type = "%s.%s".printf (typename, fields_path);
+			string qualified_type = "%s.%s".printf (get_qualified_name_for_datatype (datatype), fields_path);
+			
 			return get_datatype_for_symbol_name (qualified_type, source);
 		}
 
@@ -885,14 +913,14 @@ namespace Vsc
 		{
 			DataType type = null;
 
-			debug ("find datatype %s", symbolname);
+			debug ("(get_datatype_for_name_with_context) find datatype %s", symbolname);
 			Class cl = null;
 			var codenode = find_codenode (source, line, column, out cl);
 			if (cl != null) {
 				debug ("class is %s, %s", cl.name, cl.get_full_name ());
 			}
 			if (codenode != null) {
-				debug ("node found %s", codenode.to_string ());
+				debug ("(get_datatype_for_name_with_context) node found %s", codenode.to_string ());
 				if (symbolname != "this" && symbolname != "base") {
 					Block body = null;
 
@@ -915,7 +943,7 @@ namespace Vsc
 					} else if (codenode is Block) {
 						body = (Block) codenode;
 					} else {
-						throw new SymbolCompletionError.UNSUPPORTED_TYPE ("unsupported type %s", Reflection.get_type_from_instance (codenode).name ());
+						throw new SymbolCompletionError.UNSUPPORTED_TYPE ("(get_datatype_for_name_with_context) unsupported type %s", Reflection.get_type_from_instance (codenode).name ());
 					}
 					//method local vars
 					foreach (LocalVariable lvar in body.get_local_variables ()) {
@@ -930,14 +958,14 @@ namespace Vsc
 					foreach (Statement st in body.get_statements ()) {
 						if (st is DeclarationStatement) {
 							var decl = (DeclarationStatement) st;
-							debug ("decl %s %s",  Reflection.get_type_from_instance (decl.declaration).name (), decl.declaration.name);	
+							//debug ("decl %s %s",  Reflection.get_type_from_instance (decl.declaration).name (), decl.declaration.name);	
 							if (decl.declaration.name == symbolname) {
 								if (decl.declaration is LocalVariable) {
 									type = datatype_for_localvariable (context, source, line, column, (LocalVariable) (decl.declaration));
 									if (type != null)
 										return type;
 								} else {
-									throw new SymbolCompletionError.UNSUPPORTED_TYPE ("unsupported type exception");
+									warning ("(get_datatype_for_name_with_context) unsupported type");
 								}
 							}
 						}
@@ -999,7 +1027,7 @@ namespace Vsc
 					}
 				}
 			} else {
-				cl = find_class (source, line, column);
+				cl = get_class (source, line, column);
 			}
 			
 			return null;
@@ -1031,8 +1059,6 @@ namespace Vsc
 							
 							if (ma.inner != null) {
 								class_name = ma.inner.to_string ();
-							} else {
-								class_name = ma.member_name;
 							}
 							
 							member_name = ma.member_name;
@@ -1040,11 +1066,11 @@ namespace Vsc
 							var ce = (CastExpression) initializer;
 							vt = ce.type_reference;
 						} else {
-							warning ("Initializer of type '%s' is not yet supported", Reflection.get_type_from_instance (initializer).name ());
+							warning ("(datatype_for_localvariable) initializer of type '%s' is not yet supported", Reflection.get_type_from_instance (initializer).name ());
 						}
 						
 						if (class_name != null) {
-							debug ("find datatype for class name: %s", class_name);
+							debug ("(datatype_for_localvariable) find datatype for class name: %s", class_name);
 							Namespace dummy;
 							var cl = resolve_class_name (context, class_name, out dummy);
 							
@@ -1053,20 +1079,25 @@ namespace Vsc
 								cl = resolve_class_name (_pri_context, class_name, out dummy);
 							}
 							if (cl != null) {
-								debug ("class type %s", cl.name);
+								debug ("(datatype_for_localvariable) class type %s", cl.name);
 								vt = new ClassType (cl);
-							} else if (member_name != null) {
+							}
+						}
+						
+						if (vt == null && member_name != null) {
+							//try to find the current class
+							var cl = get_class (source, line, column);
+							if (cl != null) {
+								vt = get_inner_datatype (new ClassType (cl), member_name, source);
+							} else {
 								//not solved!
-								var mdt = get_datatype_for_name_with_context (context, class_name, source, line, column);
-								if (mdt == null) {
-									//try to see if is a namespace
-									vt = get_datatype_for_symbol_name ("%s.%s".printf (class_name, member_name), source);
-								} else {
+								var mdt = get_datatype_for_name_with_context (context, member_name, source, line, column);
+								if (mdt != null) {
 									//now locking for the inner datatype
-									debug ("find inner for: %s", member_name);
+									debug ("(datatype_for_localvariable) find inner for: %s, %s", this.get_qualified_name_for_datatype (mdt), member_name);
 									vt = get_inner_datatype (mdt, member_name, source);
 								}
-							} 
+							}
 						}
 					}
 				} else if (lv.variable_type != null) {
@@ -1077,7 +1108,7 @@ namespace Vsc
 			}
 			return vt;
 		}
-
+		
 		private bool node_contains_position (CodeNode node, int line, int column)
 		{
 			/*
