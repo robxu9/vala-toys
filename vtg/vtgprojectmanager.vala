@@ -201,8 +201,12 @@ namespace Vtg.ProjectManager
 				
 			var doc = (Gedit.Document) view.get_buffer ();
 			return_if_fail (doc != null);
-			
-			var methods = pdes.completion.get_methods_for_source (doc.get_uri () );
+
+			var uri = doc.get_uri ();
+			if (uri == null)
+				return;
+				
+			var methods = pdes.completion.get_methods_for_source (uri);
 			if (methods.size <= 0)
 				return;
 				

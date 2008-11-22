@@ -1,5 +1,13 @@
 2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	fixed a segmentationfault caused by a document 
+	with a null file uri
+	
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
 	
 	sorted the item list in the filter dialog

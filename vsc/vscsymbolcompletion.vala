@@ -443,12 +443,15 @@ namespace Vsc
 			else
 				name = sourcefile;
 
-			foreach (SourceFile source in context.get_source_files ()) {
-				if (source.filename == name) {
-					return source;
+
+			var sources = context.get_source_files ();
+			if (sources != null) {
+				foreach (SourceFile source in sources) {
+					if (source.filename == name) {
+						return source;
+					}
 				}
 			}
-
 			return null;
 		}
 
@@ -624,15 +627,17 @@ namespace Vsc
 			SourceFile source = null;
 			var results = new Gee.ArrayList<SymbolCompletionItem> ();
 			
-			lock (_sec_context) {
-				lock (_pri_context) {
-					source = find_sourcefile (_sec_context, sourcefile);
-					if (source == null)
+			if (sourcefile != null) {
+				lock (_sec_context) {
+					lock (_pri_context) {
 						source = find_sourcefile (_sec_context, sourcefile);
+						if (source == null)
+							source = find_sourcefile (_pri_context, sourcefile);
 						
-					if (source != null) {
-						var ml = new MethodList (results);
-						source.accept (ml);
+						if (source != null) {
+							var ml = new MethodList (results);
+							source.accept (ml);
+						}
 					}
 				}
 			}
