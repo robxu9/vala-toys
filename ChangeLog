@@ -1,5 +1,19 @@
 2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ui/Makefile.am:
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+	* vtg/Makefile.am:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerprojectsource.vala:
+	* vtg/vtgutils.vala:
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+	
+	added a quick project document picker dialog
+
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala:
 	* vtg/vtgsymbolcompletionprovider.vala:
 

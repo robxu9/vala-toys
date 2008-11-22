@@ -26,11 +26,12 @@ using Gtk;
 
 namespace Vtg.ProjectManager
 {
-	public class ProjectSource
+	public class ProjectSource : GLib.Object
 	{
 		public string uri;
 		public string name;
-
+		public bool is_vala_source;
+		
 		public ProjectSource (string uri)
 		{
 			this.uri = uri;
@@ -45,6 +46,10 @@ namespace Vtg.ProjectManager
 			} else {
 				this.name = tmp[count-1];
 			}
+			if (uri.has_suffix (".vala") || uri.has_suffix (".vapi"))
+				is_vala_source = true;
+			else
+				is_vala_source = false;
 		}
 	}
 }

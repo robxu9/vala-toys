@@ -58,8 +58,18 @@ namespace Vtg.ProjectManager
                                                         <menuitem name="KillProcess" action="ProjectBuildKill"/>
                                                     </placeholder>
                                                 </menu>
-                                              </placeholder>
+                                              </placeholder>                                              
                                             </menubar>
+                                            
+                                            <menubar name="MenuBar">
+                                                <menu name="DocumentsMenu" action="Documents">
+                                                    <placeholder name="DocumentsOps_3">
+                                                        <menuitem name="GotoDocument" action="ProjectGotoDocument"/>
+                                                        <separator />
+                                                    </placeholder>
+                                                </menu>
+                                            </menubar>
+                                            
                                         </ui>""";
 		private uint _ui_id;
 
@@ -73,7 +83,8 @@ namespace Vtg.ProjectManager
 			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
 			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
 			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute built program"), on_project_execute_process},
-			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process}
+			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process},
+			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document}
 		};
 
 
@@ -137,10 +148,31 @@ namespace Vtg.ProjectManager
 			dialog.destroy ();
 		}
 			    
-
 		private void on_project_save (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);
+		}
+
+		private void on_project_goto_document (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			var project = this.get_project_manager_view.current_project;
+			return_if_fail (project != null);
+			
+			TreeIter iter;
+			Gtk.ListStore model = new Gtk.ListStore (2, typeof(string), typeof (GLib.Object));
+			foreach (ProjectSource src in project.all_vala_sources) {
+				model.append (out iter);
+				model.set (iter, 0, src.name, 1, src);
+			}
+			model.set_sort_column_id (0, SortType.ASCENDING);
+			
+			var dialog = new FilteredListDialog (model);
+			if (dialog.run ()) {
+				ProjectSource src;
+				model.get (dialog.selected_iter , 1, out src);
+				_plugin.activate_uri (src.uri);
+			}
 		}
 
 		private void on_project_build (Gtk.Action action)

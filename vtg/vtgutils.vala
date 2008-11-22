@@ -32,9 +32,24 @@ namespace Vtg
 		private static bool _initialized = false;
 		private static Proposal[] _proposals = null;
 		private static Gee.List<ProjectPackage> _available_packages = null;
-
+		private static Gtk.Builder _builder = null;
+		
 		public const int prealloc_count = 500;
 
+
+		public static Gtk.Builder get_builder ()
+		{
+			if (_builder == null) {
+				_builder = new Gtk.Builder ();
+				try {
+					_builder.add_from_file (get_ui_path ("vtg.ui"));
+				} catch (Error err) {
+					GLib.warning ("initialize_ui: %s", err.message);
+				}
+			}	
+			return _builder;
+		}
+		
 		public static weak Proposal[] get_proposal_cache ()
 		{
 			if (!_initialized) {

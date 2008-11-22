@@ -41,7 +41,9 @@ namespace Vtg.ProjectManager
 		public Gee.List<string> exec_targets = new Gee.ArrayList<string> ();
 		public Gee.List<ProjectModule> modules = new Gee.ArrayList<ProjectModule> ();
 		public Gee.List<ProjectGroup> groups = new Gee.ArrayList<ProjectGroup> ();
-
+		
+		public Gee.List<ProjectSource> all_vala_sources = new Gee.ArrayList<ProjectSource> ();
+		
 		public Gtk.TreeModel model { get { return _model; } }
 		public Gbf.Project gbf_project { get { return _gbf_project; } }
 
@@ -85,6 +87,17 @@ namespace Vtg.ProjectManager
 			return false;
 		}
 
+		public bool contains_vala_source_file (string uri)
+		{
+			foreach (ProjectSource source in all_vala_sources) {
+				if (source.uri == uri) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+		
 		public string? source_uri_for_name (string name)
 		{
 			string[] name_parts = name.split ("/");
@@ -271,6 +284,8 @@ namespace Vtg.ProjectManager
 				this.modules.clear ();
 				this.groups.clear ();
 				this.exec_targets.clear ();
+				this.all_vala_sources.clear ();
+				
 				foreach (string mod_id in _gbf_project.get_config_modules ()) {
 					var module = new ProjectModule (this, mod_id);
 					this.modules.add (module);
@@ -303,6 +318,9 @@ namespace Vtg.ProjectManager
 									ProjectSource src = target.find_source (src_name);
 									if (src == null) {
 										src = new ProjectSource (src_name);
+										if (src.is_vala_source && !contains_vala_source_file (src_name)) {
+											all_vala_sources.add (src);
+										}
 										target.add_source (src);
 									}
 								}								

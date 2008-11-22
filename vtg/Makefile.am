@@ -44,6 +44,7 @@ libvtg_la_VALASOURCES = \
 	vtgprojectmanagerprojecttarget.vala \
 	vtgprojectmanagerprojectsource.vala \
 	vtgprojectmanagerpackagesdialog.vala \
+	vtgprojectmanagerfilteredlistdialog.vala \
 	vtgplugin.vala \
 	vtgutils.vala \
 	$(NULL)
