@@ -32,6 +32,7 @@ namespace Vtg.ProjectManager
 		private Gtk.TreeView _treeview;
 		private Gtk.Entry _entry;
 		private Gtk.TreeModelFilter _model;
+		private Gtk.TreeModelSort _sorted;
 		private Gtk.TreeModel _child_model;
 		private PatternSpec _current_pattern = null;
 		
@@ -66,7 +67,10 @@ namespace Vtg.ProjectManager
 			column.pack_start (renderer, true);
 			column.add_attribute (renderer, "text", 0);
 			_treeview.append_column (column);
-			_treeview.set_model (_model);
+			_sorted = new Gtk.TreeModelSort.with_model (_model);
+			_sorted.set_sort_column_id (0, SortType.ASCENDING);
+			_sorted.set_sort_func (0, this.sort_model);
+			_treeview.set_model (_sorted);
 			_treeview.get_selection ().set_mode (SelectionMode.SINGLE);
 			_treeview.key_press_event += on_treeview_key_press;
 		}
@@ -76,9 +80,11 @@ namespace Vtg.ProjectManager
 			int result = _dialog.run ();
 			if (result > 0) {
 				TreeIter iter;
-				if (_treeview.get_selection ().get_selected (null, out iter))
-					_model.convert_iter_to_child_iter (out selected_iter, iter);
-				else
+				if (_treeview.get_selection ().get_selected (null, out iter)) {
+					TreeIter sort;
+					_sorted.convert_iter_to_child_iter (out sort, iter);
+					_model.convert_iter_to_child_iter (out selected_iter, sort);
+				} else
 					result = 0;
 			}
 			_dialog.destroy ();
@@ -116,7 +122,7 @@ namespace Vtg.ProjectManager
 			return false;
 		}
 		
-		private bool filter_model (Gtk.TreeModel model, TreeIter iter)
+		private bool filter_model (TreeModel model, TreeIter iter)
 		{
 			if (_current_pattern == null)
 				return true;
@@ -124,6 +130,24 @@ namespace Vtg.ProjectManager
 			string val;
 			model.get (iter, 0, out val);		
 			return _current_pattern.match_string(val);
+		}
+		
+		private int sort_model (TreeModel model, TreeIter a, TreeIter b)
+		{
+			string vala;
+			string valb;
+			
+			model.get (a, 0, out vala);
+			model.get (b, 0, out valb);
+			
+			if (vala.has_suffix (".vala") || vala.has_suffix(".vapi")) {
+				vala = vala.substring (0, vala.length - 5);
+			}
+			if (valb.has_suffix (".vala") || valb.has_suffix(".vapi")) {
+				valb = valb.substring (0, valb.length - 5);
+			}
+
+			return strcmp (vala,valb);
 		}
 	}
 }

@@ -1,5 +1,11 @@
 2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+	
+	sorted the item list in the filter dialog
+
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/Makefile.am:
 	* vsc/vscsymbolcompletion.vala:
 	* vsc/vscsymbolcompletionitem.vala:
