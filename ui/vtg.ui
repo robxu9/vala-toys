@@ -3,7 +3,7 @@
   <object class="GtkDialog" id="dialog-db">
     <property name="border_width">5</property>
     <property name="window_position">GTK_WIN_POS_CENTER</property>
-    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_POPUP_MENU</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="skip_pager_hint">True</property>
     <property name="has_separator">False</property>
