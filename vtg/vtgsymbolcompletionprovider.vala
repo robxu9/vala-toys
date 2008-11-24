@@ -85,7 +85,7 @@ namespace Vtg
 
 				_view.key_press_event += this.on_view_key_press;
 
-				this._completion.add_source_buffer (_sb);
+				this._completion.parser.add_source_buffer (_sb);
 				this._icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				this._icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
 				this._icon_method = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-method-16.png"));
@@ -98,13 +98,13 @@ namespace Vtg
 				this.all_doc = true;
 				this.parse (doc);
 
-				this._completion.cache_building += sender => { 
+				this._completion.parser.cache_building += sender => { 
 					if (cache_building == false) {
 						cache_building = true; 
 						Idle.add (this.on_idle);
 					}
 				};
-				this._completion.cache_builded += sender => { 
+				this._completion.parser.cache_builded += sender => { 
 					if (cache_building == true) {
 						cache_building = false; 
 						Idle.add (this.on_idle);
@@ -245,7 +245,7 @@ namespace Vtg
 			var buffer = this.get_document_text (doc, this.all_doc);
 			//GLib.debug ("parse called:\n-------------------------------\n%s\n-------------------------------\n", buffer);
 			_sb.source = buffer;
-			_completion.reparse_source_buffers ();
+			_completion.parser.reparse_source_buffers ();
 		}
 
 		public void finish ()

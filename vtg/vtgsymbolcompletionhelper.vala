@@ -50,7 +50,7 @@ namespace Vtg
 		construct	
 		{
 			try {
-				_completion.add_package_from_namespace ("GLib");
+				_completion.parser.add_package_from_namespace ("GLib");
 			} catch (Error err) {
 				GLib.warning (err.message);
    			}

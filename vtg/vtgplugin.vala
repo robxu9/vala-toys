@@ -267,7 +267,7 @@ namespace Vtg
 			foreach (ProjectManager.ProjectModule module in project.modules) {
 				foreach (ProjectManager.ProjectPackage package in module.packages) {
 					GLib.debug ("adding package %s from project %s", package.name, project.name);
-					if (!completion.try_add_package (package.name))
+					if (!completion.parser.try_add_package (package.name))
 						GLib.debug ("package %s not added", package.name);
 				}
 			}
@@ -280,7 +280,7 @@ namespace Vtg
 							string filename = source.uri.substring (7, source.uri.length - 7);
 							GLib.debug ("adding source %s", filename);
 							try {
-								completion.add_source (filename);
+								completion.parser.add_source (filename);
 								source_added = true;
 							} catch (Error err) {
 								GLib.warning ("Error adding source %s: %s", filename, err.message);
@@ -291,12 +291,12 @@ namespace Vtg
 
 				if (source_added) {
 					foreach(string path in group.vapidirs) {
-						completion.add_path_to_vapi_search_dir (path);
+						completion.parser.add_path_to_vapi_search_dir (path);
 					}
 
 					foreach(string package in group.packages) {
 						if (!project.contains_built_library (package)) {
-							    completion.try_add_package (package);
+							    completion.parser.try_add_package (package);
 						}
 					}
 				}

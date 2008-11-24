@@ -127,7 +127,7 @@ namespace Vsc
 
 		private void reparse (bool both_context)
 		{
-			_completion.reparse (both_context);
+			_completion.parser.reparse (both_context);
 		}
 
 		private void describe_symbol (string name, string sourcefile, int line, int column)
@@ -181,7 +181,7 @@ namespace Vsc
 		private void add_package (string packagename)
 		{
 			try {
-				_completion.add_package (packagename);
+				_completion.parser.add_package (packagename);
 				print_message ("package '%s' added".printf (packagename));
 			} catch (Error err) {
 				print_error (err.message);
@@ -191,7 +191,7 @@ namespace Vsc
 		private void add_source (string filename)
 		{
 			try {
-				_completion.add_source (filename);
+				_completion.parser.add_source (filename);
 				print_message ("source file '%s' added".printf (filename));
 			} catch (Error err) {
 				print_error (err.message);
@@ -201,7 +201,7 @@ namespace Vsc
 		private void add_package_from_namespace (string @namespace)
 		{
 			try {
-				_completion.add_package_from_namespace (@namespace);
+				_completion.parser.add_package_from_namespace (@namespace);
 				print_message ("package '%s' added".printf (@namespace));
 			} catch (Error err) {
 				print_error (err.message);

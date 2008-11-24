@@ -1,3 +1,17 @@
+2008-11-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/Makefile.am:
+	* vsc/vscsourcebuffer.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscparsermanager.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	splitted the symbol completion parser functions 
+	to the ParserManager class
+
 2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
 
 	* ui/vtg.glade:
