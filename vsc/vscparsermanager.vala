@@ -26,6 +26,7 @@ namespace Vsc
 	public class ParserManager : GLib.Object
 	{
 		private string glib_file;
+		private string gobject_file;
 
 		private List<string> _vapidirs = new List<string> ();
 		private Gee.List<string> _packages = new Gee.ArrayList<string> ();
@@ -55,10 +56,15 @@ namespace Vsc
 			add_path_to_vapi_search_dir ("/usr/share/vala/vapi");
 			add_path_to_vapi_search_dir ("/usr/local/share/vala/vapi");
 			try {
-				var file = find_vala_package_name ("GLib");
-				glib_file = find_vala_package_filename (file)[0];
+				glib_file = find_vala_package_filename ("glib-2.0")[0];
 			} catch (Error err) {
 				error ("Can't find glib vapi file: %s", err.message);
+			}
+
+			try {
+				gobject_file = find_vala_package_filename ("gobject-2.0")[0];
+			} catch (Error err) {
+				error ("Can't find gobject vapi file: %s", err.message);
 			}
 		}
 
@@ -396,6 +402,9 @@ namespace Vsc
 
 			source = new SourceFile (current_context, glib_file, true);
 			current_context.add_source_file (source);
+
+			source = new SourceFile (current_context, gobject_file, true);
+			current_context.add_source_file (source);
 		
 			foreach (SourceBuffer src in _source_buffers) {
 				if (src.name != null && src.source != null) {
@@ -445,8 +454,11 @@ namespace Vsc
 			source = new SourceFile (current_context, glib_file, true);
 			current_context.add_source_file (source);
 
+			source = new SourceFile (current_context, gobject_file, true);
+			current_context.add_source_file (source);
+
 			foreach (string item in _packages) {
-				if (item != null && item != glib_file) {
+				if (item != null && item != glib_file && item != gobject_file) {
 					debug ("adding package %s", item);					
 					source = new SourceFile (current_context, item, true);
 					current_context.add_source_file (source);

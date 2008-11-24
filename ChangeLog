@@ -1,5 +1,11 @@
 2008-11-24  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscparsermanager.vala:
+
+	added also gobject library to the parser contexts
+
+2008-11-24  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc-shell/vsccompletionshell.vala:
 	* vsc/Makefile.am:
 	* vsc/vscsourcebuffer.vala:
