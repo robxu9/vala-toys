@@ -33,12 +33,15 @@ namespace Vtg.ProjectManager
 		private Vtg.Plugin _plugin;
 		private BuildLogView _build_view = null;
 		private uint _child_watch_id = 0;
-
+		private bool is_bottom_pane_visible;
+		private int last_exit_code = 0;
+		
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 
 		construct
 		{
 			this._build_view = new BuildLogView (_plugin);
+			is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
 		}
 
 		public Builder (Vtg.Plugin plugin)
@@ -66,6 +69,8 @@ namespace Vtg.ProjectManager
 				if (child_pid != null) {
 					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
 					_build_view.initialize (project);
+					if (last_exit_code == 0)
+						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
 				} else {
@@ -108,6 +113,8 @@ namespace Vtg.ProjectManager
 				if (child_pid != null) {
 					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
 					_build_view.initialize (project);
+					if (last_exit_code == 0)
+						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
 				} else {
@@ -137,8 +144,17 @@ namespace Vtg.ProjectManager
 			Process.close_pid (pid);
 
 			log.stop_watch (_child_watch_id);
-			log.log_message (_("\ncompilation end with exit status %d\n").printf(status));
+			last_exit_code = Process.exit_status (status);
+			log.log_message (_("\ncompilation end with exit status %d\n").printf (last_exit_code));
+
 			_build_view.activate ();
+			if (last_exit_code == 0) {
+				if (!this.is_bottom_pane_visible) {
+					_plugin.gedit_window.get_bottom_panel ().hide ();
+				}
+			} else {
+				Gdk.beep ();				
+			}
 			_child_watch_id = 0;
 		}
 	}

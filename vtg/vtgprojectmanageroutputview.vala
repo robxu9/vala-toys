@@ -34,7 +34,7 @@ namespace Vtg.ProjectManager
 		private StringBuilder line = new StringBuilder ();
 		private TextBuffer _messages;
 		private TextView _textview;
-
+		
 		private Gtk.ScrolledWindow _ui = null;
 		
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
@@ -54,7 +54,8 @@ namespace Vtg.ProjectManager
 			/* Change default font throughout the widget */
 			weak Pango.FontDescription font_desc = Pango.FontDescription.from_string ("Monospace");
 			_textview.modify_font (font_desc);
-
+			_textview.set_wrap_mode (Gtk.WrapMode.CHAR);
+			
 			_ui = new Gtk.ScrolledWindow (null, null);
 			_ui.add (_textview);
 			_ui.show_all ();
@@ -134,6 +135,11 @@ namespace Vtg.ProjectManager
 				target.stderr.set_flags (target.stderr.get_flags () | IOFlags.NONBLOCK);
 				target.stderr.set_buffered (false);
 				line.erase (0, -1);
+				//activate bottom pane if not visible
+				var panel = _plugin.gedit_window.get_bottom_panel ();
+				if (!panel.visible)
+					panel.show_all ();
+				
 			} catch (Error err) {
 				GLib.warning ("error during watch setup: %s", err.message);
 			}

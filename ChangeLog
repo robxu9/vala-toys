@@ -1,5 +1,19 @@
 2008-11-30  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerbuilder.vala: 
+	* vtg/vtgprojectmanageroutputview.vala: 	
+	
+	the botton pane is shown or hidden according to its previous
+	status and compilation result. 
+	
+	Added also beeps on compilation finish.
+	
+	* vtg/vtgprojectmanageroutputview.vala: 
+
+	output window now wrap its content
+	
+2008-11-30  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionrpvider.vala: 
 	
 	strip the current line from the parsed text
