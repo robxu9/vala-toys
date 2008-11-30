@@ -1,5 +1,11 @@
 2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanager.vala: 
+
+	used new vala-gen-project command line option
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/valaprojectgenerator.vala:
 
 	added projectpath command line option to vala-gen-project

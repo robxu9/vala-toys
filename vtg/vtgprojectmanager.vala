@@ -345,7 +345,7 @@ namespace Vtg.ProjectManager
 			try {
 				var log = _plugin.output_view;
 				if (!is_dir_empty (project_path)) {
-					log.log_message ("project directory %s not empty".printf (project_path));
+					log.log_message ("project directory %s not empty\n".printf (project_path));
 					return;
 				}
 				string process_file = "vala-gen-project";
@@ -354,7 +354,7 @@ namespace Vtg.ProjectManager
 				Pid child_pid;
 
 				//vala-gen-project
-				if (Process.spawn_sync (project_path, new string[] { process_file }, null, 
+				if (Process.spawn_sync (project_path, new string[] { process_file, "--projectdir", project_path }, null, 
 					SpawnFlags.SEARCH_PATH,
 					null, null, null, out status)) {
 					if (Process.exit_status (status) == 0) {
