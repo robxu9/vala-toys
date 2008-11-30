@@ -1,5 +1,20 @@
 2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/Makefile.am:
+	* gen-project/licenses/Makefile.am:
+	* gen-project/licenses/gpl-2.0.txt:
+	* gen-project/licenses/gpl-3.0.txt:
+	* gen-project/licenses/lgpl-2.1.txt:
+	* gen-project/licenses/lgpl-3.0.txt:
+	* gen-project/valaprojectgenerator.vala:
+	* Makefile.am:
+	* configure.ac:
+	* vapi/config.vapi:
+
+	added gen-project to the vtg distribution
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletiontrigger.vala:
 
 	closed the completion popup automatically 

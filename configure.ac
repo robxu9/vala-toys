@@ -31,6 +31,10 @@ GTKSOURCECOMPLETION_REQUIRED=0.5.0
 VALA_REQUIRED=0.3.6
 GNOME_BUILD_REQUIRED=2.23.90
 
+PKG_CHECK_MODULES(GENPROJECT, glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-2.0 >= $GTK_REQUIRED)
+AC_SUBST(GENPROJECT_CFLAGS)
+AC_SUBST(GENPROJECT_LIBS)
+
 PKG_CHECK_MODULES(VTG, 	glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED gtk+-2.0 >= $GTK_REQUIRED gedit-2.20 >= $GEDIT_REQUIRED gtksourcecompletion-1.0 >= $GTKSOURCECOMPLETION_REQUIRED gnome-build-1.0 >= $GNOME_BUILD_REQUIRED vala-1.0 >= $VALA_REQUIRED)
 
 AC_SUBST(VTG_CFLAGS)
@@ -43,6 +47,8 @@ AC_CONFIG_FILES([
 	Makefile
 	vsc/Makefile
 	vsc-shell/Makefile
+	gen-project/Makefile
+	gen-project/licenses/Makefile
 	vtg/Makefile
 	ui/Makefile
 	images/Makefile
