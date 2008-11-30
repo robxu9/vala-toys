@@ -36,11 +36,14 @@ enum Vala.ProjectLicense {
 }
 
 class Vala.ProjectGenerator : Dialog {
+	static string option_project_path = null;
+
 	private FileChooserButton project_folder_button;
 	private ComboBox project_type_combobox;
 	private ComboBox license_combobox;
 	private Entry name_entry;
 	private Entry email_entry;
+
 
 	private string project_path;
 	private string project_name;
@@ -52,6 +55,10 @@ class Vala.ProjectGenerator : Dialog {
 
 	private ProjectType project_type;
 	private ProjectLicense project_license;
+
+        const OptionEntry[] options = {
+		{ "projectdir", 0, 0, OptionArg.STRING, ref option_project_path, "Project path", "NAME" }
+	};
 
 	public ProjectGenerator () {
 		title = "Vala Project Generator";
@@ -75,10 +82,14 @@ class Vala.ProjectGenerator : Dialog {
 		label.xalign = 0;
 		label.show ();
 
-		hbox = create_hbox ("Project folder:", size_group);
-		project_folder_button = new FileChooserButton ("Select a project folder", FileChooserAction.SELECT_FOLDER);
-		hbox.pack_start (project_folder_button, true, true, 0);
-		project_folder_button.show ();
+		if (option_project_path == null) {
+			hbox = create_hbox ("Project folder:", size_group);
+			project_folder_button = new FileChooserButton ("Select a project folder", FileChooserAction.SELECT_FOLDER);
+			hbox.pack_start (project_folder_button, true, true, 0);
+			project_folder_button.show ();
+		} else {
+			project_path = option_project_path;
+		}
 
 		hbox = create_hbox ("Project type:", size_group);
 		project_type_combobox = new ComboBox.text ();
@@ -146,7 +157,9 @@ class Vala.ProjectGenerator : Dialog {
 	}
 
 	public void create_project () {
-		project_path = project_folder_button.get_current_folder ();
+		if (project_folder_button != null) {
+			project_path = project_folder_button.get_current_folder ();
+		}
 		project_name = Path.get_basename (project_path);
 
 		// only use [a-zA-Z0-9-]* as projectname
@@ -607,12 +620,25 @@ class Vala.ProjectGenerator : Dialog {
 		return null;
 	}
 
-	static void main (string[] args) {
+	static int main (string[] args) {
 		Gtk.init (ref args);
+
+                try {
+                        var opt_context = new OptionContext ("- Vala Project Generator");
+                        opt_context.set_help_enabled (true);
+                        opt_context.add_main_entries (options, null);
+                        opt_context.parse (ref args);
+                } catch (OptionError e) {
+                        stdout.printf ("%s\n", e.message);
+                        stdout.printf ("Run '%s --help' to see a full list of available command line options.\n", args[0]);
+                        return 1;
+                }
 
 		var generator = new ProjectGenerator ();
 		if (generator.run () == ResponseType.OK) {
 			generator.create_project ();
+			return 0;
 		}
+		return 1;
 	}
 }
