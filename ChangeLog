@@ -1,5 +1,13 @@
 2008-11-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vapi/gtksourcecompletion-1.0.vapi:
+	* vapi/packages/gtksourcecompletion-1.0/gtksourcecompletion-1.0.metadata:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	ported my calltip to Gsc.Info window
+
+2008-11-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletiontrigger.vala: 
 	* vapi/gtksourcecompletion-1.0.vapi:
 	* vapi/packages/gtksourcecompletion-1.0/gtksourcecompletion-1.0.metadata:

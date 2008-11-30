@@ -57,8 +57,7 @@ namespace Vtg
 		private uint sb_context_id = 0;
 
 		private Vtg.Plugin _plugin;
-		private Gtk.Window _calltip_window = null;
-		private Gtk.Label _calltip_label = null;
+		private Gsc.Info _calltip_window = null;
 
 		public SymbolCompletion completion { construct { _completion = value;} }
 		public Gedit.View view { construct { _view = value; } }
@@ -187,9 +186,6 @@ namespace Vtg
 					counter = 5;
 				}
 			}
-			if (_last_trigger != null) {
-				GLib.debug ("LAST TRIGGER IS POPUP VISIBLE: %d", (int) _last_trigger.completion.is_visible ());
-			}
 			return false;
 		}
 
@@ -197,29 +193,14 @@ namespace Vtg
 		{
 			SymbolCompletionItem result = find_method_signature ();
 			if (result != null) {
-				weak Gedit.Document doc = (Gedit.Document) _view.get_buffer ();
-				weak TextMark mark = (TextMark) doc.get_insert ();
-				TextIter pos;
-				doc.get_iter_at_mark (out pos, mark);
-				Gdk.Rectangle rect;
-				_view.get_iter_location (pos, out rect);
-				int x,y;
-				_view.buffer_to_window_coords (TextWindowType.TEXT, rect.x, rect.y, out x, out y);
 				if (_calltip_window == null) {
 					initialize_calltip_window ();
 				}
-				int wx,wy;
-				_view.window.get_origin (out wx, out wy);
-				x += wx;
-				y += wy;
-				string calltip_text = null;
-
-				calltip_text = result.info;
+				string calltip_text = result.info;
 				if (calltip_text != null) {
-					_calltip_window.resize (20, 20);
-					_calltip_label.set_markup (calltip_text);
+					_calltip_window.set_markup (calltip_text);
+					_calltip_window.move_to_cursor (_view);
 					_calltip_window.show_all ();
-					_calltip_window.move (x + 32, y + 20);
 				}
 			} else {
 				GLib.debug ("calltip no proposal found");
@@ -236,17 +217,13 @@ namespace Vtg
 
 		private void initialize_calltip_window ()
 		{
-			var box = new Gtk.HBox (true, 8);
-			_calltip_window = new Gtk.Window (Gtk.WindowType.POPUP);
-			_calltip_label = new Gtk.Label ("");
-			box.pack_start (_calltip_label, true, true, 8);
-			_calltip_window.add (box);
+			_calltip_window = new Gsc.Info ();
+			_calltip_window.set_info_type (InfoType.EXTENDED);
 		}
 
 		private void parse (Gedit.Document doc)
 		{
 			var buffer = this.get_document_text (doc, this.all_doc);
-			//GLib.debug ("parse called:\n-------------------------------\n%s\n-------------------------------\n", buffer);
 			_sb.source = buffer;
 			_completion.parser.reparse_source_buffers ();
 		}
