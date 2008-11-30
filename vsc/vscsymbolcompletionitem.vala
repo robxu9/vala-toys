@@ -63,7 +63,7 @@ namespace Vsc
 				result += "&gt;";
 			}
 
-			if (type.nullable && !result.has_suffix ("?")) {
+			if (type.nullable && !result.has_suffix ("?") && !result.has_suffix("*")) {
 				result += "?";
 			}
 			if (type.is_dynamic) {
