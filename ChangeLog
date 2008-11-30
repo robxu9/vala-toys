@@ -1,3 +1,10 @@
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	closed the completion popup automatically 
+	when the dot is cancelled in the edit window
+
 2008-11-26  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vapi/gtksourcecompletion-1.0.vapi:

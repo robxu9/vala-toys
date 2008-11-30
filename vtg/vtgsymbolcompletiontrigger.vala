@@ -60,12 +60,17 @@ namespace Vtg
 		private void on_buffer_changed (Gtk.TextBuffer sender)
 		{
 			if (_completion.is_visible ()) {
-				Gsc.ManagerEventOptions opts;
 				string delimiter;
 				string filter = get_filter_word (sender, out delimiter);
-				_completion.get_current_event_options (out opts);
-				opts.filter_text = filter;
-				_completion.update_event_options (opts);
+				if (delimiter != ".") {
+					GLib.debug ("CLOSING THE POPUP MANUALLY!!!!!!!");
+					_completion.finish_completion ();
+				} else  {
+					Gsc.ManagerEventOptions opts;
+					_completion.get_current_event_options (out opts);
+					opts.filter_text = filter;
+					_completion.update_event_options (opts);
+				}
 			}
 		}
 
