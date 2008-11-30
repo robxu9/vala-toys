@@ -1,5 +1,16 @@
 2008-11-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletiontrigger.vala: 
+	* vapi/gtksourcecompletion-1.0.vapi:
+	* vapi/packages/gtksourcecompletion-1.0/gtksourcecompletion-1.0.metadata:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	the proposal list is filtered in realtime while typing
+
+2008-11-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletionitem.vala: 
 
 	fixed nullable '?' character after pointer char '*'

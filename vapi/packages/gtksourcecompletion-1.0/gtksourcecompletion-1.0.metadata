@@ -16,6 +16,8 @@ TRIGGER_AUTOWORDS_NAME cheader_filename="gtksourcecompletion/gsc-trigger-autowor
 Gsc cheader_filename="gtksourcecompletion/gsc-utils.h"
 GscPopupPriv hidden="1"
 GscTreePriv hidden="1"
+GscManagerEventOptions is_value_type="1"
 
 gsc_provider_get_proposals type_arguments="Proposal" transfer_ownership="1"
 GscPopupOptions is_value_type="1"
+gsc_manager_get_current_event_options.options is_out="1"

@@ -52,7 +52,7 @@ namespace Vtg
 		private bool prev_cache_building = false;
 		private bool tooltip_is_visible = false;
 
-		private GLib.Object _last_trigger = null;
+		private SymbolCompletionTrigger _last_trigger = null;
 		private uint sb_msg_id = 0;
 		private uint sb_context_id = 0;
 
@@ -126,7 +126,7 @@ namespace Vtg
 				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
 				if (sb_msg_id != 0) {
 					status_bar.remove (sb_context_id, sb_msg_id);
-									}
+				}
 				sb_msg_id = status_bar.push (sb_context_id, "rebuilding symbol cache...");
 			} else if (cache_building == false && prev_cache_building == true) {
 				GLib.debug ("delete tooltip ");
@@ -186,6 +186,9 @@ namespace Vtg
 					this.all_doc = false;
 					counter = 5;
 				}
+			}
+			if (_last_trigger != null) {
+				GLib.debug ("LAST TRIGGER IS POPUP VISIBLE: %d", (int) _last_trigger.completion.is_visible ());
 			}
 			return false;
 		}
@@ -265,7 +268,7 @@ namespace Vtg
 			timer.stop ();
 			GLib.debug ("TOTAL TIME ELAPSED: %f", timer.elapsed ());
 			if (list.length () == 0 && cache_building) {
-				_last_trigger = (GLib.Object) trigger;
+				_last_trigger = (SymbolCompletionTrigger) trigger;
 			} else {
 				_last_trigger = null;
 			}

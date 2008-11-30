@@ -31,29 +31,24 @@ namespace Vtg
 	{
 		private Gsc.Manager _completion;
 		private string _trigger_name;
-		private weak Gsc.ManagerEventOptions _opts = null;
+		private Gsc.ManagerEventOptions _opts;
 
-		public Gsc.Manager completion { construct { _completion = value; } }
+		public Gsc.Manager completion { get { return _completion; } construct { _completion = value; } }
 
 		public string trigger_name { construct { _trigger_name = value; } }
-
-
-		public void set_opts (Gsc.ManagerEventOptions opts)
-		{
-			this._opts = opts;
-		}
 
 		public bool activate ()
 		{
 			var view = _completion.get_view ();
 			view.key_press_event += this.on_view_key_press;
+			view.get_buffer ().changed += this.on_buffer_changed;
 			return true;
 		}
 
 		public bool deactivate ()
 		{
 			var view = _completion.get_view ();
-			view.key_press_event -= this.on_view_key_press;
+			view.key_press_event -= this.on_view_key_press;			
 			return true;
 		}
 
@@ -62,22 +57,69 @@ namespace Vtg
 			return this._trigger_name;
 		}
 
+		private void on_buffer_changed (Gtk.TextBuffer sender)
+		{
+			if (_completion.is_visible ()) {
+				Gsc.ManagerEventOptions opts;
+				string delimiter;
+				string filter = get_filter_word (sender, out delimiter);
+				_completion.get_current_event_options (out opts);
+				opts.filter_text = filter;
+				_completion.update_event_options (opts);
+			}
+		}
+
 		private bool on_view_key_press (Gtk.TextView view, Gdk.EventKey event)
 		{
-			if (event.keyval == '.' && 
-			    (event.state & (ModifierType.SHIFT_MASK | ModifierType.META_MASK | ModifierType.CONTROL_MASK)) == 0) {
-				trigger_event ();
+			if (!_completion.is_visible ()) {
+				if (event.keyval == '.' && 
+				    (event.state & (ModifierType.SHIFT_MASK | ModifierType.META_MASK | ModifierType.CONTROL_MASK)) == 0) {
+					trigger_event ();
+				}
 			}
 			return false;
 		}
 
+		private string get_filter_word (Gtk.TextBuffer doc, out string delimiter)
+		{
+ 			weak TextMark mark = (TextMark) doc.get_insert ();
+			TextIter end;
+			TextIter start;
+			string result;
+			doc.get_iter_at_mark (out start, mark);
+			end = start;
+			int col = start.get_line_offset ();
+			delimiter = "";
+			while (col > 0) {
+				start.backward_char ();
+				result = start.get_text (end).strip ();
+				unichar ch = start.get_char ();
+				if (is_word_delimiter (ch)) {
+					TextIter delim = start;
+					start.forward_char ();
+					delimiter = delim.get_text (start);
+					break;
+				}
+				
+				col--;
+			}
+
+			result = start.get_text (end).strip ();
+			return (result == null ? "" : result);
+		}
+		
+		private bool is_word_delimiter (unichar ch)
+		{
+			return !ch.isalnum () && ch != '_';
+		}
+
 		public void trigger_event ()
 		{
-			if (_opts == null) {
-				_completion.trigger_event (this._trigger_name, null);
-			} else {
-				_completion.trigger_event_with_opts (this._trigger_name, _opts, null);
-			}
+			_opts.position_type = PopupPositionType.CURSOR;
+			_opts.filter_type = PopupFilterType.TREE_HIDDEN;
+			_opts.autoselect = false;
+			_opts.show_bottom_bar = true;
+			_completion.trigger_event_with_opts (this._trigger_name, _opts, null);
 		}
 
 		public SymbolCompletionTrigger (Gsc.Manager completion, string trigger_name)

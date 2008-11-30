@@ -26,7 +26,7 @@ namespace Gsc {
 		public void deactivate ();
 		public void finish_completion ();
 		public weak Gsc.Trigger get_active_trigger ();
-		public void get_current_event_options (Gsc.ManagerEventOptions options);
+		public void get_current_event_options (out Gsc.ManagerEventOptions options);
 		public static weak Gsc.Manager get_from_view (Gtk.TextView view);
 		public weak Gsc.Provider get_provider (string provider_name);
 		public weak Gsc.Trigger get_trigger (string trigger_name);
@@ -48,15 +48,6 @@ namespace Gsc {
 		public string next_page_keys { get; set; }
 		[NoAccessorMethod]
 		public string previous_page_keys { get; set; }
-	}
-	[Compact]
-	[CCode (cheader_filename = "gtksourcecompletion/gsc-manager.h")]
-	public class ManagerEventOptions {
-		public bool autoselect;
-		public weak string filter_text;
-		public Gsc.PopupFilterType filter_type;
-		public Gsc.PopupPositionType position_type;
-		public bool show_bottom_bar;
 	}
 	[CCode (cheader_filename = "gtksourcecompletion/gsc-popup.h")]
 	public class Popup : Gtk.Window, Gtk.Buildable, Atk.Implementor {
@@ -153,6 +144,14 @@ namespace Gsc {
 		public abstract bool activate ();
 		public abstract bool deactivate ();
 		public abstract weak string get_name ();
+	}
+	[CCode (cheader_filename = "gtksourcecompletion/gsc-utils.h")]
+	public struct ManagerEventOptions {
+		public Gsc.PopupPositionType position_type;
+		public Gsc.PopupFilterType filter_type;
+		public weak string filter_text;
+		public bool autoselect;
+		public bool show_bottom_bar;
 	}
 	[CCode (cprefix = "GSC_DOCUMENTWORDS_PROVIDER_SORT_", has_type_id = "0", cheader_filename = "gtksourcecompletion/gsc-documentwords-provider.h")]
 	public enum DocumentwordsProviderSortType {
