@@ -94,9 +94,6 @@ namespace Vtg
 				this._icon_signal = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-event-16.png"));
 				this._icon_iface = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-interface-16.png"));
 
-				this.all_doc = true;
-				this.parse (doc);
-
 				this._completion.parser.cache_building += sender => { 
 					if (cache_building == false) {
 						cache_building = true; 
@@ -112,6 +109,10 @@ namespace Vtg
 
 				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
 				sb_context_id = status_bar.get_context_id ("symbol status");
+				
+				cache_building = true; 
+				this.all_doc = true;
+				this.parse (doc);
 			} catch (Error err) {
 				GLib.warning ("an error occourred: %s", err.message);
 			}
@@ -522,7 +523,7 @@ namespace Vtg
 
 			doc.get_iter_at_mark (out start, mark);
 			string doc_text;
-			if (all_doc) {
+			if (all_doc || doc.is_untouched ()) {
 				end = start;
 				start.set_line_offset (0);
 				while (start.backward_line ())
