@@ -1,3 +1,15 @@
+2008-11-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgconfiguration.vala: 
+	* configure.ac:
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+
+	added a simple configuration dialog where you can enable / disable
+	symbol and bracket completion modules
+
 2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
 
 	* gen-project/valaprojectgenerator.vala:

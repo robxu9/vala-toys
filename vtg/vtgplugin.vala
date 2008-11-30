@@ -40,9 +40,16 @@ namespace Vtg
 		private Gee.List<Vtg.BracketCompletion> _bcs = new Gee.ArrayList<Vtg.BracketCompletion> ();
 		private Gee.List<Vtg.SymbolCompletionHelper> _scs = new Gee.ArrayList<Vtg.SymbolCompletionHelper> ();
 		private Gee.List<Vtg.ProjectDescriptor> _projects = new Gee.ArrayList<Vtg.ProjectDescriptor> ();
-		
+		private Configuration _config = null;
 		private Vtg.ProjectDescriptor default_project = null;
 		private ProjectManager.PluginHelper _prj_man;
+		
+		private enum DeactivateModuleOptions
+		{
+			ALL,
+		        BRACKET,
+			SYMBOL
+	        }
 
 		public Gee.List<Vtg.ProjectDescriptor> projects
 		{
@@ -51,20 +58,19 @@ namespace Vtg
 
 		public ProjectManager.OutputView output_view { get; set; }
 
+		construct
+		{
+			_config = new Configuration ();
+			_config.notify += this.on_configuration_property_changed;
+		}
+
 		public override void activate (Gedit.Window window)
 		{
 			this._window = window;
 			Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
 			Signal.connect_after (this._window, "tab-removed", (GLib.Callback) on_tab_removed, this);
 
-			foreach (Gedit.View view in this._window.get_views ()) {
-				var doc = (Gedit.Document) (view.get_buffer ());
-				if (doc.language != null && doc.language.id == "vala") {
-					var project = project_descriptor_find_from_document (doc);
-					initialize_view (project, view);
-				}
-			}
-
+			initialize_views (this._window);
 			foreach (Document doc in this._window.get_documents ()) {
 				initialize_document (doc);
 			}
@@ -76,13 +82,18 @@ namespace Vtg
 
 		public override void deactivate (Gedit.Window window)
 		{
-			deactivate_plugins ();
+			deactivate_modules ();
 			this._window = null;
 		}
 	  
 		public override bool is_configurable ()
 		{
-			return false;
+			return true;
+		}
+
+		public override weak Gtk.Widget? create_configure_dialog ()
+		{
+			return _config.get_configuration_dialog ();
 		}
 
 		public Gedit.Window gedit_window
@@ -90,18 +101,72 @@ namespace Vtg
 			get { return _window; }
 		}
 
-		private void deactivate_plugins ()
+		private void on_configuration_property_changed (GLib.Object sender, ParamSpec param)
+		{
+			var name = param.get_name ();
+			if (name == "bracket-enabled") {
+				if (_config.bracket_enabled) {
+					activate_modules (DeactivateModuleOptions.BRACKET);
+				} else {
+					deactivate_modules (DeactivateModuleOptions.BRACKET);
+			        }
+			} else if (name == "symbol-enabled") {
+				if (_config.bracket_enabled) {
+					activate_modules (DeactivateModuleOptions.SYMBOL);
+				} else {
+					deactivate_modules (DeactivateModuleOptions.SYMBOL);
+			        }
+			}
+		}
+
+		private void deactivate_modules (DeactivateModuleOptions options = DeactivateModuleOptions.ALL)
 		{
 			GLib.debug ("deactvate");
-			foreach (BracketCompletion bc in _bcs) {
-				bc.deactivate ();
+			if (options == DeactivateModuleOptions.ALL || options == DeactivateModuleOptions.SYMBOL) {
+				foreach (Vtg.SymbolCompletionHelper sc in _scs) {
+					deactivate_symbol (sc);
+				}
 			}
-			foreach (Vtg.SymbolCompletionHelper sc in _scs) {
-				sc.deactivate ();
+			if (options == DeactivateModuleOptions.ALL || options == DeactivateModuleOptions.BRACKET) {
+				foreach (Vtg.BracketCompletion bc in _bcs) {
+					deactivate_bracket (bc);
+				}
 			}
 			GLib.debug ("deactvated");
 		}
 
+
+		private void activate_modules (DeactivateModuleOptions options = DeactivateModuleOptions.ALL)
+		{
+			GLib.debug ("actvate");
+			initialize_views (this._window);
+			GLib.debug ("actvated");
+		}
+
+		private void activate_bracket (Gedit.View view)
+		{
+			var bc = new BracketCompletion (this, view);
+			_bcs.add (bc);
+
+		}
+		
+		private void deactivate_bracket (BracketCompletion bc)
+		{
+			bc.deactivate ();
+			_bcs.remove (bc);
+		}
+
+		private void activate_symbol (ProjectDescriptor project, Gedit.View view)
+		{
+			var sc = new Vtg.SymbolCompletionHelper (this, view, project.completion);
+			_scs.add (sc);
+		}
+
+ 		private void deactivate_symbol (SymbolCompletionHelper sc)
+		{
+			sc.deactivate ();
+			_scs.remove (sc);
+		}
 
 		private static void on_tab_added (Gedit.Window sender, Gedit.Tab tab, Vtg.Plugin instance)
 		{
@@ -172,18 +237,27 @@ namespace Vtg
 			return null;
 		}
 
+		private void initialize_views (Gedit.Window window)
+		{
+			foreach (Gedit.View view in window.get_views ()) {
+				var doc = (Gedit.Document) (view.get_buffer ());
+				if (doc.language != null && doc.language.id == "vala") {
+					var project = project_descriptor_find_from_document (doc);
+					initialize_view (project, view);
+				}
+			}
+		}
+
 		private void initialize_view (ProjectDescriptor project, Gedit.View view)
 		{
-			if (!scs_contains (view)) {
-				var sc = new Vtg.SymbolCompletionHelper (this, view, project.completion);
-				_scs.add (sc);
+			if (_config.symbol_enabled && !scs_contains (view)) {
+				activate_symbol (project, view);
 			} else {
 				GLib.warning ("sc already initialized for view");
 			}
 
-			if (!bcs_contains (view)) {
-				var bc = new BracketCompletion (this, view);
-				_bcs.add (bc);
+			if (_config.bracket_enabled && !bcs_contains (view)) {
+				activate_bracket (view);
 			} else {
 				GLib.warning ("bc already initialized vor view");
 			}
@@ -198,16 +272,14 @@ namespace Vtg
 		{
 			var sc = scs_find_from_view (view);
 			if (sc != null) {
-				sc.deactivate ();
-				_scs.remove (sc);
+				deactivate_symbol (sc);
 			} else {
 				GLib.warning ("sc not found");
 			}
 
 			var bc = bcs_find_from_view (view);
 			if (bc != null) {
-				bc.deactivate ();
-				_bcs.remove (bc);
+				deactivate_bracket (bc);
 			} else {
 				GLib.warning ("bc not found");
 			}
@@ -309,7 +381,7 @@ namespace Vtg
 		~Plugin ()
 		{
 			GLib.debug ("destructor");
-			deactivate_plugins ();
+			deactivate_modules ();
 		}
 	}
 }
