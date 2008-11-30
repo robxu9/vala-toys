@@ -177,6 +177,10 @@ namespace Vtg.ProjectManager
 				foldername = dialog.get_filename ();
 			}
 			dialog.destroy ();
+			//HACK: need to going to async code in create_project
+			while (MainContext.@default ().pending ()) {
+				MainContext.@default ().iteration (false);
+			}
 
 			if (foldername != null) {
 				create_project (foldername);
