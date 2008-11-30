@@ -3,13 +3,13 @@ NULL =
 AUTOMAKE_OPTIONS = subdir-objects
 
 SUBDIRS = \
-	../vsc \
 	$(NULL)
 
 AM_CPPFLAGS = \
 	$(VTG_CFLAGS) \
 	-DPACKAGE_DATADIR=\""$(pkgdatadir)"\" \
 	-include $(CONFIG_HEADER) \
+	-I $(top_srcdir)/vsc \
 	$(NULL)
 
 BUILT_SOURCES = libvtg.vala.stamp
@@ -74,17 +74,11 @@ libvtg_DATA = \
 	$(NULL)
 
 EXTRA_DIST = \
-	intltool-extract.in \
-	intltool-update.in \
-	intltool-merge.in \
-	$(vtg_VALASOURCES) \
+	$(libvtg_la_VALASOURCES) \
 	libvtg.vala.stamp \
+	vtg.gedit-plugin
 	$(NULL)
 
 DISTCLEANFILES = \
-	intltool-extract \
-	intltool-update \
-	intltool-merge \
-	po/.intltool-merge-cache \
 	$(NULL)
 

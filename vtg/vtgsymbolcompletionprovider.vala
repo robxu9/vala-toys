@@ -219,6 +219,7 @@ namespace Vtg
 		{
 			_calltip_window = new Gsc.Info ();
 			_calltip_window.set_info_type (InfoType.EXTENDED);
+			_calltip_window.set_transient_for (_plugin.gedit_window);
 		}
 
 		private void parse (Gedit.Document doc)

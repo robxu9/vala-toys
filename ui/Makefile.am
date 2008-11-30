@@ -2,9 +2,7 @@
 
 uidir = $(datadir)/vtg/ui
 
-ui_DATA = vtg-config-dialog.ui vtg.ui
-
-#BUILT_SOURCES = tuntun.ui.stamp
+ui_DATA = vtg.ui
 
 GLADE_FILES = vtg.glade
 

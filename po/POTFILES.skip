@@ -1,1 +1,10 @@
-src/mainwindow.c
+ui/vtg.glade
+vtg/vtgconfiguration.c
+vtg/vtgprojectmanager.c
+vtg/vtgprojectmanagerbuilder.c
+vtg/vtgprojectmanagerbuildlogview.c
+vtg/vtgprojectmanagerexecuter.c
+vtg/vtgprojectmanageroutputview.c
+vtg/vtgprojectmanagerproject.c
+vtg/vtgprojectmanagerprojectgroup.c
+vtg/vtgprojectmanagerview.c

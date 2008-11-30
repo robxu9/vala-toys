@@ -1,3 +1,18 @@
+2008-11-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala: 
+
+	set the calltip window transint for the gedit one
+
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+	* ui/Makefile.am:
+	* vsc-shell/Makefile.am:
+	* vsc/Makefile.am:
+	* vtg/Makefile.am:
+	
+	vtg now pass make distcheck
+	
 2008-11-29  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscparsermanager.vala: 
