@@ -76,7 +76,8 @@ namespace Vtg
 				_proposals = new Proposal[prealloc_count];
 				var _icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				for (int idx = 0; idx < prealloc_count; idx++) {
-					_proposals[idx] = new Proposal ("", "", _icon_generic);
+					var obj = new Proposal ("", "", _icon_generic);
+					_proposals[idx] = obj;
 				}
 
 				_initialized = true;

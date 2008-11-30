@@ -17,5 +17,5 @@ Gsc cheader_filename="gtksourcecompletion/gsc-utils.h"
 GscPopupPriv hidden="1"
 GscTreePriv hidden="1"
 
-gsc_provider_get_proposals type_arguments="Proposal"
+gsc_provider_get_proposals type_arguments="Proposal" transfer_ownership="1"
 GscPopupOptions is_value_type="1"

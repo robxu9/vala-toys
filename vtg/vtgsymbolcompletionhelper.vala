@@ -71,9 +71,10 @@ namespace Vtg
 
 			var ck = new SymbolCompletionTrigger (_manager, "SymbolComplete");
 			ManagerEventOptions *opt = new ManagerEventOptions ();
-			opt->popup_options.position_type = PopupPositionType.CURSOR;
-			opt->popup_options.filter_type = PopupFilterType.TREE;
+			opt->position_type = PopupPositionType.CURSOR;
+			opt->filter_type = PopupFilterType.TREE_HIDDEN;
 			opt->autoselect = false;
+			opt->show_bottom_bar = true;
 			ck.set_opts (opt);
 			_manager.register_trigger (ck);
 
