@@ -359,7 +359,7 @@ namespace Vtg.ProjectManager
 					null, null, null, out status)) {
 					if (Process.exit_status (status) == 0) {
 						//autogen
-						var start_message = _("Autogenrating project: %s\n").printf (project_path);
+						var start_message = _("Autogenerating project: %s\n").printf (project_path);
 						log.log_message (start_message);
 						log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
 						Process.spawn_async_with_pipes (project_path, new string[] { "./autogen.sh" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);

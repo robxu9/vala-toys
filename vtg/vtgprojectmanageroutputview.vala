@@ -190,7 +190,9 @@ namespace Vtg.ProjectManager
 		{
 			GLib.debug ("LOG message: %s", message);
 			if (message != null && message_added (message)) {
-				_messages.insert_at_cursor (message, (int) message.length);
+				var str = message.replace ("[1m", "");
+				str = str.replace ("[m(B", "");
+				_messages.insert_at_cursor (str, (int) str.length);
 				_textview.scroll_mark_onscreen (_messages.get_insert ());
 			}					
 		}

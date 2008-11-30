@@ -2,6 +2,17 @@
 
 	* vtg/vtgprojectmanager.vala: 
 
+	removed the keyboard shortcut for the "new project" function
+	
+	* vtg/vtgprojectmanageroutputview.vala: 
+
+	added a little hack to clen the output view while
+	executing autogen.sh script
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala: 
+
 	used new vala-gen-project command line option
 
 2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
