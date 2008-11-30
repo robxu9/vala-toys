@@ -1,3 +1,11 @@
+2008-12-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsemanager.vala: 
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanagerprojectmodule.vala:
+	
+	added suspend / resume parsing threads
+
 2008-11-30  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerbuilder.vala: 

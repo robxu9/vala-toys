@@ -212,6 +212,7 @@ namespace Vtg
 			if (_default_project == null) {
 				_default_project = new ProjectDescriptor ();
 				_default_project.completion = new Vsc.SymbolCompletion ();
+				_default_project.completion.parser.resume_parsing ();
 			}
 
 			return _default_project;
@@ -360,7 +361,6 @@ namespace Vtg
 			var prj = new ProjectDescriptor ();
 			var completion = new Vsc.SymbolCompletion ();
 
-
 			foreach (ProjectManager.ProjectModule module in project.modules) {
 				foreach (ProjectManager.ProjectPackage package in module.packages) {
 					GLib.debug ("adding package %s from project %s", package.name, project.name);
@@ -400,6 +400,7 @@ namespace Vtg
 			prj.completion = completion;
 			prj.project = project;
 			_projects.add (prj);
+			completion.parser.resume_parsing ();
 		}
 
 		~Plugin ()

@@ -46,6 +46,8 @@ namespace Vsc
 		private Mutex mutex_pri_context = null;
 		private Mutex mutex_sec_context = null;
 	
+		private bool parsing_suspended = true;
+		
 		public signal void cache_building ();
 		public signal void cache_builded ();
 
@@ -153,6 +155,9 @@ namespace Vsc
 		
 		private void create_pri_thread ()
 		{
+			if (parsing_suspended)
+				return;
+				
 			try {
 				if (parser_pri_thread != null) {
 					debug ("freeing pri thread resources: join");
@@ -166,6 +171,9 @@ namespace Vsc
 
 		private void create_sec_thread ()
 		{
+			if (parsing_suspended)
+				return;
+
 			try {
 				if (parser_sec_thread != null) {
 					debug ("freeing sec thread resources: join");
@@ -177,6 +185,20 @@ namespace Vsc
 			}
 		}
 
+		public void suspend_parsing ()
+		{
+			lock_all_contexts ();
+			parsing_suspended = true;
+			unlock_all_contexts ();
+		}
+
+		public void resume_parsing ()
+		{
+			lock_all_contexts ();
+			parsing_suspended = false;
+			unlock_all_contexts ();
+		}
+		
 		public bool add_path_to_vapi_search_dir (string path)
 		{
 			if (!FileUtils.test (path, FileTest.IS_DIR) || _vapidirs.find_custom (path, GLib.strcmp) != null)
