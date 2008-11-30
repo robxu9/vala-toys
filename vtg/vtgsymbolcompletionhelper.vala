@@ -49,12 +49,6 @@ namespace Vtg
 
 		construct	
 		{
-			try {
-				_completion.parser.add_package_from_namespace ("GLib");
-			} catch (Error err) {
-				GLib.warning (err.message);
-   			}
-
 			setup_gsc_completion (view);
 		}
 

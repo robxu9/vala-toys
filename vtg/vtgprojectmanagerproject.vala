@@ -58,19 +58,6 @@ namespace Vtg.ProjectManager
 			return null;
 		}
 
-		public bool contains_built_library (string library)
-		{
-			foreach (ProjectGroup group in groups) {
-				foreach (string item in group.built_libraries) {
-					if (item == library) {
-						return true;
-					}
-				}
-			}
-			
-			return false;
-		}
-
 		public bool contains_source_file (string uri)
 		{
 			foreach (ProjectGroup group in groups) {

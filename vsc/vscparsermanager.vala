@@ -30,6 +30,7 @@ namespace Vsc
 
 		private List<string> _vapidirs = new List<string> ();
 		private Gee.List<string> _packages = new Gee.ArrayList<string> ();
+		private Gee.List<string> _built_packages = new Gee.ArrayList<string> ();
 		private Gee.List<string> _sources = new Gee.ArrayList<string> ();
 		private Gee.List<SourceBuffer> _source_buffers = new Gee.ArrayList<SourceBuffer> ();
 
@@ -57,12 +58,14 @@ namespace Vsc
 			add_path_to_vapi_search_dir ("/usr/local/share/vala/vapi");
 			try {
 				glib_file = find_vala_package_filename ("glib-2.0")[0];
+				debug ("found package glib-2.0: %s", glib_file);
 			} catch (Error err) {
 				error ("Can't find glib vapi file: %s", err.message);
 			}
 
 			try {
 				gobject_file = find_vala_package_filename ("gobject-2.0")[0];
+				debug ("found package gobject-2.0: %s", gobject_file);
 			} catch (Error err) {
 				error ("Can't find gobject vapi file: %s", err.message);
 			}
@@ -80,6 +83,7 @@ namespace Vsc
 			debug ("parser manager destructor: cleanup");
 			lock_all_contexts ();
 			_packages.clear ();
+			_built_packages.clear ();
 			_sources.clear ();
 			_source_buffers.clear ();
 			unlock_all_contexts ();
@@ -183,6 +187,37 @@ namespace Vsc
 			return true;
 		}
 
+
+		public bool add_built_package (string vapi_file)
+		{
+			bool result = false;
+			string built_vapi_file;
+			if (vapi_file.has_suffix (".vapi"))
+				built_vapi_file = vapi_file;
+			else
+				built_vapi_file = "%s.vapi".printf (vapi_file);
+
+			if (!list_contains_string (_built_packages, built_vapi_file)) {
+				result = true;
+				_built_packages.add (built_vapi_file);
+				schedule_parse ();
+			}
+			return result;
+		}
+
+	
+		public bool remove_build_package (string vapi_file)
+		{
+			bool result = false;
+
+			if (list_contains_string (_built_packages, vapi_file)) {
+				result = true;
+				_built_packages.remove (vapi_file);
+				schedule_parse ();
+			}
+			return result;
+		}
+
 		public bool add_package_from_namespace (string @namespace, bool auto_schedule_parse = true) throws Error
 		{
 			if (@namespace == null)
@@ -222,7 +257,19 @@ namespace Vsc
 	
 		public bool add_package (string package_name, bool auto_schedule_parse = true) throws Error
 		{
-			Gee.List<string> files = find_vala_package_filename (package_name);
+			debug ("(add_package): adding package %s", package_name);
+			string vapi_file;
+			if (package_name.has_suffix (".vapi"))
+				vapi_file = package_name;
+			else
+				vapi_file = "%s.vapi".printf (package_name);
+
+			if (list_contains_string (_built_packages, vapi_file)) {
+				debug ("(parser): package %s is built, so it can't be added", vapi_file);
+				return false;
+			}
+
+			Gee.List<string> files = find_vala_package_filename (vapi_file);
 			if (files.size > 0) {
 				bool need_parse = false;
 
@@ -488,7 +535,7 @@ namespace Vsc
 
 				foreach (string item in _packages) {
 					if (item != null && item != glib_file && item != gobject_file) {
-						debug ("adding package %s", item);					
+						debug ("(parser) adding package %s", item);					
 						source = new SourceFile (current_context, item, true);
 						current_context.add_source_file (source);
 					}

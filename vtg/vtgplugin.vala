@@ -360,6 +360,7 @@ namespace Vtg
 			var prj = new ProjectDescriptor ();
 			var completion = new Vsc.SymbolCompletion ();
 
+
 			foreach (ProjectManager.ProjectModule module in project.modules) {
 				foreach (ProjectManager.ProjectPackage package in module.packages) {
 					GLib.debug ("adding package %s from project %s", package.name, project.name);
@@ -369,6 +370,11 @@ namespace Vtg
 			}
 			foreach (ProjectGroup group in project.groups) {
 				bool source_added = false;
+
+				foreach(string package in group.built_libraries) {
+					GLib.debug ("adding package as built %s so it can be blacklisted", package);
+					completion.parser.add_built_package (package);
+				}
 
 				foreach (ProjectTarget target in group.targets) {
 					foreach (ProjectSource source in target.sources) {
@@ -388,12 +394,6 @@ namespace Vtg
 				if (source_added) {
 					foreach(string path in group.vapidirs) {
 						completion.parser.add_path_to_vapi_search_dir (path);
-					}
-
-					foreach(string package in group.packages) {
-						if (!project.contains_built_library (package)) {
-							    completion.parser.try_add_package (package);
-						}
 					}
 				}
 			}
