@@ -8,7 +8,7 @@ SUBDIRS = \
 
 AM_CPPFLAGS = \
 	$(VTG_CFLAGS) \
-	-DPACKAGE_DATA_DIR=\""$(pkgdatadir)"\" \
+	-DPACKAGE_DATADIR=\""$(pkgdatadir)"\" \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
 

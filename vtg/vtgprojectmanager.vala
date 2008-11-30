@@ -33,6 +33,8 @@ namespace Vtg.ProjectManager
                                             <menubar name="MenuBar">
                                                 <menu name="FileMenu" action="File">
                                                     <placeholder name="FileOps_2">
+                                                        <separator />
+                                                        <menuitem name="ProjectNew" action="ProjectNew"/>
                                                         <menuitem name="ProjectOpen" action="ProjectOpen"/>
                                                     </placeholder>
                                                 </menu>
@@ -84,8 +86,8 @@ namespace Vtg.ProjectManager
 		private uint _ui_id;
 
 		const ActionEntry[] _action_entries = {
+			{"ProjectNew", null, N_("_New Project..."), "<control><alt>O", N_("Create a new project"), on_project_new},
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
-			{"ProjectSave", null, N_("S_ave Project..."), "<control><alt>S", N_("Save the current project"), on_project_save},
 			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
 			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
 			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project using 'make clean'"), on_project_clean},
@@ -159,9 +161,27 @@ namespace Vtg.ProjectManager
 			dialog.destroy ();
 		}
 			    
-		private void on_project_save (Gtk.Action action)
+		private void on_project_new (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);
+			//save dialog
+			var dialog = new Gtk.FileChooserDialog (_("Save Project"),
+				      _plugin.gedit_window,
+				      Gtk.FileChooserAction.SELECT_FOLDER,
+				      Gtk.STOCK_CANCEL, ResponseType.CANCEL,
+				      Gtk.STOCK_SAVE, ResponseType.ACCEPT,
+				      null);
+			string foldername = null;
+
+			if (dialog.run () == ResponseType.ACCEPT) {
+				foldername = dialog.get_filename ();
+			}
+			dialog.destroy ();
+
+			if (foldername != null) {
+				create_project (foldername);
+				open_project (foldername);
+			}
 		}
 
 		private void on_project_goto_document (Gtk.Action action)
@@ -258,7 +278,6 @@ namespace Vtg.ProjectManager
 			clean_project (true);
 		}
 
-
 		private void on_project_execute_process (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);
@@ -321,6 +340,47 @@ namespace Vtg.ProjectManager
 			}
 		}
 
+		private void create_project (string project_path)
+		{
+			try {
+				var log = _plugin.output_view;
+				if (!is_dir_empty (project_path)) {
+					log.log_message ("project directory %s not empty".printf (project_path));
+					return;
+				}
+				string process_file = "vala-gen-project";
+				int status = 0;
+				int stdo, stde;
+				Pid child_pid;
+
+				//vala-gen-project
+				if (Process.spawn_sync (project_path, new string[] { process_file }, null, 
+					SpawnFlags.SEARCH_PATH,
+					null, null, null, out status)) {
+					if (Process.exit_status (status) == 0) {
+						//autogen
+						var start_message = _("Autogenrating project: %s\n").printf (project_path);
+						log.log_message (start_message);
+						log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+						Process.spawn_async_with_pipes (project_path, new string[] { "./autogen.sh" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
+						if (child_pid != (Pid) null) {
+							ChildWatch.add (child_pid, this.on_child_watch);
+							log.start_watch ((uint) child_pid, stdo, stde);
+							log.activate ();
+						} else {
+							log.log_message ("error spawning ./autogen.sh process\n");
+						}
+					} else {
+						log.log_message ("error executing vala-gen-project process\n");
+					}
+				} else {
+					log.log_message ("error spawning vala-gen-project process\n");
+				}
+			} catch (Error err) {
+				GLib.warning ("error creating project: %s", err.message);
+			}
+		}
+
 		private View get_project_manager_view
 		{
 			get {
@@ -330,6 +390,27 @@ namespace Vtg.ProjectManager
 
 				return _prj_view;
 			}
+		}
+
+		private bool is_dir_empty (string dir_path)
+		{
+			try {
+				var dir = Dir.open (dir_path);
+				return dir.read_name () == null;
+			} catch (Error err) {
+				GLib.warning ("cannot open directort %s", dir_path);
+				return false;
+			}
+		}
+
+		private void on_child_watch (Pid pid, int status)
+		{
+			var log = _plugin.output_view;
+
+			Process.close_pid (pid);
+
+			log.stop_watch ((uint) pid);
+			log.log_message (_("\nautogeneration end with exit status %d\n").printf(status));
 		}
 	}
 }

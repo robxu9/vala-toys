@@ -1,5 +1,17 @@
 2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+	* vsc-shell/Makefile.am:
+	* vsc/Makefile.am:
+	* vtg/Makefile.am
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgutils.vala:
+
+	added "new project" function based on vala-gen-project
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/Makefile.am:
 	* gen-project/licenses/Makefile.am:
 	* gen-project/licenses/gpl-2.0.txt:

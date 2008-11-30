@@ -59,13 +59,13 @@ namespace Vtg
 		}
 
 		public static string get_image_path (string id) {
-			var result = Path.build_filename (Config.PACKAGE_DATA_DIR, "images", id);
+			var result = Path.build_filename (Config.PACKAGE_DATADIR, "images", id);
 			debug ("image: %s", result);
 			return result;
 		}
 
 		public static string get_ui_path (string id) {
-			var result = Path.build_filename (Config.PACKAGE_DATA_DIR, "ui", id);
+			var result = Path.build_filename (Config.PACKAGE_DATADIR, "ui", id);
 			debug ("ui: %s", result);
 			return result;
 		}
