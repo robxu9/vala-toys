@@ -1,5 +1,22 @@
 2008-11-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscparsermanager.vala: 
+	* vsc/Makefile.am:
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed a concurrency bug during project destruction
+	
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+
+	implemented the Close Project menu' item
+
+
+2008-11-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanager.vala: 
 
 	added a siple hack to let the save dialog disappear when

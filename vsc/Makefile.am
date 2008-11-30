@@ -17,7 +17,7 @@ BUILT_SOURCES = libvsc.vala.stamp
 if ENABLE_DEBUG
         DEBUG = -g
 else
-        DEBUG = -D G_DISABLE_DEBUG
+        DEBUG = -Xcc "-D G_DISABLE_DEBUG"
 endif
 
 libvsc_ladir = $(libdir)/gedit-2/plugins

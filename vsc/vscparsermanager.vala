@@ -68,6 +68,24 @@ namespace Vsc
 			}
 		}
 
+		~ParseManager ()
+		{			
+			debug ("parser manager destructor: joining threads");
+			if (parser_pri_thread != null)
+				parser_pri_thread.join ();
+
+			if (parser_sec_thread != null)
+				parser_sec_thread.join ();
+
+			debug ("parser manager destructor: cleanup");
+			lock_all_contexts ();
+			_packages.clear ();
+			_sources.clear ();
+			_source_buffers.clear ();
+			unlock_all_contexts ();
+			mutex_pri_context = null;
+			mutex_sec_context = null;
+		}
 
 		internal weak CodeContext pri_context
 		{
@@ -86,45 +104,57 @@ namespace Vsc
 		internal void lock_all_contexts ()
 		{
 			debug ("lock all context");
+			return_if_fail (mutex_pri_context != null);
 			mutex_pri_context.@lock ();
+			return_if_fail (mutex_sec_context != null);
 			mutex_sec_context.@lock ();
 		}
 
 	        internal void unlock_all_contexts ()
 		{
 			debug ("unlock all context");
+			return_if_fail (mutex_sec_context != null);
 			mutex_sec_context.unlock ();
+			return_if_fail (mutex_pri_context != null);
 			mutex_pri_context.unlock ();
 		}
 
 		internal void lock_pri_context ()
 		{
 			debug ("lock pri context");
+			return_if_fail (mutex_pri_context != null);
 			mutex_pri_context.@lock ();
 		}
 
 		internal void unlock_pri_context ()
 		{
 			debug ("unlock pri context");
+			return_if_fail (mutex_pri_context != null);
 			mutex_pri_context.unlock ();
 		}
 	
 		internal void lock_sec_context ()
 		{
 			debug ("lock sec context");
+			return_if_fail (mutex_sec_context != null);
 			mutex_sec_context.@lock ();
 		}
 
 		internal void unlock_sec_context ()
 		{
 			debug ("unlock sec context");
+			return_if_fail (mutex_sec_context != null);
 			mutex_sec_context.unlock ();
 		}
 		
 		private void create_pri_thread ()
 		{
 			try {
-				parser_pri_thread = Thread.create (this.parse_pri_contexts, false);
+				if (parser_pri_thread != null) {
+					debug ("freeing pri thread resources: join");
+					parser_pri_thread.join ();
+				}
+				parser_pri_thread = Thread.create (this.parse_pri_contexts, true);
 			} catch (ThreadError err) {
 				error ("Can't create parser thread: %s", err.message);
 			}
@@ -133,7 +163,11 @@ namespace Vsc
 		private void create_sec_thread ()
 		{
 			try {
-				parser_sec_thread = Thread.create (this.parse_sec_contexts, false);
+				if (parser_sec_thread != null) {
+					debug ("freeing sec thread resources: join");
+					parser_sec_thread.join ();
+				}
+				parser_sec_thread = Thread.create (this.parse_sec_contexts, true);
 			} catch (ThreadError err) {
 				error ("Can't create parser thread: %s", err.message);
 			}
@@ -347,9 +381,7 @@ namespace Vsc
 		private void* parse_pri_contexts ()
 		{
 			debug ("PARSER THREAD ENTER");
-			Gdk.threads_enter ();
 			this.cache_building ();
-			Gdk.threads_leave ();
 
 			while (true) {
 				int stamp = AtomicInt.get (ref need_parse_pri_context);
@@ -362,9 +394,7 @@ namespace Vsc
 				}
 			}
 
-			Gdk.threads_enter ();
 			this.cache_builded ();
-			Gdk.threads_leave ();
 			debug ("PARSER THREAD EXIT");
 			return ((void *) 0);
 		}
@@ -372,9 +402,7 @@ namespace Vsc
 		private void* parse_sec_contexts ()
 		{
 			debug ("PARSER SEC THREAD ENTER");
-			Gdk.threads_enter ();
 			this.cache_building ();
-			Gdk.threads_leave ();
 
 			while (true) {
 				int stamp = AtomicInt.get (ref need_parse_sec_context);
@@ -387,9 +415,7 @@ namespace Vsc
 				}
 			}
 
-			Gdk.threads_enter ();
 			this.cache_builded ();
-			Gdk.threads_leave ();
 			debug ("PARSER SEC THREAD EXIT");
 			return ((void *) 0);
 		}
@@ -398,48 +424,50 @@ namespace Vsc
 		{
 			var current_context = new CodeContext ();
 			lock_sec_context ();
-			SourceFile source;
+			if (_source_buffers.size != 0) {
+				SourceFile source;
 
-			source = new SourceFile (current_context, glib_file, true);
-			current_context.add_source_file (source);
+				source = new SourceFile (current_context, glib_file, true);
+				current_context.add_source_file (source);
 
-			source = new SourceFile (current_context, gobject_file, true);
-			current_context.add_source_file (source);
-		
-			foreach (SourceBuffer src in _source_buffers) {
-				if (src.name != null && src.source != null) {
-					var name = src.name;
+				source = new SourceFile (current_context, gobject_file, true);
+				current_context.add_source_file (source);
+				
+				foreach (SourceBuffer src in _source_buffers) {
+					if (src.name != null && src.source != null) {
+						var name = src.name;
 
-					if (!name.has_suffix (".vala")) {
-						name = "%s.vala".printf (name);
-					}
-					source = new SourceFile (current_context, name, false, src.source);
-					source.add_using_directive (new UsingDirective (new UnresolvedSymbol (null, "GLib", null)));
-					current_context.add_source_file (source);
-				}
-			}
-			unlock_sec_context ();
-
-			parse_context (current_context);
-			bool need_reparse = false;
-			//add new namespaces to standard context)
-			foreach (SourceFile src in current_context.get_source_files ()) {
-				foreach (UsingDirective nr in src.get_using_directives ()) {
-					try {
-						if (nr.namespace_symbol.name != null && nr.namespace_symbol.name != "") {
-							need_reparse = add_package_from_namespace (nr.namespace_symbol.name, false);
+						if (!name.has_suffix (".vala")) {
+							name = "%s.vala".printf (name);
 						}
-					} catch (Error err) {
-						warning ("Error adding namespace %s from file %s", nr.namespace_symbol.name, src.filename);
+						source = new SourceFile (current_context, name, false, src.source);
+						source.add_using_directive (new UsingDirective (new UnresolvedSymbol (null, "GLib", null)));
+						current_context.add_source_file (source);
 					}
 				}
-			}
+				unlock_sec_context ();
 
-			lock_sec_context ();
-			_sec_context = current_context;
-			//primary context reparse?
-			if (need_reparse) {
-				schedule_parse ();
+				parse_context (current_context);
+				bool need_reparse = false;
+				//add new namespaces to standard context)
+				foreach (SourceFile src in current_context.get_source_files ()) {
+					foreach (UsingDirective nr in src.get_using_directives ()) {
+						try {
+							if (nr.namespace_symbol.name != null && nr.namespace_symbol.name != "") {
+								need_reparse = add_package_from_namespace (nr.namespace_symbol.name, false);
+							}
+						} catch (Error err) {
+							warning ("Error adding namespace %s from file %s", nr.namespace_symbol.name, src.filename);
+						}
+					}
+				}
+
+				lock_sec_context ();
+				_sec_context = current_context;
+				//primary context reparse?
+				if (need_reparse) {
+					schedule_parse ();
+				}
 			}
 			unlock_sec_context ();
 		}
@@ -449,33 +477,35 @@ namespace Vsc
 			var current_context = new CodeContext ();
 
 			lock_pri_context ();
-			SourceFile source;
+			if (_packages.size != 0 || _sources.size != 0) {
+				SourceFile source;
 
-			source = new SourceFile (current_context, glib_file, true);
-			current_context.add_source_file (source);
+				source = new SourceFile (current_context, glib_file, true);
+				current_context.add_source_file (source);
 
-			source = new SourceFile (current_context, gobject_file, true);
-			current_context.add_source_file (source);
+				source = new SourceFile (current_context, gobject_file, true);
+				current_context.add_source_file (source);
 
-			foreach (string item in _packages) {
-				if (item != null && item != glib_file && item != gobject_file) {
-					debug ("adding package %s", item);					
-					source = new SourceFile (current_context, item, true);
+				foreach (string item in _packages) {
+					if (item != null && item != glib_file && item != gobject_file) {
+						debug ("adding package %s", item);					
+						source = new SourceFile (current_context, item, true);
+						current_context.add_source_file (source);
+					}
+				}
+				foreach (string item in _sources) {
+					source = new SourceFile (current_context, item, false);
+					source.add_using_directive (new UsingDirective (new UnresolvedSymbol (null, "GLib", null)));
 					current_context.add_source_file (source);
 				}
-			}
-			foreach (string item in _sources) {
-				source = new SourceFile (current_context, item, false);
-				source.add_using_directive (new UsingDirective (new UnresolvedSymbol (null, "GLib", null)));
-				current_context.add_source_file (source);
-			}
-			unlock_pri_context ();
+				unlock_pri_context ();
 			
-			parse_context (current_context);
-			analyze_context (current_context);
+				parse_context (current_context);
+				analyze_context (current_context);
 
-			lock_pri_context ();
-			_pri_context = current_context;
+				lock_pri_context ();
+				_pri_context = current_context;
+			}
 			unlock_pri_context ();
 		}
 

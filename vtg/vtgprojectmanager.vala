@@ -36,6 +36,9 @@ namespace Vtg.ProjectManager
                                                         <separator />
                                                         <menuitem name="ProjectNew" action="ProjectNew"/>
                                                         <menuitem name="ProjectOpen" action="ProjectOpen"/>
+                                                        <separator />
+                                                        <menuitem name="ProjectClose" action="ProjectClose"/>
+                                                        <separator />
                                                     </placeholder>
                                                 </menu>
                                             </menubar>
@@ -88,6 +91,7 @@ namespace Vtg.ProjectManager
 		const ActionEntry[] _action_entries = {
 			{"ProjectNew", null, N_("_New Project..."), null, N_("Create a new project"), on_project_new},
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
+			{"ProjectClose", null, N_("_Close Current Project"), null, N_("Close current selected project"), on_project_close},
 			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
 			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
 			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project using 'make clean'"), on_project_clean},
@@ -159,6 +163,42 @@ namespace Vtg.ProjectManager
 				open_project (foldername);				
 			}
 			dialog.destroy ();
+		}
+
+		private void on_project_close (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			var project = this.get_project_manager_view.current_project;
+			return_if_fail (project != null);
+
+			bool save_required = false;
+			foreach (Gedit.Document doc in _plugin.gedit_window.get_unsaved_documents ()) {
+				if (project.contains_source_file (doc.get_uri ())) {
+					save_required = true;
+				}
+			}
+			
+			//there are some files that require saving: ask it!
+			if (save_required) {
+				var dialog = new Gtk.MessageDialog (_plugin.gedit_window,
+                                  DialogFlags.DESTROY_WITH_PARENT,
+                                  MessageType.QUESTION,
+                                  ButtonsType.NONE,
+				    _("Project files need to be saved"));
+				dialog.add_buttons (Gtk.STOCK_CLOSE, ResponseType.CLOSE,
+				    Gtk.STOCK_CANCEL, ResponseType.CANCEL,
+				    Gtk.STOCK_SAVE, ResponseType.ACCEPT);
+				var response = dialog.run ();
+				dialog.destroy ();
+				if (response == ResponseType.CANCEL) {
+					return;
+				} else if (response == ResponseType.ACCEPT) {
+					project_save_all (project);
+				}
+			}
+
+			//close project
+			close_project (project);
 		}
 			    
 		private void on_project_new (Gtk.Action action)
@@ -333,6 +373,21 @@ namespace Vtg.ProjectManager
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
 			}
+		}
+
+		private void close_project (Project project)
+		{
+			foreach (Gedit.Document doc in _plugin.gedit_window.get_documents ()) {
+				if (project.contains_source_file (doc.get_uri ())) {
+					//close tab
+					var tab = Tab.get_from_document (doc);
+					_plugin.gedit_window.close_tab (tab);
+				}
+			}
+			this.get_project_manager_view.remove_project (project);
+			_plugin.on_project_closed (this, project);
+			project.close ();
+			_projects.remove (project);
 		}
 
 		private void project_save_all (Project project)

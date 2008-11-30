@@ -181,6 +181,18 @@ namespace Vtg.ProjectManager
 			}
 		}
 
+		public void close ()
+		{
+			this.modules.clear ();
+			this.groups.clear ();
+			this.exec_targets.clear ();
+			this.all_vala_sources.clear ();
+
+			this._model = null;
+			this._backend = null;
+			this._gbf_project = null;
+		}
+
 		private void on_project_updated (Gbf.Project sender)
 		{
 			GLib.debug ("project updated");

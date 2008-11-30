@@ -42,7 +42,12 @@ namespace Vsc
 				return _parser;
 			}
 		}
-		
+
+		public void cleanup ()
+		{
+			_parser = null;
+		}
+
 		private SourceFile? find_sourcefile (CodeContext context, string sourcefile)
 		{
 			string name;
@@ -232,6 +237,7 @@ namespace Vsc
 		
 		public Gee.List<SymbolCompletionItem> get_methods_for_source (string sourcefile)
 		{
+			warn_if_fail (_parser != null);
 			SourceFile source = null;
 			var results = new Gee.ArrayList<SymbolCompletionItem> ();
 			
@@ -268,6 +274,7 @@ namespace Vsc
 		
 		public DataType? get_datatype_for_name (string symbolname, string sourcefile, int line, int column) throws SymbolCompletionError
 		{
+			warn_if_fail (_parser != null);
 			DataType? result = null;
 			string[] toks = symbolname.split (".", 2);
 			int count = 0;
@@ -302,6 +309,7 @@ namespace Vsc
 
 		private DataType? get_datatype_for_symbol_name (string qualified_type, SourceFile source) throws SymbolCompletionError
 		{
+			warn_if_fail (_parser != null);
 			Symbol? result = null;
 
 			string[] fields = qualified_type.split (".");
@@ -456,6 +464,10 @@ namespace Vsc
 		}
 
 		private Symbol? get_symbol_in_class_with_context (CodeContext context, Class @class, string name, SourceFile source) {
+			warn_if_fail (_parser != null);
+			if (_parser == null)
+				return null;
+
 			foreach (Vala.Method item in @class.get_methods ()) {
 				if (item.name == name) {
 					return item;
@@ -664,6 +676,7 @@ namespace Vsc
 
 		private DataType datatype_for_localvariable (CodeContext context,  SourceFile? source = null, int line = 0, int column = 0, LocalVariable lv)
 		{
+			warn_if_fail (parser != null);
 			DataType vt = null;
 			try {
 				if (lv.variable_type == null && lv.initializer != null) {
@@ -764,6 +777,7 @@ namespace Vsc
 
 		private SymbolCompletionResult get_completions_with_namespace (SymbolCompletionFilterOptions options, Namespace namespc, string symbolprefix, string symbolname) throws GLib.Error
 		{
+			warn_if_fail (_parser != null);
 			SymbolCompletionResult result;
 			var symbol = "%s.%s".printf (symbolprefix, symbolname);
 			GLib.debug ("get_completions_with_namespace: %s", symbol);
@@ -781,6 +795,7 @@ namespace Vsc
 		
 		public SymbolCompletionResult get_completions_for_name (SymbolCompletionFilterOptions options, string symbolname, string? sourcefile = null) throws GLib.Error
 		{
+			warn_if_fail (_parser != null);
 			SymbolCompletionResult result;
 			SourceFile source = null;
 
@@ -970,6 +985,7 @@ namespace Vsc
 		}
 		private void find_name_in_class (CodeContext context, SymbolCompletionFilterOptions options, string? name, Vala.Class item, SymbolCompletionResult result)
 		{
+			warn_if_fail (_parser != null);
 			foreach (Vala.Method method in item.get_methods ()) {
 				if (test_symbol (options, name, method) &&
 				    (options.static_symbols || (options.static_symbols == false && method.binding != MemberBinding.STATIC))) {
@@ -1027,6 +1043,7 @@ namespace Vsc
 
 		private Class? resolve_class_name (CodeContext context, string typename, out Namespace? parent_ns = null, string? preferred_namespace = null)
 		{
+			warn_if_fail (_parser != null);
 			string[] toks = typename.split (".");
 			int count = 0;
 			while (toks[count] != null)

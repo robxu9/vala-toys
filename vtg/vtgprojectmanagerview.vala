@@ -122,6 +122,17 @@ namespace Vtg.ProjectManager
 			_project_count++;
 		}
 
+		public void remove_project (Project project)
+		{
+			_prjs_combo.remove_text (_project_count - 1);
+			_project_count--;
+			if (_project_count > 0) {
+				_prjs_combo.set_active (_project_count - 1);
+			} else {
+				update_view (null);
+			}
+		}
+
 		public void on_project_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
 		{
 			var tw = (TreeView) sender;
@@ -180,23 +191,27 @@ namespace Vtg.ProjectManager
 			dialog.show ();
 		}
 
-		private void update_view (string project_name)
+		private void update_view (string? project_name)
 		{
 			if (_current_project != null)
 				_current_project.updated -= this.on_current_project_updated;
 
 			_current_project = null;
-			//find project
-			foreach (ProjectDescriptor item in _plugin.projects) {
-				GLib.debug ("%s vs %s", item.project.name, project_name);
-				if (item.project.name == project_name) {
-					GLib.debug ("found!");
-					_prj_view.set_model (item.project.model);
-					_prj_view.expand_all ();
-					_current_project = item.project;
-					_current_project.updated += this.on_current_project_updated;
-					break;
+			if (project_name != null) {
+				//find project
+				foreach (ProjectDescriptor item in _plugin.projects) {
+					GLib.debug ("%s vs %s", item.project.name, project_name);
+					if (item.project.name == project_name) {
+						GLib.debug ("found!");
+						_prj_view.set_model (item.project.model);
+						_prj_view.expand_all ();
+						_current_project = item.project;
+						_current_project.updated += this.on_current_project_updated;
+						break;
+					}
 				}
+			} else {
+				_prj_view.set_model (null);
 			}
 		}
 

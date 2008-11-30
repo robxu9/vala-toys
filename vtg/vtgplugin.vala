@@ -32,6 +32,15 @@ namespace Vtg
 	{
 		public Vsc.SymbolCompletion completion;
 		public ProjectManager.Project project;
+
+		~ProjectDescriptor ()
+		{
+			GLib.debug ("ProjectDescriptor destructor");
+			if (completion != null) {
+				GLib.debug ("Stopping the completion module");
+				completion.cleanup ();
+			}
+		}
 	}
 
 	public class Plugin : Gedit.Plugin
@@ -41,7 +50,7 @@ namespace Vtg
 		private Gee.List<Vtg.SymbolCompletionHelper> _scs = new Gee.ArrayList<Vtg.SymbolCompletionHelper> ();
 		private Gee.List<Vtg.ProjectDescriptor> _projects = new Gee.ArrayList<Vtg.ProjectDescriptor> ();
 		private Configuration _config = null;
-		private Vtg.ProjectDescriptor default_project = null;
+		private Vtg.ProjectDescriptor _default_project = null;
 		private ProjectManager.PluginHelper _prj_man;
 		
 		private enum DeactivateModuleOptions
@@ -200,12 +209,12 @@ namespace Vtg
 			}
 
 			//return default_project anyway
-			if (default_project == null) {
-				default_project = new ProjectDescriptor ();
-				default_project.completion = new Vsc.SymbolCompletion ();
+			if (_default_project == null) {
+				_default_project = new ProjectDescriptor ();
+				_default_project.completion = new Vsc.SymbolCompletion ();
 			}
 
-			return default_project;
+			return _default_project;
 		}
 
 		private bool scs_contains (Gedit.View view)
@@ -270,6 +279,7 @@ namespace Vtg
 
 		private void uninitialize_view (Gedit.View view)
 		{
+			GLib.debug ("view deactivated");
 			var sc = scs_find_from_view (view);
 			if (sc != null) {
 				deactivate_symbol (sc);
@@ -328,6 +338,20 @@ namespace Vtg
 					tab.get_view ().scroll_to_cursor ();
 				}
 			}
+		}
+
+		internal void on_project_closed (ProjectManager.PluginHelper sender, ProjectManager.Project project)
+		{
+			GLib.debug ("Project closed");
+			return_if_fail (project != _default_project.project);
+
+			foreach (ProjectDescriptor descriptor in _projects) {
+				if (descriptor.project == project) {
+					_projects.remove (descriptor);
+					break;
+				}
+			}
+
 		}
 
 		internal void on_project_loaded (ProjectManager.PluginHelper sender, ProjectManager.Project project)
