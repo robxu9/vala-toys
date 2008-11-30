@@ -191,9 +191,10 @@ class Vala.ProjectGenerator : Dialog {
 		try {
 			write_autogen_sh ();
 			write_configure_ac ();
-			write_makefile_am ();
 			DirUtils.create (project_path + "/src", 0777);
 			DirUtils.create (project_path + "/po", 0777);
+			write_toplevel_makefile_am ();
+			write_src_makefile_am ();
 			if (project_type == ProjectType.CONSOLE_APPLICATION) {
 				write_main_vala ();
 			} else if (project_type == ProjectType.GTK_APPLICATION) {
@@ -312,6 +313,7 @@ class Vala.ProjectGenerator : Dialog {
 		s.append_printf ("AC_SUBST(%s_LIBS)\n\n", upper_case_make_name);
 
 		s.append ("AC_CONFIG_FILES([Makefile\n");
+		s.append ("\tsrc/Makefile\n");
 		s.append ("\tpo/Makefile.in])\n\n");
 
 		s.append ("AC_OUTPUT\n");
@@ -319,33 +321,66 @@ class Vala.ProjectGenerator : Dialog {
 		FileUtils.set_contents (project_path + "/configure.ac", s.str, -1);
 	}
 
-	private void write_makefile_am () throws FileError {
+	private void write_toplevel_makefile_am () throws FileError {
+		var s = new StringBuilder ();
+
+		s.append ("NULL = \n\n");
+
+		s.append ("#Build in these directories:\n\n");
+
+		s.append ("SUBDIRS = \\\n");
+		s.append ("\tsrc \\\n");
+		s.append ("\tpo \\\n");
+		s.append ("\t$(NULL)\n\n");
+
+		s.append_printf ("%sdocdir = ${prefix}/doc/%s", project_name, project_name);
+		s.append_printf ("%sdoc_DATA = \\", project_name);
+		s.append ("\tChangeLog \\\n");
+		s.append ("\tREADME \\\n");
+		s.append ("\tCOPYING \\\n");
+		s.append ("\tAUTHORS \\\n");
+		s.append ("\tINSTALL \\\n");
+		s.append ("\tNEWS\\\n");
+		s.append ("\t$(NULL)\n\n");
+
+		s.append ("EXTRA_DIST = \\\n");
+		s.append_printf ("\t$(%sdoc_DATA) \\\n", project_name);
+		s.append ("\tintltool-extract.in \\\n");
+		s.append ("\tintltool-merge.in \\\n");
+		s.append ("\tintltool-update.in\\\n");
+		s.append ("\t$(NULL)\n\n");
+
+		s.append ("DISTCLEANFILES = \\\n");
+		s.append ("\tintltool-extract \\\n");
+		s.append ("\tintltool-merge \\\n");
+		s.append ("\tintltool-update\n");
+		s.append ("\tpo/.intltool-merge-cache \\\n");
+		s.append ("\t$(NULL)\n\n");
+
+		FileUtils.set_contents (project_path + "/Makefile.am", s.str, -1);
+	}
+
+	private void write_src_makefile_am () throws FileError {
 		bool use_gtk = (project_type == ProjectType.GTK_APPLICATION);
 
 		var s = new StringBuilder ();
 
 		s.append ("NULL = \n\n");
 
-		s.append ("AUTOMAKE_OPTIONS = subdir-objects\n\n");
-
-		s.append ("SUBDIRS = \\\n");
-		s.append ("\tpo \\\n");
-		s.append ("\t$(NULL)\n\n");
-
 		s.append ("AM_CPPFLAGS = \\\n");
 		s.append_printf ("\t$(%s_CFLAGS) \\\n", upper_case_make_name);
 		s.append ("\t-include $(CONFIG_HEADER) \\\n");
 		s.append ("\t$(NULL)\n\n");
 
-		s.append_printf ("BUILT_SOURCES = src/%s.vala.stamp\n\n", project_name);
+		s.append_printf ("BUILT_SOURCES = %s.vala.stamp\n\n", project_name);
 
 		s.append_printf ("bin_PROGRAMS = %s\n\n", project_name);
 
 		s.append_printf ("%s_VALASOURCES = \\\n", make_name);
 		if (use_gtk) {
-			s.append ("\tsrc/mainwindow.vala \\\n");
+			s.append ("\tmainwindow.vala \\\n");
 		} else {
-			s.append ("\tsrc/main.vala \\\n");
+			s.append ("\tmain.vala \\\n");
 		}
 		s.append ("\t$(NULL)\n\n");
 
@@ -354,12 +389,12 @@ class Vala.ProjectGenerator : Dialog {
 		s.append_printf ("\t$(%s_VALASOURCES:.vala=.h) \\\n", make_name);
 		s.append ("\t$(NULL)\n\n");
 
-		s.append_printf ("src/%s.vala.stamp: $(%s_VALASOURCES)\n", project_name, make_name);
+		s.append_printf ("%s.vala.stamp: $(%s_VALASOURCES)\n", project_name, make_name);
 		s.append ("\t$(VALAC) -C ");
 		if (use_gtk) {
 			s.append ("--pkg gtk+-2.0 ");
 		}
-		s.append ("--basedir $(top_srcdir) $^\n");
+		s.append ("--basedir $(top_srcdir)/src $^\n");
 		s.append ("\ttouch $@\n\n");
 
 		s.append_printf ("%s_LDADD = \\\n", make_name);
@@ -367,21 +402,14 @@ class Vala.ProjectGenerator : Dialog {
 		s.append ("\t$(NULL)\n\n");
 
 		s.append ("EXTRA_DIST = \\\n");
-		s.append ("\tintltool-extract.in \\\n");
-		s.append ("\tintltool-update.in \\\n");
-		s.append ("\tintltool-merge.in \\\n");
 		s.append_printf ("\t$(%s_VALASOURCES) \\\n", make_name);
-		s.append_printf ("\tsrc/%s.vala.stamp \\\n", project_name);
+		s.append_printf ("\t%s.vala.stamp \\\n", project_name);
 		s.append ("\t$(NULL)\n\n");
 
 		s.append ("DISTCLEANFILES = \\\n");
-		s.append ("\tintltool-extract \\\n");
-		s.append ("\tintltool-update \\\n");
-		s.append ("\tintltool-merge \\\n");
-		s.append ("\tpo/.intltool-merge-cache \\\n");
 		s.append ("\t$(NULL)\n\n");
 
-		FileUtils.set_contents (project_path + "/Makefile.am", s.str, -1);
+		FileUtils.set_contents (project_path + "/src/Makefile.am", s.str, -1);
 	}
 
 	private string generate_source_file_header (string filename) {

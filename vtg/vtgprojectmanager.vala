@@ -86,7 +86,7 @@ namespace Vtg.ProjectManager
 		private uint _ui_id;
 
 		const ActionEntry[] _action_entries = {
-			{"ProjectNew", null, N_("_New Project..."), "<control><alt>O", N_("Create a new project"), on_project_new},
+			{"ProjectNew", null, N_("_New Project..."), null, N_("Create a new project"), on_project_new},
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
 			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
 			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
