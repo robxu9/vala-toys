@@ -66,7 +66,14 @@ namespace Vtg
 		}
 
 		public ProjectManager.OutputView output_view { get; set; }
-
+		
+		public Configuration config 
+		{ 
+			get {
+				return _config;
+			}
+		}
+		
 		construct
 		{
 			_config = new Configuration ();
@@ -318,6 +325,19 @@ namespace Vtg
 			}
 		}
 
+
+		public void activate_display_name (string display_name, int line = 0, int col = 0)
+		{
+			foreach (Document doc in _window.get_documents ()) {
+				if (doc.get_short_name_for_display () == display_name) {
+					var tab = Tab.get_from_document (doc);
+					_window.set_active_tab (tab);
+					doc.goto_line (line - 1);
+					tab.get_view ().scroll_to_cursor ();
+				}
+			}
+		}
+		
 		public void activate_uri (string uri, int line = 0, int col = 0)
 		{
 			Gedit.Tab tab = null;
@@ -338,9 +358,9 @@ namespace Vtg
 					existing_doc.goto_line (line - 1);
 					tab.get_view ().scroll_to_cursor ();
 				}
-			}
+			}			
 		}
-
+		
 		internal void on_project_closed (ProjectManager.PluginHelper sender, ProjectManager.Project project)
 		{
 			GLib.debug ("Project closed");

@@ -196,12 +196,23 @@ namespace Vtg.ProjectManager
 		{
 			GLib.debug ("LOG message: %s", message);
 			if (message != null && message_added (message)) {
-				var str = message.replace ("[1m", "");
-				str = str.replace ("[m(B", "");
+				var str = replace (message, "[1m", "");
+				str = replace (str, "[m", "");
 				_messages.insert_at_cursor (str, (int) str.length);
 				_textview.scroll_mark_onscreen (_messages.get_insert ());
 			}					
 		}
+
+		//HACK: to be changed to string.replace when it works
+		private string replace (string data, string old, string replacement) {
+			try {
+				var regex = new GLib.Regex (GLib.Regex.escape_string (old));
+				return regex.replace_literal (data, -1, 0, replacement);
+			} catch (GLib.RegexError e) {
+				GLib.assert_not_reached ();
+			}
+		}
+
 
 		public void activate ()
 		{

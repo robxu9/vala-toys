@@ -387,8 +387,8 @@ namespace Vtg
 
 			/* 
 			  strip last type part. 
-			  eg. for demons.demo.demo_method optains
-			  demons.demo + demo_method
+			  eg. for demos.demo.demo_method obtains
+			  demos.demo + demo_method
 			*/
 
 			string[] tmp = word.split (".");
@@ -411,14 +411,7 @@ namespace Vtg
 				string typename = null;
 				var dt = _completion.get_datatype_for_name (parent, _sb.name, lineno + 1, colno);
 				if (dt != null) {
-					if (dt is Vala.ClassType) {
-						typename = ((Vala.ClassType) dt).class_symbol.name;
-					} else {
-						typename = dt.to_qualified_string ();
-					}
-					if (typename.has_suffix ("?")) {
-						typename = typename.substring (0, typename.length - 1);
-					}
+					typename = _completion.get_qualified_name_for_datatype (dt);
 				}
 
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();

@@ -51,6 +51,8 @@ namespace Vtg.ProjectManager
                                                         <menuitem name="ProjectBuildClean" action="ProjectBuildClean"/>
                                                         <separator />
                                                         <menuitem name="ProjectBuildCleanStamps" action="ProjectBuildCleanStamps"/>
+                                                        <separator />
+                                                        <menuitem name="ProjectBuildCompileFile" action="ProjectBuildCompileFile"/>
                                                     </placeholder>
                                                     <placeholder name="BuildMenuOps_2">
                                                         <separator />
@@ -96,6 +98,7 @@ namespace Vtg.ProjectManager
 			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
 			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project using 'make clean'"), on_project_clean},
 			{"ProjectBuildCleanStamps", null, N_("_Clean Project and Vala 'Stamp' Files"), null, N_("Clean the current project stamp files"), on_project_clean_stamps},
+			{"ProjectBuildCompileFile", null, N_("_Compile file"), "<control>B", N_("Compile the current file with the vala compiler"), on_standalone_file_compile},			
 			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
 			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
 			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute built program"), on_project_execute_process},
@@ -299,6 +302,29 @@ namespace Vtg.ProjectManager
 			}
 			
 			return null;
+		}
+
+		private void on_standalone_file_compile (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			var doc = _plugin.gedit_window.get_active_document ();
+			if (doc != null) {
+				string file = doc.get_uri ();
+				var project = this.get_project_manager_view.current_project;
+				if (project != null) {
+					if (project.contains_source_file (file)) {
+						//TODO: we should get the group an issue a make in that subfolder
+						GLib.warning ("Can't compile a project file (for now)");
+						return;
+					}
+				}
+				file = file.replace ("file://", ""); //HACK
+				GLib.debug ("compiling file %s", file);
+				if (!doc.is_untouched () && _plugin.config.save_before_build)
+					doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
+						
+				_prj_builder.compile_file (file);
+			}
 		}
 		
 		private void on_project_build (Gtk.Action action)

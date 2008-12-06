@@ -37,7 +37,14 @@ namespace Vtg
 
 		public bool bracket_enabled { get; set; }
 		public bool symbol_enabled { get; set; }
-
+		
+		public bool save_before_build 
+		{ 
+			get {
+				return true; //TODO: implement me!
+			}
+		}
+		
 		construct
 		{
 			try {

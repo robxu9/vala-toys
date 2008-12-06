@@ -87,7 +87,7 @@ namespace Vtg.ProjectManager
 			_plugin.output_view.message_added += this.on_message_added;
 		}
 
-		public void initialize (Project project)
+		public void initialize (Project? project = null)
 		{
 			this._project = project;
 			current_error_row = 0;
@@ -127,14 +127,19 @@ namespace Vtg.ProjectManager
 			if (_model.get_iter (out iter, path)) {
 				string name;
 				int line, col;
-				Project proj;
+				Project? proj;
 
 				_model.get (iter, 2, out name, 3, out line, 4, out col, 5, out proj);
-				string uri = proj.source_uri_for_name (name);
-				if (uri != null)
-					_plugin.activate_uri (uri, line, col);
-				else
-					GLib.warning ("Couldn't find uri for source: %s", name);
+
+				if (proj != null) {
+					string uri = proj.source_uri_for_name (name);
+					if (uri != null)
+						_plugin.activate_uri (uri, line, col);
+					else
+						GLib.warning ("Couldn't find uri for source: %s", name);
+				} else {
+					_plugin.activate_display_name (name, line, col);
+				}
 			}
 		}
 

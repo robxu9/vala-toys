@@ -49,6 +49,45 @@ namespace Vtg.ProjectManager
 			this.plugin = plugin;
 		}
 
+
+		public bool compile_file (string filename)
+		{
+			if (_child_watch_id != 0)
+				return false;
+
+			var working_dir = Path.get_dirname (filename);
+			Pid? child_pid;
+			int stdo, stde;
+			var log = _plugin.output_view;
+			try {
+				string command = "valac";
+
+				log.clean_output ();
+				var start_message = _("Start compiling file: %s\n").printf (filename);
+				log.log_message (start_message);
+				log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+				log.log_message ("%s %s\n".printf (command, filename));
+				Process.spawn_async_with_pipes (working_dir, new string[] { command, filename }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
+				if (child_pid != null) {
+					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
+					_build_view.initialize ();
+					if (last_exit_code == 0)
+						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
+					log.start_watch (_child_watch_id, stdo, stde);
+					log.activate ();
+				} else {
+					log.log_message ("error compiling file\n");
+				}
+				return true;
+			} catch (SpawnError err) {
+				var msg = "error spawning compiler process: %s".printf (err.message);
+				GLib.warning (msg);
+				log.log_message (msg);
+				return false;
+			}
+		
+		}
+		
 		public bool build (Project project)
 		{
 			if (_child_watch_id != 0)
