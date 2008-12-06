@@ -154,10 +154,7 @@ namespace Vsc
 		}
 		
 		private void create_pri_thread ()
-		{
-			if (parsing_suspended)
-				return;
-				
+		{				
 			try {
 				if (parser_pri_thread != null) {
 					debug ("freeing pri thread resources: join");
@@ -425,6 +422,9 @@ namespace Vsc
 
 		private void schedule_parse_source_buffers ()
 		{
+			if (parsing_suspended)
+				return;
+
 			//scheduling parse for secondary context
 			if (AtomicInt.compare_and_exchange (ref need_parse_sec_context, 0, 1)) {
 				debug ("PARSE SECONDARY  CONTEXT SCHEDULED, AND THREAD CREATED");
@@ -437,6 +437,9 @@ namespace Vsc
 
 		private void schedule_parse ()
 		{
+			if (parsing_suspended)
+				return;
+
 			//scheduling parse for primary context
  			if (AtomicInt.compare_and_exchange (ref need_parse_pri_context, 0, 1)) {
 				debug ("PARSE PRIMARY CONTEXT SCHEDULED, AND THREAD CREATED");

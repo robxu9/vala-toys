@@ -44,6 +44,14 @@ AC_SUBST(VTG_LIBS)
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
 AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
 
+AC_ARG_ENABLE(vsc-shell, AS_HELP_STRING([--enable-vsc-shell], [Build vsc-shell program]), enable_vscshell=$enableval, enable_vscshell=no)
+AM_CONDITIONAL(ENABLE_VSCSHELL, test x$enable_vscshell = xyes)
+
+if test x$enable_vscshell = xyes; then
+	AC_CHECK_LIB(readline,readline,, [AC_MSG_ERROR([cannot find readline library])])
+	AC_CHECK_HEADER([readline/readline.h],, [AC_MSG_ERROR([cannot find readline headers is the readline 'dev' package installed?])])
+fi
+
 AC_CONFIG_FILES([
 	Makefile
 	vsc/Makefile

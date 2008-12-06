@@ -22,55 +22,29 @@
 using GLib;
 using Vala;
 using Vsc;
+using ReadLine;
 
 namespace Vsc
 {
 	public class CompletionShell : Object
 	{
 		private SymbolCompletion _completion = new SymbolCompletion ();
-		private MainLoop _loop;
-		private bool _pause_execution = false;
-
+		private string redirect_filename = "";
+		
 		public void run ()
 		{
-			_loop = new MainLoop (null, false);
-			var inp = new IOChannel.unix_new (0); //stdin
-			inp.set_line_term ("\n", 1);
-			inp.add_watch (IOCondition.IN, this.on_input);
-			print_message ("Welcome!");
-
-			//automatically add GLib
-			add_package_from_namespace ("GLib");
-			prompt ();
-			_loop.run ();
-			_completion = null;
-		}
-
-		private bool on_input (IOChannel source, IOCondition condition)
-		{
-			try {
-				string data;
-				size_t length, term_pos;
-
-				source.read_line (out data, out length, out term_pos);
-				
-				if (length > 0) {
-					if (term_pos > 0) {
-						// strip terminator
-						data = data.substring (0, (long) term_pos);
-					}
-					if (!execute (data))
-						return false; //request to exit
+			bool exit = false;
+			_completion.parser.resume_parsing ();			
+			while (!exit) {
+				string line = read_line ("> ");
+				if (line != null && line != "") {
+					add_history (line);
+					exit = !execute_command (line.strip ());
 				}
-				prompt ();
-
-			} catch (Error err) {
-				warning ("error reading command: %s", err.message);
 			}
-			return true;
 		}
 
-		private bool execute (string command)
+		private bool execute_command (string command)
 		{
 			if (command != null && command.length > 0) {
 				string[] toks = command.split (" ", 0);
@@ -79,43 +53,76 @@ namespace Vsc
 					count++;
 
 				switch (toks[0]) {
-					case "\n":
-						this._pause_execution = false;
-						break;
 					case "quit":
+						print_message ("Stopping the parser engine");
+						_completion.cleanup ();
 						print_message ("Bye bye!");
-						_loop.quit ();
 						return false;
 					case "add-package":
 						add_package (toks[1]);
 						break;
-					case "find":
-						if (count == 2)
-							find_by_name (toks[1]);
+					case "type-name":
+						if (count == 5) {
+							int line = toks[3].to_int ();
+							int col = toks[4].to_int ();
+							
+							type_name (toks[1], toks[2], line, col);
+						} else
+							print_error ("invalid command arguments");
+
+						break;
+					case "complete":
+						if (count == 3)
+							complete (toks[1], toks[2]);
 						else
 							print_error ("invalid command arguments");
 						break;
-					case "describe":
-						if (count == 5) {
-							describe_symbol (toks[1], toks[2], toks[3].to_int (), toks[4].to_int ());
-						} else {
-							print_error ("invalid command arguments");
-						}
-						break;
 					case "add-source":
-						add_source (toks[1]);
+						if (count == 2)
+							add_source (toks[1]);
+						else if (count == 3) {
+							bool sec = toks[2].to_int () != 0;
+							add_source (toks[1], sec);
+						}							
 						break;
-					case "using":
+					case "remove-source":
+						if (count == 2)
+							remove_source (toks[1]);
+						else if (count == 3) {
+							bool sec = toks[2].to_int () != 0;
+							remove_source (toks[1], sec);
+						}							
+						break;
+					case "update-source":
+						if (count == 2)
+							update_source (toks[1]);
+						else if (count == 3) {
+							bool sec = toks[2].to_int () != 0;
+							update_source (toks[1], sec);
+						}							
+						break;						
+					case "add-namespace":
 						add_package_from_namespace (toks[1]);
 						break;
 					case "execute":
-						import (toks[1]);
-						break;
-					case "pause":
-						pause ();
+						execute (toks[1]);
 						break;
 					case "reparse":
 						reparse (toks[1] == "both");
+						break;
+					case "redirect-output":
+						set_redirect_file (toks[1]);
+						break;
+					case "suspend-parsing":
+						_completion.parser.suspend_parsing ();
+						break;
+					case "resume-parsing":
+						_completion.parser.resume_parsing ();
+						break;
+					case "wait-parser-engine":
+						print_message ("waiting parser engine...");
+						while (_completion.parser.is_cache_building ()) 
+							;
 						break;
 					default:
 						print_error ("unknown command '%s'".printf (command));
@@ -125,53 +132,36 @@ namespace Vsc
 			return true;
 		}
 
+		private void set_redirect_file (string? filename)
+		{
+			if (filename == "")
+				this.redirect_filename = null;
+			else
+				this.redirect_filename = filename;
+		}
+		
 		private void reparse (bool both_context)
 		{
 			_completion.parser.reparse (both_context);
 		}
 
-		private void describe_symbol (string name, string sourcefile, int line, int column)
-		{
-			try {
-				var dt = _completion.get_datatype_for_name (name, sourcefile, line, column);
-				if (dt is Vala.UnresolvedSymbol) {
-					UnresolvedSymbol sym = dt as UnresolvedSymbol;
-					print_message ("unresolved symbol: %s".printf(sym.name));
-				} else if (dt != null) {
-					string name = dt.to_qualified_string ();
-					if (name.has_suffix ("?")) {
-						name = name.substring (0, name.length - 1);
-					}
-					print_message ("datatype found: %s (%s)".printf(name, dt.to_qualified_string ()));
-					
-					find_by_name ("%s.".printf(name));
-				} else {
-					print_message ("no datatype found");
-				}
-			} catch (Error err) {
-				print_error (err.message);
-			}
-		}
-
-		private void pause ()
-		{
-			this._pause_execution = true;
-		}
-
-		private void import (string filename)
+		private void execute (string filename)
 		{
 			try {
 				if (FileUtils.test (filename, FileTest.EXISTS)) {
 					size_t len;
 					string buffer;
 					FileUtils.get_contents (filename, out buffer, out len);
-					print_message ("running...");
-					foreach (string command in buffer.split("\n")) {
-						print_message ("   %s".printf(command));
-						execute (command);
+					print_message ("running script '%s'...".printf (filename));
+					foreach (string line in buffer.split("\n")) {
+						string command = line.strip ();
+						if (command != null && command != "") {
+							print_message ("   %s".printf(command));
+							execute_command (command);
+						}
 					}
 				} else {
-					print_error ("file not found");
+					print_error ("script file not found: %s".printf (filename));
 				}
 			} catch (Error err) {
 				print_error (err.message);
@@ -188,11 +178,41 @@ namespace Vsc
 			}
 		}
 
-		private void add_source (string filename)
+		private void update_source (string filename, bool secondary = false)
+		{
+			_completion.parser.suspend_parsing ();
+			remove_source (filename);
+			add_source (filename, secondary);
+			_completion.parser.resume_parsing ();		
+		}
+		
+		private void add_source (string filename, bool secondary = false)
 		{
 			try {
-				_completion.parser.add_source (filename);
-				print_message ("source file '%s' added".printf (filename));
+				if (secondary) {
+					string source = null;
+					ulong len = 0;
+					FileUtils.get_contents (filename, out source, out len);
+					_completion.parser.add_source_buffer (new Vsc.SourceBuffer (filename, source));
+					
+				} else {
+					_completion.parser.add_source (filename);
+				}
+				print_message ("source '%s' added to context %s".printf (filename, secondary ? "secondary" : "primary"));
+			} catch (Error err) {
+				print_error (err.message);
+			}
+		}
+
+		private void remove_source (string filename, bool secondary = false)
+		{
+			try {
+				if (secondary) {
+					_completion.parser.remove_source_buffer_by_name (filename);
+				} else {
+					_completion.parser.remove_source (filename);
+				}
+				print_message ("source file '%s' removed".printf (filename));
 			} catch (Error err) {
 				print_error (err.message);
 			}
@@ -208,92 +228,106 @@ namespace Vsc
 			}
 		}
 
-		private void append_symbols (StringBuilder sb, Gee.List<Vala.Symbol> symbols)
+
+		private void type_name (string word, string source, int line, int col)
 		{
-			foreach (Vala.Symbol symbol in symbols) {
-				sb.append ("      %s\n".printf(symbol.name));
+			try {
+				var typename = _completion.get_datatype_name_for_name (word, source, line, col);
+				if (typename != null) {
+					print_message ("typename for %s: %s".printf (word, typename));
+				} else {
+					print_message ("type name not found for %s".printf (word));
+				}
+			} catch (Error err) {
+				print_error (err.message);
 			}
 		}
-
-		private void find_by_name (string data)
+		
+		private void complete (string typename, string source)
 		{
 			try {
 				var options = new SymbolCompletionFilterOptions ();
-				var result = _completion.get_completions_for_name (options, data);
+				var result = _completion.get_completions_for_name (options, typename, source);
 				display_result (result);
 			} catch (Error err) {
 				print_error (err.message);
 			} 
 		}
+		
+		private void append_symbols (string type, StringBuilder sb, Gee.List<SymbolCompletionItem> symbols)
+		{
+			foreach (SymbolCompletionItem symbol in symbols) {
+				sb.append ("%s:%s\n".printf(type, symbol.name));
+			}
+		}
 
 		private void display_result (SymbolCompletionResult result)
 		{
 			if (!result.is_empty) {
-				print_message ("symbols:");
 				var sb = new StringBuilder ();
 
+				print_message ("symbols found");
 				if (result.fields.size > 0) {
-					sb.append ("   fields:\n");
-					append_symbols (sb, result.fields);
+					append_symbols ("field", sb, result.fields);
 				}
 				if (result.properties.size > 0) {
-					sb.append ("   properties:\n");
-					append_symbols (sb, result.properties);
+					append_symbols ("property", sb, result.properties);
 				}
 				if (result.methods.size > 0) {
-					sb.append ("   methods:\n");
-					append_symbols (sb, result.methods);
+					append_symbols ("method", sb, result.methods);
 				}
 
 				if (result.signals.size > 0) {
-					sb.append ("   signals:\n");
-					append_symbols (sb, result.signals);
+					append_symbols ("signal", sb, result.signals);
 				}
 
 				if (result.classes.size > 0) {
-					sb.append ("   classes:\n");
-					append_symbols (sb, result.classes);
+					append_symbols ("class", sb, result.classes);
 				}
 				if (result.interfaces.size > 0) {
-					sb.append ("   interfaces:\n");
-					append_symbols (sb, result.interfaces);
+					append_symbols ("interface", sb, result.interfaces);
 				}
 
 				if (result.structs.size > 0) {
-					sb.append ("   structs:\n");
-					append_symbols (sb, result.structs);
+					append_symbols ("struct", sb, result.structs);
 				}
 				if (result.others.size > 0) {
-					sb.append ("   others:\n");
-					append_symbols (sb, result.others);
+					append_symbols ("other", sb, result.others);
 				}
-
 				print_message (sb.str);
 			} else {
 				print_message ("no symbol found");
 			}
 		}
 
-		private void prompt ()
-		{
-			stdout.printf ("> ");
-			stdout.flush ();
-		}
-
 		public void print_error (string message)
 		{
-			stdout.printf ("* error: %s\n", message);
+			stdout.printf ("vsc-shell *** ERROR *** - %s\n", message);
 			stdout.flush ();
 		}
 
-		public void print_message (string message, bool new_line = true)
+		public void print_message (string message)
 		{
-			if (new_line)
-				stdout.printf ("%s\n", message);
-			else
-				stdout.printf ("%s", message);
-
-			stdout.flush ();
+			string data;
+			data = "%s".printf (message);
+			string[] lines = data.split ("\n");
+			FileStream file = null;
+			if (this.redirect_filename != null) {
+				file = FileStream.open (this.redirect_filename, "w+");
+			}
+			
+			foreach (string line in lines) {
+				string buffer = "vsc-shell - %s\n".printf (line);
+				stdout.printf (buffer);
+				if (file != null)
+					file.puts (buffer);
+				stdout.flush ();
+			}
+			
+			if (file != null) {
+				file.flush ();
+				file = null;
+			}
 		}
 	}
 

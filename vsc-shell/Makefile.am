@@ -34,7 +34,7 @@ vsc_shell_SOURCES = \
 	$(NULL)
 
 vsc-shell.vala.stamp: $(vsc_shell_VALASOURCES)
-	$(VALAC) $(DEBUG) --thread -C  --vapidir ./vtg --vapidir ../vapi --vapidir ../vsc --pkg vsc-1.0 --pkg config --pkg vala-1.0 --pkg utils --pkg vala-1.0 --pkg gtk+-2.0 $^
+	$(VALAC) $(DEBUG) --thread -C  --vapidir ./vtg --vapidir ../vapi --vapidir ../vsc --pkg vsc-1.0 --pkg config --pkg vala-1.0 --pkg utils --pkg vala-1.0 --pkg gtk+-2.0 --pkg readline $^
 	touch $@
 
 vsc_shell_LDADD = \

@@ -1,0 +1,5 @@
+add-source ../vsc-tests/simple.vala 1
+wait-parser-engine
+type-name this ../vsc-tests/simple.vala 17 1
+complete Vsc.Tests.Test01 ../vsc-tests/simple.vala
+

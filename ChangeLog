@@ -1,4 +1,17 @@
 2008-12-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-tests/simple.script
+	* vsc-tests/simple.vala
+	* configure.ac:
+	* vapi/readline.vapi:
+	* vsc-shell/Makefile.am:
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscparsermanager.vala:
+	* vtg/vtgprojectmanager.vala:
+	
+	revamped vsc-shell for implementing some automated test in vsc
+
+2008-12-06  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* vtg/vtgconfiguration.vala:
 	* vtg/vtgplugin.vala:
