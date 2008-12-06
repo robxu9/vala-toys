@@ -1,3 +1,9 @@
+2008-12-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	changed get_qualified_name_for_datatype from private to public
+
 2008-12-01  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscparsemanager.vala: 

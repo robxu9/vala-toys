@@ -220,7 +220,7 @@ namespace Vsc
 			return null;
 		}
 
-		private string get_qualified_name_for_datatype (DataType dt)
+		public string get_qualified_name_for_datatype (DataType dt)
 		{
 			string typename;
 			
