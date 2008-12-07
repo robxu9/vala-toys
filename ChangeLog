@@ -1,3 +1,13 @@
+2008-12-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/Makefile.am:
+	* vsc/Makefile.am:
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanagerprojectgroup.vala:
+
+	fixed a crash cause by not adding all the referenced vapi
+
 2008-12-06  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc-tests/simple.script

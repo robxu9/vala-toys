@@ -381,6 +381,7 @@ namespace Vtg
 			var prj = new ProjectDescriptor ();
 			var completion = new Vsc.SymbolCompletion ();
 
+			/* setup referenced packages */
 			foreach (ProjectManager.ProjectModule module in project.modules) {
 				foreach (ProjectManager.ProjectPackage package in module.packages) {
 					GLib.debug ("adding package %s from project %s", package.name, project.name);
@@ -388,14 +389,25 @@ namespace Vtg
 						GLib.debug ("package %s not added", package.name);
 				}
 			}
-			foreach (ProjectGroup group in project.groups) {
-				bool source_added = false;
 
+
+			/* setup vapidir, built libraries and local packages */
+			foreach (ProjectGroup group in project.groups) {
 				foreach(string package in group.built_libraries) {
 					GLib.debug ("adding package as built %s so it can be blacklisted", package);
 					completion.parser.add_built_package (package);
 				}
-
+				foreach(string path in group.vapidirs) {
+					completion.parser.add_path_to_vapi_search_dir (path);
+				}
+				foreach(string package in group.packages) {
+					if (!completion.parser.try_add_package (package))
+						GLib.debug ("package %s not added", package);
+				}
+			}
+			
+			/* setup source files */
+			foreach (ProjectGroup group in project.groups) {
 				foreach (ProjectTarget target in group.targets) {
 					foreach (ProjectSource source in target.sources) {
 						if (source.uri.has_suffix (".vala") && source.uri.has_prefix ("file://")) {
@@ -403,20 +415,14 @@ namespace Vtg
 							GLib.debug ("adding source %s", filename);
 							try {
 								completion.parser.add_source (filename);
-								source_added = true;
 							} catch (Error err) {
 								GLib.warning ("Error adding source %s: %s", filename, err.message);
 							}
 						}
 					}
 				}
-
-				if (source_added) {
-					foreach(string path in group.vapidirs) {
-						completion.parser.add_path_to_vapi_search_dir (path);
-					}
-				}
 			}
+			
 			prj.completion = completion;
 			prj.project = project;
 			_projects.add (prj);
