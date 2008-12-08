@@ -75,7 +75,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 				GLib.debug ("(visit_namespace): found %s", _current_typename);
 	                	_type_found = true;
 			}
-			GLib.debug ("(visit_namespace): scanning namespace %s", ns.name);
 			ns.accept_children (this);
 		}
 		
@@ -225,13 +224,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		if (test_symbol (_options, m)) {
 			_results.methods.add (new SymbolCompletionItem.with_method (m));
 		}		
-	}
-	
-       	public override void visit_constructor (Constructor c) 
-	{
-		if (test_symbol (_options, c)) {
-			_results.methods.add (new SymbolCompletionItem (c.name));
-		}
 	}
 
        	public override void visit_delegate (Delegate d) 

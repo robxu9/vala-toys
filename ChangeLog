@@ -1,4 +1,12 @@
 2008-12-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fiexd a crash when visiting a costructor
+
+2008-12-08  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* Makefile.am:
 

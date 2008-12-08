@@ -30,7 +30,7 @@ namespace Vsc
 		public string info;
 		public int line = 0;
 		
-		public SymbolCompletionItem (string name) 
+		public SymbolCompletionItem (string name)
 		{
 			this.name = name;
 			this.info = name;

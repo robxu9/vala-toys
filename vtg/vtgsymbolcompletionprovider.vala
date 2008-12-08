@@ -265,16 +265,18 @@ namespace Vtg
 
 			foreach (SymbolCompletionItem symbol in symbols) {
 				Proposal proposal;
-
+				var name = (symbol.name != null ? symbol.name : "<null>");
+				var info = (symbol.info != null ? symbol.info : "");
+				
 				if (prealloc_index < Utils.prealloc_count) {
 					proposal = proposals [prealloc_index];
 					prealloc_index++;
 
-					proposal.label = symbol.name;
-					proposal.info = symbol.info;
+					proposal.label = name;
+					proposal.info = info;
 				        proposal.icon = icon;
 				} else {
-					proposal = new Proposal(symbol.name, symbol.info, icon);
+					proposal = new Proposal(name, info, icon);
 				}
 				this.list.append (proposal);
 			}
