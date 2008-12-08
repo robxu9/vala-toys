@@ -1,6 +1,10 @@
 
 #Build in these directories:
-SUBDIRS = vsc vsc-shell gen-project vtg images ui po
+SUBDIRS = vsc gen-project vtg images ui po
+
+if ENABLE_VSCSHELL
+SUBDIRS += vsc-shell
+endif
 
 vtgdocdir = ${prefix}/doc/vtg
 vtgdoc_DATA = \

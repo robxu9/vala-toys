@@ -1,4 +1,11 @@
 2008-12-08  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* Makefile.am:
+
+	fixed a build issue, when vsc-shell build 
+	is not enabled (default settings)
+
+2008-12-08  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vsccompletionvisitor.vala:
 	* vsc/Makefile.am:
