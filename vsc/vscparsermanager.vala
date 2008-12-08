@@ -194,6 +194,7 @@ namespace Vsc
 			lock_all_contexts ();
 			parsing_suspended = false;
 			unlock_all_contexts ();
+			schedule_parse ();
 		}
 		
 		public bool add_path_to_vapi_search_dir (string path)

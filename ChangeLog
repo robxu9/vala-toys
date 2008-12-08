@@ -1,3 +1,16 @@
+2008-12-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/Makefile.am:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionresult.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	started the rewriting of vsc, migrated the completion part
+	to a more appropriated completion visitor
+
 2008-12-07  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc-shell/Makefile.am:

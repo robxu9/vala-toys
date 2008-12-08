@@ -319,16 +319,16 @@ namespace Vsc
 				count++;
 
 			Symbol? parent = null;
-			bool both_pri_context_scope = true;
+			bool search_both_contexts = true;
 
 			//first on the local context
 			for (int idx = 0; idx < count; idx++) {
-				if (both_pri_context_scope) {
+				if (search_both_contexts) {
 					result = get_symbol_with_context (_parser.sec_context, fields[idx], source, parent);
 				}
 
 				if (result == null || parent != null) {
-					both_pri_context_scope = false;
+					search_both_contexts = false;
 					result = get_symbol_with_context (_parser.pri_context, fields[idx], source, parent);
 					if (result == null) {
 						break;
@@ -353,7 +353,7 @@ namespace Vsc
 					var method = (Method) result;
 					return method.return_type;
 				} else {
-					throw new SymbolCompletionError.UNSUPPORTED_TYPE ("find_inner_datatype: unsupported type");
+					throw new SymbolCompletionError.UNSUPPORTED_TYPE ("(get_datatype_for_symbol_name): unsupported type");
 				}
 			}
 
@@ -773,71 +773,93 @@ namespace Vsc
 
 			return false;
 		}
-
-
-		private SymbolCompletionResult get_completions_with_namespace (SymbolCompletionFilterOptions options, Namespace namespc, string symbolprefix, string symbolname) throws GLib.Error
+		
+		private string normalize_typename (string typename, string namespace_name)
 		{
-			warn_if_fail (_parser != null);
-			SymbolCompletionResult result;
-			var symbol = "%s.%s".printf (symbolprefix, symbolname);
-			GLib.debug ("get_completions_with_namespace: %s", symbol);
-			result = get_completions_for_name_with_context (options, _parser.sec_context, symbol);
-			if (result.is_empty) {
-				foreach (Namespace ns in namespc.get_namespaces ()) {
-					result = get_completions_with_namespace (options, ns,  "%s.%s".printf (symbolprefix, ns.name), symbolname);
-					if (!result.is_empty) {
-						break;
-					}
-				}
-			}
-			return result;
+			debug ("(normalize_typename): %s, namespace %s", typename, namespace_name);
+			
+			if (typename.has_prefix ("%s.".printf (namespace_name))) {
+				return typename;				
+			} else {
+				return "%s.%s".printf (namespace_name, typename);
+			}			
 		}
 		
 		public SymbolCompletionResult get_completions_for_name (SymbolCompletionFilterOptions options, string symbolname, string? sourcefile = null) throws GLib.Error
 		{
 			warn_if_fail (_parser != null);
-			SymbolCompletionResult result;
+			SymbolCompletionResult result = new SymbolCompletionResult ();
 			SourceFile source = null;
 
+			
 			if (sourcefile != null) {
 				source = find_sourcefile (_parser.sec_context, sourcefile);
 			}
-			_parser.lock_sec_context ();
-			result = get_completions_for_name_with_context (options, _parser.sec_context, symbolname);
-			if (source != null && result.is_empty) {
+			
+			//first look in the namespaces defined in the source file
+			_parser.lock_all_contexts ();
+			var completion_visitor = new CompletionVisitor (options, result,source,  _parser.pri_context);
+			if (source != null) {
 				foreach (CodeNode node in source.get_nodes ()) {
 					if (node is Namespace) {
 						var ns = (Namespace) node;
-						result = get_completions_with_namespace (options, ns, ns.name, symbolname);
-						if (!result.is_empty) {
+						var name = normalize_typename (symbolname, ns.name);
+						GLib.debug ("search in source namespaces for %s", name);
+						completion_visitor.searched_typename = name;
+						int tmp = result.count;
+						completion_visitor.visit_namespace (ns);
+						if (tmp != result.count) {
 							break;
 						}
 					}
 				}					
+			} else {
+				GLib.debug ("no source file found");
 			}
-			_parser.unlock_sec_context ();
 
-			if (result.is_empty) {
-				_parser.lock_pri_context ();
-				result = get_completions_for_name_with_context (options, _parser.pri_context, symbolname);
+			//search it in the root namespace, string and other base types are there
+			GLib.debug ("search in source root namespace for %s", symbolname);
+			completion_visitor.searched_typename = symbolname;
+			completion_visitor.visit_namespace (_parser.sec_context.root);
 
-				//search it in referenced namespaces
-				if (source != null && result.is_empty) {
-					if (result.is_empty) {
-						foreach(UsingDirective item in source.get_using_directives ()) {
-							GLib.debug ("search in using for: %s.%s", item.namespace_symbol.name , symbolname);
-							var symbol = "%s.%s".printf (item.namespace_symbol.name, symbolname);
-							result = get_completions_for_name_with_context (options, _parser.pri_context, symbol);
-							if (!result.is_empty) {
-								break;
-							}
+			//search it in referenced namespaces
+			if (source != null) {
+				foreach(UsingDirective item in source.get_using_directives ()) {
+					GLib.debug ("search in using directives %s for %s", item.namespace_symbol.name, symbolname);
+					int tmp = result.count;
+					get_completion_for_name_in_namespace_with_context (item.namespace_symbol.name, 
+						symbolname, completion_visitor, _parser.pri_context);
+						if (tmp != result.count) {
+							break;
 						}
-					}
 				}
-				_parser.unlock_pri_context ();
 			}
 
+			var parts = symbolname.split (".", 2);				
+			//search it in the global namespace pool only if the typename contains a dot
+			if (parts[1] != null) {
+				GLib.debug ("search in global namespace poll %s for %s", parts[0], parts[1]);
+				get_completion_for_name_in_namespace_with_context (parts[0], parts[1], 
+					completion_visitor, _parser.pri_context);
+			}				
+
+			GLib.debug ("search in primary root namespace for %s", symbolname);
+			completion_visitor.searched_typename = symbolname;
+			completion_visitor.visit_namespace (_parser.pri_context.root);
+			
+			_parser.unlock_all_contexts ();
 			return result;
+		}
+		
+		private void get_completion_for_name_in_namespace_with_context (string namespace_name, string typename, CompletionVisitor completion_visitor, CodeContext context)
+		{
+			foreach (Namespace ns in context.root.get_namespaces ()) {
+				if (ns.name == namespace_name) {
+					completion_visitor.searched_typename = typename;
+					completion_visitor.visit_namespace (ns);
+					return;
+				}
+			}
 		}
 
 		private Namespace? get_namespace_for_name (Namespace root, string name, ref int level)
@@ -864,181 +886,6 @@ namespace Vsc
 			}
 
 			return result;
-		}
-
-		private SymbolCompletionResult get_completions_for_name_with_context (SymbolCompletionFilterOptions options, CodeContext? context, string symbolname) throws GLib.Error
-		{
-			var result = new SymbolCompletionResult ();
-			if (context == null) {
-				critical ("context is null");
-				return result;
-			}
-
-			int baseidx = 0;
-			Namespace root_ns = get_namespace_for_name (context.root, symbolname, ref baseidx);
-
-			string[] toks = symbolname.split (".");
-			int count = 0;
-			while (toks[count] != null)
-				count++;
-
-
-			count -= baseidx;
-
-			if (count > 0) {
-				if (root_ns == null) {
-					foreach (Namespace ns in context.root.get_namespaces ()) {
-						get_completions_in_namespace (context, options, toks, count, baseidx, ns, result);
-					}
-				} else {
-					get_completions_in_namespace (context, options, toks, count, baseidx, root_ns, result);
-				}
-
-				//fallback to the root namespace
-				if (result.is_empty) {
-					get_completions_in_namespace (context, options, toks, count, baseidx, context.root, result);
-				}
-			}
-			return result;
-		}
-
-		private void get_completions_in_namespace (CodeContext context, SymbolCompletionFilterOptions options, string[] toks, int count, int baseidx, Namespace ns, SymbolCompletionResult result) //throws GLib.Error
-		{
-			Struct last_st = null;
-			Class last_cl = null;
-			Interface last_if = null;
-			Method last_md = null;
-			Field last_fd = null;
-
-			foreach (Vala.Struct st in ns.get_structs ()) {
-				if (count <= 1 && st.name.has_prefix (toks[baseidx])) {
-					last_st = st;
-					result.structs.add (new SymbolCompletionItem.with_struct (st));
-				} else if (count == 2 && st.name == toks[baseidx]) {
-					last_st = st;
-					result.structs.add (new SymbolCompletionItem.with_struct (st));
-				}
-			}
-				
-			foreach (Vala.Class cl in ns.get_classes ()) {
-				if (count <= 1 && cl.name.has_prefix (toks[baseidx])) {
-					last_cl = cl;
-					result.classes.add (new SymbolCompletionItem.with_class (cl));
-				} else if (count == 2 && cl.name == toks[baseidx]) {
-					last_cl = cl;
-					result.classes.add (new SymbolCompletionItem.with_class (cl));
-				}
-			}
-
-			if (options.interface_symbols) {
-				foreach (Vala.Interface item in ns.get_interfaces ()) {
-					if (count <= 1 && item.name.has_prefix (toks[baseidx])) {
-						last_if = item;
-						result.interfaces.add (new SymbolCompletionItem.with_interface (item));
-					} else if (count == 2 && item.name == toks[baseidx]) {
-						last_if = item;
-						result.interfaces.add (new SymbolCompletionItem.with_interface (item));
-					}
-				}
-			}
-
-			if (options.static_symbols) {
-				foreach (Vala.Method item in ns.get_methods ()) {
-					if (count <= 1 && item.name.has_prefix (toks[baseidx])) {
-						last_md = item;
-						result.methods.add (new SymbolCompletionItem.with_method (item));
-					} else if (count == 2 && item.name == toks[baseidx]) {
-						last_md = item;
-						result.methods.add (new SymbolCompletionItem.with_method (item));
-					}
-				}
-			}
-
-			if (options.static_symbols) {
-				foreach (Vala.Field item in ns.get_fields ()) {
-					if (count <= 1 && item.name.has_prefix (toks[baseidx])) {
-						last_fd = item;
-						result.fields.add (new SymbolCompletionItem.with_field (item));
-					} else if (count == 2 && item.name == toks[baseidx]) {
-						last_fd = item;
-						result.fields.add (new SymbolCompletionItem.with_field (item));
-					}
-				}
-			}
-
-			//if I've found just one type
-			if (count >= 1 && result.classes.size == 1 && result.classes[0].name == toks[baseidx]) {
-				find_name_in_class (context, options, count == 1 ? null : toks[baseidx+1], last_cl, result);
-			} else if (count >= 1 && result.structs.size == 1 && result.structs[0].name == toks[baseidx]) {
-				find_name_in_struct (context, options, count == 1 ? null : toks[baseidx+1], last_st, result);
-			} else if (count >= 1 && result.interfaces.size == 1 && result.interfaces[0].name == toks[baseidx]) {
-				find_name_in_interface (context, options, count == 1 ? null : toks[baseidx+1], last_if, result);
-			}
-
-			if (options.exclude_type != null && result.classes.size == 1 && options.exclude_type == result.classes[0].name) {
-				result.classes.remove_at (0);
-			} else if (options.exclude_type != null && result.structs.size == 1 && options.exclude_type == result.structs[0].name) {
-				result.structs.remove_at (0);
-			} else if (options.exclude_type != null && result.interfaces.size == 1 && options.exclude_type == result.interfaces[0].name) {
-				result.interfaces.remove_at (0);
-			}
-		}
-		private void find_name_in_class (CodeContext context, SymbolCompletionFilterOptions options, string? name, Vala.Class item, SymbolCompletionResult result)
-		{
-			warn_if_fail (_parser != null);
-			foreach (Vala.Method method in item.get_methods ()) {
-				if (test_symbol (options, name, method) &&
-				    (options.static_symbols || (options.static_symbols == false && method.binding != MemberBinding.STATIC))) {
-					if (options.only_constructors && (method is CreationMethod || method.name.has_prefix(".new"))) {
-						result.methods.add (new SymbolCompletionItem.with_method (method));
-					} else if (!options.only_constructors) {
-						result.methods.add (new SymbolCompletionItem.with_method (method));
-					}
-				}
-			}
-
-			if (!options.only_constructors) {
-				foreach (Vala.Field field in item.get_fields ()) {
-					if (test_symbol (options, name, field) &&
-					    (options.static_symbols || (options.static_symbols == false && field.binding != MemberBinding.STATIC))) {
-						result.fields.add (new SymbolCompletionItem.with_field (field));
-					}
-				}
-
-
-				foreach (Vala.Property property in item.get_properties ()) {
-					if (test_symbol (options, name, property)) {
-						result.properties.add (new SymbolCompletionItem.with_property (property));
-					}
-				}
-
-
-				foreach (Vala.Signal @signal in item.get_signals ()) {
-					if (test_symbol (options, name, @signal)) {
-						result.signals.add (new SymbolCompletionItem.with_signal (@signal));
-					}
-				}
-			}
-
-			if (!(item is GLib.Object)) {
-				if (item.base_class is Vala.Class) {
-					if (!result.classes_contains (item.base_class.name))
-						find_name_in_class (context, options, name, item.base_class , result);
-				}
-
-				foreach (Vala.DataType type in item.get_base_types ()) {
-					if (options.interface_symbols && type is Vala.Interface) {
-						if (!result.interfaces_contains (((Vala.Interface) type).name))
-							find_name_in_interface (context, options, name, (Vala.Interface) type, result);
-					} else if (type is Vala.UnresolvedType) {
-						Namespace ns = null;
-						Class? cl = resolve_class_name (_parser.pri_context, type.to_string (), out ns);
-						if (cl != null) {
-							find_name_in_class (_parser.pri_context, options, name, cl , result);
-						}
-					}
-				}
-			}
 		}
 
 		private Class? resolve_class_name (CodeContext context, string typename, out Namespace? parent_ns = null, string? preferred_namespace = null)
@@ -1112,71 +959,7 @@ namespace Vsc
 			}
 
 			return null;
-		}
-
-		private bool test_symbol (SymbolCompletionFilterOptions options, string? name, Symbol symbol)
-		{
-			if ((name == null || name == "" || symbol.name.has_prefix (name)) &&
-			    ((options.public_symbols && symbol.access == Vala.SymbolAccessibility.PUBLIC) ||
-				(options.private_symbols && symbol.access == Vala.SymbolAccessibility.PRIVATE) ||
-				(options.protected_symbols && symbol.access == Vala.SymbolAccessibility.PROTECTED) ||
-				(options.internal_symbols && symbol.access == Vala.SymbolAccessibility.INTERNAL))) {
-				    return true;
-			}
-
-			return false;
-		}
-
-		private void find_name_in_interface (CodeContext context, SymbolCompletionFilterOptions options, string? name, Vala.Interface item, SymbolCompletionResult result)
-		{
-			foreach (Vala.Method method in item.get_methods ()) {
-				if (test_symbol (options, name, method)) {
-					if (options.only_constructors && (method is CreationMethod || method.name.has_prefix (".new"))) {
-						result.methods.add (new SymbolCompletionItem (method.name));
-					} else if (!options.only_constructors) {
-						result.methods.add (new SymbolCompletionItem (method.name));
-					}
-				}
-			}
-
-			if (!options.only_constructors) {
-				foreach (Vala.Field field in item.get_fields ()) {
-					if (test_symbol (options, name, field)) {
-						result.fields.add (new SymbolCompletionItem (field.name));
-					}
-				}
-
-				foreach (Vala.Property property in item.get_properties ()) {
-					if (test_symbol (options, name, property)) {
-						result.properties.add (new SymbolCompletionItem (property.name));
-					}
-				}
-
-
-				foreach (Vala.Signal @signal in item.get_signals ()) {
-					if (test_symbol (options, name, @signal)) {
-						result.signals.add (new SymbolCompletionItem (@signal.name));
-					}
-				}
-			}
-
-			//TODO: prerequisites
-		}
-
-		private void find_name_in_struct (CodeContext context, SymbolCompletionFilterOptions options, string? name, Vala.Struct item, SymbolCompletionResult result)
-		{
-			foreach (Vala.Field field in item.get_fields ()) {
-				if (test_symbol (options, name, field)) {
-					result.fields.add (new SymbolCompletionItem (field.name));
-				}
-			}
-
-			foreach (Vala.Method method in item.get_methods ()) {
-				if (test_symbol (options, name, method)) {
-					result.methods.add (new SymbolCompletionItem (method.name));
-				}
-			}
-		}
+		}		
 	}
 }
 

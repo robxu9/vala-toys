@@ -23,7 +23,7 @@ using Vala;
 
 namespace Vsc
 {
-	public class SymbolCompletionResult
+	public class SymbolCompletionResult : GLib.Object
 	{
 		public Gee.List<SymbolCompletionItem> properties = new Gee.ArrayList<SymbolCompletionItem> ();
 		public Gee.List<SymbolCompletionItem> classes = new Gee.ArrayList<SymbolCompletionItem> ();
@@ -34,7 +34,9 @@ namespace Vsc
 		public Gee.List<SymbolCompletionItem> signals = new Gee.ArrayList<SymbolCompletionItem> ();
 		public Gee.List<SymbolCompletionItem> others = new Gee.ArrayList<SymbolCompletionItem> ();
 		public Gee.List<SymbolCompletionItem> namespaces = new Gee.ArrayList<SymbolCompletionItem> ();
-
+		public Gee.List<SymbolCompletionItem> enums = new Gee.ArrayList<SymbolCompletionItem> ();
+		public Gee.List<SymbolCompletionItem> constants = new Gee.ArrayList<SymbolCompletionItem> ();
+		
 		public bool is_empty
 		{
 			get {
@@ -53,25 +55,43 @@ namespace Vsc
 				    + fields.size
 				    + signals.size
 				    + namespaces.size
+				    + enums.size
+				    + constants.size
 				    + others.size;
 			}
 		}
 
-		public bool classes_contains (string name) {
-			return symbols_contains (classes, name);
+		public bool namespaces_contain (string name) {
+			return symbols_contain (namespaces, name);
+		}
+		
+		public bool classes_contain (string name) {
+			return symbols_contain (classes, name);
 		}
 
-		public bool interfaces_contains (string name) {
-			return symbols_contains (interfaces, name);
+		public bool interfaces_contain (string name) {
+			return symbols_contain (interfaces, name);
 		}
 
-		private bool symbols_contains (Gee.List<Vala.Symbol> data, string name)
+		public bool structs_contain (string name) {
+			return symbols_contain (structs, name);
+		}
+
+		public bool constants_contain (string name) {
+			return symbols_contain (constants, name);
+		}
+		
+		public bool enums_contain (string name) {
+			return symbols_contain (enums, name);
+		}
+		
+		private bool symbols_contain (Gee.List<SymbolCompletionItem> data, string name)
 		{
 			if (data.size == 0)
 				return false;
-
-			foreach (Vala.Symbol item in data) {
-				if (item is Symbol && item.name == name) {
+				
+			foreach (SymbolCompletionItem item in data) {
+				if (item.name == name) {
 					return true;
 				}
 			}

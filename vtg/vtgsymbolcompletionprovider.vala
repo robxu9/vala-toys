@@ -42,6 +42,8 @@ namespace Vtg
 		private Gdk.Pixbuf _icon_property;
 		private Gdk.Pixbuf _icon_signal;
 		private Gdk.Pixbuf _icon_iface;
+		private Gdk.Pixbuf _icon_const;
+		private Gdk.Pixbuf _icon_enum;
 		private uint timeout_id = 0;
 		private bool all_doc = false; //this is a hack!!!
 
@@ -93,7 +95,8 @@ namespace Vtg
 				this._icon_property = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-property-16.png"));
 				this._icon_signal = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-event-16.png"));
 				this._icon_iface = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-interface-16.png"));
-
+				this._icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
+				this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
 				this._completion.parser.cache_building += sender => { 
 					if (cache_building == false) {
 						cache_building = true; 
@@ -221,6 +224,8 @@ namespace Vtg
 			_calltip_window = new Gsc.Info ();
 			_calltip_window.set_info_type (InfoType.EXTENDED);
 			_calltip_window.set_transient_for (_plugin.gedit_window);
+			_calltip_window.set_adjust_width (true, 400);
+			_calltip_window.set_adjust_height (true, 250);
 		}
 
 		private void parse (Gedit.Document doc)
@@ -313,6 +318,12 @@ namespace Vtg
 				if (result.structs.size > 0) {
 					append_symbols (result.structs, _icon_struct);
 				}
+				if (result.enums.size > 0) {
+					append_symbols (result.enums, _icon_enum);
+				}
+				if (result.constants.size > 0) {
+					append_symbols (result.constants, _icon_const);
+				}
 				if (result.others.size > 0) {
 					append_symbols (result.others, _icon_generic);
 				}
@@ -393,47 +404,50 @@ namespace Vtg
 
 			string[] tmp = word.split (".");
 			int count = 0;
-			while (tmp[count] != null)
-				count++;
-
-			string parent = "";
-			string method = tmp[count-1];
-			if (count > 1) {
-				for(int idx=0; idx < count-1; idx++) {
-					parent += tmp[idx];
+			string first_part = null;
+			while (tmp[count] != null) {
+				if (tmp [count+1] != null) {
+					if (first_part == null)
+						first_part = tmp[count];
+					else
+						first_part = first_part.concat (".", tmp[count]);
 				}
+				count++;
 			}
-			//TODO: set to the current namespace (the namespace containing it line/col)
-			if (parent == "") {
+			
+			string method = tmp[count-1];
+			if (first_part == null) {
+				first_part = method;
 			}
-
+			
 			try {			
 				string typename = null;
-				var dt = _completion.get_datatype_for_name (parent, _sb.name, lineno + 1, colno);
+				var dt = _completion.get_datatype_for_name (first_part, _sb.name, lineno + 1, colno);
 				if (dt != null) {
 					typename = _completion.get_qualified_name_for_datatype (dt);
 				}
 
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
+				options.public_only ();				
+				if (line.str ("= new ") != null || line.str ("=new ") != null) {
+					options.only_constructors = true;
+				}
 				if (typename != null) {
 					GLib.debug ("datatype '%s' for: %s",typename, word);
 					options.static_symbols = false;
-					options.public_only ();
 					if (word == "this") {
 						options.private_symbols = true;
 						options.protected_symbols = true;
 					} else if (word == "base") {
 						options.protected_symbols = true;
 					}
-					options.exclude_type = typename;
-					result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
+					result = _completion.get_completions_for_name (options, typename, _sb.name);
 				} else {
-					if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
+					if (first_part.has_prefix ("this.") == false && first_part.has_prefix ("base.") == false) {
 						options.static_symbols = true;
 						options.interface_symbols = false;
-						options.public_only ();
 					
-						result = _completion.get_completions_for_name (options, "%s.".printf(word), _sb.name);
+						result = _completion.get_completions_for_name (options, first_part, _sb.name);
 					}
 				}
 			} catch (Error err) {
@@ -470,13 +484,13 @@ namespace Vtg
 				}
 				
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
+				options.public_only ();
 				if (line.str ("= new ") != null || line.str ("=new ") != null) {
 					options.only_constructors = true;
 				}
 				if (typename != null) {
 					GLib.debug ("datatype '%s' for: %s",typename, word);
 					options.static_symbols = false;
-					options.public_only ();
 					if (word == "this") {
 						options.private_symbols = true;
 						options.protected_symbols = true;
@@ -486,7 +500,8 @@ namespace Vtg
 					options.exclude_type = typename;						
 
 					timer.start ();
-					result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
+					//result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
+					result = _completion.get_completions_for_name (options, typename, _sb.name);
 					timer.stop ();
 					GLib.debug ("find_by_name: %f", timer.elapsed ());
 				} else {
@@ -494,9 +509,9 @@ namespace Vtg
 					if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
 						options.static_symbols = true;
 						options.interface_symbols = false;
-						options.public_only ();
 						timer.start ();
-						result = _completion.get_completions_for_name (options, "%s.".printf(word), _sb.name);
+						//result = _completion.get_completions_for_name (options, "%s.".printf(word), _sb.name);
+						result = _completion.get_completions_for_name (options, word, _sb.name);
 						timer.stop ();
 						GLib.debug ("find_by_name (static): %f, count %d", timer.elapsed (), result.count);
 					}
