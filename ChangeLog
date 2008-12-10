@@ -1,6 +1,15 @@
 2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala
+
+	fixed symbol scope test
+	improved class analysis for static methods
+	improved namespace search in completion engine
+
+2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	improved static method completion

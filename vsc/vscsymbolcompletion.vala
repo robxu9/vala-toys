@@ -810,6 +810,13 @@ namespace Vsc
 						completion_visitor.visit_namespace (ns);
 						if (tmp != result.count) {
 							break;
+						} else {
+							GLib.debug ("search in primary namespaces for %s", name);
+							get_completion_for_name_in_namespace_with_context (ns.name, name, 
+								completion_visitor, _parser.pri_context);
+							if (tmp != result.count) {
+								break; //found something in primary context
+							}
 						}
 					}
 				}					
@@ -825,7 +832,7 @@ namespace Vsc
 			//search it in referenced namespaces
 			if (source != null) {
 				foreach(UsingDirective item in source.get_using_directives ()) {
-					GLib.debug ("search in using directives %s for %s", item.namespace_symbol.name, symbolname);
+					GLib.debug ("search in primary with using directives %s for %s", item.namespace_symbol.name, symbolname);
 					int tmp = result.count;
 					get_completion_for_name_in_namespace_with_context (item.namespace_symbol.name, 
 						symbolname, completion_visitor, _parser.pri_context);
@@ -838,7 +845,7 @@ namespace Vsc
 			var parts = symbolname.split (".", 2);				
 			//search it in the global namespace pool only if the typename contains a dot
 			if (parts[1] != null) {
-				GLib.debug ("search in global namespace poll %s for %s", parts[0], parts[1]);
+				GLib.debug ("search in primary namespace poll %s for %s", parts[0], parts[1]);
 				get_completion_for_name_in_namespace_with_context (parts[0], parts[1], 
 					completion_visitor, _parser.pri_context);
 			}				

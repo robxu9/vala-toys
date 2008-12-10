@@ -276,12 +276,14 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			res = has_constructors;
 		}
 		
-		//test symbol accesibility
+		//test symbol accessibility
 		if (res && (options.public_symbols && symbol.access == Vala.SymbolAccessibility.PUBLIC) ||
 			(options.private_symbols && symbol.access == Vala.SymbolAccessibility.PRIVATE) ||
 			(options.protected_symbols && symbol.access == Vala.SymbolAccessibility.PROTECTED) ||
 			(options.internal_symbols && symbol.access == Vala.SymbolAccessibility.INTERNAL)) {
 			    res = true;
+		} else {
+			res = false;
 		}
 		GLib.debug ("(test_symbol): testing %s: %s", symbol.name, (res ? "true" : "false"));
 		return res;
@@ -322,7 +324,8 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 				var completion = new CompletionVisitor (_options, res);
 				completion.searched_typename = cl.name;
 				completion.visit_class (cl);
-				return res.fields.size > 0 || res.methods.size > 0 || res.properties.size > 0;
+				return  res.classes.size > 0 || res.fields.size > 0 || 
+					res.methods.size > 0 || res.properties.size > 0;
 			}
 		}
 		
