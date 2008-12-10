@@ -67,9 +67,12 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			_current_typename = "%s.%s".printf (_current_typename, ns.name);
 		}
 		
-		if (_type_found && test_symbol (_options, ns)) {
-			if (!_results.namespaces_contain (ns.name))
-				_results.namespaces.add (new SymbolCompletionItem (ns.name));
+		if (_type_found) {
+			if (test_symbol (_options, ns)) {
+				if (!_results.namespaces_contain (ns.name)) {
+					_results.namespaces.add (new SymbolCompletionItem (ns.name));
+				}
+			}
 		} else {
 			if (!_type_found && _current_typename == _searched_typename) {
 				GLib.debug ("(visit_namespace): found %s", _current_typename);
@@ -259,8 +262,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		if (!_type_found)
 			return false;
 
-		GLib.debug ("(test_symbol): testing %s", symbol.name);
-			
 		bool res = false;
 		bool is_static = symbol_is_static (symbol);
 		bool has_constructors = symbol_has_constructors (symbol);
@@ -282,6 +283,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			(options.internal_symbols && symbol.access == Vala.SymbolAccessibility.INTERNAL)) {
 			    res = true;
 		}
+		GLib.debug ("(test_symbol): testing %s: %s", symbol.name, (res ? "true" : "false"));
 		return res;
 	}
 	
@@ -309,6 +311,19 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			return true;
 		} else if (symbol is Constant) {
 			return true;
+		} else if (symbol is Namespace) {
+			return true;
+		} else if (symbol is Class) {
+			//class is fully visited only if looking for
+			//static symbols
+			if (_options.static_symbols) {
+				var cl = (Class) symbol;
+				var res = new SymbolCompletionResult ();
+				var completion = new CompletionVisitor (_options, res);
+				completion.searched_typename = cl.name;
+				completion.visit_class (cl);
+				return res.fields.size > 0 || res.methods.size > 0 || res.properties.size > 0;
+			}
 		}
 		
 		return false;

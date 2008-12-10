@@ -44,6 +44,7 @@ namespace Vtg
 		private Gdk.Pixbuf _icon_iface;
 		private Gdk.Pixbuf _icon_const;
 		private Gdk.Pixbuf _icon_enum;
+		private Gdk.Pixbuf _icon_namespace;
 		private uint timeout_id = 0;
 		private bool all_doc = false; //this is a hack!!!
 
@@ -97,6 +98,8 @@ namespace Vtg
 				this._icon_iface = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-interface-16.png"));
 				this._icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
 				this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
+				this._icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));
+				
 				this._completion.parser.cache_building += sender => { 
 					if (cache_building == false) {
 						cache_building = true; 
@@ -326,6 +329,9 @@ namespace Vtg
 				if (result.constants.size > 0) {
 					append_symbols (result.constants, _icon_const);
 				}
+				if (result.namespaces.size > 0) {
+					append_symbols (result.namespaces, _icon_namespace);
+				}				
 				if (result.others.size > 0) {
 					append_symbols (result.others, _icon_generic);
 				}
