@@ -97,11 +97,14 @@ namespace Vtg.ProjectManager
 			if ((evt.state & ModifierType.MOD1_MASK) == 0 &&
 			     evt.keyval == Gdk.Key_Return) {
 				string filter = _entry.get_text ();
-				if (filter == null || filter == "") {
+				if (StringUtils.is_null_or_empty (filter)) {
 					_current_pattern = null;
 				} else {
+					filter = StringUtils.replace (filter, " ", "*");
 					if (!filter.has_suffix ("*"))
-						filter = "*%s*".printf (filter);
+						filter += "*";
+					if (!filter.has_prefix ("*"))
+						filter = "*" + filter;
 						
 					_current_pattern = new PatternSpec (filter);
 				}
@@ -109,8 +112,7 @@ namespace Vtg.ProjectManager
 			}
 			return false;
 		}
-
-			
+		
 		public bool on_treeview_key_press (Gtk.Widget sender, Gdk.EventKey evt)
 		{
 			if ((evt.state & ModifierType.MOD1_MASK) == 0 &&

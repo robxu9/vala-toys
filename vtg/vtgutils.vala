@@ -27,6 +27,24 @@ using Vtg.ProjectManager;
 
 namespace Vtg
 {
+	namespace StringUtils
+	{
+		public static bool is_null_or_empty (string? data)
+		{
+			return data == null || data == "";
+		}
+		
+		public static string replace (string data, string search, string replace) 
+		{
+			try {
+				var regex = new GLib.Regex (GLib.Regex.escape_string (search));
+				return regex.replace_literal (data, -1, 0, replace);
+			} catch (GLib.RegexError e) {
+				GLib.assert_not_reached ();
+			}
+		}
+	}
+	
 	public class Utils : GLib.Object
 	{
 		private static bool _initialized = false;
