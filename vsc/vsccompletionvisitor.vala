@@ -170,9 +170,12 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			}
 		
 			if (!_type_found && _current_typename == _searched_typename) {
-				GLib.debug ("(visit_struct): found %s", _current_typename);
-				_type_found = true;
-				en.accept_children (this);
+				if (!_typename_already_visited) {
+					GLib.debug ("(visit_enum): found %s", _current_typename);
+					_type_found = true;
+					_typename_already_visited = true;
+					en.accept_children (this);
+				}
 			} else if (_type_found && test_symbol (_options, en)) {
 				_results.enums.add (new SymbolCompletionItem (en.name));		
 			}
@@ -220,6 +223,11 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		if (test_symbol (_options, m)) {
 			_results.methods.add (new SymbolCompletionItem.with_method (m));
 		}
+	}
+	
+	public override void visit_enum_value (Vala.EnumValue e) 
+	{
+		_results.constants.add (new SymbolCompletionItem (e.name));
 	}
 	
 	public override void visit_creation_method (Vala.CreationMethod m)

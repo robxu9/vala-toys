@@ -1,5 +1,11 @@
 2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vsccompletionvisitor.vala
+
+	added first support for enum completion
+
+2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vsccompletionvisitor.vala:
 	* vsc/vscsymbolcompletion.vala
 
