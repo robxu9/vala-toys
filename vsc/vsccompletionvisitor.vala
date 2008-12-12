@@ -28,16 +28,23 @@ using Vala;
 public class Vsc.CompletionVisitor : CodeVisitor {
 	private SymbolCompletionResult _results;
 	private SymbolCompletionFilterOptions _options;
-	private string _current_typename = null;
-	private bool _type_found = false;
 	private CodeContext _context;
 	private SourceFile _current_file = null;
 		
 	//this flag blocks the visit of unmergeable types, like classes, struct etc
 	//it isn't setted for namespaces that we want to merge across files, and context
-	private bool _typename_already_visited = false; 
+	private bool _parent_type_already_visited = false; 
 	private string _searched_typename = null;
+
 	
+	public CompletionVisitor (SymbolCompletionFilterOptions options, SymbolCompletionResult results, SourceFile? source = null, CodeContext? context = null)
+	{
+		_results = results;
+		_options = options;
+		_context = context;
+        	_current_file = source;
+	}
+		
 	public string searched_typename
 	{
 		get {
@@ -48,174 +55,145 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		}
 	}
 	
-	public CompletionVisitor (SymbolCompletionFilterOptions options, SymbolCompletionResult results, SourceFile? source = null, CodeContext? context = null)
+	public void integrate_completion (Symbol symbol)
 	{
-		_results = results;
-		_options = options;
-		_context = context;
-        	_current_file = source;
+		_parent_type_already_visited = false;
+		symbol.accept (this);
 	}
 	
 	public override void visit_namespace (Namespace ns) 
 	{
-		var previous_typename = _current_typename;
-		var previous_type_found = _type_found;
-		
-		if (_current_typename == null) {
-			_current_typename = ns.name;			
-		} else {
-			_current_typename = "%s.%s".printf (_current_typename, ns.name);
-		}
-		
-		if (_type_found) {
+		if (_parent_type_already_visited) {
 			if (test_symbol (_options, ns)) {
 				if (!_results.namespaces_contain (ns.name)) {
 					_results.namespaces.add (new SymbolCompletionItem (ns.name));
 				}
 			}
 		} else {
-			if (!_type_found && _current_typename == _searched_typename) {
-				GLib.debug ("(visit_namespace): found %s", _current_typename);
-	                	_type_found = true;
-			}
+			_parent_type_already_visited = true;
 			ns.accept_children (this);
 		}
-		
-                _current_typename = previous_typename;
-                _type_found = previous_type_found;
         }
         
        	public override void visit_class (Class cl) 
 	{
-		//check for duplicates since for more accurate results
-		//container types are searched and merged in all the context		
-		//beaware that cl.name isn't fully qualified!
-		//This can be a problem in the future
-		if (!_results.classes_contain (cl.name)) {
-			var previous_typename = _current_typename;
-			var previous_type_found = _type_found;
-
-			if (_current_typename == null) {
-				_current_typename = cl.name;
-			} else {
-				_current_typename = "%s.%s".printf (_current_typename, cl.name);
-			}
-
-			//GLib.debug ("(visit_class): class %s for %s", _current_typename, _searched_typename);
-			if (!_type_found && _current_typename == _searched_typename) {
-				if (!_typename_already_visited) {
-					GLib.debug ("(visit_class): found class %s", _current_typename);
-					_type_found = true;
-					//if I just found the type I'll visit all the children
-					_typename_already_visited = true;
-					cl.accept_children (this);
-				}
-			} else if (_type_found && test_symbol (_options, cl)) {
+		if (_parent_type_already_visited) {
+			if (!_results.classes_contain (cl.name) && test_symbol (_options, cl)) {
 				var item = new SymbolCompletionItem.with_class (cl);
 				_results.classes.add (item);
 			}
-	
-			_type_found = previous_type_found;
-			_current_typename = previous_typename;
+		} else {
+			foreach (DataType type in cl.get_base_types ()) {
+				type.accept (this);
+			}
+			
+			_parent_type_already_visited = true;
+			foreach (TypeParameter p in cl.get_type_parameters ()) {
+				p.accept (this);
+			}
+
+			/* process enums first to avoid order problems in C code */
+			foreach (Enum en in cl.get_enums ()) {
+				en.accept (this);
+			}
+
+			foreach (Field f in cl.get_fields ()) {
+				f.accept (this);
+			}
+		
+			foreach (Constant c in cl.get_constants()) {
+				c.accept (this);
+			}
+		
+			foreach (Method m in cl.get_methods()) {
+				m.accept (this);
+			}
+		
+			foreach (Property prop in cl.get_properties()) {
+				prop.accept (this);
+			}
+		
+			foreach (Vala.Signal sig in cl.get_signals()) {
+				sig.accept (this);
+			}
+		
+			foreach (Class cl in cl.get_classes()) {
+				cl.accept (this);
+			}
+		
+			foreach (Struct st in cl.get_structs()) {
+				st.accept (this);
+			}
+
+			foreach (Delegate d in cl.get_delegates()) {
+				d.accept (this);
+			}
 		}
 	}
 	        
        	public override void visit_struct (Struct st) 
 	{
-		//check for duplicates since for more accurate results
-		//container types are searched and merged in all the context		
-		//beaware that st.name isn't fully qualified!
-		//This can be a problem in the future
-		if (!_results.structs_contain (st.name)) {
-			var previous_typename = _current_typename;
-			var previous_type_found = _type_found;
-		
-			if (_current_typename == null) {
-				_current_typename = st.name;
-			} else {
-				_current_typename = "%s.%s".printf (_current_typename, st.name);
+		if (_parent_type_already_visited) {
+			if (!_results.structs_contain (st.name) && test_symbol (_options, st)) {
+				_results.structs.add (new SymbolCompletionItem.with_struct (st));
+			}
+		} else {
+			foreach (DataType type in st.get_base_types()) {
+				type.accept (this);
+			}
+			_parent_type_already_visited = true;
+			foreach (TypeParameter p in st.get_type_parameters()) {
+				p.accept (this);
 			}
 		
-			//GLib.debug ("(visit_struct): class %s for %s", _current_typename, _searched_typename);
-			if (!_type_found && _current_typename == _searched_typename) {
-				if (!_typename_already_visited) {
-					GLib.debug ("(visit_struct): found %s", _current_typename);
-					_type_found = true;
-					_typename_already_visited = true;
-					st.accept_children (this);
-				}
-			} else if (_type_found && test_symbol (_options, st)) {
-					_results.structs.add (new SymbolCompletionItem.with_struct (st));
+			foreach (Field f in st.get_fields()) {
+				f.accept (this);
 			}
 		
-		        _type_found = previous_type_found;
-			_current_typename = previous_typename;
+			foreach (Constant c in st.get_constants()) {
+				c.accept (this);
+			}
+		
+			foreach (Method m in st.get_methods()) {
+				m.accept (this);
+			}			
 		}
 	}
 
        	public override void visit_enum (Enum en) 
 	{
-		//check for duplicates since for more accurate results
-		//container types are searched and merged in all the context		
-		//beaware that en.name isn't fully qualified!
-		//This can be a problem in the future
-		if (!_results.enums_contain (en.name)) {
-			var previous_typename = _current_typename;
-			var previous_type_found = _type_found;
-		
-			if (_current_typename == null) {
-				_current_typename = en.name;
-			} else {
-				_current_typename = "%s.%s".printf (_current_typename, en.name);
+		if (_parent_type_already_visited) {
+			if (!_results.enums_contain (en.name) && test_symbol (_options, en)) {
+				_results.enums.add (new SymbolCompletionItem (en.name));
 			}
-		
-			if (!_type_found && _current_typename == _searched_typename) {
-				if (!_typename_already_visited) {
-					GLib.debug ("(visit_enum): found %s", _current_typename);
-					_type_found = true;
-					_typename_already_visited = true;
-					en.accept_children (this);
-				}
-			} else if (_type_found && test_symbol (_options, en)) {
-				_results.enums.add (new SymbolCompletionItem (en.name));		
-			}
-		
-		        _type_found = previous_type_found;
-			_current_typename = previous_typename;
+		} else {
+			_parent_type_already_visited = true;
+			en.accept_children (this);			
 		}
 	}
 	
 	public override void visit_data_type (DataType data_type) {
-		data_type.accept_children (this);
-
-		//no need to resolve a type if I haven't found its parent
-		if (!(_type_found && data_type is UnresolvedType)) {
+		if (!(data_type is UnresolvedType)) {
 			return;
 		}
-
+		
 		return_if_fail (_context != null);
 		
 		var unresolved_type = (UnresolvedType) data_type;
-		string name = unresolved_type.unresolved_symbol.name;
-
-		Symbol sym = null;
-		if (unresolved_type.unresolved_symbol.qualified) {
-			GLib.debug ("(visit_data_type): lookup %s in %s: %d", name, _context.root.name, (int) _context.root.scope);
-			sym = _context.root.scope.lookup (name);
-			if (sym != null)
-				sym.accept (this);
+		var sym = resolve_type (unresolved_type);
+		debug ("resolving type started");
+		if (sym == null) {
+			GLib.warning ("(visit-data-type): can't resolve type");
+			return;
 		}
 		
-		if (sym == null && _current_file != null) {
-			foreach (UsingDirective item in _current_file.get_using_directives ()) {
-				name = "%s.%s".printf (item.namespace_symbol.name, unresolved_type.unresolved_symbol.name);
-				GLib.debug ("(visit_data_type): symbol not qualified looking for %s", name);
-				var completion = new CompletionVisitor (_options, _results);
-				completion._searched_typename = name;
-				completion.visit_namespace (_context.root);
-			}
+		if (_parent_type_already_visited) {
+			sym.accept (this);
+		} else {
+			_parent_type_already_visited = true;
+			sym.accept_children (this);
 		}
-		GLib.debug ("(visit_data_type): unresolved type, symbol %s", name);		
+		debug ("resolving type ended");
 	}
 		
        	public override void visit_method (Method m) 
@@ -267,9 +245,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	
 	private bool test_symbol (SymbolCompletionFilterOptions options, Symbol symbol)
 	{
-		if (!_type_found)
-			return false;
-
 		bool res = false;
 		bool is_static = symbol_is_static (symbol);
 		bool has_constructors = symbol_has_constructors (symbol);
@@ -293,7 +268,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		} else {
 			res = false;
 		}
-		GLib.debug ("(test_symbol): testing %s: %s", symbol.name, (res ? "true" : "false"));
+		//GLib.debug ("(test_symbol): testing %s: %s", symbol.name, (res ? "true" : "false"));
 		return res;
 	}
 	
@@ -328,16 +303,87 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			//static symbols
 			if (_options.static_symbols) {
 				var cl = (Class) symbol;
-				var res = new SymbolCompletionResult ();
-				var completion = new CompletionVisitor (_options, res);
-				completion.searched_typename = cl.name;
-				completion.visit_class (cl);
-				return  res.classes.size > 0 || res.fields.size > 0 || 
-					res.methods.size > 0 || res.properties.size > 0;
+				return class_is_static (cl);
 			}
 		}
 		
 		return false;
-	}		
+	}
+	
+	private bool class_is_static (Class cl)		
+	{
+		if (cl.get_enums ().size > 0 || cl.get_constants ().size > 0)
+			return true;
+		
+		foreach (Field f in cl.get_fields ()) {
+			if (symbol_is_static(f))
+				return true;
+		}
+	
+		foreach (Method m in cl.get_methods()) {
+			if (symbol_is_static(m))
+				return true;
+		}
+	
+		foreach (Property prop in cl.get_properties()) {
+			if (symbol_is_static(prop))
+				return true;
+		}
+	
+		foreach (Struct st in cl.get_structs()) {
+			if (symbol_is_static(st))
+				return true;
+		}
+
+		foreach (Delegate d in cl.get_delegates()) {
+			if (symbol_is_static(d))
+				return true;
+		}
+
+		foreach (DataType type in cl.get_base_types ()) {
+			if (type is UnresolvedType) {
+				var unresolved_type = (UnresolvedType) type;
+				var sym = resolve_type (unresolved_type);
+				if (sym != null) {
+					if (symbol_is_static(sym)) {
+						return true;		
+					}
+				}
+			} else if (symbol_is_static(type.data_type))
+				return true;
+		}
+		
+		foreach (Class cl in cl.get_classes()) {
+			if (symbol_is_static(cl))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	private Symbol? resolve_type (UnresolvedType unresolved_type)
+	{
+		string name = unresolved_type.unresolved_symbol.name;
+
+		Symbol sym = null;
+		if (unresolved_type.unresolved_symbol.qualified) {
+			sym = _context.root.scope.lookup (name);
+		}
+		
+		if (sym == null && _current_file != null) {
+			var typefinder = new TypeFinderVisitor (_current_file);
+			foreach (UsingDirective item in _current_file.get_using_directives ()) {
+				name = "%s.%s".printf (item.namespace_symbol.name, unresolved_type.unresolved_symbol.name);
+				typefinder.searched_typename = name;
+				typefinder.visit_namespace (_context.root);
+				if (typefinder.result != null) {
+					sym = typefinder.result;
+					break;
+				}
+			}
+		}
+		
+		return sym;
+	}
 }
 

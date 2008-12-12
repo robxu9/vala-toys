@@ -1,5 +1,15 @@
 2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vsctypefindvisitor.vala:
+	* vsc/Makefile.am:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+
+	vsc performance and accuracy improvments
+
+2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vsccompletionvisitor.vala
 
 	added first support for enum completion

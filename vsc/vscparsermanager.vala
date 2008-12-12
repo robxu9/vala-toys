@@ -603,9 +603,10 @@ namespace Vsc
 		{
 			var symbol_resolver = new SymbolResolver ();
 			symbol_resolver.resolve (context);
-
+/*
 			var semantic = new SemanticAnalyzer ();
 			semantic.analyze (context);
+*/
 		}
 
 		private string? find_vala_package_name (string @namespace) throws GLib.Error

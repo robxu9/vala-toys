@@ -798,23 +798,31 @@ namespace Vsc
 			
 			//first look in the namespaces defined in the source file
 			_parser.lock_all_contexts ();
-			var completion_visitor = new CompletionVisitor (options, result,source,  _parser.pri_context);
+			var finder = new TypeFinderVisitor (source,  _parser.pri_context);
+			var completion = new CompletionVisitor (options, result, source,  _parser.pri_context);
 			if (source != null) {
 				foreach (CodeNode node in source.get_nodes ()) {
 					if (node is Namespace) {
 						var ns = (Namespace) node;
 						var name = normalize_typename (symbolname, ns.name);
-						GLib.debug ("search in source namespaces for %s", name);
-						completion_visitor.searched_typename = name;
-						int tmp = result.count;
-						completion_visitor.visit_namespace (ns);
-						if (tmp != result.count) {
+						GLib.debug ("source: search in secondary namespaces for %s", name);
+						finder.searched_typename = name;
+						finder.visit_namespace (ns);
+						if (finder.result != null) {
+							GLib.debug ("source: search in secondary namespaces found: %s", finder.qualified_typename);
+							finder.result.accept (completion);
+							if (finder.result is Namespace) {
+								get_completion_for_name_in_namespace_with_context (ns.name, name, 
+									finder, completion, _parser.pri_context);
+							}
 							break;
 						} else {
-							GLib.debug ("search in primary namespaces for %s", name);
+							GLib.debug ("source: search in primary namespaces for %s", name);
+							int tmp = result.count;
 							get_completion_for_name_in_namespace_with_context (ns.name, name, 
-								completion_visitor, _parser.pri_context);
+								finder, completion, _parser.pri_context);
 							if (tmp != result.count) {
+								GLib.debug ("source: search in primary namespaces found: %s", name);
 								break; //found something in primary context
 							}
 						}
@@ -824,47 +832,43 @@ namespace Vsc
 				GLib.debug ("no source file found");
 			}
 
-			//search it in the root namespace, string and other base types are there
-			GLib.debug ("search in source root namespace for %s", symbolname);
-			completion_visitor.searched_typename = symbolname;
-			completion_visitor.visit_namespace (_parser.sec_context.root);
-
+			if (finder.result == null) {
+				//search it in the root namespace, string and other base types are there
+				GLib.debug ("search in primary root namespace for %s", symbolname);
+				finder.searched_typename = symbolname;
+				finder.visit_namespace (_parser.pri_context.root);
+				if (finder.result != null) {
+					finder.result.accept (completion);
+				}
+			}
+			
 			//search it in referenced namespaces
-			if (source != null) {
+			if (source != null && finder.result == null) {
 				foreach(UsingDirective item in source.get_using_directives ()) {
-					GLib.debug ("search in primary with using directives %s for %s", item.namespace_symbol.name, symbolname);
+					GLib.debug ("using directives: search in primary with namespace  %s for %s", item.namespace_symbol.name, symbolname);
 					int tmp = result.count;
 					get_completion_for_name_in_namespace_with_context (item.namespace_symbol.name, 
-						symbolname, completion_visitor, _parser.pri_context);
-						if (tmp != result.count) {
-							break;
-						}
+						symbolname, finder, completion, _parser.pri_context);
+					if (tmp != result.count) {
+						break;
+					}
 				}
 			}
 
-			var parts = symbolname.split (".", 2);				
-			//search it in the global namespace pool only if the typename contains a dot
-			if (parts[1] != null) {
-				GLib.debug ("search in primary namespace poll %s for %s", parts[0], parts[1]);
-				get_completion_for_name_in_namespace_with_context (parts[0], parts[1], 
-					completion_visitor, _parser.pri_context);
-			}				
-
-			GLib.debug ("search in primary root namespace for %s", symbolname);
-			completion_visitor.searched_typename = symbolname;
-			completion_visitor.visit_namespace (_parser.pri_context.root);
-			
 			_parser.unlock_all_contexts ();
 			return result;
 		}
 		
-		private void get_completion_for_name_in_namespace_with_context (string namespace_name, string typename, CompletionVisitor completion_visitor, CodeContext context)
+		private void get_completion_for_name_in_namespace_with_context (string namespace_name, string typename, TypeFinderVisitor finder, CompletionVisitor completion, CodeContext context)
 		{
 			foreach (Namespace ns in context.root.get_namespaces ()) {
 				if (ns.name == namespace_name) {
-					completion_visitor.searched_typename = typename;
-					completion_visitor.visit_namespace (ns);
-					return;
+					finder.searched_typename = typename;
+					finder.visit_namespace (ns);
+					if (finder.result != null) {					
+						completion.integrate_completion (finder.result);
+					}
+					break;
 				}
 			}
 		}
