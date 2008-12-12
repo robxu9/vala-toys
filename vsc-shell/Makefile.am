@@ -16,7 +16,7 @@ BUILT_SOURCES = vsc-shell.vala.stamp
 
 
 if ENABLE_DEBUG
-        DEBUG = -g
+        DEBUG =
 else
         DEBUG = -Xcc "-D G_DISABLE_DEBUG"
 endif

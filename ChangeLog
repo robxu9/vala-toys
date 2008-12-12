@@ -1,5 +1,17 @@
 2008-12-13  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/valaprojectgenerator.vala:
+	* vsc-shell/vsccompletionshell.vala:
+
+	fixed a crash when using -h command line switch
+
+	* vsc/Makefile.am:
+	* vsc-shell/Makefile.am:
+
+	don't use valac -g if debug is enabled
+
+2008-12-13  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala:
 
 	fixed a crash when completing the base keyword

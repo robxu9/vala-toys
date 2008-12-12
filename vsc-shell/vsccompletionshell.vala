@@ -28,13 +28,23 @@ namespace Vsc
 {
 	public class CompletionShell : Object
 	{
+		static string option_execute_script = null;
+
+		const OptionEntry[] options = {
+			{ "exec", 'e', 0, OptionArg.STRING, ref option_execute_script, "Execute script", "FILE" },
+			{ null }
+		};
+
 		private SymbolCompletion _completion = new SymbolCompletion ();
 		private string redirect_filename = "";
 		
-		public void run ()
+		public void run (string? script = null)
 		{
 			bool exit = false;
-			_completion.parser.resume_parsing ();			
+			_completion.parser.resume_parsing ();
+			if (script != null) {
+				exit = !execute_command ("execute %s".printf (script));
+			}
 			while (!exit) {
 				string line = read_line ("> ");
 				if (line != null && line != "") {
@@ -267,6 +277,15 @@ namespace Vsc
 				var sb = new StringBuilder ();
 
 				print_message ("symbols found");
+				if (result.enums.size > 0) {
+					append_symbols ("enums", sb, result.interfaces);
+				}
+				if (result.constants.size > 0) {
+					append_symbols ("constants", sb, result.interfaces);
+				}
+				if (result.namespaces.size > 0) {
+					append_symbols ("namespaces", sb, result.interfaces);
+				}
 				if (result.fields.size > 0) {
 					append_symbols ("field", sb, result.fields);
 				}
@@ -280,14 +299,12 @@ namespace Vsc
 				if (result.signals.size > 0) {
 					append_symbols ("signal", sb, result.signals);
 				}
-
 				if (result.classes.size > 0) {
 					append_symbols ("class", sb, result.classes);
 				}
 				if (result.interfaces.size > 0) {
 					append_symbols ("interface", sb, result.interfaces);
 				}
-
 				if (result.structs.size > 0) {
 					append_symbols ("struct", sb, result.structs);
 				}
@@ -329,11 +346,21 @@ namespace Vsc
 				file = null;
 			}
 		}
-	}
 
-	public static void main (string [] args)
-	{
-		var cs = new CompletionShell ();
-		cs.run ();
+		public static int main (string [] args)
+		{
+			try {
+		                var opt_context = new OptionContext ("- Vsc Completion Shell");
+		                opt_context.add_main_entries (options, null);
+		                opt_context.parse (ref args);
+		        } catch (OptionError e) {
+		                stdout.printf ("%s\n", e.message);
+		                stdout.printf ("Run '%s --help' to see a full list of available command line options.\n", args[0]);
+		                return 1;
+		        }
+			var cs = new CompletionShell ();
+			cs.run (option_execute_script);
+			return 0;
+		}
 	}
 }

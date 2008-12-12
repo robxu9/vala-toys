@@ -57,7 +57,8 @@ class Vala.ProjectGenerator : Dialog {
 	private ProjectLicense project_license;
 
         const OptionEntry[] options = {
-		{ "projectdir", 0, 0, OptionArg.STRING, ref option_project_path, "Project path", "NAME" }
+		{ "projectdir", 0, 0, OptionArg.STRING, ref option_project_path, "Project path", "NAME" },
+		{ null }
 	};
 
 	public ProjectGenerator () {
