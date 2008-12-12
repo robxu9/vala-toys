@@ -1,3 +1,9 @@
+2008-12-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed a crash when completing the base keyword
+
 2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vsctypefindvisitor.vala:
