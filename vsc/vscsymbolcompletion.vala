@@ -297,7 +297,7 @@ namespace Vsc
 				result = get_inner_datatype (result, toks[1], source);
 			}
 			_parser.unlock_all_contexts ();
-			return (result == null ? null : result.copy ());
+			return result;
 		}
 
 		private DataType? get_inner_datatype (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
@@ -635,12 +635,10 @@ namespace Vsc
 						if (cl.base_class != null) {
 							return new ClassType (cl.base_class);
 						} else {
-							foreach (Vala.DataType type in cl.get_base_types ()) {
-								if (type != null && !(type is Vala.Interface)) {
+							foreach (Vala.DataType item in cl.get_base_types ()) {
+								if (!(item is Vala.Interface)) {
 									//this is a HACK!
-									//datatype can be UnreferencedType even for interfaces
-									debug ("%s", Reflection.get_type_from_instance (type).name());
-									return type.copy ();
+									return item;
 								}
 							}
 							return null;

@@ -1,5 +1,11 @@
 2008-12-13  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+
+	really fixed the crash when completing the base keyword
+
+2008-12-13  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/valaprojectgenerator.vala:
 	* vsc-shell/vsccompletionshell.vala:
 
