@@ -33,9 +33,17 @@ namespace Vtg.ProjectManager
 		//TODO: hashtable with Project as key
 		private uint _child_watch_id = 0;
 		private	Pid child_pid = (Pid) 0;
-
+		
+		public signal void process_start ();
+		public signal void process_exit (int exit_status);
+		
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
-
+		public bool is_executing {
+			get {
+				return _child_watch_id != 0;
+			}
+		}
+		
 		public Executer (Vtg.Plugin plugin)
 		{
 			this.plugin = plugin;
@@ -69,6 +77,7 @@ namespace Vtg.ProjectManager
 					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
 					log.start_watch (_child_watch_id, stdo, stde, stdi);
 					log.activate ();
+					this.process_start ();
 				} else {
 					log.log_message ("error spawning process\n");
 				}
@@ -94,12 +103,12 @@ namespace Vtg.ProjectManager
 			var log = _plugin.output_view;
 
 			Process.close_pid (child_pid);
-			child_pid = (Pid) 0;
-
 			log.stop_watch (_child_watch_id);
 			log.log_message (_("\nprocess terminated with exit status %d\n").printf(status));
 			_build_view.activate ();
 			_child_watch_id = 0;
+			this.process_exit (Process.exit_status(status));
+			child_pid = (Pid) 0;
 		}
 	}
 }

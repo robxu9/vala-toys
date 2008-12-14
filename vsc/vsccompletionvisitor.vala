@@ -306,7 +306,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 				return class_is_static (cl);
 			}
 		}
-		
 		return false;
 	}
 	

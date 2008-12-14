@@ -37,7 +37,11 @@ namespace Vtg.ProjectManager
 		private int last_exit_code = 0;
 		
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
-
+		public BuildLogView error_pane {
+			get {
+				return _build_view;
+			}
+		}
 		construct
 		{
 			this._build_view = new BuildLogView (_plugin);
@@ -181,12 +185,11 @@ namespace Vtg.ProjectManager
 			var log = _plugin.output_view;
 
 			Process.close_pid (pid);
-
 			log.stop_watch (_child_watch_id);
 			last_exit_code = Process.exit_status (status);
 			log.log_message (_("\ncompilation end with exit status %d\n").printf (last_exit_code));
-
 			_build_view.activate ();
+			
 			if (last_exit_code == 0) {
 				if (!this.is_bottom_pane_visible) {
 					_plugin.gedit_window.get_bottom_panel ().hide ();

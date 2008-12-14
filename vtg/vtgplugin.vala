@@ -112,6 +112,16 @@ namespace Vtg
 			return _config.get_configuration_dialog ();
 		}
 
+		public override void update_ui (Gedit.Window window)
+		{
+			GLib.debug ("update UI");
+			var doc = window.get_active_document ();
+			if (doc != null) {
+				var prj = project_descriptor_find_from_document (doc);
+				_prj_man.project_view.current_project = prj.project;
+			}
+		}
+		
 		public Gedit.Window gedit_window
 		{
 			get { return _window; }
@@ -209,6 +219,9 @@ namespace Vtg
 		private ProjectDescriptor project_descriptor_find_from_document (Gedit.Document document)
 		{
 			var file = document.get_uri ();
+			if (file == null) {
+				file = document.get_short_name_for_display ();
+			}
 			foreach (ProjectDescriptor project in _projects) {
 				if (project.project.contains_source_file (file)) {
 					return project;

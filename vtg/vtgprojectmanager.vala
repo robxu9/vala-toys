@@ -101,7 +101,7 @@ namespace Vtg.ProjectManager
 			{"ProjectBuildCompileFile", null, N_("_Compile File"), "<control>B", N_("Compile the current file with the vala compiler"), on_standalone_file_compile},			
 			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
 			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
-			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute built program"), on_project_execute_process},
+			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute target program"), on_project_execute_process},
 			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process},
 			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
 			{"ProjectGotoMethod", null, N_("_Go To Method..."), "<control>M", N_("Goto to a specific method in the current source document"), on_project_goto_method}
@@ -110,7 +110,7 @@ namespace Vtg.ProjectManager
 
 		/* END UI */
 		private Gee.List<Project> _projects = new Gee.ArrayList<Project> ();
-
+		private ActionGroup _actions = null;
 		private Vtg.Plugin _plugin;
 		private ProjectManager.View _prj_view = null;
 		private ProjectManager.Builder _prj_builder = null;
@@ -127,17 +127,32 @@ namespace Vtg.ProjectManager
 
 		construct	
 		{
-			initialize_ui ();
+			_prj_view = new ProjectManager.View (_plugin);
+			_prj_view.notify["current-project"] += this.on_current_project_changed;
 			_prj_builder = new ProjectManager.Builder (_plugin);
 			_prj_executer = new ProjectManager.Executer (_plugin);
+			_prj_executer.process_start += (sender) => {
+				update_ui (_prj_view.current_project == null);
+			};
+			_prj_executer.process_exit += (sender, exit_status) => {
+				update_ui (_prj_view.current_project == null);
+			};
+			initialize_ui ();
 		}
 
+		public ProjectManager.View project_view 
+		{
+			get {
+				return _prj_view;
+			}
+		}
+		
 		private void initialize_ui ()
 		{
-			var prj_agrp = new ActionGroup ("ProjectManagerActionGroup");
-			prj_agrp.add_actions (_action_entries, this);
+			_actions = new ActionGroup ("ProjectManagerActionGroup");
+			_actions.add_actions (_action_entries, this);
 			var manager = plugin.gedit_window.get_ui_manager ();
-			manager.insert_action_group (prj_agrp, -1);
+			manager.insert_action_group (_actions, -1);
 			try {
 				_ui_id = manager.add_ui_from_string (_ui_def, -1);
 			} catch (Error err) {
@@ -171,7 +186,7 @@ namespace Vtg.ProjectManager
 		private void on_project_close (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);
-			var project = this.get_project_manager_view.current_project;
+			var project = _prj_view.current_project;
 			return_if_fail (project != null);
 
 			bool save_required = false;
@@ -234,7 +249,7 @@ namespace Vtg.ProjectManager
 		private void on_project_goto_document (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);
-			var project = this.get_project_manager_view.current_project;
+			var project = _prj_view.current_project;
 			return_if_fail (project != null);
 			
 			TreeIter iter;
@@ -256,7 +271,7 @@ namespace Vtg.ProjectManager
 		{
 			GLib.debug ("Action %s activated", action.name);
 			
-			var project = this.get_project_manager_view.current_project;
+			var project = _prj_view.current_project;
 			return_if_fail (project != null);
 			
 			var pdes = get_projectdescriptor_for_project (project);
@@ -310,7 +325,7 @@ namespace Vtg.ProjectManager
 			var doc = _plugin.gedit_window.get_active_document ();
 			if (doc != null) {
 				string file = doc.get_uri ();
-				var project = this.get_project_manager_view.current_project;
+				var project = _prj_view.current_project;
 				if (project != null) {
 					if (project.contains_source_file (file)) {
 						//TODO: we should get the group an issue a make in that subfolder
@@ -330,8 +345,8 @@ namespace Vtg.ProjectManager
 		private void on_project_build (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);
-			if (this.get_project_manager_view.current_project != null) {
-				var project = this.get_project_manager_view.current_project;
+			if (_prj_view.current_project != null) {
+				var project = _prj_view.current_project;
 				GLib.debug ("building project %s", project.name);
 				project_save_all (project);
 				_prj_builder.build (project);
@@ -351,8 +366,8 @@ namespace Vtg.ProjectManager
 		private void on_project_execute_process (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);
-			if (this.get_project_manager_view.current_project != null) {
-				var project = this.get_project_manager_view.current_project;
+			if (_prj_view.current_project != null) {
+				var project = _prj_view.current_project;
 				GLib.debug ("executing project %s", project.name);
 				_prj_executer.execute (project);
 			}
@@ -367,8 +382,8 @@ namespace Vtg.ProjectManager
 
 		private void clean_project (bool stamps = false)
 		{
-			if (this.get_project_manager_view.current_project != null) {
-				var project = this.get_project_manager_view.current_project;
+			if (_prj_view.current_project != null) {
+				var project = _prj_view.current_project;
 				_prj_builder.clean (project, stamps);
 			}
 		}
@@ -385,6 +400,45 @@ namespace Vtg.ProjectManager
 			_prj_builder.previous_error ();
 		}
 
+		private void on_current_project_changed (GLib.Object sender, ParamSpec pspec)
+		{
+			ProjectManager.View view = (ProjectManager.View) sender;
+			update_ui (view.current_project == null);
+		}
+		
+		private void update_ui (bool default_project)
+		{
+			var action = _actions.get_action ("ProjectClose");
+			action.set_sensitive (!default_project);
+			action = _actions.get_action ("ProjectBuild");
+			action.set_sensitive (!default_project);
+			action = _actions.get_action ("ProjectBuildClean");
+			action.set_sensitive (!default_project);
+			action = _actions.get_action ("ProjectBuildCleanStamps");
+			action.set_sensitive (!default_project);
+			
+			var doc = _plugin.gedit_window.get_active_document ();
+			bool is_vala_source = (doc != null && doc.language != null && doc.language.id == "vala");
+			action = _actions.get_action ("ProjectBuildCompileFile");
+			action.set_sensitive (default_project && is_vala_source);
+			action = _actions.get_action ("ProjectGotoMethod");
+			action.set_sensitive (is_vala_source);
+			
+			action = _actions.get_action ("ProjectGotoDocument");
+			action.set_sensitive (!default_project);
+			
+			bool has_errors = _prj_builder.error_pane.error_count > 0;
+			action = _actions.get_action ("ProjectBuildNextError");
+			action.set_sensitive (has_errors);
+			action = _actions.get_action ("ProjectBuildPreviousError");
+			action.set_sensitive (has_errors);
+			
+			action = _actions.get_action ("ProjectBuildExecute");
+			action.set_sensitive (!_prj_executer.is_executing && !default_project);
+			action = _actions.get_action ("ProjectBuildKill");
+			action.set_sensitive (_prj_executer.is_executing && !default_project);
+		}
+		
 		private void open_project (string name)
 		{
 			try {
@@ -394,7 +448,7 @@ namespace Vtg.ProjectManager
 					//HACK: why the signal isn't working?!?!
 					//this.project_loaded (project);
 					_plugin.on_project_loaded (this, project);
-					this.get_project_manager_view.add_project (project);
+					_prj_view.add_project (project);
 				}
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
@@ -410,7 +464,7 @@ namespace Vtg.ProjectManager
 					_plugin.gedit_window.close_tab (tab);
 				}
 			}
-			this.get_project_manager_view.remove_project (project);
+			_prj_view.remove_project (project);
 			_plugin.on_project_closed (this, project);
 			project.close ();
 			_projects.remove (project);
@@ -463,17 +517,6 @@ namespace Vtg.ProjectManager
 				}
 			} catch (Error err) {
 				GLib.warning ("error creating project: %s", err.message);
-			}
-		}
-
-		private View get_project_manager_view
-		{
-			get {
-				if (_prj_view == null) {
-					_prj_view = new ProjectManager.View (this._plugin);
-				}
-
-				return _prj_view;
 			}
 		}
 

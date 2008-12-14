@@ -33,12 +33,18 @@ namespace Vtg.ProjectManager
 		private TreeView _build_view = null;
 
 		private int current_error_row = 0;
-		private int error_count = 0;
+		private int _error_count = 0;
 		private Vtg.Plugin _plugin;
 		private Project _project;
 
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
-
+		
+		public int error_count {
+			get {
+				return _error_count;
+			}
+		}
+		
 		public BuildLogView (Vtg.Plugin plugin)
 		{
 			this.plugin = plugin;
@@ -91,7 +97,7 @@ namespace Vtg.ProjectManager
 		{
 			this._project = project;
 			current_error_row = 0;
-			error_count = 0;
+			_error_count = 0;
 			_model.clear ();
 		}
 
@@ -150,7 +156,7 @@ namespace Vtg.ProjectManager
 				activate_path (path);
 				_build_view.scroll_to_cell (path, null, false, 0, 0);
 				_build_view.get_selection ().select_path (path);
-				if (current_error_row < error_count - 1)
+				if (current_error_row < _error_count - 1)
 					current_error_row++;
 				else
 					current_error_row = 0;
@@ -167,7 +173,7 @@ namespace Vtg.ProjectManager
 				if (current_error_row > 0)
 					current_error_row--;
 				else
-					current_error_row = error_count - 1;
+					current_error_row = _error_count - 1;
 			}
 		}
 
@@ -206,7 +212,7 @@ namespace Vtg.ProjectManager
 					TreeIter iter;
 					_model.append (out iter);
 					_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, _project);
-					error_count++;
+					_error_count++;
 				}
 			}
 		}

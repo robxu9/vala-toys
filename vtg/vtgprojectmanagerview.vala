@@ -64,7 +64,26 @@ namespace Vtg.ProjectManager
 
 		private Project _current_project = null;
 		
-		public Project current_project { get { return _current_project; } }
+		public Project current_project 
+		{ 
+			get { 
+				return _current_project; 
+			} 
+			set { 
+				if (_current_project != null) {
+					_current_project.updated -= this.on_current_project_updated;
+				}
+				_current_project = value; 
+				if (_current_project != null) {
+					_current_project.updated += this.on_current_project_updated;
+					_prj_view.set_model (_current_project.model);
+					_prj_view.expand_all ();
+				} else {
+					_prj_view.set_model (null);
+				}
+			} 
+		}
+		
 		public Vtg.Plugin plugin { construct { _plugin = value; } }
 
 		public View (Vtg.Plugin plugin)
@@ -113,8 +132,13 @@ namespace Vtg.ProjectManager
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
 			}
+			
+			//default empty project
+			_prjs_combo.append_text (_("(no project opened - default)"));
+			_prjs_combo.set_active (0);
+			_project_count++;
 		}
-
+		
 		public void add_project (Project project)
 		{
 			_prjs_combo.append_text (project.name);
@@ -187,32 +211,27 @@ namespace Vtg.ProjectManager
 
 		private void show_packages_dialog (ProjectModule module)
 		{
-			var dialog = new PackagesDialog (module, _current_project.modules);
+			var dialog = new PackagesDialog (module, current_project.modules);
 			dialog.show ();
 		}
 
 		private void update_view (string? project_name)
 		{
-			if (_current_project != null)
-				_current_project.updated -= this.on_current_project_updated;
+			Project result = null;
 
-			_current_project = null;
 			if (project_name != null) {
 				//find project
 				foreach (ProjectDescriptor item in _plugin.projects) {
 					GLib.debug ("%s vs %s", item.project.name, project_name);
 					if (item.project.name == project_name) {
 						GLib.debug ("found!");
-						_prj_view.set_model (item.project.model);
-						_prj_view.expand_all ();
-						_current_project = item.project;
-						_current_project.updated += this.on_current_project_updated;
+						result = item.project;
 						break;
 					}
 				}
-			} else {
-				_prj_view.set_model (null);
 			}
+			
+			current_project = result;
 		}
 
 		private void on_current_project_updated (Project sender)

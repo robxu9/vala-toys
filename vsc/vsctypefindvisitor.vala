@@ -102,7 +102,6 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			//cl.accept_children (this);
 			foreach (DataType type in cl.get_base_types ()) {
 				if (type != null) {
-					GLib.debug ("type %s", type.to_string ());
 					type.accept (this);
 				}
 			}

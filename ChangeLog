@@ -1,3 +1,16 @@
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgprojectmanagerbuildlogview.vala:
+	* vtg/vtgprojectmanagerexecuter.vala:
+	* vtg/vtgprojectmanagerview.vala:
+
+	enabled / disabled menu' actions
+
 2008-12-13  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala:
