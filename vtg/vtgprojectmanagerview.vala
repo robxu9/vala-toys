@@ -62,6 +62,9 @@ namespace Vtg.ProjectManager
 			{"target-open-makefile", Gtk.STOCK_OPEN, N_("Open makefile"), "<control><shift>M", N_("Open makefile.am file"), on_target_open_makefile}
 		};
 
+
+		private ActionGroup _actions;
+		private VBox _side_panel;
 		private Project _current_project = null;
 		
 		public Project current_project 
@@ -90,11 +93,19 @@ namespace Vtg.ProjectManager
 		{
 			this.plugin = plugin;
 		}
-
+		
+		~View ()
+		{
+			var manager = _plugin.gedit_window.get_ui_manager ();
+			manager.remove_action_group (_actions);
+			var panel = _plugin.gedit_window.get_side_panel ();
+			panel.remove_item (_side_panel);
+		}
+		
 		construct
 		{
 			var panel = _plugin.gedit_window.get_side_panel ();
-			var vbox = new Gtk.VBox (false, 8);
+			_side_panel = new Gtk.VBox (false, 8);
 			_prjs_combo = new Gtk.ComboBox.text ();
 			_prjs_combo.changed += this.on_project_combobox_changed;
 			_prj_view = new Gtk.TreeView ();
@@ -111,17 +122,17 @@ namespace Vtg.ProjectManager
 			_prj_view.button_press_event += this.on_project_view_button_press;
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_prj_view);
-			vbox.pack_start (_prjs_combo, false, false, 4);
-			vbox.pack_start (scroll, true, true, 4);
-			vbox.show_all ();
-			panel.add_item (vbox, _("Projects"), null);
-			panel.activate_item (vbox);
+			_side_panel.pack_start (_prjs_combo, false, false, 4);
+			_side_panel.pack_start (scroll, true, true, 4);
+			_side_panel.show_all ();
+			panel.add_item (_side_panel, _("Projects"), null);
+			panel.activate_item (_side_panel);
 			_project_count = 0;
 
-			var prj_agrp = new ActionGroup ("ProjectManagerActionGroup");
-			prj_agrp.add_actions (_action_entries, this);
+			_actions = new ActionGroup ("ProjectManagerActionGroup");
+			_actions.add_actions (_action_entries, this);
 			var manager = _plugin.gedit_window.get_ui_manager ();
-			manager.insert_action_group (prj_agrp, -1);
+			manager.insert_action_group (_actions, -1);
 			try {
 				_popup_modules_ui_id = manager.add_ui_from_string (_popup_modules_ui_def, -1);
 				_popup_modules = (Gtk.Menu) manager.get_widget ("/ProjectManagerPopupPackagesEdit");

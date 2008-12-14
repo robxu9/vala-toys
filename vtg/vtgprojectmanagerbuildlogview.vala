@@ -50,6 +50,12 @@ namespace Vtg.ProjectManager
 			this.plugin = plugin;
 		}
 
+		~BuildLogView ()
+		{
+			var panel = _plugin.gedit_window.get_bottom_panel ();
+			panel.remove_item (_ui);
+		}
+
 		construct 
 		{
 			var panel = _plugin.gedit_window.get_bottom_panel ();

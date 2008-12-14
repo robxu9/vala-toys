@@ -1,5 +1,15 @@
 2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuildlogview.vala:
+	* vtg/vtgprojectmanageroutputview.vala:
+	* vtg/vtgprojectmanagerview.vala:
+
+	remove ui on plugin deactivation
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vsccompletionvisitor.vala:
 	* vsc/vsctypefindvisitor.vala:
 	* vtg/vtgplugin.vala:

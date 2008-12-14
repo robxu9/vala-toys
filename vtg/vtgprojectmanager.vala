@@ -125,19 +125,30 @@ namespace Vtg.ProjectManager
 			this.plugin = plugin;
 		}
 
+
+		~PluginHelper ()
+		{
+			var manager = _plugin.gedit_window.get_ui_manager ();
+			manager.remove_ui (_ui_id);
+			manager.remove_action_group (_actions);
+		}
+
 		construct	
 		{
 			_prj_view = new ProjectManager.View (_plugin);
 			_prj_view.notify["current-project"] += this.on_current_project_changed;
 			_prj_builder = new ProjectManager.Builder (_plugin);
 			_prj_executer = new ProjectManager.Executer (_plugin);
+			
 			_prj_executer.process_start += (sender) => {
 				update_ui (_prj_view.current_project == null);
 			};
 			_prj_executer.process_exit += (sender, exit_status) => {
 				update_ui (_prj_view.current_project == null);
 			};
+			
 			initialize_ui ();
+			update_ui (_prj_view.current_project == null);
 		}
 
 		public ProjectManager.View project_view 

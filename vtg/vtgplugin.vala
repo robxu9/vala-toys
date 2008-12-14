@@ -91,15 +91,18 @@ namespace Vtg
 				initialize_document (doc);
 			}
 
-			this.output_view = new ProjectManager.OutputView (this);
+			_output_view = new ProjectManager.OutputView (this);
 			_prj_man = new ProjectManager.PluginHelper (this);
 			//_prj_man.project_loaded += this.on_project_loaded;
+			
 		}
 
 		public override void deactivate (Gedit.Window window)
 		{
 			deactivate_modules ();
-			this._window = null;
+			_prj_man = null;
+			_output_view = null;
+			_window = null;
 		}
 	  
 		public override bool is_configurable ()
@@ -148,14 +151,20 @@ namespace Vtg
 		private void deactivate_modules (DeactivateModuleOptions options = DeactivateModuleOptions.ALL)
 		{
 			GLib.debug ("deactvate");
+			int size;
 			if (options == DeactivateModuleOptions.ALL || options == DeactivateModuleOptions.SYMBOL) {
-				foreach (Vtg.SymbolCompletionHelper sc in _scs) {
-					deactivate_symbol (sc);
-				}
+				size = 0;
+				while (_scs.size > 0 && _scs.size != size) {
+					size = _scs.size;
+					deactivate_symbol (_scs.get(0));					
+				} 
+
 			}
 			if (options == DeactivateModuleOptions.ALL || options == DeactivateModuleOptions.BRACKET) {
-				foreach (Vtg.BracketCompletion bc in _bcs) {
-					deactivate_bracket (bc);
+				size = 0;
+				while (_bcs.size > 0 && _bcs.size != size) {
+					size = _bcs.size;
+					deactivate_bracket (_bcs.get(0));
 				}
 			}
 			GLib.debug ("deactvated");
