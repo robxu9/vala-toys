@@ -1,5 +1,17 @@
 2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	improved completion accuracy and speed.
+	more debug message cleaned up
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 	* vsc/vscsymbolcompletion.vala:
 	* vtg/vtgplugin.vala:

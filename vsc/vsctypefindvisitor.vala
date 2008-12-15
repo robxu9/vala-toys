@@ -103,48 +103,79 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			foreach (DataType type in cl.get_base_types ()) {
 				if (type != null) {
 					type.accept (this);
+					if (_result != null) {
+						break;
+					}
 				}
-			}
-			
-			foreach (TypeParameter p in cl.get_type_parameters ()) {
-				p.accept (this);
 			}
 
 			/* process enums first to avoid order problems in C code */
-			foreach (Enum en in cl.get_enums ()) {
-				en.accept (this);
+			//Minor optimization
+			if (_result == null) {
+				foreach (Enum en in cl.get_enums ()) {
+					en.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
 			}
 
-			foreach (Field f in cl.get_fields ()) {
-				f.accept (this);
+			//Minor optimization
+			if (_result == null) {
+				foreach (Field f in cl.get_fields ()) {
+					f.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
 			}
-		
-			foreach (Constant c in cl.get_constants()) {
-				c.accept (this);
-			}
-		
-			foreach (Method m in cl.get_methods()) {
-				m.accept (this);
-			}
-		
-			foreach (Property prop in cl.get_properties()) {
-				prop.accept (this);
-			}
-		
-			foreach (Vala.Signal sig in cl.get_signals()) {
-				sig.accept (this);
-			}
-		
-			foreach (Class cl in cl.get_classes()) {
-				cl.accept (this);
-			}
-		
-			foreach (Struct st in cl.get_structs()) {
-				st.accept (this);
+			//Minor optimization
+			if (_result == null) {
+				foreach (Constant c in cl.get_constants()) {
+					c.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
 			}
 
-			foreach (Delegate d in cl.get_delegates()) {
-				d.accept (this);
+			//Minor optimization
+			if (_result == null) {
+				foreach (Method m in cl.get_methods()) {
+					m.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
+			}
+			
+			//Minor optimization
+			if (_result == null) {
+				foreach (Property prop in cl.get_properties()) {
+					prop.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
+			}
+			//Minor optimization
+			if (_result == null) {
+				foreach (Class cl in cl.get_classes()) {
+					cl.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
+			}
+			
+			//Minor optimization
+			if (_result == null) {
+				foreach (Struct st in cl.get_structs()) {
+					st.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
 			}
 		}
 		_current_typename = previous_typename;
@@ -192,6 +223,90 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			qualified_typename = _current_typename;
 		} else {
 			en.accept_children (this);
+		}
+		
+		_current_typename = previous_typename;
+	}
+	
+	public override void visit_method (Method m) 
+	{
+		if (_result != null) //found
+			return;
+
+		var previous_typename = _current_typename;
+	
+		if (_current_typename == null) {
+			_current_typename = m.name;
+		} else {
+			_current_typename = "%s.%s()".printf (_current_typename, m.name);
+		}
+	
+		if (_current_typename == _searched_typename) {
+			_result = m;
+			qualified_typename = _current_typename;
+		}
+		
+		_current_typename = previous_typename;
+	}
+		
+	public override void visit_property (Property p) 
+	{
+		if (_result != null) //found
+			return;
+
+		var previous_typename = _current_typename;
+	
+		if (_current_typename == null) {
+			_current_typename = p.name;
+		} else {
+			_current_typename = "%s.%s".printf (_current_typename, p.name);
+		}
+	
+		if (_current_typename == _searched_typename) {
+			_result = p;
+			qualified_typename = _current_typename;
+		}
+		
+		_current_typename = previous_typename;
+	}
+	
+	public override void visit_field (Field f) 
+	{
+		if (_result != null) //found
+			return;
+
+		var previous_typename = _current_typename;
+	
+		if (_current_typename == null) {
+			_current_typename = f.name;
+		} else {
+			_current_typename = "%s.%s".printf (_current_typename, f.name);
+		}
+	
+		if (_current_typename == _searched_typename) {
+			_result = f;
+			qualified_typename = _current_typename;
+		}
+		
+		_current_typename = previous_typename;
+	}
+
+	public override void visit_constant (Constant c) 
+	{
+		if (_result != null) //found
+			return;
+
+		var previous_typename = _current_typename;
+	
+		if (_current_typename == null) {
+			_current_typename = c.name;
+		} else {
+			_current_typename = "%s.%s".printf (_current_typename, c.name);
+		}
+	
+		if (_current_typename == _searched_typename) {
+			_result = c;
+			qualified_typename = _current_typename;
 		}
 		
 		_current_typename = previous_typename;

@@ -45,6 +45,7 @@ namespace Vsc
 
 		public void cleanup ()
 		{
+			debug ("vsc: symbol completion cleanup");
 			_parser = null;
 		}
 
@@ -75,7 +76,7 @@ namespace Vsc
 					var cl = (Class) node;
 					//TODO: fields, signal subclasses
 					foreach (Method md in cl.get_methods ()) {
-						if (find_sub_codenode (md, line, column) != null) {
+						if (find_sub_codenode (md, line, column, null) != null) {
 							return cl;
 						}
 					}
@@ -85,14 +86,17 @@ namespace Vsc
 			return null;
 		}
 
-		private CodeNode? find_sub_codenode (CodeNode node, int line, int column)
+		private CodeNode? find_sub_codenode (CodeNode node, int line, int column, CodeNode? parent_node)
 		{
 			CodeNode? result = null;
+			//this is a HACK since vala set the parent_node property only form expression
+			if (parent_node != null && node.parent_node == null && node != parent_node)
+				node.parent_node = parent_node;
 
 			if (node is Method) {
 				var md = (Method) node;
 
-				result = find_sub_codenode (md.body, line, column);
+				result = find_sub_codenode (md.body, line, column, node);
 				if (result != null)
 					return result;
 
@@ -101,21 +105,21 @@ namespace Vsc
 					return md;
 				}
 			} else if (node is ExpressionStatement) {
-				result = find_sub_codenode (((ExpressionStatement) node).expression, line, column);
+				result = find_sub_codenode (((ExpressionStatement) node).expression, line, column, node);
 				if (result != null)
 					return result;
 			} else if (node is LambdaExpression) {
 				var lambda = (LambdaExpression) node;
 
  				if (node_contains_position (lambda.statement_body, line, column)) {
-					result = find_sub_codenode (lambda.statement_body, line, column);
+					result = find_sub_codenode (lambda.statement_body, line, column, node);
 					if (result != null) {
 						return result;
 					}
 					return lambda;
 				}
 			} else if (node is Assignment) {
-				result = find_sub_codenode (((Assignment) node).right, line, column);
+				result = find_sub_codenode (((Assignment) node).right, line, column, node);
 				if (result != null) {
 					return result;
 				}
@@ -123,14 +127,28 @@ namespace Vsc
  				if (node_contains_position (((Assignment) node).right, line, column)) {
 					return node;
 				}
-			} else if (node is ForeachStatement) {
-				var fe = (ForeachStatement) node;
-
-				if (node_contains_position (fe.body, line, column) ||
-				    node_contains_position (fe, line, column)) {
-					result = find_sub_codenode (fe.body, line, column);
+			} else if (node is IfStatement) {
+				var ifs = (IfStatement) node;
+					
+				if (ifs.true_statement != null) {
+					result = find_sub_codenode (ifs.true_statement, line, column, node);
 					if (result != null)
 						return result;
+				}
+				
+				if (ifs.false_statement != null) {
+					result = find_sub_codenode (ifs.false_statement, line, column, node);
+					if (result != null)
+						return result;
+				}				
+			} else if (node is ForeachStatement) {
+				var fe = (ForeachStatement) node;
+				if (node_contains_position (fe.body, line, column) ||
+				    node_contains_position (fe, line, column)) {
+					result = find_sub_codenode (fe.body, line, column, node);
+					if (result != null) {
+						return result;
+					}
 
 					return fe;
 				}
@@ -139,7 +157,7 @@ namespace Vsc
 
 				if (node_contains_position (ws.body, line, column) ||
 				    node_contains_position (ws, line, column)) {
-					result = find_sub_codenode (ws.body, line, column);
+					result = find_sub_codenode (ws.body, line, column, node);
 					if (result != null)
 						return result;
 
@@ -150,7 +168,7 @@ namespace Vsc
 
 				if (node_contains_position (fs.body, line, column) ||
 				    node_contains_position (fs, line, column)) {
-					result = find_sub_codenode (fs.body, line, column);
+					result = find_sub_codenode (fs.body, line, column, node);
 					if (result != null)
 						return result;
 
@@ -161,7 +179,7 @@ namespace Vsc
 
 				//check first in inner sub-nodes
 				foreach (CodeNode subnode in block.get_statements ()) {
-					result = find_sub_codenode (subnode, line, column);
+					result = find_sub_codenode (subnode, line, column, node);
 					if (result != null) {
 						return result;
 					}
@@ -185,7 +203,7 @@ namespace Vsc
 			foreach (CodeNode node in source.get_nodes ()) {
 				CodeNode? result = null;
 				if (node is Method) {
-					result = find_sub_codenode (node, line, column);
+					result = find_sub_codenode (node, line, column, null);
 					if (result != null)
 						return result;
 				} else if (node is Class) {
@@ -209,7 +227,7 @@ namespace Vsc
 					}
 
 					foreach (Method md in cl.get_methods ()) {
-						result = find_sub_codenode (md, line, column);
+						result = find_sub_codenode (md, line, column, cl);
 						if (result != null)
 							return result;
 					}
@@ -276,11 +294,6 @@ namespace Vsc
 			warn_if_fail (_parser != null);
 			DataType? result = null;
 			string[] toks = symbolname.split (".", 2);
-			int count = 0;
-
-			while (toks[count] != null)
-				count++;
-
 			SourceFile source = null;
 
 			_parser.lock_all_contexts ();
@@ -292,10 +305,51 @@ namespace Vsc
 				warning ("(get_datatype_for_name) no sourcefile found %s", sourcefile);
 			}
 
-			if (result != null && source != null && count > 1) {
-				result = get_inner_datatype (result, toks[1], source);
+			if (result != null && source != null && toks[1] != null) {
+				result = get_inner_datatype2 (result, toks[1], source);
 			}
 			_parser.unlock_all_contexts ();
+			return result;
+		}
+
+
+		private DataType? get_inner_datatype2 (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
+		{
+			DataType result = null;
+			var finder = new TypeFinderVisitor (source, _parser.pri_context);
+			string[] toks = fields_path.split (".", 2);
+			string typename = "%s.%s".printf (get_qualified_name_for_datatype (datatype), toks[0]);
+			finder.searched_typename = typename;
+			if (datatype is ObjectType) {
+				var obj = (ObjectType) datatype;
+				obj.type_symbol.accept (finder);
+			} else {
+				datatype.accept (finder);
+			}
+			
+			if (finder.result != null) {
+				if (finder.result is Class) {
+					result = new ClassType ((Class) finder.result);
+				} else if (finder.result is Field) {
+					var field = (Field) finder.result;
+					result = field.field_type;
+				} else if (finder.result is Property) {
+					var prop = (Property) finder.result;
+					result = prop.property_type;
+				} else if (finder.result is Struct) {
+					result = new ValueType ((Struct) finder.result);
+				} else if (finder.result is Method) {
+					var method = (Method) finder.result;
+					result = method.return_type;
+				} else {
+					warning ("(get_datatype_for_symbol_name): unsupported type %s", Reflection.get_type_from_instance (finder.result).name ());
+				}
+
+				if (toks[1] != null) {
+					result = get_inner_datatype2 (result, toks[1], source);
+				}
+			}
+			
 			return result;
 		}
 
@@ -305,6 +359,8 @@ namespace Vsc
 			
 			return get_datatype_for_symbol_name (qualified_type, source);
 		}
+ 
+		
 
 		private DataType? get_datatype_for_symbol_name (string qualified_type, SourceFile source) throws SymbolCompletionError
 		{
@@ -549,37 +605,36 @@ namespace Vsc
 			return null;
 		}
 
- 		private DataType? get_datatype_for_name_with_context (CodeContext context, string symbolname, SourceFile? source = null, int line = 0, int column = 0) throws SymbolCompletionError
-		{
-			DataType type = null;
 
-			Class cl = null;
-			var codenode = find_codenode (source, line, column, out cl);
-			if (codenode != null) {
-				if (symbolname != "this" && symbolname != "base") {
-					Block body = null;
+ 		private DataType? get_datatype_for_name_in_code_node_with_context (CodeNode codenode, CodeContext context, string symbolname, SourceFile? source, int line, int column) throws SymbolCompletionError
+ 		{
+			debug ("(get_datatype_for_name_with_context) found codenode - %s for %s: %s", Reflection.get_type_from_instance (codenode).name (), symbolname, codenode.to_string ());
+			if (symbolname != "this" && symbolname != "base") {
+				Block body = null;
 
-					if (codenode is Method) {
-						body = ((Method) codenode).body;
-					} else if (codenode is CreationMethod) {
-						body = ((Constructor) codenode).body;
-					} else if (codenode is Constructor) {
-						body = ((Constructor) codenode).body;
-					} else if (codenode is Destructor) {
-						body = ((Destructor) codenode).body;
-					} else if (codenode is LambdaExpression) {
-						body = ((LambdaExpression) codenode).statement_body;
-					} else if (codenode is ForeachStatement) {
-						body = ((ForeachStatement) codenode).body;
-					} else if (codenode is ForStatement) {
-						body = ((ForStatement) codenode).body;
-					} else if (codenode is WhileStatement) {
-						body = ((WhileStatement) codenode).body;
-					} else if (codenode is Block) {
-						body = (Block) codenode;
-					} else {
-						throw new SymbolCompletionError.UNSUPPORTED_TYPE ("(get_datatype_for_name_with_context) unsupported type %s", Reflection.get_type_from_instance (codenode).name ());
-					}
+				if (codenode is Method) {
+					body = ((Method) codenode).body;
+				} else if (codenode is CreationMethod) {
+					body = ((Constructor) codenode).body;
+				} else if (codenode is Constructor) {
+					body = ((Constructor) codenode).body;
+				} else if (codenode is Destructor) {
+					body = ((Destructor) codenode).body;
+				} else if (codenode is LambdaExpression) {
+					body = ((LambdaExpression) codenode).statement_body;
+				} else if (codenode is ForeachStatement) {
+					body = ((ForeachStatement) codenode).body;
+				} else if (codenode is ForStatement) {
+					body = ((ForStatement) codenode).body;
+				} else if (codenode is WhileStatement) {
+					body = ((WhileStatement) codenode).body;
+				} else if (codenode is Block) {
+					body = (Block) codenode;
+				} else {
+					warning ("(get_datatype_for_name_with_context) unsupported type %s for %s", Reflection.get_type_from_instance (codenode).name (), symbolname);
+				}
+				
+				if (body != null) {
 					//method local vars
 					foreach (LocalVariable lvar in body.get_local_variables ()) {
 						if (lvar.name == symbolname) {
@@ -595,7 +650,7 @@ namespace Vsc
 							var decl = (DeclarationStatement) st;
 							if (decl.declaration.name == symbolname) {
 								if (decl.declaration is LocalVariable) {
-									type = datatype_for_localvariable (context, source, line, column, (LocalVariable) (decl.declaration));
+									var type = datatype_for_localvariable (context, source, line, column, (LocalVariable) (decl.declaration));
 									if (type != null)
 										return type;
 								} else {
@@ -620,7 +675,23 @@ namespace Vsc
 						}
 					}
 				}
-
+			}
+			if (codenode.parent_node != null) {
+				return get_datatype_for_name_in_code_node_with_context (codenode.parent_node, context, symbolname, source, line, column);
+			} else {
+	 			return null;
+ 			}
+ 		}
+ 		
+ 		private DataType? get_datatype_for_name_with_context (CodeContext context, string symbolname, SourceFile? source = null, int line = 0, int column = 0) throws SymbolCompletionError
+		{
+			Class cl = null;
+			var codenode = find_codenode (source, line, column, out cl);
+			if (codenode != null) {
+				DataType type = get_datatype_for_name_in_code_node_with_context (codenode, context, symbolname, source, line, column);
+				if (type != null)
+					return type;
+					
 				if (cl != null) {
 					if (symbolname == "this")
 						return new ClassType (cl);
@@ -797,13 +868,13 @@ namespace Vsc
 						if (finder.result != null) {
 							finder.result.accept (completion);
 							if (finder.result is Namespace) {
-								get_completion_for_name_in_namespace_with_context (ns.name, name, 
+								get_completion_for_name_in_namespace_with_context (ns.name, symbolname, 
 									finder, completion, _parser.pri_context);
 							}
 							break;
 						} else {
 							int tmp = result.count;
-							get_completion_for_name_in_namespace_with_context (ns.name, name, 
+							get_completion_for_name_in_namespace_with_context (ns.name, symbolname, 
 								finder, completion, _parser.pri_context);
 							if (tmp != result.count) {
 								break; //found something in primary context

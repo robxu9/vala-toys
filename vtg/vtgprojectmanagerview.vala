@@ -196,19 +196,12 @@ namespace Vtg.ProjectManager
 					string name;
 					model.get_iter (out iter, path);
 					model.get (iter, 1, out name, 3, out obj);
-					GLib.debug ("activated: %s", name);
 					if (obj is ProjectModule) {
 						_last_selected_module = (ProjectModule) obj;
 						_popup_modules.popup (null, null, null, event.button, event.time);
 					} else if (obj is ProjectTarget) {
 						_last_selected_target = (ProjectTarget) obj;
 						_popup_targets.popup (null, null, null, event.button, event.time);
-					} else {
-						if (obj == null) {
-							GLib.debug ("obj is null");
-						} else {
-							GLib.debug ("activated: %s - %s", name, Reflection.get_type_from_instance (obj).name ());
-						}
 					}
 				}
 			}
@@ -234,9 +227,7 @@ namespace Vtg.ProjectManager
 			if (project_name != null) {
 				//find project
 				foreach (ProjectDescriptor item in _plugin.projects) {
-					GLib.debug ("%s vs %s", item.project.name, project_name);
 					if (item.project.name == project_name) {
-						GLib.debug ("found!");
 						result = item.project;
 						break;
 					}
@@ -262,7 +253,6 @@ namespace Vtg.ProjectManager
 			return_if_fail (_last_selected_module != null);
 			string file = Path.build_filename (_last_selected_module.project.filename, "configure.ac");
 			
-			GLib.debug ("Opening: %s", file);
 			if (FileUtils.test (file, FileTest.EXISTS)) {
 				_plugin.activate_uri ("file://%s".printf (file));
 			}
@@ -273,7 +263,6 @@ namespace Vtg.ProjectManager
 			return_if_fail (_last_selected_target != null);
 			string file = Path.build_filename (_last_selected_target.group.project.filename, _last_selected_target.group.id, "Makefile.am");
 			
-			GLib.debug ("Opening: %s", file);
 			if (FileUtils.test (file, FileTest.EXISTS)) {
 				_plugin.activate_uri ("file://%s".printf (file));
 			}

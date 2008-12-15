@@ -64,7 +64,6 @@ namespace Vtg.ProjectManager
 				foreach (ProjectTarget target in group.targets) {
 					foreach (ProjectSource source in target.sources) {
 						if (source.uri == uri) {
-							GLib.debug ("source found %s", source.uri);
 							return true;
 						}
 					}

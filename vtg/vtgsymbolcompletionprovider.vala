@@ -81,7 +81,6 @@ namespace Vtg
 				if (name == null) {
 					name = doc.get_short_name_for_display ();
 				}
-				GLib.debug ("source buffer is %s", name);
 				_sb = new Vsc.SourceBuffer (name, null);
 				_sb.data = (void *) doc;
 
@@ -127,7 +126,6 @@ namespace Vtg
 		private bool on_idle ()
 		{
 			if (cache_building && !tooltip_is_visible && prev_cache_building == false) {
-				GLib.debug ("show tooltip ");
 				prev_cache_building = cache_building;
 				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
 				if (sb_msg_id != 0) {
@@ -135,7 +133,6 @@ namespace Vtg
 				}
 				sb_msg_id = status_bar.push (sb_context_id, "rebuilding symbol cache...");
 			} else if (cache_building == false && prev_cache_building == true) {
-				GLib.debug ("delete tooltip ");
 				prev_cache_building = false;
 				//hide tip, show proposal list
 				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
@@ -152,7 +149,6 @@ namespace Vtg
 		private bool on_timeout_parse ()
 		{
 			if (counter == 0) {
-				GLib.debug ("scheduling a reparse");
 				this.parse ((Gedit.Document) _view.get_buffer ());
 				this.timeout_id = 0;
 				return false;
@@ -343,6 +339,8 @@ namespace Vtg
 
 		private void parse_current_line (out string word, out string line, out int lineno, out int colno)
 		{
+			var tmp = new StringBuilder ();
+			
  			weak Gedit.Document doc = (Gedit.Document) _view.get_buffer ();
 			weak TextMark mark = (TextMark) doc.get_insert ();
 			TextIter end;
@@ -361,35 +359,75 @@ namespace Vtg
 
 			if (colno > 1) {
 				start = end;
-				start.backward_char ();
-				unichar ch = start.get_char ();
-				if (ch == '\"') {
-					//find the string literal begin
-					while (true) {
-						start.backward_char ();
-						if (start.starts_line ())
-							break;
+				while (true) {
+					start.backward_char ();
+					if (start.starts_line ())
+						break;
 
-						ch = start.get_char ();
-						if (ch == '\"')
-							break;
-					}
-				} else {
-					while (true) {
-						start.backward_char ();
-						if (start.starts_line ())
-							break;
-						ch = start.get_char ();
-						if (!(ch.isalnum () ||
-						      ch == '.' ||
-						      ch == '_')) {
-							start.forward_char ();
-							break;
-						}			
+					unichar ch = start.get_char ();
+					if (ch == ' ') {
+						while (true) {
+							start.backward_char ();
+							if (start.starts_line ()) {
+								break;								
+							}
+							ch = start.get_char ();
+							if (ch != ' ')
+								break;
+						}
+						start.forward_char ();
+					} else if (ch == ')') {
+						tmp.append_unichar (ch);
+						//find where the method invocation begin
+						while (true) {
+							start.backward_char ();
+							if (start.starts_line ())
+								break;
+
+							ch = start.get_char ();
+							if (ch == '(') {
+								tmp.append_unichar (ch);
+								break;
+							}
+						}
+						//skip spaces
+						if (!start.starts_line ()) {
+							while (true) {
+								start.backward_char ();
+								if (start.starts_line ())
+									break;
+
+								ch = start.get_char ();
+								if (ch != ' ')
+									break;
+							}
+						}
+						if (!start.starts_line ()) {
+							tmp.append_unichar (ch);
+						}
+					} else if (ch == '\"') {
+						//find where the string literal begin
+						tmp.append_unichar (ch);
+						while (true) {
+							start.backward_char ();
+							if (start.starts_line ())
+								break;
+
+							ch = start.get_char ();
+							tmp.append_unichar (ch);
+							if (ch == '\"')
+								break;
+						}
+					} else if (!(ch.isalnum () ||
+					      ch == '.' ||
+					      ch == '_')) {
+						break;
+					} else {
+						tmp.append_unichar (ch);
 					}
 				}
-
-				word = start.get_text (end).strip ();
+				word = tmp.str.reverse ();
+				GLib.debug ("word %s", word);
 			}
 		}
 
