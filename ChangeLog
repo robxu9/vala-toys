@@ -1,5 +1,12 @@
 2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerview.vala:
+
+	now changelog and other project files can be opened
+	with a double click on the project manager view
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbracketcompletion.vala:
 
 	fixed a doubly declared variable

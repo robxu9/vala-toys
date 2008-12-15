@@ -176,7 +176,8 @@ namespace Vtg.ProjectManager
 			if (model.get_iter (out iter, path)) {
 				string name, id;
 				model.get (iter, 1, out name, 2, out id);
-				if (name != null && (name.has_suffix (".vala") || name.has_suffix (".vapi"))) {
+				string file = StringUtils.replace (id, "file://", ""); //HACK
+				if (name != null && FileUtils.test (file, FileTest.EXISTS)) {
 					_plugin.activate_uri (id);
 				}
 			}
