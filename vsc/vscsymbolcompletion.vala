@@ -861,8 +861,9 @@ namespace Vsc
 		private void get_completion_for_name_in_namespace_with_context (string namespace_name, string typename, TypeFinderVisitor finder, CompletionVisitor completion, CodeContext context)
 		{
 			foreach (Namespace ns in context.root.get_namespaces ()) {
+				GLib.debug ("get in ns: %s vs %s", ns.name, namespace_name);
 				if (ns.name == namespace_name) {
-					finder.searched_typename = typename;
+					finder.searched_typename = "%s.%s".printf (ns.name, typename);
 					finder.visit_namespace (ns);
 					if (finder.result != null) {					
 						completion.integrate_completion (finder.result);

@@ -1,5 +1,11 @@
 2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed the completion search in the using clauses
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerview.vala:
 
 	now changelog and other project files can be opened
