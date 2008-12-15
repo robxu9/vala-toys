@@ -60,14 +60,12 @@ namespace Vsc
 			add_path_to_vapi_search_dir ("/usr/local/share/vala/vapi");
 			try {
 				glib_file = find_vala_package_filename ("glib-2.0")[0];
-				debug ("found package glib-2.0: %s", glib_file);
 			} catch (Error err) {
 				error ("Can't find glib vapi file: %s", err.message);
 			}
 
 			try {
 				gobject_file = find_vala_package_filename ("gobject-2.0")[0];
-				debug ("found package gobject-2.0: %s", gobject_file);
 			} catch (Error err) {
 				error ("Can't find gobject vapi file: %s", err.message);
 			}
@@ -75,14 +73,12 @@ namespace Vsc
 
 		~ParseManager ()
 		{			
-			debug ("parser manager destructor: joining threads");
 			if (parser_pri_thread != null)
 				parser_pri_thread.join ();
 
 			if (parser_sec_thread != null)
 				parser_sec_thread.join ();
 
-			debug ("parser manager destructor: cleanup");
 			lock_all_contexts ();
 			_packages.clear ();
 			_built_packages.clear ();
@@ -109,7 +105,6 @@ namespace Vsc
 		
 		internal void lock_all_contexts ()
 		{
-			debug ("lock all context");
 			return_if_fail (mutex_pri_context != null);
 			mutex_pri_context.@lock ();
 			return_if_fail (mutex_sec_context != null);
@@ -118,7 +113,6 @@ namespace Vsc
 
 	        internal void unlock_all_contexts ()
 		{
-			debug ("unlock all context");
 			return_if_fail (mutex_sec_context != null);
 			mutex_sec_context.unlock ();
 			return_if_fail (mutex_pri_context != null);
@@ -127,28 +121,24 @@ namespace Vsc
 
 		internal void lock_pri_context ()
 		{
-			debug ("lock pri context");
 			return_if_fail (mutex_pri_context != null);
 			mutex_pri_context.@lock ();
 		}
 
 		internal void unlock_pri_context ()
 		{
-			debug ("unlock pri context");
 			return_if_fail (mutex_pri_context != null);
 			mutex_pri_context.unlock ();
 		}
 	
 		internal void lock_sec_context ()
 		{
-			debug ("lock sec context");
 			return_if_fail (mutex_sec_context != null);
 			mutex_sec_context.@lock ();
 		}
 
 		internal void unlock_sec_context ()
 		{
-			debug ("unlock sec context");
 			return_if_fail (mutex_sec_context != null);
 			mutex_sec_context.unlock ();
 		}
@@ -157,7 +147,6 @@ namespace Vsc
 		{				
 			try {
 				if (parser_pri_thread != null) {
-					debug ("freeing pri thread resources: join");
 					parser_pri_thread.join ();
 				}
 				parser_pri_thread = Thread.create (this.parse_pri_contexts, true);
@@ -173,7 +162,6 @@ namespace Vsc
 
 			try {
 				if (parser_sec_thread != null) {
-					debug ("freeing sec thread resources: join");
 					parser_sec_thread.join ();
 				}
 				parser_sec_thread = Thread.create (this.parse_sec_contexts, true);
@@ -277,7 +265,6 @@ namespace Vsc
 	
 		public bool add_package (string package_name, bool auto_schedule_parse = true) throws Error
 		{
-			debug ("(add_package): adding package %s", package_name);
 			string vapi_file;
 			if (package_name.has_suffix (".vapi"))
 				vapi_file = package_name;
@@ -285,7 +272,6 @@ namespace Vsc
 				vapi_file = "%s.vapi".printf (package_name);
 
 			if (list_contains_string (_built_packages, vapi_file)) {
-				debug ("(parser): package %s is built, so it can't be added", vapi_file);
 				return false;
 			}
 
@@ -303,7 +289,6 @@ namespace Vsc
 				unlock_pri_context ();
 				
 				if (need_parse && auto_schedule_parse) {
-					debug ("scheduling a parse");
 					schedule_parse ();
 				}
 				return need_parse;
@@ -350,7 +335,6 @@ namespace Vsc
 			if (contains_source_buffer (source))
 				throw new SymbolCompletionError.SOURCE_BUFFER ("source already added");
 
-			debug ("added sourcebuffer: %s", source.name);
 			lock_sec_context ();
 			_source_buffers.add (source);
 			unlock_sec_context ();
@@ -428,10 +412,8 @@ namespace Vsc
 
 			//scheduling parse for secondary context
 			if (AtomicInt.compare_and_exchange (ref need_parse_sec_context, 0, 1)) {
-				debug ("PARSE SECONDARY  CONTEXT SCHEDULED, AND THREAD CREATED");
 				create_sec_thread ();
 			} else {
-				debug ("PARSE SECONDARY CONTEXT SCHEDULED");
 				AtomicInt.inc (ref need_parse_sec_context);
 			}
 		}
@@ -443,24 +425,19 @@ namespace Vsc
 
 			//scheduling parse for primary context
  			if (AtomicInt.compare_and_exchange (ref need_parse_pri_context, 0, 1)) {
-				debug ("PARSE PRIMARY CONTEXT SCHEDULED, AND THREAD CREATED");
 				create_pri_thread ();
 			} else {
-				debug ("PARSE PRIMARY CONTEXT SCHEDULED");
 				AtomicInt.inc (ref need_parse_pri_context);
 			}
 		}
 
 		private void* parse_pri_contexts ()
 		{
-			debug ("PARSER THREAD ENTER");
 			this.cache_building ();
 
 			while (true) {
 				int stamp = AtomicInt.get (ref need_parse_pri_context);
-				debug ("PARSING PRIMARY CONTEXT: START");
 				parse ();
-				debug ("PARSING PRIMARY CONTEXT: END");
 				//check for changes
 				if (AtomicInt.compare_and_exchange (ref need_parse_pri_context, stamp, 0)) {
 					break;
@@ -468,20 +445,16 @@ namespace Vsc
 			}
 
 			this.cache_builded ();
-			debug ("PARSER THREAD EXIT");
 			return ((void *) 0);
 		}
 
 		private void* parse_sec_contexts ()
 		{
-			debug ("PARSER SEC THREAD ENTER");
 			this.cache_building ();
 
 			while (true) {
 				int stamp = AtomicInt.get (ref need_parse_sec_context);
-				debug ("PARSING SEC CONTEXT: START");
 				parse_source_buffers ();
-				debug ("PARSING SEC CONTEXT: END");
 				//check for changes
 				if (AtomicInt.compare_and_exchange (ref need_parse_sec_context, stamp, 0)) {
 					break;
@@ -489,7 +462,6 @@ namespace Vsc
 			}
 
 			this.cache_builded ();
-			debug ("PARSER SEC THREAD EXIT");
 			return ((void *) 0);
 		}
 
@@ -561,7 +533,6 @@ namespace Vsc
 
 				foreach (string item in _packages) {
 					if (item != null && item != glib_file && item != gobject_file) {
-						debug ("(parser) adding package %s", item);					
 						source = new SourceFile (current_context, item, true);
 						current_context.add_source_file (source);
 					}

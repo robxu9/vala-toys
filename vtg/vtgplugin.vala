@@ -35,9 +35,7 @@ namespace Vtg
 
 		~ProjectDescriptor ()
 		{
-			GLib.debug ("ProjectDescriptor destructor");
 			if (completion != null) {
-				GLib.debug ("Stopping the completion module");
 				completion.cleanup ();
 			}
 		}
@@ -117,7 +115,6 @@ namespace Vtg
 
 		public override void update_ui (Gedit.Window window)
 		{
-			GLib.debug ("update UI");
 			var doc = window.get_active_document ();
 			if (doc != null) {
 				var prj = project_descriptor_find_from_document (doc);
@@ -309,7 +306,6 @@ namespace Vtg
 
 		private void uninitialize_view (Gedit.View view)
 		{
-			GLib.debug ("view deactivated");
 			var sc = scs_find_from_view (view);
 			if (sc != null) {
 				deactivate_symbol (sc);
@@ -385,7 +381,6 @@ namespace Vtg
 		
 		internal void on_project_closed (ProjectManager.PluginHelper sender, ProjectManager.Project project)
 		{
-			GLib.debug ("Project closed");
 			return_if_fail (project != _default_project.project);
 
 			foreach (ProjectDescriptor descriptor in _projects) {
@@ -399,14 +394,12 @@ namespace Vtg
 
 		internal void on_project_loaded (ProjectManager.PluginHelper sender, ProjectManager.Project project)
 		{
-			GLib.debug ("Project loaded");
 			var prj = new ProjectDescriptor ();
 			var completion = new Vsc.SymbolCompletion ();
 
 			/* setup referenced packages */
 			foreach (ProjectManager.ProjectModule module in project.modules) {
 				foreach (ProjectManager.ProjectPackage package in module.packages) {
-					GLib.debug ("adding package %s from project %s", package.name, project.name);
 					if (!completion.parser.try_add_package (package.name))
 						GLib.debug ("package %s not added", package.name);
 				}
@@ -416,7 +409,6 @@ namespace Vtg
 			/* setup vapidir, built libraries and local packages */
 			foreach (ProjectGroup group in project.groups) {
 				foreach(string package in group.built_libraries) {
-					GLib.debug ("adding package as built %s so it can be blacklisted", package);
 					completion.parser.add_built_package (package);
 				}
 				foreach(string path in group.vapidirs) {
@@ -434,7 +426,6 @@ namespace Vtg
 					foreach (ProjectSource source in target.sources) {
 						if (source.uri.has_suffix (".vala") && source.uri.has_prefix ("file://")) {
 							string filename = source.uri.substring (7, source.uri.length - 7);
-							GLib.debug ("adding source %s", filename);
 							try {
 								completion.parser.add_source (filename);
 							} catch (Error err) {
@@ -453,7 +444,6 @@ namespace Vtg
 
 		~Plugin ()
 		{
-			GLib.debug ("destructor");
 			deactivate_modules ();
 		}
 	}

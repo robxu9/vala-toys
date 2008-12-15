@@ -1,5 +1,14 @@
 2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanageroutputview.vala:
+
+	removed some debug prints
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala:
 
 	fixed the completion search in the using clauses

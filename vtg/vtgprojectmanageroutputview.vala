@@ -86,7 +86,6 @@ namespace Vtg.ProjectManager
 						try {
 							item.stdin.write_chars ((char[]) buffer, out bw);
 							item.stdin.flush ();
-							GLib.debug ("sent: %s, %d", buffer, (int) bw);
 						} catch (Error err) {
 							GLib.warning ("on_textview_key_press - error: %s", err.message);
 						}
@@ -188,8 +187,6 @@ namespace Vtg.ProjectManager
 					if (message != "") {
 						log_message (message);
 					}
-				} else {
-					GLib.debug ("IOCondition: %d", (int) condition);
 				}
 				return true;
 			} catch (Error err) {
@@ -200,25 +197,13 @@ namespace Vtg.ProjectManager
 
 		public void log_message (string message)
 		{
-			GLib.debug ("LOG message: %s", message);
 			if (message != null && message_added (message)) {
-				var str = replace (message, "[1m", "");
-				str = replace (str, "[m", "");
+				var str = StringUtils.replace (message, "[1m", "");
+				str = StringUtils.replace (str, "[m", "");
 				_messages.insert_at_cursor (str, (int) str.length);
 				_textview.scroll_mark_onscreen (_messages.get_insert ());
 			}					
 		}
-
-		//HACK: to be changed to string.replace when it works
-		private string replace (string data, string old, string replacement) {
-			try {
-				var regex = new GLib.Regex (GLib.Regex.escape_string (old));
-				return regex.replace_literal (data, -1, 0, replacement);
-			} catch (GLib.RegexError e) {
-				GLib.assert_not_reached ();
-			}
-		}
-
 
 		public void activate ()
 		{

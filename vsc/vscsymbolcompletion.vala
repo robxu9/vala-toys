@@ -71,7 +71,6 @@ namespace Vsc
 		private Class? get_class (SourceFile source, int line, int column) throws SymbolCompletionError
 		{
 			foreach (CodeNode node in source.get_nodes ()) {
-				debug ("(find_class) node: %s - %s", Reflection.get_type_from_instance (node).name (), node.to_string());
 				if (node is Class) {
 					var cl = (Class) node;
 					//TODO: fields, signal subclasses
@@ -264,7 +263,7 @@ namespace Vsc
 			var dt = get_datatype_for_name (symbolname, sourcefile, line, column);
 			timer.stop ();
 			
-			GLib.debug ("(get_datatype_name_for_name) time elapsed: %f", timer.elapsed ());
+			debug ("(get_datatype_name_for_name) time elapsed: %f", timer.elapsed ());
 			if (dt != null) {
 				typename = get_qualified_name_for_datatype (dt);
 				debug ("(get_datatype_name_for_name) found DataType: %s", typename);
@@ -504,7 +503,7 @@ namespace Vsc
 				if (result == null) {
 					foreach (Vala.DataType type in @class.get_base_types ()) {
 						if (type is Vala.Interface) {
-							debug ("TODO: search in interface");
+							warning ("TODO: search in interface");
 						} else if (type is Vala.UnresolvedType) {
 							Namespace ns = null;
 							Class? cl = resolve_class_name (_parser.pri_context, type.to_string (), out ns);
@@ -554,14 +553,9 @@ namespace Vsc
 		{
 			DataType type = null;
 
-			debug ("(get_datatype_for_name_with_context) find datatype %s", symbolname);
 			Class cl = null;
 			var codenode = find_codenode (source, line, column, out cl);
-			if (cl != null) {
-				debug ("class is %s, %s", cl.name, cl.get_full_name ());
-			}
 			if (codenode != null) {
-				debug ("(get_datatype_for_name_with_context) node found %s", codenode.to_string ());
 				if (symbolname != "this" && symbolname != "base") {
 					Block body = null;
 
@@ -599,7 +593,6 @@ namespace Vsc
 					foreach (Statement st in body.get_statements ()) {
 						if (st is DeclarationStatement) {
 							var decl = (DeclarationStatement) st;
-							//debug ("decl %s %s",  Reflection.get_type_from_instance (decl.declaration).name (), decl.declaration.name);	
 							if (decl.declaration.name == symbolname) {
 								if (decl.declaration is LocalVariable) {
 									type = datatype_for_localvariable (context, source, line, column, (LocalVariable) (decl.declaration));
@@ -711,7 +704,6 @@ namespace Vsc
 						}
 						
 						if (class_name != null) {
-							debug ("(datatype_for_localvariable) find datatype for class name: %s", class_name);
 							Namespace dummy;
 							var cl = resolve_class_name (context, class_name, out dummy);
 							
@@ -720,7 +712,6 @@ namespace Vsc
 								cl = resolve_class_name (_parser.pri_context, class_name, out dummy);
 							}
 							if (cl != null) {
-								debug ("(datatype_for_localvariable) class type %s", cl.name);
 								vt = new ClassType (cl);
 							}
 						}
@@ -735,7 +726,6 @@ namespace Vsc
 								var mdt = get_datatype_for_name_with_context (context, member_name, source, line, column);
 								if (mdt != null) {
 									//now locking for the inner datatype
-									debug ("(datatype_for_localvariable) find inner for: %s, %s", this.get_qualified_name_for_datatype (mdt), member_name);
 									vt = get_inner_datatype (mdt, member_name, source);
 								}
 							}
@@ -775,8 +765,6 @@ namespace Vsc
 		
 		private string normalize_typename (string typename, string namespace_name)
 		{
-			debug ("(normalize_typename): %s, namespace %s", typename, namespace_name);
-			
 			if (typename.has_prefix ("%s.".printf (namespace_name))) {
 				return typename;				
 			} else {
@@ -804,11 +792,9 @@ namespace Vsc
 					if (node is Namespace) {
 						var ns = (Namespace) node;
 						var name = normalize_typename (symbolname, ns.name);
-						GLib.debug ("source: search in secondary namespaces for %s", name);
 						finder.searched_typename = name;
 						finder.visit_namespace (ns);
 						if (finder.result != null) {
-							GLib.debug ("source: search in secondary namespaces found: %s", finder.qualified_typename);
 							finder.result.accept (completion);
 							if (finder.result is Namespace) {
 								get_completion_for_name_in_namespace_with_context (ns.name, name, 
@@ -816,24 +802,21 @@ namespace Vsc
 							}
 							break;
 						} else {
-							GLib.debug ("source: search in primary namespaces for %s", name);
 							int tmp = result.count;
 							get_completion_for_name_in_namespace_with_context (ns.name, name, 
 								finder, completion, _parser.pri_context);
 							if (tmp != result.count) {
-								GLib.debug ("source: search in primary namespaces found: %s", name);
 								break; //found something in primary context
 							}
 						}
 					}
 				}					
 			} else {
-				GLib.debug ("no source file found");
+				warning ("no source file found");
 			}
 
 			if (finder.result == null) {
 				//search it in the root namespace, string and other base types are there
-				GLib.debug ("search in primary root namespace for %s", symbolname);
 				finder.searched_typename = symbolname;
 				finder.visit_namespace (_parser.pri_context.root);
 				if (finder.result != null) {
@@ -844,7 +827,6 @@ namespace Vsc
 			//search it in referenced namespaces
 			if (source != null && finder.result == null) {
 				foreach(UsingDirective item in source.get_using_directives ()) {
-					GLib.debug ("using directives: search in primary with namespace  %s for %s", item.namespace_symbol.name, symbolname);
 					int tmp = result.count;
 					get_completion_for_name_in_namespace_with_context (item.namespace_symbol.name, 
 						symbolname, finder, completion, _parser.pri_context);
@@ -861,7 +843,6 @@ namespace Vsc
 		private void get_completion_for_name_in_namespace_with_context (string namespace_name, string typename, TypeFinderVisitor finder, CompletionVisitor completion, CodeContext context)
 		{
 			foreach (Namespace ns in context.root.get_namespaces ()) {
-				GLib.debug ("get in ns: %s vs %s", ns.name, namespace_name);
 				if (ns.name == namespace_name) {
 					finder.searched_typename = "%s.%s".printf (ns.name, typename);
 					finder.visit_namespace (ns);
