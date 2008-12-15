@@ -32,25 +32,149 @@ VALA_REQUIRED=0.3.6
 GNOME_BUILD_REQUIRED=2.23.90
 GCONF_REQUIRED=2.22.0
 
-PKG_CHECK_MODULES(GENPROJECT, glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-2.0 >= $GTK_REQUIRED)
-AC_SUBST(GENPROJECT_CFLAGS)
-AC_SUBST(GENPROJECT_LIBS)
-
-PKG_CHECK_MODULES(VTG, 	glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED gtk+-2.0 >= $GTK_REQUIRED gedit-2.20 >= $GEDIT_REQUIRED gtksourcecompletion-1.0 >= $GTKSOURCECOMPLETION_REQUIRED gnome-build-1.0 >= $GNOME_BUILD_REQUIRED vala-1.0 >= $VALA_REQUIRED gconf-2.0 >= $GCONF_REQUIRED)
-
-AC_SUBST(VTG_CFLAGS)
-AC_SUBST(VTG_LIBS)
-
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
 AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
 
-AC_ARG_ENABLE(vsc-shell, AS_HELP_STRING([--enable-vsc-shell], [Build vsc-shell program]), enable_vscshell=$enableval, enable_vscshell=no)
-AM_CONDITIONAL(ENABLE_VSCSHELL, test x$enable_vscshell = xyes)
+### gen-project ####
 
-if test x$enable_vscshell = xyes; then
-	AC_CHECK_LIB(readline,readline,, [AC_MSG_ERROR([cannot find readline library])])
-	AC_CHECK_HEADER([readline/readline.h],, [AC_MSG_ERROR([cannot find readline headers is the readline 'dev' package installed?])])
+AC_ARG_ENABLE([gen-project],
+    AS_HELP_STRING([--disable-gen-project],[Disable vala gen-project program]),
+        [
+            case "${enableval}" in
+                yes) genprj=yes ;;
+                no) genprj=no ;;
+                *) AC_MSG_ERROR(bad value ${enableval} for --disable-gen-project) ;;
+            esac
+        ],
+        [genprj=auto])
+
+AC_ARG_ENABLE([vtg-plugin],
+    AS_HELP_STRING([--disable-vtg-plugin],[Disable vtg gEdit plugin]),
+        [
+            case "${enableval}" in
+                yes) vtgplugin=yes ;;
+                no) vtgplugin=no ;;
+                *) AC_MSG_ERROR(bad value ${enableval} for --disable-vtg-plugin) ;;
+            esac
+        ],
+        [vtgplugin=auto])
+
+AC_ARG_ENABLE([vsc-shell],
+    AS_HELP_STRING([--disable-vsc-shell],[Disable vsc-shell program]),
+        [
+            case "${enableval}" in
+                yes) vscshell=yes ;;
+                no) vscshell=no ;;
+                *) AC_MSG_ERROR(bad value ${enableval} for --disable-vsc-shell) ;;
+            esac
+        ],
+        [vscshell=auto])
+
+### gen-project ###############################################
+if test "x${genprj}" != xno ; then
+	PKG_CHECK_MODULES(GENPROJECT, 
+		[glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-2.0 >= $GTK_REQUIRED],
+		HAVE_GENPRJ=1,
+		[
+		    HAVE_GENPRJ=0
+		    if test "x$genprj" = xyes ; then
+		        AC_MSG_ERROR([*** gen-project support not found])
+		    fi
+		])
+else
+    HAVE_GENPRJ=0
 fi
+
+AC_SUBST(GENPROJECT_CFLAGS)
+AC_SUBST(GENPROJECT_LIBS)
+AC_SUBST(HAVE_GENPRJ)
+AM_CONDITIONAL([HAVE_GENPRJ], [test "x$HAVE_GENPRJ" = x1])
+###############################################################
+
+if test "x${vtgplugin}" != xno -o "x${vscshell}" != xno; then
+	PKG_CHECK_MODULES(VSC, 
+		[glib-2.0 >= $GLIB_REQUIRED 
+		gobject-2.0 >= $GLIB_REQUIRED 
+		gthread-2.0 >= $GTHREAD_REQUIRED 
+		vala-1.0 >= $VALA_REQUIRED],
+		HAVE_VSC=1,
+		[
+		    HAVE_VSC=0
+		    if test "x$vscshell" = xyes -o "x$vtgplugin" = xyes; then
+		        AC_MSG_ERROR([*** vsc library dependencies])
+		    fi
+		])
+else
+    HAVE_VSC=0
+fi
+
+AC_SUBST(VSC_CFLAGS)
+AC_SUBST(VSC_LIBS)
+AC_SUBST(HAVE_VSC)
+AM_CONDITIONAL([HAVE_VSC], [test "x$HAVE_VSC" = x1])
+
+### vsc-shell #################################################
+if test "x${vscshell}" != xno ; then
+	PKG_CHECK_MODULES(VSCSHELL, 
+		[glib-2.0 >= $GLIB_REQUIRED 
+		gobject-2.0 >= $GLIB_REQUIRED 
+		gthread-2.0 >= $GTHREAD_REQUIRED
+		vala-1.0 >= $VALA_REQUIRED],
+		HAVE_VSCSHELL=1,
+		[
+		    HAVE_VSCSHELL=0
+		    if test "x$vscshell" = xyes ; then
+		        AC_MSG_ERROR([*** vsc-shell dependencies])
+		    fi
+		])
+	AC_CHECK_LIB(readline,readline,, 
+		[
+			HAVE_VSCSHELL=0
+			AC_MSG_RESULT([cannot find readline library]) 
+		])
+	AC_CHECK_HEADER([readline/readline.h],, 
+		[
+			HAVE_VSCSHELL=0
+			AC_MSG_RESULT([cannot find readline headers is the readline 'dev' package installed?])
+		])
+else
+    HAVE_VSCSHELL=0
+fi
+
+AC_SUBST(VSCSHELL_CFLAGS)
+AC_SUBST(VSCSHELL_LIBS)
+AC_SUBST(HAVE_VSCSHELL)
+AM_CONDITIONAL([HAVE_VSCSHELL], [test "x$HAVE_VSCSHELL" = x1])
+################################################################
+
+### vtg-plugin #################################################
+if test "x${vtgplugin}" != xno ; then
+	PKG_CHECK_MODULES(VTGPLUGIN, 
+		[glib-2.0 >= $GLIB_REQUIRED 
+		gobject-2.0 >= $GLIB_REQUIRED 
+		gthread-2.0 >= $GTHREAD_REQUIRED 
+		gtk+-2.0 >= $GTK_REQUIRED 
+		gedit-2.20 >= $GEDIT_REQUIRED 
+		gtksourcecompletion-1.0 >= $GTKSOURCECOMPLETION_REQUIRED 
+		gnome-build-1.0 >= $GNOME_BUILD_REQUIRED 
+		vala-1.0 >= $VALA_REQUIRED 
+		gconf-2.0 >= $GCONF_REQUIRED],
+		HAVE_VTGPLUGIN=1,
+		[
+		    HAVE_VTGPLUGIN=0
+		    if test "x$vtgplugin" = xyes ; then
+		        AC_MSG_ERROR([*** vtg-plugin dependencies])
+		    fi
+		])
+else
+    HAVE_VTGPLUGIN=0
+fi
+
+AC_SUBST(VTGPLUGIN_CFLAGS)
+AC_SUBST(VTGPLUGIN_LIBS)
+AC_SUBST(HAVE_VTGPLUGIN)
+AM_CONDITIONAL([HAVE_VTGPLUGIN], [test "x$HAVE_VTGPLUGIN" = x1])
+##########################################################
 
 AC_CONFIG_FILES([
 	Makefile
@@ -64,3 +188,39 @@ AC_CONFIG_FILES([
 	po/Makefile.in])
 
 AC_OUTPUT
+
+##########################################################
+ENABLE_GENPRJ=no
+if test "x$HAVE_GENPRJ" = "x1" ; then
+   ENABLE_GENPRJ=yes
+fi
+
+ENABLE_VSC=no
+if test "x$HAVE_VSC" = "x1" ; then
+   ENABLE_VSC=yes
+fi
+
+ENABLE_VSCSHELL=no
+if test "x$HAVE_VSCSHELL" = "x1" ; then
+   ENABLE_VSCSHELL=yes
+fi
+
+ENABLE_VTGPLUGIN=no
+if test "x$HAVE_VTGPLUGIN" = "x1" ; then
+   ENABLE_VTGPLUGIN=yes
+fi
+
+echo "
+ ---{ $PACKAGE_NAME $VERSION }---
+
+    prefix:                        ${prefix}
+    sysconfdir:                    ${sysconfdir}
+    localstatedir:                 ${localstatedir}
+    C Compiler:                    ${CC}
+    CFLAGS:                        ${CFLAGS}
+    Enable gen-project:            ${ENABLE_GENPRJ}
+    Enable vsc library:            ${ENABLE_VSC}
+    Enable vtg:                    ${ENABLE_VTGPLUGIN}
+    Enable vsc-shell:              ${ENABLE_VSCSHELL}
+"
+

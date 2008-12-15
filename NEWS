@@ -1,0 +1,11 @@
+Vala toys for gEdit version 0.1.0
+================================
+
+* First relase of Vala toys for gEdit
+
+  Main implemented modules are:
+       * Bracket completion
+       * Symbol completion
+       * Autotool project managment
+       * Simple "one source" workflow optimization
+~                

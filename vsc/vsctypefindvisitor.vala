@@ -236,11 +236,13 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 		var previous_typename = _current_typename;
 	
 		if (_current_typename == null) {
-			_current_typename = m.name;
+			_current_typename = "%s()".printf (m.name);
 		} else {
 			_current_typename = "%s.%s()".printf (_current_typename, m.name);
 		}
-	
+		if (m.name.str ("printf") != null)
+			debug ("method %s vs %s", _current_typename, _searched_typename);
+			
 		if (_current_typename == _searched_typename) {
 			_result = m;
 			qualified_typename = _current_typename;

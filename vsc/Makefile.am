@@ -6,7 +6,7 @@ SUBDIRS = \
 	$(NULL)
 
 AM_CPPFLAGS = \
-	$(VTG_CFLAGS) \
+	$(VSC_CFLAGS) \
 	-DPACKAGE_DATADIR=\""$(pkgdatadir)"\" \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
@@ -15,7 +15,7 @@ BUILT_SOURCES = libvsc.vala.stamp
 
 
 if ENABLE_DEBUG
-        DEBUG =
+        DEBUG = --Xcc "-g" --Xcc "-O0"
 else
         DEBUG = --Xcc "-D G_DISABLE_DEBUG"
 endif
@@ -52,7 +52,7 @@ libvsc_la_LDFLAGS = \
 	$(NULL)
 
 libvsc_la_LIBADD = \
-	$(VTG_LIBS) \
+	$(VSC_LIBS) \
 	$(NULL)
 
 libvsc_la_DATA = \

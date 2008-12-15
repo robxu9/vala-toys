@@ -1,8 +1,8 @@
 [Gedit Plugin]
 Module=vtg
 IAge=2
-Name=Vala developer toys for GEdit
+Name=Vala developer toys
 Description=Plugins to easier the development of Vala applications
 Authors=Andrea Del Signore <sejerpz@tin.it>
 Copyright=Copyright © 2008 Andrea Del Signore
-Website=http://persbaglio.no-ip.org
+Website=http://vtg.googlecode.com

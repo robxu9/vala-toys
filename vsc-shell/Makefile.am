@@ -6,7 +6,7 @@ SUBDIRS = \
 	$(NULL)
 
 AM_CPPFLAGS = \
-	$(VTG_CFLAGS) \
+	$(VSCSHELL_CFLAGS) \
 	-DPACKAGE_DATADIR=\""$(pkgdatadir)"\" \
 	-include $(CONFIG_HEADER) \
 	-I $(top_srcdir)/vsc/ \
@@ -39,7 +39,7 @@ vsc-shell.vala.stamp: $(vsc_shell_VALASOURCES)
 
 vsc_shell_LDADD = \
 	../vsc/libvsc.la \
-	$(VTG_LIBS) \
+	$(VSCSHELL_LIBS) \
 	$(NULL)
 
 EXTRA_DIST = \

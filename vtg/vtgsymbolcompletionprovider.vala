@@ -425,9 +425,9 @@ namespace Vtg
 					} else {
 						tmp.append_unichar (ch);
 					}
+					skip_leading_spaces = false;
 				}
 				word = tmp.str.reverse ();
-				GLib.debug ("word %s", word);
 			}
 		}
 
@@ -472,7 +472,7 @@ namespace Vtg
 				if (dt != null) {
 					typename = _completion.get_qualified_name_for_datatype (dt);
 				}
-
+				
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
 				options.public_only ();				
 				if (line.str ("= new ") != null || line.str ("=new ") != null) {

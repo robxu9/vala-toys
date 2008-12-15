@@ -1,3 +1,22 @@
+2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* NEWS:
+	* README:
+	* configure.ac:
+	* Makefile.am:
+	* vsc-shell/Makefile.am:
+	* vsc/Makefile.am:
+	* vtg/Makefile.am:
+	* vtg/vtg.gedit-plugin:
+
+	build system improvments
+
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	completion improvments
+
 2008-12-15  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala:

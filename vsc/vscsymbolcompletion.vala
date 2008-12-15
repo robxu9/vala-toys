@@ -249,6 +249,10 @@ namespace Vsc
 			if (typename.has_suffix ("?")) {
 				typename = typename.substring (0, typename.length - 1);
 			}
+			//HACK: to check
+			if (typename == "GLib.string") {
+				return "string";
+			}
 			return typename;
 		}
 		
@@ -395,15 +399,17 @@ namespace Vsc
 					foreach (Statement st in body.get_statements ()) {
 						if (st is DeclarationStatement) {
 							var decl = (DeclarationStatement) st;
+							debug ("decl in method %s vs %s", decl.declaration.name, symbolname);
 							if (decl.declaration.name == symbolname) {
+								debug ("decl in method found:  %s", decl.declaration.name);
 								if (decl.declaration is LocalVariable) {
 									var type = datatype_for_localvariable (context, source, line, column, (LocalVariable) (decl.declaration));
 									if (type != null)
 										return type;
 								} else {
-									warning ("(get_datatype_for_name_with_context) unsupported type");
+									warning ("(get_datatype_for_name_with_context) unsupported type %s for %s", Reflection.get_type_from_instance (codenode).name (), symbolname);
 								}
-							}
+							} 
 						}
 					}
 

@@ -6,7 +6,7 @@ SUBDIRS = \
 	$(NULL)
 
 AM_CPPFLAGS = \
-	$(VTG_CFLAGS) \
+	$(VTGPLUGIN_CFLAGS) \
 	-DPACKAGE_DATADIR=\""$(pkgdatadir)"\" \
 	-include $(CONFIG_HEADER) \
 	-I $(top_srcdir)/vsc \
@@ -15,9 +15,9 @@ AM_CPPFLAGS = \
 BUILT_SOURCES = libvtg.vala.stamp
 
 if ENABLE_DEBUG
-	DEBUG = -g
+        DEBUG = --Xcc "-g" --Xcc "-O0"
 else
-	DEBUG = -D G_DISABLE_DEBUG
+	DEBUG = --Xcc "-D G_DISABLE_DEBUG"
 endif
 
 libvtgdir = $(libdir)/gedit-2/plugins
@@ -66,7 +66,7 @@ libvtg_la_LDFLAGS = \
 
 libvtg_la_LIBADD = \
 	../vsc/libvsc.la \
-	$(VTG_LIBS) \
+	$(VTGPLUGIN_LIBS) \
 	$(NULL)
 
 libvtg_DATA = \

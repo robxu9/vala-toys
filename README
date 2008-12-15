@@ -1,10 +1,7 @@
+Vala toys for gEdit
 
-* WARNING THIS CODE IS ALPHA SOFTWARE *
-
-Vala toys for GEdit
-
-Vala Toys for GEdit (Vtg) are an experimental collection of plugins
-that extends the GEdit editor to make it a better programmer editor
+Vala Toys for gEdit (Vtg) are an experimental collection of plugins
+that extends the gEdit editor to make it a better programmer editor
 targetted especially for the Vala language.
 
 Currently is composed of just one plugin with two modules:
@@ -17,6 +14,10 @@ Currently is composed of just one plugin with two modules:
 Directory structure
 
 root
+ +---- gen-project: this is the same utility shipped with the
+ |                  vala distribution. It's used by vtg to create
+ |                  a new project.
+ |
  +---- vsc:  static library containing the completion engine
  |
  +---- vsc-shell: unfinished shell useful to debug the
@@ -24,7 +25,7 @@ root
  |                to implement Vala completion also in other
  |                editors like emacs, vi etc...
  |
- +---- vtg: the GEdit plugin
+ +---- vtg: the gEdit plugin
 
 
 Vsc (Vala symbol completion)

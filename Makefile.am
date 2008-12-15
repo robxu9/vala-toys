@@ -1,8 +1,16 @@
 
 #Build in these directories:
-SUBDIRS = vsc gen-project vtg images ui po
+SUBDIRS = gen-project
 
-if ENABLE_VSCSHELL
+if HAVE_VSC
+SUBDIRS += vsc
+endif
+
+if HAVE_VTGPLUGIN
+SUBDIRS += vtg images ui po
+endif
+
+if HAVE_VSCSHELL
 SUBDIRS += vsc-shell
 endif
 
