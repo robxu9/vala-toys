@@ -1,3 +1,13 @@
+2008-12-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	removed a lot of dead code
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed completion bug with instantiable type
+
 2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala:

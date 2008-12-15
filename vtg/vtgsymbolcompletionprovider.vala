@@ -337,7 +337,7 @@ namespace Vtg
 			GLib.debug ("     TRANSFORM TOTAL TIME ELAPSED: %f", timer.elapsed ());
 		}
 
-		private void parse_current_line (out string word, out string line, out int lineno, out int colno)
+		private void parse_current_line (bool skip_leading_spaces, out string word, out string line, out int lineno, out int colno)
 		{
 			var tmp = new StringBuilder ();
 			
@@ -365,7 +365,7 @@ namespace Vtg
 						break;
 
 					unichar ch = start.get_char ();
-					if (ch == ' ') {
+					if (skip_leading_spaces && ch == ' ') {
 						while (true) {
 							start.backward_char ();
 							if (start.starts_line ()) {
@@ -437,7 +437,7 @@ namespace Vtg
 			string line, word;
 			int lineno, colno;
 
-			parse_current_line (out word, out line, out lineno, out colno);
+			parse_current_line (true, out word, out line, out lineno, out colno);
 
 			if (word == null || word == "")
 				return null;
@@ -515,7 +515,7 @@ namespace Vtg
 			string line, word;
 			int lineno, colno;
 
-			parse_current_line (out word, out line, out lineno, out colno);
+			parse_current_line (false, out word, out line, out lineno, out colno);
 
 			if (word == null && word == "")
 				return null;

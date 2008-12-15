@@ -306,14 +306,14 @@ namespace Vsc
 			}
 
 			if (result != null && source != null && toks[1] != null) {
-				result = get_inner_datatype2 (result, toks[1], source);
+				result = get_inner_datatype (result, toks[1], source);
 			}
 			_parser.unlock_all_contexts ();
 			return result;
 		}
 
 
-		private DataType? get_inner_datatype2 (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
+		private DataType? get_inner_datatype (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
 		{
 			DataType result = null;
 			var finder = new TypeFinderVisitor (source, _parser.pri_context);
@@ -346,265 +346,12 @@ namespace Vsc
 				}
 
 				if (toks[1] != null) {
-					result = get_inner_datatype2 (result, toks[1], source);
+					result = get_inner_datatype (result, toks[1], source);
 				}
 			}
 			
 			return result;
 		}
-
-		private DataType? get_inner_datatype (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
-		{
-			string qualified_type = "%s.%s".printf (get_qualified_name_for_datatype (datatype), fields_path);
-			
-			return get_datatype_for_symbol_name (qualified_type, source);
-		}
- 
-		
-
-		private DataType? get_datatype_for_symbol_name (string qualified_type, SourceFile source) throws SymbolCompletionError
-		{
-			warn_if_fail (_parser != null);
-			Symbol? result = null;
-
-			string[] fields = qualified_type.split (".");
-			int count = 0;
-
-			while (fields[count] != null)
-				count++;
-
-			Symbol? parent = null;
-			bool search_both_contexts = true;
-
-			//first on the local context
-			for (int idx = 0; idx < count; idx++) {
-				if (search_both_contexts) {
-					result = get_symbol_with_context (_parser.sec_context, fields[idx], source, parent);
-				}
-
-				if (result == null || parent != null) {
-					search_both_contexts = false;
-					result = get_symbol_with_context (_parser.pri_context, fields[idx], source, parent);
-					if (result == null) {
-						break;
-					}
-				}
-
-				parent = result;
-			}
-
-			if (result != null) {
-				if (result is Class) {
-					return new ClassType ((Class) result);
-				} else if (result is Field) {
-					var field = (Field) result;
-					return field.field_type;
-				} else if (result is Property) {
-					var prop = (Property) result;
-					return prop.property_type;
-				} else if (result is Struct) {
-					return new ValueType ((Struct) result);
-				} else if (result is Method) {
-					var method = (Method) result;
-					return method.return_type;
-				} else {
-					throw new SymbolCompletionError.UNSUPPORTED_TYPE ("(get_datatype_for_symbol_name): unsupported type");
-				}
-			}
-
-			return null;
-		}
-
-		private Symbol? get_symbol_with_context (CodeContext context, string name, SourceFile source, Symbol? parent = null) throws SymbolCompletionError
-		{
-			Symbol result = null;
-			if (context == null) {
-				critical ("context is null");
-				return result;
-			}
-
-			if (parent == null) {
-				//search in all namespaces
-				foreach (Namespace ns in context.root.get_namespaces ()) {
-					if (ns.name == name) {
-						return ns;
-					}
-				}
-
-				//it isn't a namespace so search for
-				//it in all namespaces specified in
-				//the using directives
-				foreach (Namespace ns in context.root.get_namespaces ()) {
-					//if (using_contains (source, ns.name)) {
-						result = get_symbol_with_context (context, name, source, ns);
-						//}
-				}
-
-				if (result == null) {
-					//and in the root one
-					result = get_symbol_with_context (context, name, source, context.root);
-				}
-
-			} else if (parent is Namespace) {
-				//find in all classes
-				var ns = (Namespace) parent;
-
- 				foreach (Vala.Field item in ns.get_fields ()) {
-					if (item.name == name) {
-						return item;
-					}
-				}
-
-				foreach (Vala.Class item in ns.get_classes ()) {
-					if (item.name == name) {
-						return item;
-					}
-				}
-
-				foreach (Vala.Struct item in ns.get_structs ()) {
-					if (item.name == name) {
-						return item;
-					}
-				}
-				
-
-				foreach (Vala.Interface item in ns.get_interfaces ()) {
-					if (item.name == name) {
-						return item;
-					}
-				}
-
-
-				foreach (Vala.Method item in ns.get_methods ()) {
-					if (item.name == name) {
-						return item;
-					}
-				}
-
-
-			} else if (parent is Class) {
-				result = get_symbol_in_class_with_context (context, (Class) parent, name, source);
-			} else if (parent is Struct) {
-				result = get_symbol_in_struct_with_context (context, (Struct) parent, name, source);
-			} else if (parent is Interface) {
-				result = get_symbol_in_interface_with_context (context, (Interface) parent, name, source);
-			} else if (parent is Property) {
-				var prop = (Property) parent;
-				result = get_symbol_with_context (context, prop.property_type.to_qualified_string (), source);
-			} else if (parent is Field) {
-				var field = (Field) parent;
-				result = get_symbol_with_context (context, field.field_type.to_qualified_string (), source);
-			} else if (parent is Method) {
-				var method = (Method) parent;
-				result = get_symbol_with_context (context, method.return_type.to_qualified_string (), source);
-			}
-
-			return result;
-		}
-
-		private Symbol? get_symbol_in_struct_with_context (CodeContext context, Struct strt, string name, SourceFile source) {
-			foreach (Vala.Method item in strt.get_methods ()) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-
-			foreach (Vala.Field item in strt.get_fields ()) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-
-			return null;
-		}
-
-		private Symbol? get_symbol_in_class_with_context (CodeContext context, Class @class, string name, SourceFile source) {
-			warn_if_fail (_parser != null);
-			if (_parser == null)
-				return null;
-
-			foreach (Vala.Method item in @class.get_methods ()) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-
-			foreach (Vala.Field item in @class.get_fields ()) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-
-
-			foreach (Vala.Property item in @class.get_properties ()) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-
-
-			foreach (Vala.Signal item in @class.get_signals ()) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-
-			Symbol? result = null;
-
-			if (!(@class is GLib.Object)) {
-				if (@class.base_class is Vala.Class) {
-					result = get_symbol_in_class_with_context (context, @class.base_class, name, source);
-				}
-
-				if (result == null) {
-					foreach (Vala.DataType type in @class.get_base_types ()) {
-						if (type is Vala.Interface) {
-							warning ("TODO: search in interface");
-						} else if (type is Vala.UnresolvedType) {
-							Namespace ns = null;
-							Class? cl = resolve_class_name (_parser.pri_context, type.to_string (), out ns);
-							if (cl != null) {
-								result = get_symbol_in_class_with_context (_parser.pri_context, cl, name, source);
-							}
-						}
-					}
-				}
-			}
-
-			return result;
-		}
-
-		private Symbol? get_symbol_in_interface_with_context (CodeContext context, Interface iface, string name, SourceFile source) {
-			foreach (Vala.Method item in iface.get_methods ()) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-
-			foreach (Vala.Field item in iface.get_fields ()) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-
-
-			foreach (Vala.Property item in iface.get_properties ()) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-
-
-			foreach (Vala.Signal item in iface.get_signals ()) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-			
-			//TODO: base interfaces!?!?
-			return null;
-		}
-
 
  		private DataType? get_datatype_for_name_in_code_node_with_context (CodeNode codenode, CodeContext context, string symbolname, SourceFile? source, int line, int column) throws SymbolCompletionError
  		{
@@ -923,32 +670,6 @@ namespace Vsc
 					break;
 				}
 			}
-		}
-
-		private Namespace? get_namespace_for_name (Namespace root, string name, ref int level)
-		{
-			Namespace result = null;
-			string[] parts = name.split (".",2);
-			int count = 0;
-			while (parts[count] != null)
-				count++;
-
-			if (parts[0] == null || parts[0] == "")
-				return null;
-
-			foreach (Namespace ns in root.get_namespaces ()) {
-				if (ns.name == parts[0]) {
-					level++;
-					if (count > 1) {
-						result = get_namespace_for_name (ns, parts[1], ref level);
-					}
-					if (result == null)
-						result = ns;
-					break;
-				}
-			}
-
-			return result;
 		}
 
 		private Class? resolve_class_name (CodeContext context, string typename, out Namespace? parent_ns = null, string? preferred_namespace = null)
