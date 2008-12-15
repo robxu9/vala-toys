@@ -1,4 +1,14 @@
 2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* debian/changelog:
+	* debian/compat:
+	* debian/control:
+	* debian/copyright:
+	* debian/rules:
+
+	debianized to make some distribution tests
+
+2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
 	
 	* NEWS:
 	* README:
