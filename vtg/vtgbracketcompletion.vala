@@ -237,7 +237,7 @@ namespace Vtg
 							//move backward to first non blank char
 							TextIter tmp = pos;
 							while (pos.backward_char ()) {
-								unichar ch = pos.get_char ();
+								ch = pos.get_char ();
 								if (!ch.isspace ())
 								{
 									pos.forward_char ();
