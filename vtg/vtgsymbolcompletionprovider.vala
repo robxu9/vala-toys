@@ -62,6 +62,9 @@ namespace Vtg
 		private Vtg.Plugin _plugin;
 		private Gsc.Info _calltip_window = null;
 
+		private bool need_parse = true;
+		private int current_edited_line = -1;
+		
 		public SymbolCompletion completion { construct { _completion = value;} }
 		public Gedit.View view { construct { _view = value; } }
  		public Vtg.Plugin plugin { construct { _plugin = value; } default = null; }
@@ -160,25 +163,25 @@ namespace Vtg
 
 		private bool on_view_key_press (Gtk.TextView view, Gdk.EventKey evt)
 		{
+			weak Gedit.Document doc = (Gedit.Document) _view.get_buffer ();
+			weak TextMark mark = (TextMark) doc.get_insert ();
+			TextIter start;
+			doc.get_iter_at_mark (out start, mark);
+			int line = start.get_line ();
 			unichar ch = Gdk.keyval_to_unicode (evt.keyval);
+			
 			if (ch == '(') {
 				this.show_calltip ();
-			} else if (evt.keyval == Gdk.Key_Escape) {
+			} else if (evt.keyval == Gdk.Key_Escape || ch == ')' || evt.keyval == Gdk.Key_Return) {
 				this.hide_calltip ();
 			}
 			if (counter <= 0) {
-				if (evt.keyval == Gdk.Key_BackSpace || 
-				    evt.keyval == Gdk.Key_Return ||
-				    (ch != 0 && ch != '.' && ch != ':')) {
-					if (evt.keyval == Gdk.Key_Return || ch == ';') {
-						this.hide_calltip ();
-						this.all_doc = true;
-						counter = 0; //immediatly (0.1sec)
-					} else {
-						this.all_doc = false;
-						counter = 8; //0.8sec
-					}
-					timeout_id = Timeout.add (100, this.on_timeout_parse);
+				if (evt.keyval == Gdk.Key_Return || ch == ';') {
+					this.all_doc = true;
+					counter = 0; //immediatly (0.1sec)
+					current_edited_line = -1;
+				} else if (evt.keyval != Gdk.Key_Escape) {
+					need_parse = true;
 				}
 			} else {
 				if (evt.keyval == Gdk.Key_Return || ch == ';') {
@@ -188,6 +191,12 @@ namespace Vtg
 					this.all_doc = false;
 					counter = 5;
 				}
+			}
+			
+			if (need_parse && current_edited_line != line) {
+				need_parse = false;
+				current_edited_line = line;
+				timeout_id = Timeout.add (25, this.on_timeout_parse);
 			}
 			return false;
 		}
@@ -377,7 +386,7 @@ namespace Vtg
 						}
 						start.forward_char ();
 					} else if (ch == ')') {
-						tmp.append_unichar (ch);
+						//tmp.append_unichar (ch);
 						//find where the method invocation begin
 						while (true) {
 							start.backward_char ();
@@ -386,7 +395,7 @@ namespace Vtg
 
 							ch = start.get_char ();
 							if (ch == '(') {
-								tmp.append_unichar (ch);
+								//tmp.append_unichar (ch);
 								break;
 							}
 						}
@@ -522,13 +531,14 @@ namespace Vtg
 
 			try {
 				string typename = null;
+				GLib.debug ("(find_proposals): START search datatype for: '%s'",word);
 				var timer = new Timer ();
 				if (word.has_prefix ("\"") && word.has_suffix ("\"")) {
 					typename = "string";
 				} else {
 					typename = _completion.get_datatype_name_for_name (word, _sb.name, lineno + 1, colno);
 				}
-				
+				GLib.debug ("(find_proposals): END search datatype for: '%s'",word);
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
 				options.public_only ();
 				if (line.str ("= new ") != null || line.str ("=new ") != null) {
@@ -544,22 +554,21 @@ namespace Vtg
 						options.protected_symbols = true;
 					}
 					options.exclude_type = typename;						
-
+					GLib.debug ("(find_proposals): START completion for: '%s'",typename);
 					timer.start ();
-					//result = _completion.get_completions_for_name (options, "%s.".printf(typename), _sb.name);
 					result = _completion.get_completions_for_name (options, typename, _sb.name);
 					timer.stop ();
-					GLib.debug ("find_by_name: %f", timer.elapsed ());
+					GLib.debug ("(find_proposals): END completion for: '%s', TIME Elapsed: %f",typename, timer.elapsed ());
 				} else {
 					GLib.debug ("data type not found for: %s", word);
 					if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
 						options.static_symbols = true;
 						options.interface_symbols = false;
+						GLib.debug ("(find_proposals): START STATIC completion for: '%s'",word);
 						timer.start ();
-						//result = _completion.get_completions_for_name (options, "%s.".printf(word), _sb.name);
 						result = _completion.get_completions_for_name (options, word, _sb.name);
 						timer.stop ();
-						GLib.debug ("find_by_name (static): %f, count %d", timer.elapsed (), result.count);
+						GLib.debug ("(find_proposals): END STATIC completion for: '%s', TIME Elapsed: %f",word, timer.elapsed ());
 					}
 				}
 			} catch (GLib.Error err) {

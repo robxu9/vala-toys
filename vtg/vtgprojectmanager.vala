@@ -146,7 +146,13 @@ namespace Vtg.ProjectManager
 			_prj_executer.process_exit += (sender, exit_status) => {
 				update_ui (_prj_view.current_project == null);
 			};
-			
+			_prj_builder.build_start += (sender) => {
+				update_ui (_prj_view.current_project == null);
+			};
+			_prj_builder.build_exit += (sender, exit_status) => {
+				update_ui (_prj_view.current_project == null);
+			};
+						
 			initialize_ui ();
 			update_ui (_prj_view.current_project == null);
 		}

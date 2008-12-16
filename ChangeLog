@@ -1,5 +1,20 @@
 2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	version bump if GtkSourceCompletion dependency
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	symbol completion speed improvements
+
+2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* debian/changelog:
 	* debian/compat:
 	* debian/control:

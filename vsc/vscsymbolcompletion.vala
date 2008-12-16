@@ -237,6 +237,18 @@ namespace Vsc
 			return null;
 		}
 
+
+		public string get_name_for_datatype (DataType dt)
+		{
+			string typename = get_qualified_name_for_datatype (dt);
+			string[] toks = typename.split (".");
+			int count = 0;
+			while (toks[count+1] != null)
+				count++;
+				
+			return toks[count];
+		}
+
 		public string get_qualified_name_for_datatype (DataType dt)
 		{
 			string typename;
@@ -248,10 +260,6 @@ namespace Vsc
 			}
 			if (typename.has_suffix ("?")) {
 				typename = typename.substring (0, typename.length - 1);
-			}
-			//HACK: to check
-			if (typename == "GLib.string") {
-				return "string";
 			}
 			return typename;
 		}
@@ -310,6 +318,7 @@ namespace Vsc
 			}
 
 			if (result != null && source != null && toks[1] != null) {
+				debug ("(get_datatype_for_name): found type for token 0: %s", get_qualified_name_for_datatype (result));
 				result = get_inner_datatype (result, toks[1], source);
 			}
 			_parser.unlock_all_contexts ();
@@ -322,33 +331,24 @@ namespace Vsc
 			DataType result = null;
 			var finder = new TypeFinderVisitor (source, _parser.pri_context);
 			string[] toks = fields_path.split (".", 2);
-			string typename = "%s.%s".printf (get_qualified_name_for_datatype (datatype), toks[0]);
+			string typename = "%s.%s".printf (get_name_for_datatype (datatype), toks[0]); // 
 			finder.searched_typename = typename;
 			if (datatype is ObjectType) {
 				var obj = (ObjectType) datatype;
 				obj.type_symbol.accept (finder);
+			} else if (datatype is ClassType) {
+				var cl = (ClassType) datatype;
+				cl.class_symbol.accept (finder);
+			} else if (datatype is ValueType) {
+				var vl = (ValueType) datatype;
+				vl.type_symbol.accept (finder);
 			} else {
+				debug ("looking in %s", Reflection.get_type_from_instance (datatype).name ());
 				datatype.accept (finder);
 			}
 			
 			if (finder.result != null) {
-				if (finder.result is Class) {
-					result = new ClassType ((Class) finder.result);
-				} else if (finder.result is Field) {
-					var field = (Field) finder.result;
-					result = field.field_type;
-				} else if (finder.result is Property) {
-					var prop = (Property) finder.result;
-					result = prop.property_type;
-				} else if (finder.result is Struct) {
-					result = new ValueType ((Struct) finder.result);
-				} else if (finder.result is Method) {
-					var method = (Method) finder.result;
-					result = method.return_type;
-				} else {
-					warning ("(get_datatype_for_symbol_name): unsupported type %s", Reflection.get_type_from_instance (finder.result).name ());
-				}
-
+				result = symbol_to_datatype (finder.result);
 				if (toks[1] != null) {
 					result = get_inner_datatype (result, toks[1], source);
 				}
@@ -357,6 +357,34 @@ namespace Vsc
 			return result;
 		}
 
+
+		private DataType? symbol_to_datatype (Symbol? symbol)
+		{
+			if (symbol == null)
+				return null;
+				
+			DataType result = null;
+			
+			if (symbol is Class) {
+				result = new ClassType ((Class) symbol);
+			} else if (symbol is Field) {
+				var field = (Field) symbol;
+				result = field.field_type;
+			} else if (symbol is Property) {
+				var prop = (Property) symbol;
+				result = prop.property_type;
+			} else if (symbol is Struct) {
+				result = new ValueType ((Struct) symbol);
+			} else if (symbol is Method) {
+				var method = (Method) symbol;
+				result = method.return_type;
+			} else {
+				warning ("(get_datatype_for_symbol_name): unsupported type %s", Reflection.get_type_from_instance (symbol).name ());
+			}
+			
+			return result;	
+		}
+		
  		private DataType? get_datatype_for_name_in_code_node_with_context (CodeNode codenode, CodeContext context, string symbolname, SourceFile? source, int line, int column) throws SymbolCompletionError
  		{
 			debug ("(get_datatype_for_name_with_context) found codenode - %s for %s: %s", Reflection.get_type_from_instance (codenode).name (), symbolname, codenode.to_string ());
@@ -492,74 +520,79 @@ namespace Vsc
 
 		private DataType datatype_for_localvariable (CodeContext context,  SourceFile? source = null, int line = 0, int column = 0, LocalVariable lv)
 		{
-			warn_if_fail (parser != null);
+			warn_if_fail (_parser != null);
 			DataType vt = null;
-			try {
-				if (lv.variable_type == null && lv.initializer != null) {
-					vt = lv.initializer.value_type;
-					if (vt == null) {
-						Expression initializer = lv.initializer;
-						string class_name = null;
-						string member_name = null;
+			if (lv.variable_type == null && lv.initializer != null) {
+				vt = lv.initializer.value_type;
+				if (vt == null) {
+					Expression initializer = lv.initializer;
+					string class_name = null;
+					string member_name = null;
 
-						if (initializer is ObjectCreationExpression) {
-							var oce = (((ObjectCreationExpression) (lv.initializer)));
-							if (oce.member_name is MemberAccess) {
-								initializer = oce.member_name;
-							}
-						} else if (initializer is MethodCall) {
-							var invoc = (MethodCall) initializer;
-							initializer = invoc.call;
+					if (initializer is ObjectCreationExpression) {
+						var oce = (((ObjectCreationExpression) (lv.initializer)));
+						if (oce.member_name is MemberAccess) {
+							initializer = oce.member_name;
+						}
+					} else if (initializer is MethodCall) {
+						var invoc = (MethodCall) initializer;
+						initializer = invoc.call;
+					}
+					
+					if (initializer is MemberAccess) {
+						var ma = (MemberAccess) initializer;
+						
+						if (ma.inner != null) {
+							class_name = ma.inner.to_string ();
 						}
 						
-						if (initializer is MemberAccess) {
-							var ma = (MemberAccess) initializer;
-							
-							if (ma.inner != null) {
-								class_name = ma.inner.to_string ();
-							}
-							
-							member_name = ma.member_name;
-						} else if (initializer is CastExpression) {
-							var ce = (CastExpression) initializer;
-							vt = ce.type_reference;
+						member_name = ma.member_name;
+					} else if (initializer is CastExpression) {
+						var ce = (CastExpression) initializer;
+						vt = ce.type_reference;
+					} else {
+						warning ("(datatype_for_localvariable) initializer of type '%s' is not yet supported", Reflection.get_type_from_instance (initializer).name ());
+					}
+					
+					if (vt == null) {
+						debug ("(datatype_for_localvariable): resolving: %s-%s", class_name, member_name);
+						string name;
+						if (member_name != null && class_name != null) {
+							name = "%s.%s".printf (class_name, member_name);
+						} else if (class_name != null) {
+							name = class_name;
 						} else {
-							warning ("(datatype_for_localvariable) initializer of type '%s' is not yet supported", Reflection.get_type_from_instance (initializer).name ());
+							name = member_name;
 						}
 						
-						if (class_name != null) {
-							Namespace dummy;
-							var cl = resolve_class_name (context, class_name, out dummy);
-							
-							//don't parse twice the primary context
-							if (cl == null && context != _parser.pri_context) { 
-								cl = resolve_class_name (_parser.pri_context, class_name, out dummy);
-							}
-							if (cl != null) {
-								vt = new ClassType (cl);
-							}
-						}
-						
-						if (vt == null && member_name != null) {
-							//try to find the current class
-							var cl = get_class (source, line, column);
-							if (cl != null) {
-								vt = get_inner_datatype (new ClassType (cl), member_name, source);
-							} else {
-								//not solved!
-								var mdt = get_datatype_for_name_with_context (context, member_name, source, line, column);
-								if (mdt != null) {
-									//now locking for the inner datatype
-									vt = get_inner_datatype (mdt, member_name, source);
+						debug ("(datatype_for_localvariable): using directives resolving type %s", name);
+
+						var finder = new TypeFinderVisitor ();
+						finder.searched_typename = name;
+						finder.visit_namespace (_parser.pri_context.root);
+						vt = symbol_to_datatype(finder.result);
+						if (vt == null) {
+							foreach (UsingDirective item in source.get_using_directives ()) {
+								var using_name = "%s.%s".printf (item.namespace_symbol.name, name);
+								debug ("(datatype_for_localvariable): using directives resolving type %s", name);
+								finder.searched_typename = using_name;
+								finder.visit_namespace (_parser.pri_context.root);
+								if (finder.result != null) {
+									vt = symbol_to_datatype(finder.result);
+									break;
 								}
+							}
+							if (vt == null) {
+								finder = new TypeFinderVisitor (source, _parser.pri_context);
+								finder.searched_typename = name;
+								finder.visit_namespace (_parser.sec_context.root);
+								vt = symbol_to_datatype(finder.result);
 							}
 						}
 					}
-				} else if (lv.variable_type != null) {
-					vt = lv.variable_type;;
 				}
-			} catch (Error err) {
-				warning ("error in datatype_for_localvariable: %s", err.message);
+			} else if (lv.variable_type != null) {
+				vt = lv.variable_type;;
 			}
 			return vt;
 		}
@@ -649,7 +682,7 @@ namespace Vsc
 			}
 			
 			//search it in referenced namespaces
-			if (source != null && finder.result == null) {
+			if (source != null && finder.result == null && !SymbolCompletion.symbol_has_known_namespace (symbolname)) {
 				foreach(UsingDirective item in source.get_using_directives ()) {
 					int tmp = result.count;
 					get_completion_for_name_in_namespace_with_context (item.namespace_symbol.name, 
@@ -678,78 +711,13 @@ namespace Vsc
 			}
 		}
 
-		private Class? resolve_class_name (CodeContext context, string typename, out Namespace? parent_ns = null, string? preferred_namespace = null)
+		internal static bool symbol_has_known_namespace (string name)
 		{
-			warn_if_fail (_parser != null);
-			string[] toks = typename.split (".");
-			int count = 0;
-			while (toks[count] != null)
-				count++;
+			return (name.has_prefix ("GLib.") || 
+				name.has_prefix ("Gtk.") || 
+				name.has_prefix ("Gdk."));
+		}
 
-			Namespace root_ns = null;
-			Namespace preferred_ns = null;
-			string name = toks[0];
-
-			parent_ns = null;
-			if (preferred_namespace != null && preferred_namespace == context.root.name) {
-				preferred_ns = context.root;
-			}
-
-			//first try to see if the first token is a namespace name
-			foreach (Namespace ns in context.root.get_namespaces ()) {
-				if (ns.name == name) {
-					root_ns = ns;
-					name = toks[1];
-					break;
-				}
-				if (preferred_namespace == ns.name) {
-					preferred_ns = ns;
-				}
-			}
-			if (root_ns == null) {
-				if (preferred_ns != null) {
-					foreach (Class cl in preferred_ns.get_classes ()) {
-						if (cl.name == name) {
-							parent_ns = preferred_ns;
-							return cl;
-						}
-					}		
-				}
-				foreach (Namespace ns in context.root.get_namespaces ()) {
-					if (ns != preferred_ns) {
-						foreach (Class cl in ns.get_classes ()) {
-							if (cl.name == name) {
-								parent_ns = ns;
-								return cl;
-							}
-						}
-					}
-				}
-			}
-
-			// cerco nel ns selezionato
-			if (root_ns != null && root_ns != preferred_ns) {
-				foreach (Class cl in root_ns.get_classes ()) {
-					if (cl.name == name) {
-						parent_ns = root_ns;
-						return cl;
-					}
-				}
-			}
-
-			//fallback to the root
-			//namespace
-			if (_parser.pri_context.root != preferred_ns) {
-				foreach (Class cl in context.root.get_classes ()) {
-					if (cl.name == name) {
-						parent_ns = context.root;
-						return cl;
-					}
-				}
-			}
-
-			return null;
-		}		
 	}
 }
 

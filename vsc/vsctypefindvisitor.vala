@@ -51,6 +51,7 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			_searched_typename = value;
 			_result = null;
 			qualified_typename = null;
+			debug ("type finder, armed with %s", _searched_typename);
 		}
 	}
 	
@@ -94,21 +95,23 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			_current_typename = "%s.%s".printf (_current_typename, cl.name);
 		}
 
-		//GLib.debug ("(visit_class): class %s for %s", _current_typename, _searched_typename);
 		if (_current_typename == _searched_typename) {
 			_result = cl;
                 	qualified_typename = _current_typename;
 		} else {
 			//cl.accept_children (this);
-			foreach (DataType type in cl.get_base_types ()) {
-				if (type != null) {
-					type.accept (this);
-					if (_result != null) {
-						break;
+			//Minor optimization
+			if (_result == null) {
+				foreach (DataType type in cl.get_base_types ()) {
+					if (type != null) {
+						type.accept (this);
+						if (_result != null) {
+							break;
+						}
 					}
 				}
 			}
-
+			
 			/* process enums first to avoid order problems in C code */
 			//Minor optimization
 			if (_result == null) {
@@ -236,12 +239,10 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 		var previous_typename = _current_typename;
 	
 		if (_current_typename == null) {
-			_current_typename = "%s()".printf (m.name);
+			_current_typename = "%s".printf (m.name);
 		} else {
-			_current_typename = "%s.%s()".printf (_current_typename, m.name);
+			_current_typename = "%s.%s".printf (_current_typename, m.name);
 		}
-		if (m.name.str ("printf") != null)
-			debug ("method %s vs %s", _current_typename, _searched_typename);
 			
 		if (_current_typename == _searched_typename) {
 			_result = m;
@@ -263,7 +264,6 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 		} else {
 			_current_typename = "%s.%s".printf (_current_typename, p.name);
 		}
-	
 		if (_current_typename == _searched_typename) {
 			_result = p;
 			qualified_typename = _current_typename;
@@ -315,15 +315,13 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 	}
 	
 	public override void visit_data_type (DataType data_type) {
-		if (_result != null) //found
+		if (_result != null || _context == null)
 			return;
 
 		if (!(data_type is UnresolvedType)) {
 			return;
 		}
 
-		return_if_fail (_context != null);
-		
 		var unresolved_type = (UnresolvedType) data_type;
 		var sym = resolve_type (unresolved_type);
 		if (sym != null) {
@@ -333,26 +331,41 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 	
 	private Symbol? resolve_type (UnresolvedType unresolved_type)
 	{
-		string name = unresolved_type.unresolved_symbol.name;
-
 		Symbol sym = null;
-		if (unresolved_type.unresolved_symbol.qualified) {
-			sym = _context.root.scope.lookup (name);
+
+		string name = unresolved_type.to_qualified_string ();
+		if (name == null) {
+			name = unresolved_type.unresolved_symbol.name;
 		}
-		
+
 		if (sym == null && _current_file != null) {
-			var typefinder = new TypeFinderVisitor (_current_file);
-			foreach (UsingDirective item in _current_file.get_using_directives ()) {
-				name = "%s.%s".printf (item.namespace_symbol.name, unresolved_type.unresolved_symbol.name);
-				typefinder._searched_typename = name;
-				typefinder.visit_namespace (_context.root);
-				if (typefinder.result != null) {
-					sym = typefinder.result;
-					break;
+			var typefinder = new TypeFinderVisitor ();
+
+
+			//trying on the root context
+			debug ("(resolve_type): root namespace type %s", name);
+			typefinder.searched_typename = name;
+			typefinder.visit_namespace (_context.root);
+			sym = typefinder.result;
+			
+			
+			if (sym == null && !SymbolCompletion.symbol_has_known_namespace (name)) {
+				foreach (UsingDirective item in _current_file.get_using_directives ()) {
+					var using_name = "%s.%s".printf (item.namespace_symbol.name, name);
+					debug ("(resolve_type): using directives resolving type %s", using_name);
+					typefinder.searched_typename = using_name;
+					typefinder.visit_namespace (_context.root);
+					if (typefinder.result != null) {
+						sym = typefinder.result;
+						break;
+					}
 				}
 			}
+
 		}
 
+		if (sym != null)
+			debug ("(resolve_type): type solved %s", sym.get_full_name ());
 		return sym;
 	}
 }

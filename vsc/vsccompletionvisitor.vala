@@ -321,7 +321,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	
 		foreach (Method m in cl.get_methods()) {
 			if (symbol_is_static(m))
-				return true;
+return true;
 		}
 	
 		foreach (Property prop in cl.get_properties()) {
@@ -362,26 +362,41 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	
 	private Symbol? resolve_type (UnresolvedType unresolved_type)
 	{
-		string name = unresolved_type.unresolved_symbol.name;
-
 		Symbol sym = null;
-		if (unresolved_type.unresolved_symbol.qualified) {
-			sym = _context.root.scope.lookup (name);
+
+		string name = unresolved_type.to_qualified_string ();
+		if (name == null) {
+			name = unresolved_type.unresolved_symbol.name;
 		}
-		
+
 		if (sym == null && _current_file != null) {
-			var typefinder = new TypeFinderVisitor (_current_file);
-			foreach (UsingDirective item in _current_file.get_using_directives ()) {
-				name = "%s.%s".printf (item.namespace_symbol.name, unresolved_type.unresolved_symbol.name);
-				typefinder.searched_typename = name;
-				typefinder.visit_namespace (_context.root);
-				if (typefinder.result != null) {
-					sym = typefinder.result;
-					break;
+			var typefinder = new TypeFinderVisitor ();
+
+
+			//trying on the root context
+			debug ("(resolve_type): root namespace type %s", name);
+			typefinder.searched_typename = name;
+			typefinder.visit_namespace (_context.root);
+			sym = typefinder.result;
+			
+			
+			if (sym == null && !SymbolCompletion.symbol_has_known_namespace (name)) {
+				foreach (UsingDirective item in _current_file.get_using_directives ()) {
+					var using_name = "%s.%s".printf (item.namespace_symbol.name, name);
+					debug ("(resolve_type): using directives resolving type %s", using_name);
+					typefinder.searched_typename = using_name;
+					typefinder.visit_namespace (_context.root);
+					if (typefinder.result != null) {
+						sym = typefinder.result;
+						break;
+					}
 				}
 			}
+
 		}
-		
+
+		if (sym != null)
+			debug ("(resolve_type): type solved %s", sym.get_full_name ());
 		return sym;
 	}
 }

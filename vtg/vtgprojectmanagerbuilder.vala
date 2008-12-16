@@ -36,11 +36,21 @@ namespace Vtg.ProjectManager
 		private bool is_bottom_pane_visible;
 		private int last_exit_code = 0;
 		
+		public signal void build_start ();
+		public signal void build_exit (int exit_status);
+		
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 		public BuildLogView error_pane {
 			get {
 				return _build_view;
 			}
+		}
+		
+		public bool is_building {
+			get {
+				return _child_watch_id != 0;
+			}
+			
 		}
 		construct
 		{
@@ -79,6 +89,7 @@ namespace Vtg.ProjectManager
 						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
+					this.build_start ();
 				} else {
 					log.log_message ("error compiling file\n");
 				}
@@ -116,6 +127,7 @@ namespace Vtg.ProjectManager
 						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
+					this.build_start ();
 				} else {
 					log.log_message ("error spawning 'make' process\n");
 				}
@@ -160,6 +172,7 @@ namespace Vtg.ProjectManager
 						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
+					this.build_start ();
 				} else {
 					log.log_message ("error spawning 'make clean' process\n");
 				}
@@ -184,12 +197,14 @@ namespace Vtg.ProjectManager
 		{
 			var log = _plugin.output_view;
 
-			Process.close_pid (pid);
 			log.stop_watch (_child_watch_id);
 			last_exit_code = Process.exit_status (status);
 			log.log_message (_("\ncompilation end with exit status %d\n").printf (last_exit_code));
 			_build_view.activate ();
+			_child_watch_id = 0;
+			this.build_exit (last_exit_code);
 			
+			Process.close_pid (pid);			
 			if (last_exit_code == 0) {
 				if (!this.is_bottom_pane_visible) {
 					_plugin.gedit_window.get_bottom_panel ().hide ();
@@ -197,7 +212,6 @@ namespace Vtg.ProjectManager
 			} else {
 				Gdk.beep ();				
 			}
-			_child_watch_id = 0;
 		}
 	}
 }
