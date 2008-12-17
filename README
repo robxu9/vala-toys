@@ -1,13 +1,13 @@
 Vala toys for gEdit
 
-Vala Toys for gEdit (Vtg) are an experimental collection of plugins
-that extends the gEdit editor to make it a better programmer editor
+Vala Toys for gEdit (Vtg) is an experimental collection of plugins
+that extend the gEdit editor to make it a better programmer editor
 targetted especially for the Vala language.
 
-Currently is composed of just one plugin with two modules:
+For more information see the Vtg homepage at:
 
-* Bracket completion module
-* Symbol completion module
+	http://vtg.googlecode.com
+
 
 * HACKING *
 
