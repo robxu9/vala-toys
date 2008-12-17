@@ -558,7 +558,7 @@ namespace Vtg
 					timer.start ();
 					result = _completion.get_completions_for_name (options, typename, _sb.name);
 					timer.stop ();
-					GLib.debug ("(find_proposals): END completion for: '%s', TIME Elapsed: %f",typename, timer.elapsed ());
+					GLib.debug ("(find_proposals): END completion for: '%s', Count %d, TIME Elapsed: %f",typename, result.count, timer.elapsed ());
 				} else {
 					GLib.debug ("data type not found for: %s", word);
 					if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
@@ -568,7 +568,7 @@ namespace Vtg
 						timer.start ();
 						result = _completion.get_completions_for_name (options, word, _sb.name);
 						timer.stop ();
-						GLib.debug ("(find_proposals): END STATIC completion for: '%s', TIME Elapsed: %f",word, timer.elapsed ());
+						GLib.debug ("(find_proposals): END STATIC completion for: '%s', Count %d, TIME Elapsed: %f",word, result.count, timer.elapsed ());
 					}
 				}
 			} catch (GLib.Error err) {

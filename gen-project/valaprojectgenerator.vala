@@ -18,6 +18,7 @@
  *
  * Author:
  * 	Jürg Billeter <j@bitron.ch>
+ * 	Andrea Del Signore <sejerpz@tin.it>
  */
 
 using GLib;

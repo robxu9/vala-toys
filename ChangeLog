@@ -1,5 +1,17 @@
 2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+	* gen-project/valaprojectgenerator.vala:
+
+	added myself to the author list
+
+	* vsc/vsccompletionvisitor.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed visit of base classes
+
+2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 
 	version bump if GtkSourceCompletion dependency

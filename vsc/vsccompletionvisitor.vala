@@ -83,8 +83,15 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 				_results.classes.add (item);
 			}
 		} else {
+			bool tmp = _parent_type_already_visited;
 			foreach (DataType type in cl.get_base_types ()) {
-				type.accept (this);
+				if (type is Vala.ObjectType) {
+					var obj = (ObjectType) type;
+					obj.type_symbol.accept (this);
+				} else {
+					type.accept (this);
+				}
+				_parent_type_already_visited = tmp;
 			}
 			
 			_parent_type_already_visited = true;
@@ -137,11 +144,14 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			if (!_results.structs_contain (st.name) && test_symbol (_options, st)) {
 				_results.structs.add (new SymbolCompletionItem.with_struct (st));
 			}
-		} else {
 			foreach (DataType type in st.get_base_types()) {
 				type.accept (this);
 			}
+		} else {
 			_parent_type_already_visited = true;
+			foreach (DataType type in st.get_base_types()) {
+				type.accept (this);
+			}
 			foreach (TypeParameter p in st.get_type_parameters()) {
 				p.accept (this);
 			}
@@ -321,7 +331,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	
 		foreach (Method m in cl.get_methods()) {
 			if (symbol_is_static(m))
-return true;
+				return true;
 		}
 	
 		foreach (Property prop in cl.get_properties()) {
