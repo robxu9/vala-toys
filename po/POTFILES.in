@@ -1,3 +1,40 @@
 [encoding: UTF-8]
 # List of source files which contain translatable strings.
-ui/vtg.ui
+[type: getttext/glade]ui/vtg.ui
+#vtg
+vtg/vtgsymbolcompletionprovider.vala
+vtg/vtgprojectmanagerbuilder.vala
+vtg/vtgprojectmanager.vala
+vtg/vtgprojectmanagerproject.vala
+vtg/vtgprojectmanagerview.vala
+vtg/vtgutils.vala
+vtg/vtgprojectmanageroutputview.vala
+vtg/vtgplugin.vala
+vtg/vtgbracketcompletion.vala
+vtg/vtgprojectmanagerbuildlogview.vala
+vtg/vtgprojectmanagerexecuter.vala
+vtg/vtgprojectmanagerfilteredlistdialog.vala
+vtg/vtgprojectmanagerprojectgroup.vala
+vtg/vtgconfiguration.vala
+vtg/vtgprojectmanagerprojectmodule.vala
+vtg/vtgsymbolcompletionhelper.vala
+vtg/vtgprojectmanagerpackagesdialog.vala
+vtg/vtgsymbolcompletiontrigger.vala
+vtg/vtgprojectmanagerprocesswatchinfo.vala
+vtg/vtgprojectmanagerprojectpackage.vala
+vtg/vtgprojectmanagerprojectsource.vala
+vtg/vtgprojectmanagerprojecttarget.vala
+#vsc
+vsc/vsccompletionvisitor.vala
+vsc/vscsymbolcompletion.vala
+vsc/vsctypefindvisitor.vala
+vsc/vscsourcebuffer.vala
+vsc/vscparsermanager.vala
+vsc/vscsymbolcompletionitem.vala
+vsc/vscsymbolcompletionresult.vala
+vsc/vscmethodlistvisitor.vala
+vsc/vscsymbolcompletionfilteroptions.vala
+#vsc-shell
+vsc-shell/vsccompletionshell.vala
+#gen-project
+gen-project/valaprojectgenerator.vala

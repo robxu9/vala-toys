@@ -8,3 +8,4 @@ vtg/vtgprojectmanageroutputview.c
 vtg/vtgprojectmanagerproject.c
 vtg/vtgprojectmanagerprojectgroup.c
 vtg/vtgprojectmanagerview.c
+gen-project/valaprojectgenerator.c

@@ -1,0 +1,311 @@
+# Vala Toys for gEdit.
+# Copyright (C) 2008 Andrea Del Signore
+# This file is distributed under the same license as the Vtg package.
+# Andrea Del Signore <sejerpz@tin.it>, 2008.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Vtg 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-12-18 21:45+0100\n"
+"PO-Revision-Date: 2008-12-18 21:23+0100\n"
+"Last-Translator: Andrea Del Signore <sejerpz@tin.it>\n"
+"Language-Team: Italiano <sejerpz@tin.it>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../vtg/vtgprojectmanagerbuilder.vala:80
+#, c-format
+msgid "Start compiling file: %s\n"
+msgstr "Inizio compilazione file: %s\n"
+
+#: ../vtg/vtgprojectmanagerbuilder.vala:118
+#, c-format
+msgid "Start building project: %s\n"
+msgstr "Inizio compilazione progetto: %s\n"
+
+#: ../vtg/vtgprojectmanagerbuilder.vala:153
+#, c-format
+msgid "Start cleaning project: %s\n"
+msgstr "Inizio pulizia progetto: %s\n"
+
+#: ../vtg/vtgprojectmanagerbuilder.vala:158
+#, c-format
+msgid "cleaning 'stamp' files for project: %s\n"
+msgstr "Pulizia 'stamp' files per il progetto: %s\n"
+
+#: ../vtg/vtgprojectmanagerbuilder.vala:162
+#, c-format
+msgid "error cleaning 'stamp' files for project: %s\n"
+msgstr "Errore durante la pulizia dei files 'stamp' per il progetto: %s\n"
+
+#: ../vtg/vtgprojectmanagerbuilder.vala:202
+#, c-format
+msgid ""
+"\n"
+"compilation end with exit status %d\n"
+msgstr ""
+"\n"
+"Compilazione terminata codide di uscita: %d\n"
+
+#: ../vtg/vtgprojectmanager.vala:94
+msgid "_New Project..."
+msgstr "_Nuovo Progetto..."
+
+#: ../vtg/vtgprojectmanager.vala:94
+msgid "Create a new project"
+msgstr "Crea un nuovo progetto"
+
+#: ../vtg/vtgprojectmanager.vala:95
+msgid "Op_en Project..."
+msgstr "_Apri Progetto..."
+
+#: ../vtg/vtgprojectmanager.vala:95
+msgid "Open an existing project"
+msgstr "Apre un progetto esistente"
+
+#: ../vtg/vtgprojectmanager.vala:96
+msgid "_Close Current Project"
+msgstr "_Chiudi Progetto Corrent"
+
+#: ../vtg/vtgprojectmanager.vala:96
+msgid "Close current selected project"
+msgstr "Chiude il progetto correntemente selezionato"
+
+#: ../vtg/vtgprojectmanager.vala:97
+msgid "Build"
+msgstr "Genera"
+
+#: ../vtg/vtgprojectmanager.vala:97
+msgid "Build menu"
+msgstr "Menu Genera"
+
+#: ../vtg/vtgprojectmanager.vala:98
+msgid "_Build Project"
+msgstr "_Genera Progetto"
+
+#: ../vtg/vtgprojectmanager.vala:98
+msgid "Build the current project using 'make'"
+msgstr "Genera il progetto corrente usando 'make'"
+
+#: ../vtg/vtgprojectmanager.vala:99
+msgid "_Clean Project"
+msgstr "_Pulisci Progetto"
+
+#: ../vtg/vtgprojectmanager.vala:99
+msgid "Clean the current project using 'make clean'"
+msgstr "Pulisce il progetto corrente usando 'make clean'"
+
+#: ../vtg/vtgprojectmanager.vala:100
+msgid "_Clean Project and Vala 'Stamp' Files"
+msgstr "P_ulisci Progetto e Files Vala 'Stamp'"
+
+#: ../vtg/vtgprojectmanager.vala:100
+msgid "Clean the current project stamp files"
+msgstr "Pulisce il progetto corrente eliminado i files 'stamp'"
+
+#: ../vtg/vtgprojectmanager.vala:101
+msgid "_Compile File"
+msgstr "_Compila File"
+
+#: ../vtg/vtgprojectmanager.vala:101
+msgid "Compile the current file with the vala compiler"
+msgstr "Compila il file corrente con il compilatore vala"
+
+#: ../vtg/vtgprojectmanager.vala:102
+msgid "_Next Error"
+msgstr "Errore _Successivo"
+
+#: ../vtg/vtgprojectmanager.vala:102
+msgid "Go to next error source line"
+msgstr "Salta alla linea dell'errore successivo"
+
+#: ../vtg/vtgprojectmanager.vala:103
+msgid "_Previuos Error"
+msgstr "Errore Prece_dente"
+
+#: ../vtg/vtgprojectmanager.vala:103
+msgid "Go to previous error source line"
+msgstr "Salta alla linea dell'errore precedente"
+
+#: ../vtg/vtgprojectmanager.vala:104
+msgid "_Execute"
+msgstr "_Esegui"
+
+#: ../vtg/vtgprojectmanager.vala:104
+msgid "Excute target program"
+msgstr "Esegue il programma"
+
+#: ../vtg/vtgprojectmanager.vala:105
+msgid "_Stop process"
+msgstr "_Ferma il processo"
+
+#: ../vtg/vtgprojectmanager.vala:105
+msgid "Stop (kill) executing program"
+msgstr "Ferma (kill) il programma correntamente eseguito"
+
+#: ../vtg/vtgprojectmanager.vala:106
+msgid "_Go To Document..."
+msgstr "_Salta Al Documento..."
+
+#: ../vtg/vtgprojectmanager.vala:106
+msgid "Open a document that belong to this project"
+msgstr "Apre un documento appartenente a questo progetto"
+
+#: ../vtg/vtgprojectmanager.vala:107
+msgid "_Go To Method..."
+msgstr "Salta Al _Metodo..."
+
+#: ../vtg/vtgprojectmanager.vala:107
+msgid "Goto to a specific method in the current source document"
+msgstr "Salta ad uno specifico metodo del sorgente corrent"
+
+#: ../vtg/vtgprojectmanager.vala:189
+msgid "Open Project"
+msgstr "Apri Progetto"
+
+#: ../vtg/vtgprojectmanager.vala:222
+msgid "Project files need to be saved"
+msgstr "Alcuni files del progetto devono essere salvati"
+
+#. save dialog
+#: ../vtg/vtgprojectmanager.vala:243
+msgid "Save Project"
+msgstr "Salva Progetto"
+
+#. autogen
+#: ../vtg/vtgprojectmanager.vala:518
+#, c-format
+msgid "Autogenerating project: %s\n"
+msgstr "Autogenerazione del progetto in corso: %s\n"
+
+#: ../vtg/vtgprojectmanager.vala:558
+#, c-format
+msgid ""
+"\n"
+"autogeneration end with exit status %d\n"
+msgstr ""
+"\n"
+"autogenerazione terminata con codice di uscita %d\n"
+
+#: ../vtg/vtgprojectmanagerproject.vala:213
+msgid "References"
+msgstr "Riferimenti"
+
+#: ../vtg/vtgprojectmanagerproject.vala:225
+msgid "Files"
+msgstr "Files"
+
+#: ../vtg/vtgprojectmanagerview.vala:60
+msgid "Add/Remove Packages..."
+msgstr "Aggiungi/Rimuovi Package..."
+
+#: ../vtg/vtgprojectmanagerview.vala:60
+msgid "Manage packages references"
+msgstr "Gestisci i riferimenti ai packages"
+
+#: ../vtg/vtgprojectmanagerview.vala:61
+msgid "Open configure file..."
+msgstr "Apri il file configure..."
+
+#: ../vtg/vtgprojectmanagerview.vala:61
+msgid "Open configure.ac file"
+msgstr "Apre il file configure.ax"
+
+#: ../vtg/vtgprojectmanagerview.vala:62
+msgid "Open makefile"
+msgstr "Apri il makefile"
+
+#: ../vtg/vtgprojectmanagerview.vala:62
+msgid "Open makefile.am file"
+msgstr "Apre il file makefile.am"
+
+#: ../vtg/vtgprojectmanagerview.vala:128
+msgid "Projects"
+msgstr "Progetti"
+
+#. default empty project
+#: ../vtg/vtgprojectmanagerview.vala:148
+msgid "(no project opened - default)"
+msgstr "(nessun progetto aperto - predefinito)"
+
+#: ../vtg/vtgprojectmanageroutputview.vala:68
+msgid "Output"
+msgstr "Risultato"
+
+#: ../vtg/vtgprojectmanagerbuildlogview.vala:67
+msgid "Message"
+msgstr "Messaggio"
+
+#: ../vtg/vtgprojectmanagerbuildlogview.vala:76
+msgid "File"
+msgstr "File"
+
+#: ../vtg/vtgprojectmanagerbuildlogview.vala:82
+msgid "Line"
+msgstr "Linea"
+
+#: ../vtg/vtgprojectmanagerbuildlogview.vala:88
+msgid "Column"
+msgstr "Colonna"
+
+#: ../vtg/vtgprojectmanagerbuildlogview.vala:98
+msgid "Build results"
+msgstr "Risultati generazione"
+
+#: ../vtg/vtgprojectmanagerexecuter.vala:72
+#, c-format
+msgid "Starting %s, from project: %s\n"
+msgstr "Avvio di %s, dal progetto: %s\n"
+
+#: ../vtg/vtgprojectmanagerexecuter.vala:107
+#, c-format
+msgid ""
+"\n"
+"process terminated with exit status %d\n"
+msgstr ""
+"\n"
+"processo terminato con stato di uscita %d\n"
+
+#: ../vtg/vtgprojectmanagerprojectgroup.vala:45
+msgid "other"
+msgstr "altro"
+
+#: ../vtg/vtgconfiguration.vala:59
+msgid "Enable the symbol completion module"
+msgstr "Abilita il modulo per il completamento del codice"
+
+#: ../vtg/vtgconfiguration.vala:65
+msgid "Enable the bracket completion module"
+msgstr "Abilita il modulo per il completamento delle parentesi"
+
+#: ../gen-project/valaprojectgenerator.vala:87
+#, c-format
+msgid "project of type %s is not supported"
+msgstr "tipo progetto %s non supportato"
+
+#: ../gen-project/valaprojectgenerator.vala:98
+#, c-format
+msgid "license of type %s is not available"
+msgstr "tipo licenza %s non disponibile"
+
+#: ../gen-project/valaprojectgenerator.vala:100
+#, c-format
+msgid "unknown option %s"
+msgstr "opzione sconosciuta %s"
+
+#. more then a project name
+#: ../gen-project/valaprojectgenerator.vala:730
+msgid "Just a single project name can be specified on the command line"
+msgstr ""
+"E' possibile specificare un solo nome progetto fra gli argomenti della linea "
+"di comando"
+
+#: ../gen-project/valaprojectgenerator.vala:740
+#, c-format
+msgid "Run '%s --help' to see a full list of available command line options.\n"
+msgstr ""
+"Esegui '%s --help' per avere la lista delle possibili opzioni della linea di "
+"comando\n"

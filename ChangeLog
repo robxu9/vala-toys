@@ -1,5 +1,15 @@
 2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
 
+	* po/it.po:
+	* po/vtg.pot
+	* po/LINGUAS:
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+
+	added italian translation
+
+2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 
 	re-bumped version number with a more appropriate one
