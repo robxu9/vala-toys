@@ -1,6 +1,12 @@
 2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerproject.vala:
+
+	fixed side pane tree sorting
+
+2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerproject.vala:
 	* vtg/vtgutils.vala:
 
 	fixed some warning cause by the use of substring without 
