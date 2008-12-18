@@ -1,5 +1,11 @@
 2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	re-bumped version number with a more appropriate one
+
+2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/valaprojectgenerator.vala:
 
 	added some useful command line options fixes #4
