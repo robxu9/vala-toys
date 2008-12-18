@@ -69,7 +69,6 @@ namespace Vtg.ProjectManager
 					}
 				}
 			}
-
 			return false;
 		}
 
@@ -250,32 +249,6 @@ namespace Vtg.ProjectManager
 			}
 		}
 
-		private string normalize_path (string name)
-		{
-			string[] name_parts = name.substring (1, name.length - 1).split ("/");
-			string last_item = null;
-
-			string target_name = "";
-
-			foreach (string item in name_parts) {
-				if (item != "..") {
-					if (last_item != null) {
-						target_name += "/" + last_item;
-					}
-
-					last_item = item;
-				} else {
-					last_item = null;
-				}
-			}
-
-			if (last_item != null && last_item != "..") {
-				target_name += "/" + last_item;
-			}
-
-			return target_name;
-		}
-
 		private void parse_project ()
 		{
 			try {
@@ -293,7 +266,7 @@ namespace Vtg.ProjectManager
 				}
 				
 				foreach (string grp_id in _gbf_project.get_all_groups ()) {
-					string grp_name = normalize_path (grp_id);
+					string grp_name = Vtg.PathUtils.normalize_path (grp_id);
 					ProjectGroup group = this.find_group (grp_name);
 					if (group == null) {
 						group = new ProjectGroup (grp_name, this);

@@ -1,5 +1,13 @@
 2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgutils.vala:
+
+	fixed some warning cause by the use of substring without 
+	the check of the string length
+
+2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
+
 	* po/it.po:
 	* po/vtg.pot
 	* po/LINGUAS:

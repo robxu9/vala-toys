@@ -45,6 +45,38 @@ namespace Vtg
 		}
 	}
 	
+	namespace PathUtils
+	{
+		public static string normalize_path (string name)
+		{
+			if (name == null || name.length <= 1)
+				return name;
+				
+			string[] name_parts = name.substring (1, name.length - 1).split ("/");
+			string last_item = null;
+
+			string target_name = "";
+
+			foreach (string item in name_parts) {
+				if (item != "..") {
+					if (last_item != null) {
+						target_name += "/" + last_item;
+					}
+
+					last_item = item;
+				} else {
+					last_item = null;
+				}
+			}
+
+			if (last_item != null && last_item != "..") {
+				target_name += "/" + last_item;
+			}
+
+			return target_name;
+		}
+	}
+	
 	public class Utils : GLib.Object
 	{
 		private static bool _initialized = false;
