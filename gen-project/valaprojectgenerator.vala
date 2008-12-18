@@ -36,9 +36,18 @@ enum Vala.ProjectLicense {
 	LGPL3
 }
 
-class Vala.ProjectGenerator : Dialog {
+class Vala.ProjectGenerator {
 	static string option_project_path = null;
-
+	static ProjectType option_project_type = ProjectType.GTK_APPLICATION;
+	static ProjectLicense option_project_license = ProjectLicense.LGPL2;
+	static bool option_version;
+	static string option_author;
+	static string option_email;
+	static string option_project_name;
+	[NoArrayLength ()]
+	static string[] option_files;
+	
+	private Dialog config_dialog;
 	private FileChooserButton project_folder_button;
 	private ComboBox project_type_combobox;
 	private ComboBox license_combobox;
@@ -58,19 +67,74 @@ class Vala.ProjectGenerator : Dialog {
 	private ProjectLicense project_license;
 
         const OptionEntry[] options = {
-		{ "projectdir", 0, 0, OptionArg.STRING, ref option_project_path, "Project path", "NAME" },
+		{ "projectdir", 'p', 0, OptionArg.FILENAME, ref option_project_path, "Project directory", "DIRECTORY" },
+		{ "type", 't', 0, OptionArg.CALLBACK, (void *) option_parse_callback, "Project TYPE: gtk+, console", "TYPE" },
+		{ "license", 'l', 0, OptionArg.CALLBACK, (void *) option_parse_callback, "License TYPE: gpl2, gpl3, lgpl2, lgpl3", "TYPE" },
+		{ "version", 0, 0, OptionArg.NONE, ref option_version, "Display version number", null },
+		{ "author", 'a', 0, OptionArg.STRING, ref option_author, "Author name", "NAME" },
+		{ "email", 'e', 0, OptionArg.STRING, ref option_email, "Author email address", "EMAIL" },
+		{ "", 0, 0, OptionArg.FILENAME_ARRAY, ref option_files, "Project NAME", "NAME" },
 		{ null }
 	};
 
+	public static bool option_parse_callback (string option_name, string @value,  void *data) throws GLib.OptionError {
+		if (option_name == "--type" || option_name == "-t") {
+			if (@value == "gtk+")
+				option_project_type = ProjectType.GTK_APPLICATION;
+			else if (@value == "console")
+				option_project_type = ProjectType.CONSOLE_APPLICATION;
+			else
+				throw new GLib.OptionError.BAD_VALUE (_("project of type %s is not supported").printf (@value));
+		} else if (option_name == "--license"  || option_name == "-l") {
+			if (@value == "gpl2")
+				option_project_license = ProjectLicense.GPL2;
+			else if (@value == "gpl3")
+				option_project_license = ProjectLicense.GPL3;
+			else if (@value == "lgpl2")
+				option_project_license = ProjectLicense.LGPL2;
+			else if (@value == "lgpl3")
+				option_project_license = ProjectLicense.LGPL3;
+			else
+				throw new GLib.OptionError.BAD_VALUE (_("license of type %s is not available").printf (@value));
+		} else {
+			throw new GLib.OptionError.UNKNOWN_OPTION (_("unknown option %s").printf (option_name));
+		}
+		return true;
+	}
+	
 	public ProjectGenerator () {
-		title = "Vala Project Generator";
+		project_path = option_project_path;
+		project_name = option_project_name;
 	}
 
-	construct {
-		border_width = 12;
-		has_separator = false;
+	private HBox create_hbox (string title, SizeGroup size_group) {
+		var hbox = new HBox (false, 6);
+		var vbox = config_dialog.vbox;
+		
+		vbox.pack_start (hbox, false, false, 0);
+		hbox.show ();
 
-		var vbox = (VBox) this.vbox;
+		var label = new Label ("    ");
+		hbox.pack_start (label, false, false, 0);
+		label.show ();
+
+		label = new Label (title);
+		hbox.pack_start (label, false, false, 0);
+		label.xalign = 0;
+		label.show ();
+		size_group.add_widget (label);
+
+		return hbox;
+	}
+
+	private void build_dialog_ui ()
+	{
+		config_dialog = new Gtk.Dialog ();
+		config_dialog.title = "Vala Project Generator";
+		config_dialog.border_width = 12;
+		config_dialog.has_separator = false;
+
+		var vbox = config_dialog.vbox;
 		var size_group = new SizeGroup (SizeGroupMode.HORIZONTAL);
 
 		Label label;
@@ -98,7 +162,7 @@ class Vala.ProjectGenerator : Dialog {
 		hbox.pack_start (project_type_combobox, true, true, 0);
 		project_type_combobox.append_text ("Console Application");
 		project_type_combobox.append_text ("GTK+ Application");
-		project_type_combobox.active = ProjectType.GTK_APPLICATION;
+		project_type_combobox.active = option_project_type;
 		project_type_combobox.show ();
 
 		hbox = create_hbox ("License:", size_group);
@@ -108,7 +172,7 @@ class Vala.ProjectGenerator : Dialog {
 		license_combobox.append_text ("GNU General Public License, version 3 or later");
 		license_combobox.append_text ("GNU Lesser General Public License, version 2.1 or later");
 		license_combobox.append_text ("GNU Lesser General Public License, version 3 or later");
-		license_combobox.active = ProjectLicense.LGPL2;
+		license_combobox.active = option_project_license;
 		license_combobox.show ();
 
 		label = new Label ("<b>Author</b>");
@@ -120,7 +184,11 @@ class Vala.ProjectGenerator : Dialog {
 		hbox = create_hbox ("Name:", size_group);
 		name_entry = new Entry ();
 		hbox.pack_start (name_entry, true, true, 0);
-		real_name = Environment.get_variable ("REAL_NAME");
+		if (option_author != null) {
+			real_name = option_author;	
+		} else {
+			real_name = Environment.get_variable ("REAL_NAME");
+		}
 		if (real_name != null) {
 			name_entry.text = real_name;
 		}
@@ -129,41 +197,45 @@ class Vala.ProjectGenerator : Dialog {
 		hbox = create_hbox ("E-mail address:", size_group);
 		email_entry = new Entry ();
 		hbox.pack_start (email_entry, true, true, 0);
-		email_address = Environment.get_variable ("EMAIL_ADDRESS");
+		if (option_email != null) {
+			email_address = option_email;			
+		} else {
+			email_address = Environment.get_variable ("EMAIL_ADDRESS");
+		}
 		if (email_address != null) {
 			email_entry.text = email_address;
 		}
 		email_entry.show ();
 
-		add_button (Gtk.STOCK_CANCEL, ResponseType.CANCEL);
-		var ok_button = add_button ("Create Project", ResponseType.OK);
+		config_dialog.add_button (Gtk.STOCK_CANCEL, ResponseType.CANCEL);
+		var ok_button = config_dialog.add_button ("Create Project", ResponseType.OK);
 		ok_button.grab_default ();
 	}
-
-	private HBox create_hbox (string title, SizeGroup size_group) {
-		var hbox = new HBox (false, 6);
-		((VBox) vbox).pack_start (hbox, false, false, 0);
-		hbox.show ();
-
-		var label = new Label ("    ");
-		hbox.pack_start (label, false, false, 0);
-		label.show ();
-
-		label = new Label (title);
-		hbox.pack_start (label, false, false, 0);
-		label.xalign = 0;
-		label.show ();
-		size_group.add_widget (label);
-
-		return hbox;
-	}
-
-	public void create_project () {
-		if (project_folder_button != null) {
-			project_path = project_folder_button.get_current_folder ();
+	
+	public ResponseType ask_parameters ()
+	{
+		ResponseType response;
+		build_dialog_ui ();
+		response = (ResponseType) config_dialog.run ();
+		if (response == ResponseType.OK) {
+			if (option_project_path == null)
+				project_path = project_folder_button.get_current_folder ();
+			else
+				project_path = option_project_path;
+			if (option_project_name == null)
+				project_name = Path.get_basename (project_path);
+			else
+				project_name = option_project_name;
+			
+			project_type = (ProjectType) project_type_combobox.active;
+			project_license = (ProjectLicense) license_combobox.active;
+			real_name = name_entry.text;
+			email_address = email_entry.text;
 		}
-		project_name = Path.get_basename (project_path);
-
+		return response;
+	}
+	
+	public void create_project () {
 		// only use [a-zA-Z0-9-]* as projectname
 		var project_name_str = new StringBuilder ();
 		var make_name_str = new StringBuilder ();
@@ -183,12 +255,6 @@ class Vala.ProjectGenerator : Dialog {
 		namespace_name = namespace_name_str.str.substring (0, 1).up () + namespace_name_str.str.substring (1, namespace_name_str.str.len () - 1);
 		make_name = make_name_str.str;
 		upper_case_make_name = make_name.up ();
-
-		project_type = (ProjectType) project_type_combobox.active;
-		project_license = (ProjectLicense) license_combobox.active;
-
-		real_name = name_entry.text;
-		email_address = email_entry.text;
 
 		try {
 			write_autogen_sh ();
@@ -658,14 +724,30 @@ class Vala.ProjectGenerator : Dialog {
                         opt_context.set_help_enabled (true);
                         opt_context.add_main_entries (options, null);
                         opt_context.parse (ref args);
+               		if (option_files != null) {
+               			if (option_files[1] != null) {
+               				//more then a project name
+               				throw new OptionError.BAD_VALUE (_("Just a single project name can be specified on the command line"));
+               			}
+               			option_project_name = option_files[0];
+               			if (option_project_path == null) {
+               				//default to current directory in not specified with -p
+               				option_project_path = Environment.get_current_dir ();
+               			}
+               		}
                 } catch (OptionError e) {
                         stdout.printf ("%s\n", e.message);
-                        stdout.printf ("Run '%s --help' to see a full list of available command line options.\n", args[0]);
+                        stdout.printf (_("Run '%s --help' to see a full list of available command line options.\n"), args[0]);
                         return 1;
                 }
 
+		if (option_version) {
+			stdout.printf ("vala-gen-project %s\n", Config.PACKAGE_VERSION);
+			return 0;
+		}
+
 		var generator = new ProjectGenerator ();
-		if (generator.run () == ResponseType.OK) {
+		if (option_project_name != null || generator.ask_parameters () == ResponseType.OK) {
 			generator.create_project ();
 			return 0;
 		}
