@@ -273,8 +273,9 @@ namespace Vtg.ProjectManager
 						group = new ProjectGroup (grp_name, this);
 						this.groups.add (group);
 						foreach (string tgt_id in _gbf_project.get_group (grp_id).targets) {
-							string[] tgt_parts = tgt_id.split (":");
-							var tgt_name = tgt_parts[0].substring (grp_id.length, tgt_id.length - grp_id.length);
+							var tgt_name = tgt_id.substring (grp_id.length, tgt_id.length - grp_id.length);
+							string[] tgt_parts = tgt_name.split (":");
+							tgt_name = tgt_parts[0];
 							ProjectTarget target = group.find_target (tgt_name);
 							if (target == null) {
 								weak Gbf.ProjectTarget tgt = _gbf_project.get_target(tgt_id);
@@ -286,7 +287,7 @@ namespace Vtg.ProjectManager
 								}
 								group.targets.add (target);
 								foreach (string src_id in tgt.sources) {
-									var src_name = src_id.substring (tgt_id.length + 1, src_id.length - tgt_id.length);
+									var src_name = src_id.substring (tgt_id.length + 1, src_id.length - tgt_id.length - 1);
 									ProjectSource src = target.find_source (src_name);
 									if (src == null) {
 										src = new ProjectSource (src_name);

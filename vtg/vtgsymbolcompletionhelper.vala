@@ -35,7 +35,8 @@ namespace Vtg
 		private SymbolCompletion _completion;
 		private SymbolCompletionProvider _provider;
 		private Manager _manager;
-
+		private SymbolCompletionTrigger _trigger;
+		
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 		public Gedit.View view { get { return _view; } construct { _view = value; } default = null; }
 		public SymbolCompletion completion { get { return _completion; } construct { _completion = value; } default = null; }
@@ -54,12 +55,12 @@ namespace Vtg
 
 		~SymbolCompletionHelper ()
 		{
-			GLib.debug ("completion helper destructor");
-			_completion.cleanup ();
 			GLib.debug ("completion helper after cleanup");
 			_manager.deactivate ();
-			GLib.debug ("completion helper manager deactivated");
+			_manager.unregister_trigger (_trigger);
+			_manager.unregister_provider (_provider, "SymbolComplete");
 			_manager = null;
+			GLib.debug ("completion helper manager deactivated");
 		}
 
 		public void deactivate ()
@@ -72,10 +73,8 @@ namespace Vtg
 		{
 			_manager = new Manager (view);
 			_provider = new SymbolCompletionProvider (_plugin, view, _completion);
-
-			var ck = new SymbolCompletionTrigger (_manager, "SymbolComplete");
-			_manager.register_trigger (ck);
-
+			_trigger = new SymbolCompletionTrigger (_manager, "SymbolComplete");
+			_manager.register_trigger (_trigger);
 			_manager.register_provider (_provider, "SymbolComplete");
 			_manager.activate ();
 		}

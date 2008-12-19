@@ -1,5 +1,22 @@
 2008-12-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgutils.vala:
+
+	fixed some warnings due to bad offsets in string.substring usage
+
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed unwanted parser deallocation, issue #15
+
+	* vsc/vscparsermanager.vala:
+
+	fixed some criticals when adding an unknown namespace 
+	directly from a vala source file
+
+2008-12-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/valaprojectgenerator.vala:
 
 	fixed some missing '\n' chars in the top level makefile,

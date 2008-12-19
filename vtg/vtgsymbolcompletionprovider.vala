@@ -46,6 +46,7 @@ namespace Vtg
 		private Gdk.Pixbuf _icon_enum;
 		private Gdk.Pixbuf _icon_namespace;
 		private uint timeout_id = 0;
+		private uint idle_id = 0;
 		private bool all_doc = false; //this is a hack!!!
 
 		private int prealloc_index = 0;
@@ -77,6 +78,26 @@ namespace Vtg
 			this.view = view;
 		}
 
+		~SymbolCompletionProvider ()
+		{
+			GLib.debug ("SymbolCompletionProvider: destructor, start");
+			_view.key_press_event -= this.on_view_key_press;
+			
+			if (sb_msg_id != 0) {
+				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
+				status_bar.remove (sb_context_id, sb_msg_id);
+			}
+			if (timeout_id != 0) {
+				Source.remove (timeout_id);
+			}
+			if (idle_id != 0) {
+				Source.remove (idle_id);
+			}
+			
+			_completion.parser.remove_source_buffer (_sb);
+			GLib.debug ("SymbolCompletionProvider: destructor, end");
+		}
+		
 		construct { 
 			try {
 				var doc = (Gedit.Document) _view.get_buffer ();
@@ -105,13 +126,14 @@ namespace Vtg
 				this._completion.parser.cache_building += sender => { 
 					if (cache_building == false) {
 						cache_building = true; 
-						Idle.add (this.on_idle);
+						idle_id = Idle.add (this.on_idle);
 					}
 				};
 				this._completion.parser.cache_builded += sender => { 
 					if (cache_building == true) {
-						cache_building = false; 
-						Idle.add (this.on_idle);
+						cache_building = false;
+						if (idle_id == 0)
+							idle_id = Idle.add (this.on_idle);
 					}
 				};
 
@@ -128,6 +150,9 @@ namespace Vtg
 
 		private bool on_idle ()
 		{
+			if (_plugin == null)
+				return false;
+				
 			if (cache_building && !tooltip_is_visible && prev_cache_building == false) {
 				prev_cache_building = cache_building;
 				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
@@ -145,7 +170,7 @@ namespace Vtg
 					((SymbolCompletionTrigger) _last_trigger).trigger_event ();
 				}
 			}
-
+			idle_id = 0;
 			return false;
 		}
 

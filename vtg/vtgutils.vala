@@ -49,7 +49,7 @@ namespace Vtg
 	{
 		public static string normalize_path (string name)
 		{
-			if (name == null || name.length <= 1)
+			if (name == null || name.length < 2)
 				return name;
 				
 			string[] name_parts = name.substring (1, name.length - 1).split ("/");

@@ -231,7 +231,10 @@ namespace Vsc
 			if (@namespace == null)
 				return false;
 			var package_name = find_vala_package_name (@namespace);
-			return add_package (package_name, auto_schedule_parse);
+			if (package_name != null)
+				return add_package (package_name, auto_schedule_parse);
+			else
+				return false;
 		}
 
 	
