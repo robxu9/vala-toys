@@ -130,6 +130,7 @@ namespace Vtg.ProjectManager
 			_project_count = 0;
 
 			_actions = new ActionGroup ("ProjectManagerActionGroup");
+			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
 			var manager = _plugin.gedit_window.get_ui_manager ();
 			manager.insert_action_group (_actions, -1);

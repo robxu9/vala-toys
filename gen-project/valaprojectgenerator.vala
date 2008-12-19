@@ -718,7 +718,8 @@ class Vala.ProjectGenerator {
 
 	static int main (string[] args) {
 		Gtk.init (ref args);
-
+		GLib.Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
+		
                 try {
                         var opt_context = new OptionContext ("- Vala Project Generator");
                         opt_context.set_help_enabled (true);

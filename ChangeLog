@@ -1,5 +1,24 @@
 2008-12-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* po/es_AR.po:
+
+	added spanish argentinia translation, courtesy of
+	Matías De la Puente
+
+	* po/LINGUAS:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* gen-project/valaprojectgenerator.vala:
+
+	fixed internationalization support
+
+	* debian/changelog:
+
+	package version bump
+
+2008-12-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerproject.vala:
 	* vtg/vtgutils.vala:
 

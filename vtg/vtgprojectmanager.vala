@@ -167,6 +167,7 @@ namespace Vtg.ProjectManager
 		private void initialize_ui ()
 		{
 			_actions = new ActionGroup ("ProjectManagerActionGroup");
+			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
 			var manager = plugin.gedit_window.get_ui_manager ();
 			manager.insert_action_group (_actions, -1);

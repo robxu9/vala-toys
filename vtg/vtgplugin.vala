@@ -76,6 +76,7 @@ namespace Vtg
 		{
 			_config = new Configuration ();
 			_config.notify += this.on_configuration_property_changed;
+			GLib.Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
 		}
 
 		public override void activate (Gedit.Window window)
