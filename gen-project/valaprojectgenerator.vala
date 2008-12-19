@@ -401,8 +401,8 @@ class Vala.ProjectGenerator {
 		s.append ("\tpo \\\n");
 		s.append ("\t$(NULL)\n\n");
 
-		s.append_printf ("%sdocdir = ${prefix}/doc/%s", project_name, project_name);
-		s.append_printf ("%sdoc_DATA = \\", project_name);
+		s.append_printf ("%sdocdir = ${prefix}/doc/%s\n", project_name, project_name);
+		s.append_printf ("%sdoc_DATA = \\\n", project_name);
 		s.append ("\tChangeLog \\\n");
 		s.append ("\tREADME \\\n");
 		s.append ("\tCOPYING \\\n");
