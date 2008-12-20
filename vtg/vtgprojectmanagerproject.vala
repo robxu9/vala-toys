@@ -247,7 +247,8 @@ namespace Vtg.ProjectManager
 					}
 				}
 			}
-			_model.set_sort_column_id (4, SortType.ASCENDING);
+			_model.set_sort_column_id (4, Gtk.SortType.ASCENDING);
+			_model.set_sort_func (4, this.sort_model);
 		}
 
 		private void parse_project ()
@@ -304,6 +305,17 @@ namespace Vtg.ProjectManager
 			} catch (Error err) {
 				GLib.warning ("error %s", err.message);
 			}
+		}
+		
+		private int sort_model (TreeModel model, TreeIter a, TreeIter b)
+		{
+			string vala;
+			string valb;
+			
+			model.get (a, 4, out vala);
+			model.get (b, 4, out valb);
+			
+			return PathUtils.compare_vala_filenames (vala,valb);
 		}
 	}
 

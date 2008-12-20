@@ -75,6 +75,20 @@ namespace Vtg
 
 			return target_name;
 		}
+		
+		public static int compare_vala_filenames (string filea, string fileb)
+		{
+			string dataa = filea;
+			string datab = fileb;
+			
+			if (dataa.has_suffix (".vala") || dataa.has_suffix(".vapi")) {
+				dataa = dataa.substring (0, dataa.length - 5);
+			}
+			if (datab.has_suffix (".vala") || datab.has_suffix(".vapi")) {
+				datab = datab.substring (0, datab.length - 5);
+			}
+			return strcmp (dataa, datab);
+		}
 	}
 	
 	public class Utils : GLib.Object

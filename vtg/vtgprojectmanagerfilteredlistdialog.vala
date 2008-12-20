@@ -142,14 +142,7 @@ namespace Vtg.ProjectManager
 			model.get (a, 0, out vala);
 			model.get (b, 0, out valb);
 			
-			if (vala.has_suffix (".vala") || vala.has_suffix(".vapi")) {
-				vala = vala.substring (0, vala.length - 5);
-			}
-			if (valb.has_suffix (".vala") || valb.has_suffix(".vapi")) {
-				valb = valb.substring (0, valb.length - 5);
-			}
-
-			return strcmp (vala,valb);
+			return PathUtils.compare_vala_filenames (vala,valb);
 		}
 	}
 }

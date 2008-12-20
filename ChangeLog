@@ -1,9 +1,18 @@
+2008-12-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* vtg/vtgutils.vala:
+
+	fixed tree sorting again
+	
 2008-12-19  Andrea Del Signore  <sejerpz@tin.it>
 
 	* po/es_AR.po:
 
 	added spanish argentinia translation, courtesy of
-	Matías De la Puente
+	Matias De la Puente
 
 	* po/LINGUAS:
 	* vtg/vtgplugin.vala:
@@ -39,7 +48,7 @@
 	* gen-project/valaprojectgenerator.vala:
 
 	fixed some missing '\n' chars in the top level makefile,
-	patch from Matías De la Puente
+	patch from Matias De la Puente
 
 	* THANKS:
 
