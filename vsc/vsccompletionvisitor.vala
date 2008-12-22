@@ -137,7 +137,52 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			}
 		}
 	}
-	        
+
+       	public override void visit_interface (Interface iface) 
+	{
+		foreach (DataType type in iface.get_prerequisites ()) {
+			type.accept (this);
+		}
+		
+		_parent_type_already_visited = true;
+		foreach (TypeParameter p in iface.get_type_parameters ()) {
+			p.accept (this);
+		}
+
+		/* process enums first to avoid order problems in C code */
+		foreach (Enum en in iface.get_enums ()) {
+			en.accept (this);
+		}
+
+		foreach (Field f in iface.get_fields ()) {
+			f.accept (this);
+		}
+	
+		foreach (Method m in iface.get_methods()) {
+			m.accept (this);
+		}
+	
+		foreach (Property prop in iface.get_properties()) {
+			prop.accept (this);
+		}
+	
+		foreach (Vala.Signal sig in iface.get_signals()) {
+			sig.accept (this);
+		}
+	
+		foreach (Class cl in iface.get_classes()) {
+			cl.accept (this);
+		}
+	
+		foreach (Struct st in iface.get_structs()) {
+			st.accept (this);
+		}
+
+		foreach (Delegate d in iface.get_delegates()) {
+			d.accept (this);
+		}
+	}
+	
        	public override void visit_struct (Struct st) 
 	{
 		if (_parent_type_already_visited) {

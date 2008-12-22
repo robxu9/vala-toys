@@ -130,10 +130,6 @@ namespace Vtg.ProjectManager
 				
 				string[] pars = new string[count+1];
 				Shell.parse_argv (cmd, out pars);
-				for(int idx=0; idx<pars.length;idx++) {
-					GLib.debug ("Param %d: %s", idx, pars[idx]);
-					
-				}
 				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
 				if (child_pid != null) {
 					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);

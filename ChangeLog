@@ -1,5 +1,15 @@
 2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vsccompletionvisitor.vala:
+
+	visit implemented interfaces, fixed issue #20
+
+	* vtg/vtgprojectmanagerbuilder.vala:
+
+	debug messages cleanup
+
+2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgconfiguration.vala:
 
 	debug messages cleanup
