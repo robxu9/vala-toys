@@ -27,6 +27,66 @@ using Vtg.ProjectManager;
 
 namespace Vtg
 {
+	public class Caches
+	{
+		private const int CACHE_LIMIT = 20;
+		
+		private static Gtk.ListStore _build_cache = null;
+		
+		public static Gtk.ListStore get_build_cache ()		
+		{
+			if (_build_cache == null) {
+				_build_cache = new Gtk.ListStore (1, typeof (string));
+			}
+			
+			return _build_cache;
+		}
+		
+		public static bool cache_contains (Gtk.ListStore cache, string data)
+		{
+			TreeIter iter;
+			bool found = false;
+			
+			if (cache.get_iter_first (out iter)) {
+				do {
+					string tmp;
+					cache.get (iter, 0, out tmp);
+					if (tmp == data) {
+						found = true;
+						break;
+					}
+				} while (cache.iter_next (ref iter));
+			}
+			return found;
+		}
+		
+		public static void cache_append (Gtk.ListStore cache, string data)
+		{
+			TreeIter iter;
+			if (cache_count (cache) > CACHE_LIMIT) {
+				if (cache.get_iter_first (out iter)) {
+					cache.remove (iter);
+				}
+			}
+			cache.append (out iter);
+			cache.set (iter, 0, data);
+		}
+		
+		public static int cache_count (Gtk.ListStore cache)
+		{
+			int count = 0;
+			TreeIter iter;
+			if (cache.get_iter_first (out iter)) {
+				do {
+					count++;
+				} while (cache.iter_next (ref iter));
+
+			}
+			return count;
+		}
+
+	}
+	
 	namespace StringUtils
 	{
 		public static bool is_null_or_empty (string? data)

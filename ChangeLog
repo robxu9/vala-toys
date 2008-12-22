@@ -1,3 +1,25 @@
+2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgconfiguration.vala:
+
+	debug messages cleanup
+
+	* vtg/Makefile.am:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgutils.vala:
+	* vtg/vtgparametersdialog.vala:
+
+	new dialog for asking 'make' parameters on compilation
+
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+
+	keyboard navigation improuvments
+
+	* vtg/vtgprojectmanageroutputview.vala:
+
+	fixed two criticals warnings
+
 2008-12-20  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerfilteredlistdialog.vala:

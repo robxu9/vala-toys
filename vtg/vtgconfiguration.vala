@@ -44,17 +44,15 @@ namespace Vtg
 				return true; //TODO: implement me!
 			}
 		}
-		
+	
 		construct
 		{
 			try {
-				GLib.debug ("starting");
-				//TODO: construct the gconf client from Engine.get_defualt ()
+				//TODO: construct the gconf client from Engine.get_default ()
 				//when supported. See this bug for a similar issue
 				//http://bugzilla.gnome.org/show_bug.cgi?id=549061
 				_gconf = GConf.Client.get_default ();
 				if (!_gconf.dir_exists ("/schemas" + VTG_BASE_KEY)) {
-					GLib.debug ("creating configuration schemas");
 					var schema = new GConf.Schema ();
 					schema.set_short_desc (_("Enable the symbol completion module"));
 					schema.set_type (GConf.ValueType.BOOL);
@@ -68,7 +66,6 @@ namespace Vtg
 					_gconf.set_schema("/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY, schema);
 				}
 				if (!_gconf.dir_exists (VTG_BASE_KEY)) {
-					GLib.debug ("creating configuration keys");
 					_gconf.set_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY, true);
 					_gconf.set_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY, true);
 				}

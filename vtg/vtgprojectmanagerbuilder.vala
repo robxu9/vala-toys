@@ -103,7 +103,7 @@ namespace Vtg.ProjectManager
 		
 		}
 		
-		public bool build (Project project)
+		public bool build (Project project, string? params = null)
 		{
 			if (_child_watch_id != 0)
 				return false;
@@ -119,7 +119,22 @@ namespace Vtg.ProjectManager
 				log.log_message (start_message);
 				log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
 				log.log_message ("%s\n".printf (MAKE));
-				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
+				int count = 0;
+				string cmd;
+				if (params != null) {
+					cmd = "%s %s".printf (MAKE, params);
+				} else {
+					cmd = MAKE;
+				}
+				
+				
+				string[] pars = new string[count+1];
+				Shell.parse_argv (cmd, out pars);
+				for(int idx=0; idx<pars.length;idx++) {
+					GLib.debug ("Param %d: %s", idx, pars[idx]);
+					
+				}
+				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
 				if (child_pid != null) {
 					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
 					_build_view.initialize (project);

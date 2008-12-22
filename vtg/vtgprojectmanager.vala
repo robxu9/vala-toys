@@ -364,10 +364,17 @@ namespace Vtg.ProjectManager
 		{
 			GLib.debug ("Action %s activated", action.name);
 			if (_prj_view.current_project != null) {
-				var project = _prj_view.current_project;
-				GLib.debug ("building project %s", project.name);
-				project_save_all (project);
-				_prj_builder.build (project);
+				var cache = Vtg.Caches.get_build_cache ();
+				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Build Project"), _plugin.gedit_window, cache);
+				if (params_dialog.run () == ResponseType.OK) {
+					var project = _prj_view.current_project;
+					var params = params_dialog.parameters;
+					if (!StringUtils.is_null_or_empty (params) && !Vtg.Caches.cache_contains (cache, params)) {
+						Vtg.Caches.cache_append (cache, params);
+					}
+					project_save_all (project);
+					_prj_builder.build (project, params);
+				}
 			}
 		}
 

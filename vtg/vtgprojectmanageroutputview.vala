@@ -134,11 +134,11 @@ namespace Vtg.ProjectManager
 				target.stdout = new IOChannel.unix_new (stdo);
 				target.stdout_watch_id =  target.stdout.add_watch (IOCondition.IN, this.on_messages);
 				target.stdout.set_flags (target.stdout.get_flags () | IOFlags.NONBLOCK);
-				target.stdout.set_buffered (false);
+				//target.stdout.set_buffered (false);
 			        target.stderr = new IOChannel.unix_new (stde);
 				target.stderr_watch_id = target.stderr.add_watch (IOCondition.IN, this.on_messages);
 				target.stderr.set_flags (target.stderr.get_flags () | IOFlags.NONBLOCK);
-				target.stderr.set_buffered (false);
+				//target.stderr.set_buffered (false);
 				line.erase (0, -1);
 				//activate bottom pane if not visible
 				var panel = _plugin.gedit_window.get_bottom_panel ();
