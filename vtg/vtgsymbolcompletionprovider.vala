@@ -257,8 +257,26 @@ namespace Vtg
 			_calltip_window = new Gsc.Info ();
 			_calltip_window.set_info_type (InfoType.EXTENDED);
 			_calltip_window.set_transient_for (_plugin.gedit_window);
-			_calltip_window.set_adjust_width (true, 400);
-			_calltip_window.set_adjust_height (true, 250);
+			_calltip_window.set_adjust_width (true, 800);
+			_calltip_window.set_adjust_height (true, 600);
+			_calltip_window.allow_grow = true;
+			_calltip_window.allow_shrink = true;
+			
+			//this is an hack
+			var child = _calltip_window.get_child ();
+			while (child != null && !(child is Gtk.Label)) {
+				if (child is Bin) {
+					child = ((Bin) child).get_child ();
+				} else {
+					child = null;
+				}
+				 
+			}
+			if (child is Gtk.Label) {
+				var l = (Label) child;
+				l.xalign = 0;
+				l.xpad = 8;
+			}
 		}
 
 		private void parse (Gedit.Document doc)

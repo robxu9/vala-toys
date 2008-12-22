@@ -1,5 +1,11 @@
 2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added a workaround to set the calltip info align to the left
+
+2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vsccompletionvisitor.vala:
 
 	visit implemented interfaces, fixed issue #20
