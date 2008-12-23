@@ -75,14 +75,18 @@ namespace Vtg
 			}
 		}
 
+
+		public void complete_word ()
+		{
+			trigger_event (true);
+		}
+		
 		private bool on_view_key_press (Gtk.TextView view, Gdk.EventKey event)
 		{
 			if (!_completion.is_visible ()) {
 				if (event.keyval == '.' && 
 				    (event.state & (ModifierType.SHIFT_MASK | ModifierType.META_MASK | ModifierType.CONTROL_MASK)) == 0) {
 					trigger_event (false);
-				} else if (event.keyval == ' ' && (event.state & ModifierType.CONTROL_MASK) == ModifierType.CONTROL_MASK) {
-					trigger_event (true);
 				}
 			}
 			return false;

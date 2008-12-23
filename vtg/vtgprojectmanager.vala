@@ -44,6 +44,15 @@ namespace Vtg.ProjectManager
                                             </menubar>
 
                                             <menubar name="MenuBar">
+                                              <menu name="EditMenu" action="Edit">
+                                                 <placeholder name="EditOps_3">
+                                                     <separator />
+                                                     <menuitem name="ProjectCompleteWord" action="ProjectCompleteWord"/>
+                                                 </placeholder>
+                                              </menu>
+                                            </menubar>
+
+                                            <menubar name="MenuBar">
                                               <placeholder name="ExtraMenu_1">
                                                 <menu name="BuildMenu" action="ProjectBuildMenuAction">
                                                     <placeholder name="BuildMenuOps_1">
@@ -104,7 +113,8 @@ namespace Vtg.ProjectManager
 			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute target program"), on_project_execute_process},
 			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process},
 			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
-			{"ProjectGotoMethod", null, N_("_Go To Method..."), "<control>M", N_("Goto to a specific method in the current source document"), on_project_goto_method}
+			{"ProjectGotoMethod", null, N_("_Go To Method..."), "<control>M", N_("Goto to a specific method in the current source document"), on_project_goto_method},
+			{"ProjectCompleteWord", null, N_("Complete _Word"), "<control>space", N_("Try to complete the word in the current source document"), on_complete_word}
 		};
 
 
@@ -184,6 +194,24 @@ namespace Vtg.ProjectManager
 			GLib.debug ("prjm deactvated");
 		}
 
+
+		private void on_complete_word (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			var project = _prj_view.current_project;
+			return_if_fail (project != null);
+			
+			var view = _plugin.gedit_window.get_active_view ();
+			if (view == null)
+				return;
+						
+			var sch = _plugin.scs_find_from_view (view);
+			if (sch == null)
+				return;
+				
+			sch.trigger.complete_word ();			
+		}
+		
 		private void on_project_open (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);
@@ -462,6 +490,15 @@ namespace Vtg.ProjectManager
 			action.set_sensitive (!_prj_executer.is_executing && !default_project);
 			action = _actions.get_action ("ProjectBuildKill");
 			action.set_sensitive (_prj_executer.is_executing && !default_project);
+			
+			bool can_complete = false;
+			var view = _plugin.gedit_window.get_active_view ();
+			if (view != null) {
+				var sch = _plugin.scs_find_from_view (view);
+				can_complete = (sch != null);
+			}
+			action = _actions.get_action ("ProjectCompleteWord");
+			action.set_sensitive (can_complete);
 		}
 		
 		private void open_project (string name)

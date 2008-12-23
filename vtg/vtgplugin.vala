@@ -250,7 +250,7 @@ namespace Vtg
 			return (scs_find_from_view (view) != null);
 		}
 
-		private Vtg.SymbolCompletionHelper? scs_find_from_view (Gedit.View view)
+		public Vtg.SymbolCompletionHelper? scs_find_from_view (Gedit.View view)
 		{
 			foreach (Vtg.SymbolCompletionHelper sc in _scs) {
 				if (sc.view == view)
@@ -405,7 +405,6 @@ namespace Vtg
 						GLib.debug ("package %s not added", package.name);
 				}
 			}
-
 
 			/* setup vapidir, built libraries and local packages */
 			foreach (ProjectGroup group in project.groups) {

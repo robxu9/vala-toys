@@ -40,6 +40,7 @@ namespace Vtg
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 		public Gedit.View view { get { return _view; } construct { _view = value; } default = null; }
 		public SymbolCompletion completion { get { return _completion; } construct { _completion = value; } default = null; }
+		public SymbolCompletionTrigger trigger { get { return _trigger; } }
 
 		public SymbolCompletionHelper (Vtg.Plugin plugin, Gedit.View view, SymbolCompletion completion)
 		{
