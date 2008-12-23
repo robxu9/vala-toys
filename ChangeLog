@@ -1,5 +1,11 @@
 2008-12-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+
+	scroll the treeview to the selection if not visible
+
+2008-12-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanager.vala:
 	* vtg/vtgprojectmanagerproject.vala:
 	* vtg/vtgutils.vala:

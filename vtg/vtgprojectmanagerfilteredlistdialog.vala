@@ -114,11 +114,12 @@ namespace Vtg.ProjectManager
 			if (evt.keyval == Gdk.Key_Down || evt.keyval == Gdk.Key_Up) {
 				TreeIter sel;
 				TreeModel model;
+				TreePath path;
 				if (_treeview.get_selection ().get_selected (out model, out sel)) {
 					if (evt.keyval == Gdk.Key_Down) {
 						model.iter_next (ref sel);
 					} else {
-						TreePath path = model.get_path (sel);
+						path = model.get_path (sel);
 						if (path.prev ()) {
 							model.get_iter (out sel, path);
 						} else {
@@ -129,7 +130,9 @@ namespace Vtg.ProjectManager
 					model = _treeview.get_model ();
 					model.get_iter_first (out sel);
 				}
+				path = model.get_path (sel);
 				_treeview.get_selection ().select_iter (sel);
+				_treeview.scroll_to_cell (path, null, false, 0, 0);
 				return true;
 			} 
 			return false;
