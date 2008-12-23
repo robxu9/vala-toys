@@ -27,6 +27,21 @@ using Vtg.ProjectManager;
 
 namespace Vtg
 {
+	namespace Interaction
+	{
+		public static void error_message (string message, Error err)
+		{
+			var dialog = new MessageDialog (null,
+                                  DialogFlags.DESTROY_WITH_PARENT,
+                                  MessageType.ERROR,
+                                  ButtonsType.CLOSE,
+			          message);
+			dialog.secondary_text = err.message;
+			dialog.run ();
+			dialog.destroy ();
+		}
+	}
+	
 	public class Caches
 	{
 		private const int CACHE_LIMIT = 20;

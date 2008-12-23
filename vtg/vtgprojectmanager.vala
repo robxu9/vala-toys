@@ -223,6 +223,7 @@ namespace Vtg.ProjectManager
 				      null);
 
 			if (dialog.run () == ResponseType.ACCEPT) {
+				dialog.hide_all ();
 				var foldername = dialog.get_filename ();
 				open_project (foldername);				
 			}
@@ -513,7 +514,7 @@ namespace Vtg.ProjectManager
 					_prj_view.add_project (project);
 				}
 			} catch (Error err) {
-				GLib.warning ("Error %s", err.message);
+				Vtg.Interaction.error_message (_("Error opening project %s").printf (name), err);
 			}
 		}
 

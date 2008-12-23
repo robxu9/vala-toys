@@ -27,6 +27,11 @@ using Gbf;
 
 namespace Vtg.ProjectManager
 {
+	public errordomain ProjectManagerError
+	{
+		NO_BACKEND
+	}
+	
 	public class Project : GLib.Object
 	{
 		private weak Backend _backend = null;
@@ -138,10 +143,7 @@ namespace Vtg.ProjectManager
 				this.name = tmp[count-1];
 			}
 
-			GLib.debug ("initializing gbf backends...");
 			Gbf.Backend.init ();
-		
-			GLib.debug ("looking for a backend for: %s", project_filename);
 			foreach (weak Gbf.Backend item in Backend.get_backends ()) {
 				var proj = Backend.new_project (item.id);
 				if (proj.probe (filename)) {
@@ -151,9 +153,7 @@ namespace Vtg.ProjectManager
 			}
 		
 			_gbf_project = null;
-
 			if (_backend != null) {
-				GLib.debug ("loading project %s with %s\n", filename, _backend.id);
 				_gbf_project = Backend.new_project (_backend.id);			
 				_gbf_project.load (filename);
 				parse_project ();
@@ -161,8 +161,7 @@ namespace Vtg.ProjectManager
 				_gbf_project.project_updated += this.on_project_updated;
 				return true;
 			} else {
-				GLib.warning ("Can't load project, no suitable backend found");
-				return false;
+				throw new ProjectManagerError.NO_BACKEND (_("Can't load project, no suitable backend found"));
 			}
 		}
 
