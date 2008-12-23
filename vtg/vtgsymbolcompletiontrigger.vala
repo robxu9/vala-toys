@@ -34,7 +34,7 @@ namespace Vtg
 		private Gsc.ManagerEventOptions _opts;
 
 		public Gsc.Manager completion { get { return _completion; } construct { _completion = value; } }
-
+		public bool shortcut_triggered = false;
 		public string trigger_name { construct { _trigger_name = value; } }
 
 		public bool activate ()
@@ -62,8 +62,9 @@ namespace Vtg
 			if (_completion.is_visible ()) {
 				string delimiter;
 				string filter = get_filter_word (sender, out delimiter);
-				if (delimiter != ".") {
-					GLib.debug ("CLOSING THE POPUP MANUALLY!!!!!!!");
+				if (delimiter != "." && delimiter != "") {
+					GLib.debug ("trigger finish completion, delimiter '%s'", delimiter);
+					
 					_completion.finish_completion ();
 				} else  {
 					Gsc.ManagerEventOptions opts;
@@ -79,7 +80,9 @@ namespace Vtg
 			if (!_completion.is_visible ()) {
 				if (event.keyval == '.' && 
 				    (event.state & (ModifierType.SHIFT_MASK | ModifierType.META_MASK | ModifierType.CONTROL_MASK)) == 0) {
-					trigger_event ();
+					trigger_event (false);
+				} else if (event.keyval == ' ' && (event.state & ModifierType.CONTROL_MASK) == ModifierType.CONTROL_MASK) {
+					trigger_event (true);
 				}
 			}
 			return false;
@@ -108,7 +111,10 @@ namespace Vtg
 				
 				col--;
 			}
-
+			if (!StringUtils.is_null_or_empty (delimiter)) {
+				delimiter = delimiter.replace (" ", ""); //TODO: replace with trim!
+				delimiter = delimiter.replace ("\t", ""); //TODO: replace with trim!
+			}
 			result = start.get_text (end).strip ();
 			return (result == null ? "" : result);
 		}
@@ -118,13 +124,26 @@ namespace Vtg
 			return !ch.isalnum () && ch != '_';
 		}
 
-		public void trigger_event ()
+		public void trigger_event (bool trigger_reason)
 		{
 			_opts.position_type = PopupPositionType.CURSOR;
 			_opts.filter_type = PopupFilterType.TREE_HIDDEN;
-			_opts.autoselect = false;
+			_opts.autoselect = trigger_reason;
 			_opts.show_bottom_bar = true;
+			this.shortcut_triggered = trigger_reason;			
 			_completion.trigger_event_with_opts (this._trigger_name, _opts, null);
+			
+			//if completion was trigger explicitly set the filter
+			if (trigger_reason) {
+				var view = _completion.get_view ();
+				var doc = view.get_buffer ();
+				string delimiter;
+				string filter = get_filter_word (doc, out delimiter);
+				Gsc.ManagerEventOptions opts;
+				_completion.get_current_event_options (out opts);
+				opts.filter_text = filter;
+				_completion.update_event_options (opts);
+			}			
 		}
 
 		public SymbolCompletionTrigger (Gsc.Manager completion, string trigger_name)

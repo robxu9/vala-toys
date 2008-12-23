@@ -197,12 +197,15 @@ namespace Vsc
 			return null;
 		}
 
-		private CodeNode? find_codenode (SourceFile source, int line, int column, out Class cl) throws SymbolCompletionError
+		private CodeNode? find_codenode (SourceFile source, int line, int column, out Class cl, out Method method) throws SymbolCompletionError
 		{
 			cl = null;
+			method = null;
 			foreach (CodeNode node in source.get_nodes ()) {
 				CodeNode? result = null;
+				method = null;
 				if (node is Method) {
+					method = (Method) node;
 					result = find_sub_codenode (node, line, column, null);
 					if (result != null)
 						return result;
@@ -227,6 +230,7 @@ namespace Vsc
 					}
 
 					foreach (Method md in cl.get_methods ()) {
+						method = (Method) node;
 						result = find_sub_codenode (md, line, column, cl);
 						if (result != null)
 							return result;
@@ -234,6 +238,7 @@ namespace Vsc
 				}
 			}
 			cl = null;
+			method = null;
 			return null;
 		}
 
@@ -385,34 +390,39 @@ namespace Vsc
 			return result;	
 		}
 		
+		private Block? get_codenode_body (CodeNode codenode)
+		{
+			Block body = null;
+			
+			if (codenode is Method) {
+				body = ((Method) codenode).body;
+			} else if (codenode is CreationMethod) {
+				body = ((Constructor) codenode).body;
+			} else if (codenode is Constructor) {
+				body = ((Constructor) codenode).body;
+			} else if (codenode is Destructor) {
+				body = ((Destructor) codenode).body;
+			} else if (codenode is LambdaExpression) {
+				body = ((LambdaExpression) codenode).statement_body;
+			} else if (codenode is ForeachStatement) {
+				body = ((ForeachStatement) codenode).body;
+			} else if (codenode is ForStatement) {
+				body = ((ForStatement) codenode).body;
+			} else if (codenode is WhileStatement) {
+				body = ((WhileStatement) codenode).body;
+			} else if (codenode is Block) {
+				body = (Block) codenode;
+			} else {
+				warning ("(get_datatype_for_name_with_context) unsupported type %s", Reflection.get_type_from_instance (codenode).name ());
+			}
+			return body;					
+		}
+		
  		private DataType? get_datatype_for_name_in_code_node_with_context (CodeNode codenode, CodeContext context, string symbolname, SourceFile? source, int line, int column) throws SymbolCompletionError
  		{
 			debug ("(get_datatype_for_name_with_context) found codenode - %s for %s: %s", Reflection.get_type_from_instance (codenode).name (), symbolname, codenode.to_string ());
 			if (symbolname != "this" && symbolname != "base") {
-				Block body = null;
-
-				if (codenode is Method) {
-					body = ((Method) codenode).body;
-				} else if (codenode is CreationMethod) {
-					body = ((Constructor) codenode).body;
-				} else if (codenode is Constructor) {
-					body = ((Constructor) codenode).body;
-				} else if (codenode is Destructor) {
-					body = ((Destructor) codenode).body;
-				} else if (codenode is LambdaExpression) {
-					body = ((LambdaExpression) codenode).statement_body;
-				} else if (codenode is ForeachStatement) {
-					body = ((ForeachStatement) codenode).body;
-				} else if (codenode is ForStatement) {
-					body = ((ForStatement) codenode).body;
-				} else if (codenode is WhileStatement) {
-					body = ((WhileStatement) codenode).body;
-				} else if (codenode is Block) {
-					body = (Block) codenode;
-				} else {
-					warning ("(get_datatype_for_name_with_context) unsupported type %s for %s", Reflection.get_type_from_instance (codenode).name (), symbolname);
-				}
-				
+				Block body = get_codenode_body (codenode);
 				if (body != null) {
 					//method local vars
 					foreach (LocalVariable lvar in body.get_local_variables ()) {
@@ -467,7 +477,8 @@ namespace Vsc
  		private DataType? get_datatype_for_name_with_context (CodeContext context, string symbolname, SourceFile? source = null, int line = 0, int column = 0) throws SymbolCompletionError
 		{
 			Class cl = null;
-			var codenode = find_codenode (source, line, column, out cl);
+			Method md = null;
+			var codenode = find_codenode (source, line, column, out cl, out md);
 			if (codenode != null) {
 				DataType type = get_datatype_for_name_in_code_node_with_context (codenode, context, symbolname, source, line, column);
 				if (type != null)
@@ -629,12 +640,11 @@ namespace Vsc
 			}			
 		}
 		
-		public SymbolCompletionResult get_completions_for_name (SymbolCompletionFilterOptions options, string symbolname, string? sourcefile = null) throws GLib.Error
+		public SymbolCompletionResult get_completions_for_name (SymbolCompletionFilterOptions options, string symbolname, string? sourcefile = null, int line, int column) throws GLib.Error
 		{
 			warn_if_fail (_parser != null);
 			SymbolCompletionResult result = new SymbolCompletionResult ();
 			SourceFile source = null;
-
 			
 			if (sourcefile != null) {
 				source = find_sourcefile (_parser.sec_context, sourcefile);
@@ -642,6 +652,44 @@ namespace Vsc
 			
 			//first look in the namespaces defined in the source file
 			_parser.lock_all_contexts ();
+			if (options.local_variables && source != null) {
+				Class cl = null;
+				Method md = null;
+				var codenode = find_codenode (source, line, column, out cl, out md);
+				if (codenode != null) {
+					var current = codenode;
+					while (current != null) {
+						var body = get_codenode_body (current);
+						if (body != null) {
+							//method local vars
+							foreach (LocalVariable lvar in body.get_local_variables ()) {
+								result.others.add (new SymbolCompletionItem (lvar.name));
+							}
+							foreach (Statement st in body.get_statements ()) {
+								if (st is DeclarationStatement) {
+									var decl = (DeclarationStatement) st;
+									result.others.add (new SymbolCompletionItem (decl.declaration.name));
+								}
+							}
+
+							if (current is ForeachStatement) {
+								var fe = (ForeachStatement) current;
+								result.others.add (new SymbolCompletionItem (fe.variable_name));
+							}
+						}
+						if (current is Method) {
+							//method arguments
+							foreach (FormalParameter par in ((Method) current).get_parameters ()) {
+								result.others.add (new SymbolCompletionItem (par.name));
+							}
+							//stop here
+							break;
+						} else
+							current = current.parent_node;
+					}
+				}
+			}
+			
 			var finder = new TypeFinderVisitor (source,  _parser.pri_context);
 			var completion = new CompletionVisitor (options, result, source,  _parser.pri_context);
 			if (source != null) {
@@ -692,6 +740,7 @@ namespace Vsc
 					}
 				}
 			}
+
 
 			_parser.unlock_all_contexts ();
 			return result;

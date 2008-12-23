@@ -167,7 +167,8 @@ namespace Vtg
 				status_bar.remove (sb_context_id, sb_msg_id);
 				sb_msg_id = 0;
 				if (_last_trigger != null) {
-					((SymbolCompletionTrigger) _last_trigger).trigger_event ();
+					var trigger = (SymbolCompletionTrigger) _last_trigger;
+					trigger.trigger_event (trigger.shortcut_triggered);
 				}
 			}
 			idle_id = 0;
@@ -197,7 +198,7 @@ namespace Vtg
 			
 			if (ch == '(') {
 				this.show_calltip ();
-			} else if (evt.keyval == Gdk.Key_Escape || ch == ')' || evt.keyval == Gdk.Key_Return) {
+			} else if (evt.keyval == Gdk.Key_Escape || ch == ')' || ch == ';' || ch == '.' || evt.keyval == Gdk.Key_Return) {
 				this.hide_calltip ();
 			}
 			if (counter <= 0) {
@@ -299,7 +300,7 @@ namespace Vtg
 		public GLib.List<Gsc.Proposal> get_proposals (Gsc.Trigger trigger)
 		{
 			var timer = new Timer ();
-			transform_result (find_proposals ());
+			transform_result (find_proposals ((SymbolCompletionTrigger) trigger));
 			timer.stop ();
 			GLib.debug ("TOTAL TIME ELAPSED: %f", timer.elapsed ());
 			if (list.length () == 0 && cache_building) {
@@ -528,7 +529,8 @@ namespace Vtg
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
 				options.public_only ();				
 				if (line.str ("= new ") != null || line.str ("=new ") != null) {
-					options.only_constructors = true;
+					options.constructors = true;
+					options.instance_symbols = false;
 				}
 				if (typename != null) {
 					GLib.debug ("datatype '%s' for: %s",typename, word);
@@ -539,13 +541,13 @@ namespace Vtg
 					} else if (word == "base") {
 						options.protected_symbols = true;
 					}
-					result = _completion.get_completions_for_name (options, typename, _sb.name);
+					result = _completion.get_completions_for_name (options, typename, _sb.name, lineno + 1, colno);
 				} else {
 					if (first_part.has_prefix ("this.") == false && first_part.has_prefix ("base.") == false) {
 						options.static_symbols = true;
 						options.interface_symbols = false;
 					
-						result = _completion.get_completions_for_name (options, first_part, _sb.name);
+						result = _completion.get_completions_for_name (options, first_part, _sb.name, lineno + 1, colno);
 					}
 				}
 			} catch (Error err) {
@@ -561,7 +563,7 @@ namespace Vtg
 			return null;
 		}
 
-		private SymbolCompletionResult? find_proposals ()
+		private SymbolCompletionResult? find_proposals (SymbolCompletionTrigger trigger)
 		{
 			SymbolCompletionResult result = null;
 			string line, word;
@@ -585,7 +587,8 @@ namespace Vtg
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
 				options.public_only ();
 				if (line.str ("= new ") != null || line.str ("=new ") != null) {
-					options.only_constructors = true;
+					options.constructors = true;
+					options.instance_symbols = false;
 				}
 				if (typename != null) {
 					GLib.debug ("datatype '%s' for: %s",typename, word);
@@ -599,7 +602,7 @@ namespace Vtg
 					options.exclude_type = typename;						
 					GLib.debug ("(find_proposals): START completion for: '%s'",typename);
 					timer.start ();
-					result = _completion.get_completions_for_name (options, typename, _sb.name);
+					result = _completion.get_completions_for_name (options, typename, _sb.name, lineno + 1, colno);
 					timer.stop ();
 					GLib.debug ("(find_proposals): END completion for: '%s', Count %d, TIME Elapsed: %f",typename, result.count, timer.elapsed ());
 				} else {
@@ -609,9 +612,26 @@ namespace Vtg
 						options.interface_symbols = false;
 						GLib.debug ("(find_proposals): START STATIC completion for: '%s'",word);
 						timer.start ();
-						result = _completion.get_completions_for_name (options, word, _sb.name);
+						result = _completion.get_completions_for_name (options, word, _sb.name, lineno + 1, colno);
 						timer.stop ();
 						GLib.debug ("(find_proposals): END STATIC completion for: '%s', Count %d, TIME Elapsed: %f",word, result.count, timer.elapsed ());
+						if (trigger.shortcut_triggered && result.is_empty) {
+							GLib.debug ("(find_proposals): START THIS completion for: '%s'",word);
+							timer.start ();
+							typename = _completion.get_datatype_name_for_name ("this", _sb.name, lineno + 1, colno);
+							if (typename != null) {
+								options.defaults ();
+								options.public_only ();
+								options.constructors = true;
+								options.static_symbols = true;
+								options.private_symbols = true;
+								options.protected_symbols = true;
+								options.local_variables = true;
+								result = _completion.get_completions_for_name (options, typename, _sb.name, lineno + 1, colno);
+							}
+							timer.stop ();
+							GLib.debug ("(find_proposals): END THIS completion for: '%s', Count %d, TIME Elapsed: %f",word, result.count, timer.elapsed ());
+						}
 					}
 				}
 			} catch (GLib.Error err) {

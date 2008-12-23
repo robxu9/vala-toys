@@ -257,7 +257,7 @@ namespace Vsc
 		{
 			try {
 				var options = new SymbolCompletionFilterOptions ();
-				var result = _completion.get_completions_for_name (options, typename, source);
+				var result = _completion.get_completions_for_name (options, typename, source, 0 ,0);
 				display_result (result);
 			} catch (Error err) {
 				print_error (err.message);

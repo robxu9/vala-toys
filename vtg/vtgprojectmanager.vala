@@ -263,7 +263,7 @@ namespace Vtg.ProjectManager
 				open_project (foldername);
 			}
 		}
-
+		
 		private void on_project_goto_document (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);

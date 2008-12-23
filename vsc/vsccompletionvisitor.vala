@@ -302,16 +302,18 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	{
 		bool res = false;
 		bool is_static = symbol_is_static (symbol);
-		bool has_constructors = symbol_has_constructors (symbol);
 
 		//test for static or instance symbols
-		if (options.static_symbols && is_static && !options.only_constructors)
+		if (options.static_symbols && is_static && !options.constructors)
 			res = true;
 		else if (!options.static_symbols && !is_static)
 			res = true;
-		
-		if (options.only_constructors) {
-			res = has_constructors;
+		else if (!is_static && options.instance_symbols)
+			res = true;
+			
+		if (options.constructors) {
+			bool has_constructors = symbol_has_constructors (symbol);
+			res = res | has_constructors;
 		}
 		
 		//test symbol accessibility

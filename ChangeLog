@@ -1,5 +1,17 @@
 2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionfilteroptions.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	added a first raw support for key-binded completion activation
+
+2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	added a workaround to set the calltip info align to the left

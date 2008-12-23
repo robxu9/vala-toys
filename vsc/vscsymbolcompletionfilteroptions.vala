@@ -24,17 +24,38 @@ namespace Vsc
 {
 	public class SymbolCompletionFilterOptions
 	{
-		public bool static_symbols = true;
-		public bool interface_symbols = true;
-		public bool only_constructors = false;
+		public bool static_symbols;
+		public bool interface_symbols;
+		public bool constructors;
+		public bool instance_symbols;
+		
+		public bool local_variables;
+		public bool private_symbols;
+		public bool public_symbols;
+		public bool protected_symbols;
+		public bool internal_symbols;
 
-		public bool private_symbols = true;
-		public bool public_symbols = true;
-		public bool protected_symbols = true;
-		public bool internal_symbols = true;
+		public string exclude_type;
 
-		public string exclude_type = null;
-
+		public SymbolCompletionFilterOptions ()
+		{
+			defaults ();
+		}
+		
+		public void defaults ()
+		{
+			static_symbols = true;
+			interface_symbols = true;
+			instance_symbols = true;
+			constructors = false;
+			local_variables = false;
+			private_symbols = true;
+			public_symbols = true;
+			protected_symbols = true;
+			internal_symbols = true;
+			exclude_type = null;
+		}
+		
 		public void public_only ()
 		{
 			public_symbols = true;
