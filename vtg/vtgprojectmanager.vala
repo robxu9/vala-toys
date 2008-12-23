@@ -61,6 +61,8 @@ namespace Vtg.ProjectManager
                                                         <separator />
                                                         <menuitem name="ProjectBuildCleanStamps" action="ProjectBuildCleanStamps"/>
                                                         <separator />
+                                                        <menuitem name="ProjectBuildConfigure" action="ProjectBuildConfigure"/>
+                                                        <separator />
                                                         <menuitem name="ProjectBuildCompileFile" action="ProjectBuildCompileFile"/>
                                                     </placeholder>
                                                     <placeholder name="BuildMenuOps_2">
@@ -107,6 +109,7 @@ namespace Vtg.ProjectManager
 			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
 			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project using 'make clean'"), on_project_clean},
 			{"ProjectBuildCleanStamps", null, N_("_Clean Project and Vala 'Stamp' Files"), null, N_("Clean the current project stamp files"), on_project_clean_stamps},
+			{"ProjectBuildConfigure", null, N_("C_onfigure Project"), null, N_("Configure or reconfigure the current project"), on_project_configure},
 			{"ProjectBuildCompileFile", null, N_("_Compile File"), "<control>B", N_("Compile the current file with the vala compiler"), on_standalone_file_compile},			
 			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
 			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
@@ -403,6 +406,24 @@ namespace Vtg.ProjectManager
 					}
 					project_save_all (project);
 					_prj_builder.build (project, params);
+				}
+			}
+		}
+
+		private void on_project_configure (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			if (_prj_view.current_project != null) {
+				var cache = Vtg.Caches.get_configure_cache ();
+				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Configure Project"), _plugin.gedit_window, cache);
+				if (params_dialog.run () == ResponseType.OK) {
+					var project = _prj_view.current_project;
+					var params = params_dialog.parameters;
+					if (!StringUtils.is_null_or_empty (params) && !Vtg.Caches.cache_contains (cache, params)) {
+						Vtg.Caches.cache_append (cache, params);
+					}
+					project_save_all (project);
+					_prj_builder.configure (project, params);
 				}
 			}
 		}

@@ -1,5 +1,13 @@
 2008-12-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgutils.vala:
+
+	added configure command to the project builder module
+
+2008-12-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
 
 	scroll the treeview to the selection if not visible
