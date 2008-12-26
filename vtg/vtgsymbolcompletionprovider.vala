@@ -82,6 +82,8 @@ namespace Vtg
 		{
 			GLib.debug ("SymbolCompletionProvider: destructor, start");
 			_view.key_press_event -= this.on_view_key_press;
+			this._completion.parser.cache_building -= this.on_cache_building;
+			this._completion.parser.cache_builded -= this.on_cache_builded;
 			
 			if (sb_msg_id != 0) {
 				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
@@ -123,19 +125,8 @@ namespace Vtg
 				this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
 				this._icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));
 				
-				this._completion.parser.cache_building += sender => { 
-					if (cache_building == false) {
-						cache_building = true; 
-						idle_id = Idle.add (this.on_idle);
-					}
-				};
-				this._completion.parser.cache_builded += sender => { 
-					if (cache_building == true) {
-						cache_building = false;
-						if (idle_id == 0)
-							idle_id = Idle.add (this.on_idle);
-					}
-				};
+				this._completion.parser.cache_building += this.on_cache_building;
+				this._completion.parser.cache_builded += this.on_cache_builded;
 
 				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
 				sb_context_id = status_bar.get_context_id ("symbol status");
@@ -148,6 +139,24 @@ namespace Vtg
 			}
 		}
 
+
+		private void on_cache_building (Vsc.ParserManager sender)
+		{
+			if (cache_building == false) {
+				cache_building = true; 
+				idle_id = Idle.add (this.on_idle);
+			}			
+		}
+		
+		private void on_cache_builded (Vsc.ParserManager sender)
+		{
+			if (cache_building == true) {
+				cache_building = false;
+				if (idle_id == 0)
+					idle_id = Idle.add (this.on_idle);
+			}
+		}
+		
 		private bool on_idle ()
 		{
 			if (_plugin == null)

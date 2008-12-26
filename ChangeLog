@@ -1,5 +1,13 @@
 2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	don't use lambda expressions since I have to detach from
+	that events on object cleanup. This may prevent some random
+	crashes that I had.
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerbuildlogview.vala:
 
 	prevent the lost focus from the documentview when
