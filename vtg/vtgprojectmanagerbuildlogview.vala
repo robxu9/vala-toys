@@ -111,6 +111,10 @@ namespace Vtg.ProjectManager
 		{
 			var panel = _plugin.gedit_window.get_bottom_panel ();
 			panel.activate_item (this._ui);
+			var view = _plugin.gedit_window.get_active_view ();
+			if (view != null && !view.is_focus) {
+				view.grab_focus ();
+			}
 		}
 
 		public bool on_message_added (OutputView sender, string message)
