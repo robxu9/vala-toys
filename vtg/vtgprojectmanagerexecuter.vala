@@ -49,7 +49,7 @@ namespace Vtg.ProjectManager
 			this.plugin = plugin;
 		}
 
-		public bool execute (Project project)
+		public bool execute (Project project, string command_line)
 		{
 			if (_child_watch_id != 0)
 				return false;
@@ -58,21 +58,21 @@ namespace Vtg.ProjectManager
 			int stdo, stde, stdi;
 			try {
 				var log = _plugin.output_view;
-				string process_file;
-				var programs = project.exec_targets;
-
+				
+				string cmd;
 				log.clean_output ();
-				if (programs.size == 0) {
-					log.log_message ("No executable in %s".printf(project.name));
+				if (command_line == null) {
+					log.log_message ("No command line specified for project %s".printf(project.name));
 					return false;
+				} else {
+					cmd = Path.build_filename (project.filename, command_line);
 				}
-
-				//TODO: support multiexec projects
-				process_file = Path.build_filename (project.filename, programs[0]);
-				var start_message = _("Starting %s, from project: %s\n").printf (process_file, project.name);
+				string[] cmds;
+				Shell.parse_argv (cmd, out cmds);
+				var start_message = _("Starting from project %s executable: %s\n").printf (project.name, cmd);
 				log.log_message (start_message);
 				log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
-				Process.spawn_async_with_pipes (working_dir, new string[] { process_file }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, out stdi, out stdo, out stde);
+				Process.spawn_async_with_pipes (working_dir, cmds, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, out stdi, out stdo, out stde);
 				if (child_pid != (Pid) 0) {
 					_child_watch_id = ChildWatch.add (child_pid, this.on_child_watch);
 					log.start_watch (_child_watch_id, stdo, stde, stdi);

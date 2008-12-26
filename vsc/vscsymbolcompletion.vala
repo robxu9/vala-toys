@@ -276,6 +276,7 @@ namespace Vsc
 			var results = new Gee.ArrayList<SymbolCompletionItem> ();
 			
 			if (sourcefile != null) {
+				GLib.debug ("sourcefile %s", sourcefile);
 				_parser.lock_all_contexts ();
 				source = find_sourcefile (_parser.sec_context, sourcefile);
 				if (source == null)

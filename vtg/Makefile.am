@@ -34,6 +34,7 @@ libvtg_la_VALASOURCES = \
 	vtgprojectmanagerview.vala \
 	vtgprojectmanagerbuilder.vala \
 	vtgprojectmanagerexecuter.vala \
+	vtgprojectmanagerexecuterdialog.vala \
 	vtgprojectmanageroutputview.vala \
 	vtgprojectmanagerprocesswatchinfo.vala \
 	vtgprojectmanagerbuildlogview.vala \

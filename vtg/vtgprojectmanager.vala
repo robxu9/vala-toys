@@ -402,7 +402,7 @@ namespace Vtg.ProjectManager
 					var project = _prj_view.current_project;
 					var params = params_dialog.parameters;
 					if (!StringUtils.is_null_or_empty (params) && !Vtg.Caches.cache_contains (cache, params)) {
-						Vtg.Caches.cache_append (cache, params);
+						Vtg.Caches.cache_add (cache, params);
 					}
 					project_save_all (project);
 					_prj_builder.build (project, params);
@@ -420,7 +420,7 @@ namespace Vtg.ProjectManager
 					var project = _prj_view.current_project;
 					var params = params_dialog.parameters;
 					if (!StringUtils.is_null_or_empty (params) && !Vtg.Caches.cache_contains (cache, params)) {
-						Vtg.Caches.cache_append (cache, params);
+						Vtg.Caches.cache_add (cache, params);
 					}
 					project_save_all (project);
 					_prj_builder.configure (project, params);
@@ -444,7 +444,12 @@ namespace Vtg.ProjectManager
 			if (_prj_view.current_project != null) {
 				var project = _prj_view.current_project;
 				GLib.debug ("executing project %s", project.name);
-				_prj_executer.execute (project);
+				var exec_dialog = new Vtg.ProjectManager.ExecuterDialog (_plugin.gedit_window, project);
+				if (exec_dialog.run () == ResponseType.OK) {
+					var command_line = exec_dialog.command_line;
+					_prj_executer.execute (project, command_line);
+				}
+				
 			}
 		}
 

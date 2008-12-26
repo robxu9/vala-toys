@@ -48,6 +48,7 @@ namespace Vtg
 		
 		private static Gtk.ListStore _build_cache = null;
 		private static Gtk.ListStore _configure_cache = null;
+		private static Gtk.ListStore _executer_cache = null;
 		
 		public static Gtk.ListStore get_build_cache ()		
 		{
@@ -65,6 +66,15 @@ namespace Vtg
 			}
 			
 			return _configure_cache;
+		}
+
+		public static Gtk.ListStore get_executer_cache ()		
+		{
+			if (_executer_cache == null) {
+				_executer_cache = new Gtk.ListStore (1, typeof (string));
+			}
+			
+			return _executer_cache;
 		}
 		
 		public static bool cache_contains (Gtk.ListStore cache, string data)
@@ -85,15 +95,20 @@ namespace Vtg
 			return found;
 		}
 		
-		public static void cache_append (Gtk.ListStore cache, string data)
+		public static void cache_add (Gtk.ListStore cache, string data)
 		{
 			TreeIter iter;
 			if (cache_count (cache) > CACHE_LIMIT) {
 				if (cache.get_iter_first (out iter)) {
-					cache.remove (iter);
+					TreeIter target = iter;
+					//find last iter
+					while (cache.iter_next (ref iter)) {
+						target = iter;
+					}
+					cache.remove (target);
 				}
 			}
-			cache.append (out iter);
+			cache.insert (out iter, 0);
 			cache.set (iter, 0, data);
 		}
 		
@@ -109,7 +124,6 @@ namespace Vtg
 			}
 			return count;
 		}
-
 	}
 	
 	namespace StringUtils

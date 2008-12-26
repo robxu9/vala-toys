@@ -1,5 +1,20 @@
 2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerexecuterdialog.vala:
+	* ui/vtg.glade:
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerexecuter.vala:
+
+	added new exec program dialog, fixes issue #12
+
+	* vtg/vtgutils.vala:
+
+	caches now behave like a stack
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 
 	really remove the source from the secondary buffer, 
