@@ -119,7 +119,9 @@ namespace Vtg
 			var doc = window.get_active_document ();
 			if (doc != null) {
 				var prj = project_descriptor_find_from_document (doc);
-				_prj_man.project_view.current_project = prj.project;
+				if (!(prj.project == null && (doc.language == null || doc.language.id != "vala"))) {
+					_prj_man.project_view.current_project = prj.project;
+				}
 			}
 		}
 		

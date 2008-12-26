@@ -1,5 +1,12 @@
 2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugin.vala:
+
+	don't change the current project to null if
+	the current file isn't a vala source
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerexecuterdialog.vala:
 	* ui/vtg.glade:
 	* vsc/vscsymbolcompletion.vala:
