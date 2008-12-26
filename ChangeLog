@@ -1,5 +1,12 @@
 2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+	
+	don't try to find the method signature if the method name
+	is a vala language keyword
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugin.vala:
 
 	don't change the current project to null if

@@ -518,7 +518,10 @@ namespace Vtg
 			if (first_part == null) {
 				first_part = method;
 			}
-			
+			//don't try to find method signature if is a: for, foreach, if, while etc...
+			if (is_a_vala_keyword (method)) {
+				return null;
+			}
 			try {			
 				string typename = null;
 				var dt = _completion.get_datatype_for_name (first_part, _sb.name, lineno + 1, colno);
@@ -640,6 +643,14 @@ namespace Vtg
 			
 			return result;
 		}
+		
+		private bool is_a_vala_keyword (string keyword)
+		{
+			return (keyword == "if"
+				|| keyword == "for"
+				|| keyword == "foreach"
+				|| keyword == "while");
+		}
 
 		private string get_document_text (Gedit.Document doc, bool all_doc = false)
 		{
@@ -683,5 +694,6 @@ namespace Vtg
 			return doc_text;
 		}
 	}
+	
 
 }
