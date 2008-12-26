@@ -381,7 +381,7 @@ namespace Vsc
 		public void remove_source_buffer (SourceBuffer source)
 		{
 			lock_sec_context ();
-			_source_buffers.add (source);
+			_source_buffers.remove (source);
 			unlock_sec_context ();
 			
 			schedule_parse_source_buffers ();
