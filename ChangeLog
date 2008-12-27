@@ -1,5 +1,11 @@
 2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed symbol completion inside properties
+
+2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ui/vtg.glade:
 	
 	set the ask-param default width 

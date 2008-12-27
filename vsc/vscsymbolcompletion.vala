@@ -89,11 +89,26 @@ namespace Vsc
 		private CodeNode? find_sub_codenode (CodeNode node, int line, int column, CodeNode? parent_node)
 		{
 			CodeNode? result = null;
-			//this is a HACK since vala set the parent_node property only form expression
+			//this is a HACK since vala set the parent_node property only for expression
 			if (parent_node != null && node.parent_node == null && node != parent_node)
 				node.parent_node = parent_node;
+				
+			if (node is Property) {
+				var prop = (Property) node;
+				if (prop.get_accessor != null) {
+					result = find_sub_codenode (prop.get_accessor, line, column, node);
+					if (result != null)
+						return result;						
+				}
+				if (prop.set_accessor != null) {
+					result = find_sub_codenode (prop.set_accessor, line, column, node);
+					if (result != null)
+						return result;						
+				}
 
-			if (node is Method) {
+				if (node_contains_position (prop, line, column))
+					return prop;
+			} if (node is Method) {
 				var md = (Method) node;
 
 				result = find_sub_codenode (md.body, line, column, node);
@@ -200,6 +215,15 @@ namespace Vsc
 				if (node_contains_position (node, line, column)) {
 					return node;
 				}
+			} else if (node is PropertyAccessor) {
+				var pa = (PropertyAccessor) node;
+				result = find_sub_codenode (pa.body, line, column, node);
+				if (result != null)
+					return result;
+
+				if (node_contains_position (pa, line, column)) {
+					return pa;
+				}
 			} else {
 				warning ("incomplete support for %s", Reflection.get_type_from_instance (node).name ());
 			}
@@ -245,6 +269,12 @@ namespace Vsc
 						if (result != null)
 							return result;
 					}
+					method = null;
+					foreach (Property prop in cl.get_properties ()) {
+						result = find_sub_codenode (prop, line, column, cl);
+						if (result != null)
+							return result;
+					}					
 				}
 			}
 			cl = null;
