@@ -642,7 +642,7 @@ namespace Vtg
 								result = _completion.get_completions_for_name (options, typename, _sb.name, lineno + 1, colno);
 							}
 							timer.stop ();
-							GLib.debug ("(find_proposals): END THIS completion for: '%s', Count %d, TIME Elapsed: %f",word, result.count, timer.elapsed ());
+							GLib.debug ("(find_proposals): END THIS completion for: '%s' in type '%s', Count %d, TIME Elapsed: %f",word, typename, result.count, timer.elapsed ());
 						}
 					}
 				}

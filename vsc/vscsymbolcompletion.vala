@@ -134,19 +134,21 @@ namespace Vsc
 					result = find_sub_codenode (ifs.true_statement, line, column, node);
 					if (result != null)
 						return result;
-				}
-				if  (node_contains_position (ifs.true_statement, line, column)) {
-					return ifs.true_statement;
+				
+					if  (node_contains_position (ifs.true_statement, line, column)) {
+						return ifs.true_statement;
+					}
 				}
 				if (ifs.false_statement != null) {
 					result = find_sub_codenode (ifs.false_statement, line, column, node);
 					if (result != null)
 						return result;
+
+					if (node_contains_position (ifs.false_statement, line, column)) {
+						return ifs.false_statement;
+					}
 				}
-				if (node_contains_position (ifs.false_statement, line, column)) {
-					return ifs.false_statement;
-				}
-				
+
 				if (node_contains_position (ifs, line, column))
 					return ifs;
 			} else if (node is ForeachStatement) {

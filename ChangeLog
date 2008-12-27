@@ -1,5 +1,16 @@
 2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ui/vtg.glade:
+	
+	set the ask-param default width 
+
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed some critical warning in IfStatement visit
+
+2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* debian/changelog:
 	* debian/control:
 	* debian/copyright:
