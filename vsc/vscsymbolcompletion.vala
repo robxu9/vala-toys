@@ -199,7 +199,7 @@ namespace Vsc
 					return node;
 				}
 			} else {
-				//warning ("incomplete support for %s", Reflection.get_type_from_instance (node).name ());
+				warning ("incomplete support for %s", Reflection.get_type_from_instance (node).name ());
 			}
 
 			return null;

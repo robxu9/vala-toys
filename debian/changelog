@@ -1,11 +1,5 @@
-vtg-plugin (0.2.0-1) unstable; urgency=low
+vtg (0.1.0-1) unstable; urgency=low
 
-  * new upstream release
+  * Initial release (Closes: #1234)
 
- --  Andrea Del Signore <sejerpz@tin.it>  Fri, 19 Dec 2008 21:44:49 +0100
-
-vtg-plugin (0.1-1) unstable; urgency=low
-
-  * First release.
-
- -- Andrea Del Signore <sejerpz@tin.it>  Tue, 16 Dec 2008 00:22:45 +0100
+ -- Andrea Del Signore <sejerpz@tin.it>  Tue, 23 Dec 2008 23:17:21 +0100

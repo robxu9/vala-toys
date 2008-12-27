@@ -1,3 +1,17 @@
+2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* debian/changelog:
+	* debian/control:
+	* debian/copyright:
+	* debian/rules:
+
+	update the debian package script to be more lintian
+	error free
+
+	* vsc/vscsymbolcompletion.vala:
+
+	readded a warning on unsupported type
+
 2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala:

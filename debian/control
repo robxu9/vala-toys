@@ -1,4 +1,4 @@
-Source: vtg-plugin
+Source: vtg
 Section: gnome
 Priority: optional
 Maintainer: Andrea Del Signore <sejerpz@tin.it>
@@ -14,18 +14,20 @@ Build-Depends: cdbs,
                gnome-doc-utils (>= 0.3.2),
                gnome-pkg-tools (>= 0.11),
                intltool (>= 0.35)
-Standards-Version: 3.7.3
+Standards-Version: 3.8.0
 
-Package: vtg-plugin
+Package: vtg
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          gedit (>= 2.20.0),
-Description: vala development plugin for gedit
- Vala developer toys contains a plugin to help the develpment of a vala program in gedit.
+Description: vala development plugin for gEdit
+ Vala developer toys contains a plugin to help the develpment
+ of a vala program in gedit.
  .
  The following modules are included:
   * Bracket Completion: Automatically adds closing brackets.
   * Symbol Completion: Automatically complete source code.
   * Project Manager: A simple project manager base on autotools
- 
+ .
+ The vala-gen-project utility is also included 

@@ -15,4 +15,7 @@ License:
    This package is licensed under the terms of the GNU GPL v2+ and some portion
    of it under the GNU LGPL v2.
 
-   See the file COPYING for more informations.
+   See the file COPYING for more informations:
+
+	GPL version 2 or later, see /usr/share/common-licenses/GPL-2
+	LGPL version 2.1 or later (libvsc), see /usr/share/common-licenses/LGPL-2.1
