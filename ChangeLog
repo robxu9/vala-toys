@@ -1,4 +1,10 @@
 2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* NEWS:
+
+	update news files before release
+
+2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala:
 

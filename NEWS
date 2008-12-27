@@ -1,3 +1,15 @@
+Vala toys for gEdit version 0.2.0
+=================================
+
+* Internationalization framework setup. A new argentinian spanish translation is included. Thanks to Matias De la Puente
+* Improved code completion engine
+* New "execute project" dialog where the executable and command line parameters can be specified
+* New build dialog where make parameters can be specified
+* New "Configure" menu item
+* Improved keyboard navigation in method and files quick pick dialogs
+* vala-gen-project utility can be used from the command line
+
+
 Vala toys for gEdit version 0.1.0
 =================================
 
@@ -8,4 +20,4 @@ Vala toys for gEdit version 0.1.0
        * Symbol completion
        * Autotool project managment
        * Simple "one source" workflow optimization
-~                
+                
