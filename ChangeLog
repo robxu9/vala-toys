@@ -1,5 +1,11 @@
 2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+
+	better support for if statement in symbol completion
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	don't use lambda expressions since I have to detach from

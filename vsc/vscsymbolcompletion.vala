@@ -135,12 +135,20 @@ namespace Vsc
 					if (result != null)
 						return result;
 				}
-				
+				if  (node_contains_position (ifs.true_statement, line, column)) {
+					return ifs.true_statement;
+				}
 				if (ifs.false_statement != null) {
 					result = find_sub_codenode (ifs.false_statement, line, column, node);
 					if (result != null)
 						return result;
-				}				
+				}
+				if (node_contains_position (ifs.false_statement, line, column)) {
+					return ifs.false_statement;
+				}
+				
+				if (node_contains_position (ifs, line, column))
+					return ifs;
 			} else if (node is ForeachStatement) {
 				var fe = (ForeachStatement) node;
 				if (node_contains_position (fe.body, line, column) ||
@@ -465,6 +473,8 @@ namespace Vsc
 						if (fe.variable_name == symbolname) {
 							return fe.type_reference;
 						}
+					} else if (codenode is IfStatement) {
+						GLib.debug ("is IFFFFF!!!!!!!!!!!");
 					}
 				}
 			}
