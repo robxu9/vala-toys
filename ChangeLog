@@ -1,5 +1,12 @@
 2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	optimized the source reparse so it isn't triggered
+	when moving the cursor up / down
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanager.vala:
 
 	fixed the empty param bug, closes #23

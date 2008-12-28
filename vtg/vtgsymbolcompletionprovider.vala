@@ -215,9 +215,14 @@ namespace Vtg
 					this.all_doc = true;
 					counter = 0; //immediatly (0.1sec)
 					current_edited_line = -1;
-				} else if (evt.keyval != Gdk.Key_Escape) {
+				} else if (ch.isprint () 
+					   || evt.keyval == Gdk.Key_Delete
+					   || evt.keyval == Gdk.Key_BackSpace) {
 					need_parse = true;
-				}
+				} else if (evt.keyval == Gdk.Key_Up
+					   || evt.keyval == Gdk.Key_Down) {
+					current_edited_line = -1; //moved so parse the buffer is its needed
+				} 
 			} else {
 				if (evt.keyval == Gdk.Key_Return || ch == ';') {
 					this.all_doc = true;
@@ -235,7 +240,7 @@ namespace Vtg
 			}
 			return false;
 		}
-
+		
 		private void show_calltip ()
 		{
 			SymbolCompletionItem result = find_method_signature ();
