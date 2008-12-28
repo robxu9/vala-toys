@@ -446,7 +446,7 @@ namespace Vtg.ProjectManager
 				if (params_dialog.run () == ResponseType.OK) {
 					var project = _prj_view.current_project;
 					var params = params_dialog.parameters;
-					if (!StringUtils.is_null_or_empty (params) && !Vtg.Caches.cache_contains (cache, params)) {
+					if (!Vtg.Caches.cache_contains (cache, params)) {
 						Vtg.Caches.cache_add (cache, params);
 					}
 					project_save_all (project);
@@ -464,7 +464,7 @@ namespace Vtg.ProjectManager
 				if (params_dialog.run () == ResponseType.OK) {
 					var project = _prj_view.current_project;
 					var params = params_dialog.parameters;
-					if (!StringUtils.is_null_or_empty (params) && !Vtg.Caches.cache_contains (cache, params)) {
+					if (!Vtg.Caches.cache_contains (cache, params)) {
 						Vtg.Caches.cache_add (cache, params);
 					}
 					project_save_all (project);
