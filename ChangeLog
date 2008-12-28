@@ -1,5 +1,14 @@
 2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	some minor speed improvements in symbol lookup and completion
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	optimized the source reparse so it isn't triggered

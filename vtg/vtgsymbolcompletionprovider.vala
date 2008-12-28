@@ -663,7 +663,8 @@ namespace Vtg
 			return (keyword == "if"
 				|| keyword == "for"
 				|| keyword == "foreach"
-				|| keyword == "while");
+				|| keyword == "while"
+				|| keyword == "switch");
 		}
 
 		private string get_document_text (Gedit.Document doc, bool all_doc = false)

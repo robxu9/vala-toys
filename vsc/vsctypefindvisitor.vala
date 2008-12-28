@@ -351,6 +351,9 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			
 			if (sym == null && !SymbolCompletion.symbol_has_known_namespace (name)) {
 				foreach (UsingDirective item in _current_file.get_using_directives ()) {
+					if (name.has_prefix ("%s.".printf (item.namespace_symbol.name)))
+						break; //exit since symbol is fully qualified
+						
 					var using_name = "%s.%s".printf (item.namespace_symbol.name, name);
 					debug ("(resolve_type): using directives resolving type %s", using_name);
 					typefinder.searched_typename = using_name;

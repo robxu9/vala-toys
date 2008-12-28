@@ -316,7 +316,6 @@ namespace Vsc
 			var results = new Gee.ArrayList<SymbolCompletionItem> ();
 			
 			if (sourcefile != null) {
-				GLib.debug ("sourcefile %s", sourcefile);
 				_parser.lock_all_contexts ();
 				source = find_sourcefile (_parser.sec_context, sourcefile);
 				if (source == null)
@@ -505,8 +504,6 @@ namespace Vsc
 						if (fe.variable_name == symbolname) {
 							return fe.type_reference;
 						}
-					} else if (codenode is IfStatement) {
-						GLib.debug ("is IFFFFF!!!!!!!!!!!");
 					}
 				}
 			}
@@ -634,7 +631,7 @@ namespace Vsc
 								if (finder.result != null) {
 									vt = symbol_to_datatype(finder.result);
 									break;
-								}
+								} 
 							}
 							if (vt == null) {
 								finder = new TypeFinderVisitor (source, _parser.pri_context);
@@ -774,11 +771,17 @@ namespace Vsc
 			
 			//search it in referenced namespaces
 			if (source != null && finder.result == null && !SymbolCompletion.symbol_has_known_namespace (symbolname)) {
-				foreach(UsingDirective item in source.get_using_directives ()) {
+				bool force_exit = false;
+				foreach (UsingDirective item in source.get_using_directives ()) {
 					int tmp = result.count;
-					get_completion_for_name_in_namespace_with_context (item.namespace_symbol.name, 
+					string ns_name = item.namespace_symbol.name;
+					
+					if (symbolname.has_prefix ("%s.".printf (ns_name)))
+						force_exit = true; //exit after this visit since symbolname is surely fully qualified
+						
+					get_completion_for_name_in_namespace_with_context (ns_name, 
 						symbolname, finder, completion, _parser.pri_context);
-					if (tmp != result.count) {
+					if (tmp != result.count || force_exit) {
 						break;
 					}
 				}
