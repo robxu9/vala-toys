@@ -290,6 +290,13 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			_results.fields.add (new SymbolCompletionItem.with_field (f));
 		}
 	}
+
+       	public override void visit_constant (Vala.Constant c) 
+	{
+		if (test_symbol (_options, c)) {
+			_results.constants.add (new SymbolCompletionItem (c.name));
+		}
+	}
 	
        	public override void visit_property (Property p) 
 	{
