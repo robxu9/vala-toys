@@ -35,7 +35,35 @@ namespace Vtg.Vcs.Backends
 		public Gee.List<Item> get_items (string path) throws GLib.Error
 		{
 			Gee.List<Item> results = new Gee.ArrayList<Item> ();
-			return results;
+			string stdo, stde;
+			int exit_status;
+						
+			if (Process.spawn_sync (path, new string[] { "svn", "status" }, null, SpawnFlags.SEARCH_PATH, null, out stdo, out stde, out exit_status)) {
+				int exit = Process.exit_status (exit_status);
+				if (exit == 0) {
+					string[] lines = stdo.split ("\n");
+					int idx = 0;
+				
+					while (lines[idx] != null) {
+						string line = lines[idx];
+						if (line.has_prefix("M")) {
+							Item item = new Item ();
+							item.state = States.MODIFIED;
+							item.name = line.substring (6, line.length - 6);
+							results.add (item);
+						} else if (line.has_prefix ("A")) {
+							Item item = new Item ();
+							item.state = States.ADDED;
+							item.name = line.substring (6, line.length - 6);
+							results.add (item);						
+						}
+						idx++;
+					}
+				} else {
+					throw new VcsError.CommandFailed (_("error executing the svn status command.\n%s").printf (stde));
+				}
+			}
+			return results;		
 		}
 		
 		public bool test (string path)

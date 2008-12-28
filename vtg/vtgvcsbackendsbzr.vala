@@ -35,7 +35,43 @@ namespace Vtg.Vcs.Backends
 		public Gee.List<Item> get_items (string path) throws GLib.Error
 		{
 			Gee.List<Item> results = new Gee.ArrayList<Item> ();
-			return results;
+			string stdo, stde;
+			int exit_status;
+						
+			if (Process.spawn_sync (path, new string[] { "bzr", "status" }, null, SpawnFlags.SEARCH_PATH, null, out stdo, out stde, out exit_status)) {
+				int exit = Process.exit_status (exit_status);
+				if (exit == 0) {
+					string[] lines = stdo.split ("\n");
+					int idx = 0;
+					int status = 0;
+					
+					while (lines[idx] != null) {
+						string line = lines[idx];
+						if (line.has_prefix("added:")) {
+							status = 1;
+						} else if (line.has_prefix ("modified:")) {
+							status = 2;
+						} else if (!line.has_prefix ("  ")) {
+							status = 0;
+						} else if (line.has_prefix ("  ")) {
+							switch (status)	{
+								case 1:
+								case 2:
+									Item item = new Item ();
+									item.state = (status == 1 ? States.ADDED : States.MODIFIED);
+									item.name = line.substring (2, line.length - 2);
+									results.add (item);
+									break;
+
+							}
+						}
+						idx++;
+					}
+				} else {
+					throw new VcsError.CommandFailed (_("error executing the bzr status command.\n%s").printf (stde));
+				}
+			}
+			return results;		
 		}
 		
 		public bool test (string path)

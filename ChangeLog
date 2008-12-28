@@ -1,5 +1,12 @@
 2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgvcsbackendsbzr.vala:
+	* vtg/vtgvcsbackendssvn.vala:
+
+	added bzr and svn support to ChangeLog backends
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ui/vtg.glade:
 	* ui/vtg.ui:
 	* vtg/vtgchangelog.vala:
