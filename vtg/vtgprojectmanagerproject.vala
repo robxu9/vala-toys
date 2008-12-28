@@ -32,6 +32,14 @@ namespace Vtg.ProjectManager
 		NO_BACKEND
 	}
 	
+	public enum VcsTypes
+	{
+		NONE,
+		GIT,
+		BZR,
+		SVN
+	}
+	
 	public class Project : GLib.Object
 	{
 		private weak Backend _backend = null;
@@ -51,7 +59,10 @@ namespace Vtg.ProjectManager
 		
 		public Gtk.TreeModel model { get { return _model; } }
 		public Gbf.Project gbf_project { get { return _gbf_project; } }
-
+		
+		public VcsTypes vcs_type = VcsTypes.NONE;
+		public string changelog_uri = null;
+		
 		public ProjectGroup? find_group (string id)
 		{
 			foreach (ProjectGroup group in groups) {
@@ -75,6 +86,20 @@ namespace Vtg.ProjectManager
 				}
 			}
 			return false;
+		}
+
+		public ProjectSource? get_source_file_from_uri (string uri)
+		{
+			foreach (ProjectGroup group in groups) {
+				foreach (ProjectTarget target in group.targets) {
+					foreach (ProjectSource source in target.sources) {
+						if (source.uri == uri) {
+							return source;
+						}
+					}
+				}
+			}
+			return null;
 		}
 
 		public bool contains_vala_source_file (string uri)
@@ -158,13 +183,35 @@ namespace Vtg.ProjectManager
 				_gbf_project.load (filename);
 				parse_project ();
 				build_tree_model ();
+				vcs_test (filename);
 				_gbf_project.project_updated += this.on_project_updated;
 				return true;
 			} else {
 				throw new ProjectManagerError.NO_BACKEND (_("Can't load project, no suitable backend found"));
-			}
+			}			
 		}
 
+
+		private void vcs_test (string filename)
+		{
+			//test if the project is under some known revision control system
+			Vtg.Vcs.Backends.IGeneric backend = new Vtg.Vcs.Backends.Git ();
+			vcs_type = VcsTypes.NONE;
+			if (backend.test (filename)) {
+				vcs_type = VcsTypes.GIT;
+			} else {
+				backend = new Vtg.Vcs.Backends.Bzr ();
+				if (backend.test (filename)) {
+					vcs_type = VcsTypes.BZR;
+				} else {
+					backend = new Vtg.Vcs.Backends.Svn ();
+					if (backend.test (filename)) {
+						vcs_type = VcsTypes.SVN;
+					}
+				}
+			}
+		}
+		
 		public void close ()
 		{
 			this.modules.clear ();
@@ -257,6 +304,7 @@ namespace Vtg.ProjectManager
 				this.groups.clear ();
 				this.exec_targets.clear ();
 				this.all_vala_sources.clear ();
+				changelog_uri = null;
 				
 				foreach (string mod_id in _gbf_project.get_config_modules ()) {
 					var module = new ProjectModule (this, mod_id);
@@ -287,14 +335,17 @@ namespace Vtg.ProjectManager
 								}
 								group.targets.add (target);
 								foreach (string src_id in tgt.sources) {
-									var src_name = src_id.substring (tgt_id.length + 1, src_id.length - tgt_id.length - 1);
-									ProjectSource src = target.find_source (src_name);
+									var src_uri = src_id.substring (tgt_id.length + 1, src_id.length - tgt_id.length - 1);
+									ProjectSource src = target.find_source (src_uri);
 									if (src == null) {
-										src = new ProjectSource (src_name);
-										if (src.is_vala_source && !contains_vala_source_file (src_name)) {
+										src = new ProjectSource (src_uri);
+										if (src.is_vala_source && !contains_vala_source_file (src_uri)) {
 											all_vala_sources.add (src);
 										}
 										target.add_source (src);
+										if (src.name.down () == "changelog") {
+											changelog_uri = src_uri;
+										}
 									}
 								}								
 							}
@@ -317,5 +368,4 @@ namespace Vtg.ProjectManager
 			return PathUtils.compare_vala_filenames (vala,valb);
 		}
 	}
-
 }

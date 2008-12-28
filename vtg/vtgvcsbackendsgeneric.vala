@@ -25,21 +25,27 @@ using Gee;
 
 namespace Vtg.Vcs.Backends
 {
-	internal enum States
+	public enum States
 	{
 		UNTRACKED,
 		ADDED,
 		MODIFIED
 	}
 	
-	internal class Item
+	public class Item
 	{
 		public string name = "";
 		public States state = States.UNTRACKED;
 	}
 	
-	internal interface Generic
+	public errordomain VcsError
 	{
-		public abstract Gee.List<Item>? get_items (string path);
+		CommandFailed
+	}
+	
+	public interface IGeneric : GLib.Object
+	{
+		public abstract Gee.List<Item> get_items (string path) throws GLib.Error;
+		public abstract bool test (string path);
 	}
 }

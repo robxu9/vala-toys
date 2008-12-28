@@ -25,16 +25,28 @@ using Gee;
 
 namespace Vtg.Vcs.Backends
 {
-	class Svn : Generic, GLib.Object
+	public class Svn : IGeneric, GLib.Object
 	{
 		public Svn ()
 		{
 			
 		}
 		
-		public Gee.List<Item>? get_items (string path)
+		public Gee.List<Item> get_items (string path) throws GLib.Error
 		{
-			return null;
+			Gee.List<Item> results = new Gee.ArrayList<Item> ();
+			return results;
 		}
+		
+		public bool test (string path)
+		{
+			string svn_dir = Path.build_filename (path, ".svn");
+			
+			if (FileUtils.test (svn_dir, FileTest.IS_DIR)) {
+				return true;
+			}
+			return false;
+		}
+
 	}
 }

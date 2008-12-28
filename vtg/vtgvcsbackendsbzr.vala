@@ -25,16 +25,28 @@ using Gee;
 
 namespace Vtg.Vcs.Backends
 {
-	class Bzr : Generic, GLib.Object
+	public class Bzr : IGeneric, GLib.Object
 	{
 		public Bzr ()
 		{
 			
 		}
 		
-		public Gee.List<Item>? get_items (string path)
+		public Gee.List<Item> get_items (string path) throws GLib.Error
 		{
-			return null;
+			Gee.List<Item> results = new Gee.ArrayList<Item> ();
+			return results;
 		}
+		
+		public bool test (string path)
+		{
+			string bzr_dir = Path.build_filename (path, ".bzr");
+			
+			if (FileUtils.test (bzr_dir, FileTest.IS_DIR)) {
+				return true;
+			}
+			return false;
+		}
+
 	}
 }

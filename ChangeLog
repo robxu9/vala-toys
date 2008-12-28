@@ -1,5 +1,21 @@
 2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgvcsbackendsbzr.vala:
+	* vtg/vtgvcsbackendsgeneric.vala:
+	* vtg/vtgvcsbackendsgit.vala:
+	* vtg/vtgvcsbackendssvn.vala:
+
+	implemented ChangeLog support, closes issues #17, #24
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgchangelog.vala:
 	* vtg/vtgvcsbackendsbzr.vala:
 	* vtg/vtgvcsbackendsgeneric.vala:

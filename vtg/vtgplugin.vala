@@ -64,6 +64,10 @@ namespace Vtg
 		}
 
 		public ProjectManager.OutputView output_view { get; set; }
+		public ProjectManager.PluginHelper project_manager 
+		{ 
+			get { return _prj_man; }
+		}
 		
 		public Configuration config 
 		{ 
@@ -359,7 +363,7 @@ namespace Vtg
 			}
 		}
 		
-		public void activate_uri (string uri, int line = 0, int col = 0)
+		public Gedit.Tab activate_uri (string uri, int line = 0, int col = 0)
 		{
 			Gedit.Tab tab = null;
 			Document existing_doc = null;
@@ -372,14 +376,15 @@ namespace Vtg
 			}
 
 			if (tab == null)
-				_window.create_tab_from_uri (uri, Encoding.get_utf8 (), line, true, true);
+				tab = _window.create_tab_from_uri (uri, Encoding.get_utf8 (), line, true, true);
 			else {
 				_window.set_active_tab (tab);
 				if (existing_doc != null && line > 0) {
 					existing_doc.goto_line (line - 1);
 					tab.get_view ().scroll_to_cursor ();
 				}
-			}			
+			}
+			return tab;		
 		}
 		
 		internal void on_project_closed (ProjectManager.PluginHelper sender, ProjectManager.Project project)

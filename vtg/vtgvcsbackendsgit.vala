@@ -25,16 +25,57 @@ using Gee;
 
 namespace Vtg.Vcs.Backends
 {
-	class Git : Generic, GLib.Object
+	public class Git : IGeneric, GLib.Object
 	{
 		public Git ()
 		{
 			
 		}
 		
-		public Gee.List<Item>? get_items (string path)
+		public Gee.List<Item> get_items (string path) throws GLib.SpawnError
 		{
-			return null;
+			Gee.List<Item> results = new Gee.ArrayList<Item> ();
+			string stdo, stde;
+			int exit_status;
+						
+			if (Process.spawn_sync (path, new string[] { "git", "status" }, null, SpawnFlags.SEARCH_PATH, null, out stdo, out stde, out exit_status)) {
+				int exit = Process.exit_status (exit_status);
+				if (exit == 0 || exit == 1) {
+					string[] lines = stdo.split ("\n");
+					int idx = 0;
+					PatternSpec modp = new PatternSpec ("#\tmodified:   *");
+					PatternSpec newp = new PatternSpec ("#\tnew file:   *");
+				
+					while (lines[idx] != null) {
+						string line = lines[idx];
+						if (modp.match_string (line)) {
+							Item item = new Item ();
+							item.state = States.MODIFIED;
+							item.name = line.replace ("#\tmodified:   ", "");
+							results.add (item);
+						} else if (newp.match_string (line)) {
+							Item item = new Item ();
+							item.state = States.ADDED;
+							item.name = line.replace ("#\tnew file:   ", "");
+							results.add (item);						
+						}
+						idx++;
+					}
+				} else {
+					throw new VcsError.CommandFailed (_("error executing the git status command.\n%s").printf (stde));
+				}
+			}
+			return results;
+		}
+		
+		public bool test (string path)
+		{
+			string git_dir = Path.build_filename (path, ".git");
+			
+			if (FileUtils.test (git_dir, FileTest.IS_DIR)) {
+				return true;
+			}
+			return false;
 		}
 	}
 }

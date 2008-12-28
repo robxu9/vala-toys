@@ -31,12 +31,16 @@ namespace Vtg
 		private const string VTG_BASE_KEY = "/apps/gedit-2/plugins/vtg";
 		private const string VTG_ENABLE_SYMBOL_COMPLETION_KEY = VTG_BASE_KEY + "/bracket_completion_enabled";
 		private const string VTG_ENABLE_BRACKET_COMPLETION_KEY = VTG_BASE_KEY + "/symbol_completion_enabled";
-
+		private const string VTG_AUTHOR_KEY = VTG_BASE_KEY + "/author";
+		private const string VTG_EMAIL_ADDRESS_KEY = VTG_BASE_KEY + "/email_address";
+		
 		private GConf.Client _gconf;
 		private Gtk.Dialog _dialog;
 
 		public bool bracket_enabled { get; set; }
 		public bool symbol_enabled { get; set; }
+		public string author { get; set; }
+		public string email_address { get; set; }
 		
 		public bool save_before_build 
 		{ 
@@ -44,7 +48,8 @@ namespace Vtg
 				return true; //TODO: implement me!
 			}
 		}
-	
+		
+		
 		construct
 		{
 			try {
@@ -52,7 +57,8 @@ namespace Vtg
 				//when supported. See this bug for a similar issue
 				//http://bugzilla.gnome.org/show_bug.cgi?id=549061
 				_gconf = GConf.Client.get_default ();
-				if (!_gconf.dir_exists ("/schemas" + VTG_BASE_KEY)) {
+				bool exists_base = _gconf.dir_exists ("/schemas" + VTG_BASE_KEY);
+				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_ENABLE_SYMBOL_COMPLETION_KEY) == null) {
 					var schema = new GConf.Schema ();
 					schema.set_short_desc (_("Enable the symbol completion module"));
 					schema.set_type (GConf.ValueType.BOOL);
@@ -60,19 +66,46 @@ namespace Vtg
 					def_value.set_bool (true);
 					schema.set_default_value (def_value);
 					_gconf.set_schema("/schemas" + VTG_ENABLE_SYMBOL_COMPLETION_KEY, schema);
+					_gconf.set_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY, true);					
+				}
+				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY) == null) {
+					var schema = new GConf.Schema ();
 					schema.set_short_desc (_("Enable the bracket completion module"));
 					schema.set_type (GConf.ValueType.BOOL);
+					var def_value = new GConf.Value (GConf.ValueType.BOOL);
+					def_value.set_bool (true);
 					schema.set_default_value (def_value);
 					_gconf.set_schema("/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY, schema);
+					_gconf.set_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY, true);					
 				}
-				if (!_gconf.dir_exists (VTG_BASE_KEY)) {
-					_gconf.set_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY, true);
-					_gconf.set_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY, true);
+				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_AUTHOR_KEY) == null) {
+					var schema = new GConf.Schema ();
+					schema.set_short_desc (_("Override the author name used in the ChangeLog entries"));
+					schema.set_type (GConf.ValueType.STRING);
+					var def_value = new GConf.Value (GConf.ValueType.STRING);
+					def_value.set_string ("");
+					schema.set_default_value (def_value);
+					_gconf.set_schema("/schemas" + VTG_AUTHOR_KEY, schema);
+					_gconf.set_string (VTG_AUTHOR_KEY, "");
+				}
+				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_EMAIL_ADDRESS_KEY) == null) {
+					var schema = new GConf.Schema ();
+					schema.set_short_desc (_("Override the author name used in the ChangeLog entries"));
+					schema.set_type (GConf.ValueType.STRING);
+					var def_value = new GConf.Value (GConf.ValueType.STRING);
+					def_value.set_string ("");
+					schema.set_default_value (def_value);
+					_gconf.set_schema("/schemas" + VTG_EMAIL_ADDRESS_KEY, schema);
+					_gconf.set_string (VTG_EMAIL_ADDRESS_KEY, "");
 				}
 				_gconf.engine.associate_schema (VTG_ENABLE_SYMBOL_COMPLETION_KEY, "/schemas" + VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_gconf.engine.associate_schema (VTG_ENABLE_BRACKET_COMPLETION_KEY, "/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY);
+				_gconf.engine.associate_schema (VTG_AUTHOR_KEY, "/schemas" + VTG_AUTHOR_KEY);
+				_gconf.engine.associate_schema (VTG_EMAIL_ADDRESS_KEY, "/schemas" + VTG_EMAIL_ADDRESS_KEY);
 				_symbol_enabled = _gconf.get_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY);
-				_bracket_enabled = _gconf.get_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY);;
+				_bracket_enabled = _gconf.get_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY);
+				_author = _gconf.get_string (VTG_AUTHOR_KEY);
+				_email_address = _gconf.get_string (VTG_EMAIL_ADDRESS_KEY);
 				_gconf.add_dir (VTG_BASE_KEY, GConf.ClientPreloadType.ONELEVEL);
 				_gconf.value_changed += this.on_conf_value_changed;
 			} catch (Error err) {
@@ -107,7 +140,14 @@ namespace Vtg
 				assert (check != null);
 				check.set_active (_symbol_enabled);
 				check.toggled += this.on_checkbutton_toggled;
-
+				var text = (Gtk.Entry) builder.get_object ("entry-settings-author");
+				assert (text != null);
+				text.set_text (_author);
+				text.notify["text"] += this.on_text_changed;
+				text = (Gtk.Entry) builder.get_object ("entry-settings-email");
+				assert (text != null);
+				text.set_text (_email_address);
+				text.notify["text"] += this.on_text_changed;
 				return _dialog;
 			} catch (Error err) {
 				GLib.warning ("(get_configuration_dialog): %s", err.message);
@@ -134,6 +174,16 @@ namespace Vtg
 					if (_symbol_enabled != new_val) {
 						symbol_enabled = new_val;
 					}
+				} else if (key == VTG_AUTHOR_KEY) {
+					var new_val = _gconf.get_string (VTG_AUTHOR_KEY);
+					if (_author != new_val) {
+						author = new_val;
+					}
+				} else if (key == VTG_EMAIL_ADDRESS_KEY) {
+					var new_val = _gconf.get_string (VTG_EMAIL_ADDRESS_KEY);
+					if (_email_address != new_val) {
+						email_address = new_val;
+					}
 				}
 			} catch (Error err) {
 				GLib.warning ("(on_conf_value_changed): %s", err.message);
@@ -154,6 +204,23 @@ namespace Vtg
 			} catch (Error err) {
 				GLib.warning ("(on_checkbutton_toggled): %s", err.message);
 			}
+		}
+		
+		private void on_text_changed (GLib.Object sender, ParamSpec pspec)
+		{
+			try {
+				var entry = (Gtk.Entry) sender;
+				string new_val = entry.get_text ();
+				string name = entry.get_name ();
+				
+				if (name == "entry-settings-author") {
+					_gconf.set_string (VTG_AUTHOR_KEY, new_val);
+				} else if (name == "entry-settings-email") {
+					_gconf.set_string (VTG_EMAIL_ADDRESS_KEY, new_val);
+				}
+			} catch (Error err) {
+				GLib.warning ("(on_text_changed): %s", err.message);
+			}			
 		}
 	}
 }

@@ -98,6 +98,16 @@ namespace Vtg.ProjectManager
                                                 </menu>
                                             </menubar>
                                             
+                                            <menubar name="MenuBar">
+                                            	 <menu name="ToolsMenu" action="Tools">
+						 	<placeholder name="ToolsOps_1"> 
+						 		<separator />
+							 	<menuitem name="PrepareSingleFileChangeLog" action="ProjectPrepareSingleFileChangeLog"/>
+							 	<menuitem name="PrepareChangeLog" action="ProjectPrepareChangeLog"/>
+						 		<separator />							 	
+                                                	</placeholder>
+                                                 </menu>
+                                            </menubar>
                                         </ui>""";
 		private uint _ui_id;
 
@@ -117,7 +127,9 @@ namespace Vtg.ProjectManager
 			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process},
 			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
 			{"ProjectGotoMethod", null, N_("_Go To Method..."), "<control>M", N_("Goto to a specific method in the current source document"), on_project_goto_method},
-			{"ProjectCompleteWord", null, N_("Complete _Word"), "<control>space", N_("Try to complete the word in the current source document"), on_complete_word}
+			{"ProjectCompleteWord", null, N_("Complete _Word"), "<control>space", N_("Try to complete the word in the current source document"), on_complete_word},
+			{"ProjectPrepareChangeLog", null, N_("_Prepare ChangeLog"), null, N_("Add an entry to the ChangeLog with all added/modified files"), on_prepare_changelog},
+			{"ProjectPrepareSingleFileChangeLog", null, N_("_Add Current File To ChangeLog"), null, N_("Add the current file to the ChangeLog"), on_prepare_single_file_changelog}
 		};
 
 
@@ -128,7 +140,8 @@ namespace Vtg.ProjectManager
 		private ProjectManager.View _prj_view = null;
 		private ProjectManager.Builder _prj_builder = null;
 		private ProjectManager.Executer _prj_executer = null;
-
+		private ChangeLog _changelog = null;
+		
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 
 		//public signal void project_loaded (Project project);
@@ -167,6 +180,7 @@ namespace Vtg.ProjectManager
 			};
 						
 			initialize_ui ();
+			_changelog = new ChangeLog (_plugin);
 			update_ui (_prj_view.current_project == null);
 		}
 
@@ -197,7 +211,38 @@ namespace Vtg.ProjectManager
 			GLib.debug ("prjm deactvated");
 		}
 
+		private void on_prepare_changelog (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			try {
+				_changelog.prepare ();
+			} catch (Error err) {
+				Vtg.Interaction.error_message (_("Can't prepare the ChangeLog entry"), err);
+			}
+		}
 
+		private void on_prepare_single_file_changelog (Gtk.Action action)
+		{
+			GLib.debug ("Action %s activated", action.name);
+			try {
+				var doc = _plugin.gedit_window.get_active_document ();
+				if (doc != null) {
+					var prj = _prj_view.current_project;
+					string uri = doc.get_uri ();
+					string file = doc.get_short_name_for_display ();
+					if (prj != null) {
+						var src = prj.get_source_file_from_uri (uri);
+						if (src != null) {
+							file = src.name;
+						}
+					}
+					_changelog.prepare (file);
+				}
+			} catch (Error err) {
+				Vtg.Interaction.error_message (_("Can't prepare the ChangeLog entry"), err);
+			}
+		}
+		
 		private void on_complete_word (Gtk.Action action)
 		{
 			GLib.debug ("Action %s activated", action.name);
@@ -526,6 +571,19 @@ namespace Vtg.ProjectManager
 			}
 			action = _actions.get_action ("ProjectCompleteWord");
 			action.set_sensitive (can_complete);
+			
+			bool has_changelog = false;
+			bool has_vcs_backend = false;
+			if (_prj_view.current_project != null 
+			    && _prj_view.current_project.changelog_uri != null) {
+				has_changelog = true;
+				if (_prj_view.current_project.vcs_type != VcsTypes.NONE)
+					has_vcs_backend = true;
+			}
+			action = _actions.get_action ("ProjectPrepareChangeLog");
+			action.set_sensitive (has_changelog && has_vcs_backend);
+			action = _actions.get_action ("ProjectPrepareSingleFileChangeLog");
+			action.set_sensitive (has_changelog);
 		}
 		
 		private void open_project (string name)
