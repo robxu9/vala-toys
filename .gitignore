@@ -15,6 +15,16 @@
 *.stamp
 *.bak
 .libs
+*orig
+debian/files
+debian/deb-patch.patch
+debian/stamp-autotools-files
+debian/stamp-makefile-build
+debian/vtg.debhelper.log
+debian/vtg.substvars
+debian/vtg
+vsc/*.gir
+vtg-*.cdbs-config_list
 Makefile
 Makefile.in
 aclocal.m4

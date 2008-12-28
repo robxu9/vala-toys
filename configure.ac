@@ -182,6 +182,7 @@ AC_CONFIG_FILES([
 	vsc-shell/Makefile
 	gen-project/Makefile
 	gen-project/licenses/Makefile
+	doc/Makefile
 	vtg/Makefile
 	ui/Makefile
 	images/Makefile

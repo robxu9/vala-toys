@@ -1,6 +1,6 @@
 
 #Build in these directories:
-SUBDIRS = gen-project
+SUBDIRS = gen-project doc
 
 if HAVE_VSC
 SUBDIRS += vsc
