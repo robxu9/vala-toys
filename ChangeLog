@@ -1,5 +1,15 @@
 2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgvcsbackendsbzr.vala:
+	* vtg/vtgvcsbackendsgeneric.vala:
+	* vtg/vtgvcsbackendsgit.vala:
+	* vtg/vtgvcsbackendssvn.vala:
+
+	prepared vtg for the new prepare changelog feature
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* doc/Makefile.am:
 	* doc/vala-gen-project.1:
 	* .gitignore:

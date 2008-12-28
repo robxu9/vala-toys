@@ -46,6 +46,11 @@ libvtg_la_VALASOURCES = \
 	vtgprojectmanagerprojectsource.vala \
 	vtgprojectmanagerpackagesdialog.vala \
 	vtgprojectmanagerfilteredlistdialog.vala \
+	vtgvcsbackendsgeneric.vala \
+	vtgvcsbackendsgit.vala \
+	vtgvcsbackendsbzr.vala \
+	vtgvcsbackendssvn.vala \
+	vtgchangelog.vala \
 	vtgparametersdialog.vala \
 	vtgconfiguration.vala \
 	vtgplugin.vala \
