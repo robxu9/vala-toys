@@ -49,7 +49,7 @@ namespace Vtg
 				file_list += "\t* %s:\n".printf (file);
 				force_add_new = false;
 			} else {
-				IGeneric backend = vcs_backend_factory (project.vcs_type);
+				IVcs backend = vcs_backend_factory (project.vcs_type);
 				if (backend == null)
 					return false;
 
@@ -118,9 +118,9 @@ namespace Vtg
 			return false;
 		}
 		
-		private IGeneric? vcs_backend_factory (Vtg.ProjectManager.VcsTypes type)
+		private IVcs? vcs_backend_factory (Vtg.ProjectManager.VcsTypes type)
 		{
-			IGeneric backend;
+			IVcs backend;
 			
 			switch (type) {
 				case Vtg.ProjectManager.VcsTypes.GIT:

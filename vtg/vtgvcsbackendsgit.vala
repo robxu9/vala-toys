@@ -25,7 +25,7 @@ using Gee;
 
 namespace Vtg.Vcs.Backends
 {
-	public class Git : IGeneric, GLib.Object
+	public class Git : IVcs, GLib.Object
 	{
 		public Git ()
 		{

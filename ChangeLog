@@ -1,5 +1,17 @@
 2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/Makefile.am:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgvcsbackendsbzr.vala:
+	* vtg/vtgvcsbackendsgit.vala:
+	* vtg/vtgvcsbackendsivcs.vala:
+	* vtg/vtgvcsbackendssvn.vala:
+
+	renamed IGeneric interface to IVcs
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vsccompletionvisitor.vala:
 
 	now constants are added to the completion list

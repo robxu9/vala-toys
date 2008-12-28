@@ -1,5 +1,5 @@
 /*
- *  vtgvcsbackendsgeneric.vala - Vala developer toys for GEdit
+ *  vtgvcsbackendsivcs.vala - Vala developer toys for GEdit
  *  
  *  Copyright (C) 2008 - Andrea Del Signore <sejerpz@tin.it>
  *  
@@ -43,7 +43,7 @@ namespace Vtg.Vcs.Backends
 		CommandFailed
 	}
 	
-	public interface IGeneric : GLib.Object
+	public interface IVcs : GLib.Object
 	{
 		public abstract Gee.List<Item> get_items (string path) throws GLib.Error;
 		public abstract bool test (string path);

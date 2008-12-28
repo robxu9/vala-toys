@@ -25,7 +25,7 @@ using Gee;
 
 namespace Vtg.Vcs.Backends
 {
-	public class Bzr : IGeneric, GLib.Object
+	public class Bzr : IVcs, GLib.Object
 	{
 		public Bzr ()
 		{

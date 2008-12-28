@@ -25,7 +25,7 @@ using Gee;
 
 namespace Vtg.Vcs.Backends
 {
-	public class Svn : IGeneric, GLib.Object
+	public class Svn : IVcs, GLib.Object
 	{
 		public Svn ()
 		{
