@@ -141,7 +141,11 @@ public class Vsc.CompletionVisitor : CodeVisitor {
        	public override void visit_interface (Interface iface) 
 	{
 		foreach (DataType type in iface.get_prerequisites ()) {
-			type.accept (this);
+			if (type.data_type != null) {
+				type.data_type.accept (this);	
+			} else {
+				type.accept (this);
+			}
 		}
 		
 		_parent_type_already_visited = true;

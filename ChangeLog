@@ -1,5 +1,12 @@
 2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vsccompletionvisitor.vala:
+
+	interface prerequisites members are added to the completion
+	list
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vsctypefindvisitor.vala:
 
 	added support for interfaces in the type finder visitor
