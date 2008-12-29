@@ -83,7 +83,7 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
                 _current_typename = previous_typename;
         }
         
-       	public override void visit_class (Class cl) 
+       	public override void visit_class (Class cl)
 	{
 		if (_result != null) //found
 			return;
@@ -174,6 +174,98 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			//Minor optimization
 			if (_result == null) {
 				foreach (Struct st in cl.get_structs()) {
+					st.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
+			}
+		}
+		_current_typename = previous_typename;
+	}
+
+       	public override void visit_interface (Interface iface)
+	{
+		if (_result != null) //found
+			return;
+		var previous_typename = _current_typename;
+
+		if (_current_typename == null) {
+			_current_typename = iface.name;
+		} else {
+			_current_typename = "%s.%s".printf (_current_typename, iface.name);
+		}
+
+		if (_current_typename == _searched_typename) {
+			_result = iface;
+                	qualified_typename = _current_typename;
+		} else {
+			//cl.accept_children (this);
+			//Minor optimization
+			if (_result == null) {
+				foreach (DataType type in iface.get_prerequisites ()) {
+					if (type != null) {
+						type.accept (this);
+						if (_result != null) {
+							break;
+						}
+					}
+				}
+			}
+			
+			/* process enums first to avoid order problems in C code */
+			//Minor optimization
+			if (_result == null) {
+				foreach (Enum en in iface.get_enums ()) {
+					en.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
+			}
+
+			//Minor optimization
+			if (_result == null) {
+				foreach (Field f in iface.get_fields ()) {
+					f.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
+			}
+
+			//Minor optimization
+			if (_result == null) {
+				foreach (Method m in iface.get_methods()) {
+					m.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
+			}
+			
+			//Minor optimization
+			if (_result == null) {
+				foreach (Property prop in iface.get_properties()) {
+					prop.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
+			}
+			//Minor optimization
+			if (_result == null) {
+				foreach (Class cl in iface.get_classes()) {
+					cl.accept (this);
+					if (_result != null) {
+						break;
+					}
+				}
+			}
+			
+			//Minor optimization
+			if (_result == null) {
+				foreach (Struct st in iface.get_structs()) {
 					st.accept (this);
 					if (_result != null) {
 						break;
