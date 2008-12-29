@@ -1,5 +1,20 @@
 2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletionitem.vala:
+
+	escaped the calltip text for correct markup parsing
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+
+	improved symbol type inference when including a namespace with
+	using Ns1.Ns2.Ns3.
+
+	improved symbol completion for generic types	
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vsccompletionvisitor.vala:
 
 	interface prerequisites members are added to the completion

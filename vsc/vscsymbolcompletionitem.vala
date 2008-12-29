@@ -46,8 +46,8 @@ namespace Vsc
 			}
 
 			var type_args = type.get_type_arguments ();
-			if (type_args.size > 0) {
-				result += "&lt;";
+			if (type_args.size > 0 && result.str ("<") == null) {
+				result += "<";
 				bool first = true;
 				foreach (DataType type_arg in type_args) {
 					if (!first) {
@@ -60,7 +60,7 @@ namespace Vsc
 					}
 					result += data_type_to_string (type_arg);
 				}
-				result += "&gt;";
+				result += ">";
 			}
 
 			if (type.nullable && !result.has_suffix ("?") && !result.has_suffix("*")) {
@@ -70,6 +70,7 @@ namespace Vsc
 				result = "dynamic " + result;
 			}
 
+			result = Markup.escape_text (result);
 			return result;
 		}
 
@@ -100,7 +101,7 @@ namespace Vsc
 					if (parameter.parameter_type != null) {
 						parameter_type = data_type_to_string (parameter.parameter_type);
 					} else {
-						parameter_type = "<unkown>";
+						parameter_type = "unknown";
 					}
 					params = "%s,%s%s%s %s%s".printf (params, param_sep, direction, parameter_type, parameter.name, default_expr);
 				}
@@ -108,6 +109,7 @@ namespace Vsc
 			if (params != "") {
 				params = params.substring (2, params.length - 2);
 			}
+			params = Markup.escape_text (params);
 			return params;
 		}
 

@@ -306,6 +306,10 @@ namespace Vsc
 			if (typename.has_suffix ("?")) {
 				typename = typename.substring (0, typename.length - 1);
 			}
+			if (typename.str ("<") != null && typename.has_suffix (">")) {
+				//generic type definition. delete the generic part from the typename
+				typename = typename.split ("<", 2)[0];
+			}
 			return typename;
 		}
 		
@@ -679,6 +683,25 @@ namespace Vsc
 				return "%s.%s".printf (namespace_name, typename);
 			}			
 		}
+
+		private string get_qualified_namespace_name (Symbol namespace_symbol)
+		{
+			string ns_name = null;
+			Symbol ns = namespace_symbol;
+			while (ns != null) {
+				if (ns_name == null) {
+					ns_name = ns.name;
+				} else {
+					ns_name = "%s.%s".printf (ns.name, ns_name);
+				}
+				if (ns is UnresolvedSymbol) {
+					ns = ((UnresolvedSymbol) ns).inner;
+				} else {
+					ns = ns.parent_symbol;
+				}
+			}
+			return ns_name;
+		}
 		
 		public SymbolCompletionResult get_completions_for_name (SymbolCompletionFilterOptions options, string symbolname, string? sourcefile = null, int line, int column) throws GLib.Error
 		{
@@ -774,8 +797,7 @@ namespace Vsc
 				bool force_exit = false;
 				foreach (UsingDirective item in source.get_using_directives ()) {
 					int tmp = result.count;
-					string ns_name = item.namespace_symbol.name;
-					
+					string ns_name = get_qualified_namespace_name (item.namespace_symbol);
 					if (symbolname.has_prefix ("%s.".printf (ns_name)))
 						force_exit = true; //exit after this visit since symbolname is surely fully qualified
 						
@@ -794,9 +816,11 @@ namespace Vsc
 		
 		private void get_completion_for_name_in_namespace_with_context (string namespace_name, string typename, TypeFinderVisitor finder, CompletionVisitor completion, CodeContext context)
 		{
+			string ns_name = namespace_name.split (".", 2)[0];
+
 			foreach (Namespace ns in context.root.get_namespaces ()) {
-				if (ns.name == namespace_name) {
-					finder.searched_typename = "%s.%s".printf (ns.name, typename);
+				if (ns.name == ns_name) {
+					finder.searched_typename = "%s.%s".printf (namespace_name, typename);
 					finder.visit_namespace (ns);
 					if (finder.result != null) {					
 						completion.integrate_completion (finder.result);

@@ -443,10 +443,11 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			
 			if (sym == null && !SymbolCompletion.symbol_has_known_namespace (name)) {
 				foreach (UsingDirective item in _current_file.get_using_directives ()) {
-					if (name.has_prefix ("%s.".printf (item.namespace_symbol.name)))
+					string ns_name = get_qualified_namespace_name (item.namespace_symbol);
+					if (name.has_prefix ("%s.".printf (ns_name)))
 						break; //exit since symbol is fully qualified
 						
-					var using_name = "%s.%s".printf (item.namespace_symbol.name, name);
+					var using_name = "%s.%s".printf (ns_name, name);
 					debug ("(resolve_type): using directives resolving type %s", using_name);
 					typefinder.searched_typename = using_name;
 					typefinder.visit_namespace (_context.root);
@@ -462,6 +463,25 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 		if (sym != null)
 			debug ("(resolve_type): type solved %s", sym.get_full_name ());
 		return sym;
+	}
+	
+	private string get_qualified_namespace_name (Symbol namespace_symbol)
+	{
+		string ns_name = null;
+		Symbol ns = namespace_symbol;
+		while (ns != null) {
+			if (ns_name == null) {
+				ns_name = ns.name;
+			} else {
+				ns_name = "%s.%s".printf (ns.name, ns_name);
+			}
+			if (ns is UnresolvedSymbol) {
+				ns = ((UnresolvedSymbol) ns).inner;
+			} else {
+				ns = ns.parent_symbol;
+			}
+		}
+		return ns_name;
 	}
 }
 
