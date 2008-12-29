@@ -759,19 +759,20 @@ namespace Vsc
 				foreach (CodeNode node in source.get_nodes ()) {
 					if (node is Namespace) {
 						var ns = (Namespace) node;
-						var name = normalize_typename (symbolname, ns.name);
+						string ns_name = get_qualified_namespace_name (ns);
+						var name = normalize_typename (symbolname, ns_name);
 						finder.searched_typename = name;
 						finder.visit_namespace (ns);
 						if (finder.result != null) {
 							finder.result.accept (completion);
 							if (finder.result is Namespace) {
-								get_completion_for_name_in_namespace_with_context (ns.name, symbolname, 
+								get_completion_for_name_in_namespace_with_context (ns_name, symbolname, 
 									finder, completion, _parser.pri_context);
 							}
 							break;
 						} else {
 							int tmp = result.count;
-							get_completion_for_name_in_namespace_with_context (ns.name, symbolname, 
+							get_completion_for_name_in_namespace_with_context (ns_name, symbolname, 
 								finder, completion, _parser.pri_context);
 							if (tmp != result.count) {
 								break; //found something in primary context

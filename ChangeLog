@@ -1,5 +1,11 @@
 2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+
+	qualified the namespace name when searching for a type
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletionitem.vala:
 
 	escaped the calltip text for correct markup parsing
