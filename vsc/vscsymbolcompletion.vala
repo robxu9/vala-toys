@@ -792,6 +792,19 @@ namespace Vsc
 					finder.result.accept (completion);
 				}
 			}
+
+			//import symbols from the imported namespaces
+			if (source != null && options.imported_namespaces) {
+				string prev_symbol = finder.searched_typename;
+				foreach (UsingDirective item in source.get_using_directives ()) {
+					string ns_name = get_qualified_namespace_name (item.namespace_symbol);
+					GLib.debug ("imported namespaces %s", ns_name);
+					finder.searched_typename = ns_name;
+					get_completion_for_name_in_namespace_with_context (ns_name, 
+						ns_name, finder, completion, _parser.pri_context);
+				}
+				finder.searched_typename = prev_symbol;
+			}
 			
 			//search it in referenced namespaces
 			if (source != null && finder.result == null && !SymbolCompletion.symbol_has_known_namespace (symbolname)) {
@@ -809,8 +822,6 @@ namespace Vsc
 					}
 				}
 			}
-
-
 			_parser.unlock_all_contexts ();
 			return result;
 		}
@@ -821,10 +832,24 @@ namespace Vsc
 
 			foreach (Namespace ns in context.root.get_namespaces ()) {
 				if (ns.name == ns_name) {
-					finder.searched_typename = "%s.%s".printf (namespace_name, typename);
-					finder.visit_namespace (ns);
-					if (finder.result != null) {					
-						completion.integrate_completion (finder.result);
+					bool same_namespace = false;
+					if (typename == namespace_name) {
+						//search all symbols
+						if (namespace_name.str (".") == null) {
+							same_namespace = true; //don't waste time finding this exact namespace
+						} else {
+							finder.searched_typename = namespace_name;							
+						}
+					} else {
+						finder.searched_typename = "%s.%s".printf (namespace_name, typename);
+					}
+					if (same_namespace) {
+						completion.integrate_completion (ns);
+					} else {
+						finder.visit_namespace (ns);
+						if (finder.result != null) {					
+							completion.integrate_completion (finder.result);
+						}
 					}
 					break;
 				}

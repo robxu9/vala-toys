@@ -315,26 +315,36 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		bool is_static = symbol_is_static (symbol);
 
 		//test for static or instance symbols
-		if (options.static_symbols && is_static && !options.constructors)
+		if (options.static_symbols && is_static)
 			res = true;
 		else if (!options.static_symbols && !is_static)
 			res = true;
 		else if (!is_static && options.instance_symbols)
 			res = true;
-			
+		
 		if (options.constructors) {
-			bool has_constructors = symbol_has_constructors (symbol);
-			res = res | has_constructors;
+			if (symbol is Enum) {
+				res = false | options.local_variables; //HACK: local_vars mean all scoped symbols in this context
+			} else if (symbol is Constant) {
+				res = false | options.local_variables;
+			} else if (symbol is Method && !(symbol is CreationMethod)) {
+				res = false | options.local_variables;
+			} else {
+				bool has_constructors = symbol_has_constructors (symbol);
+				res = res | has_constructors;
+			}
 		}
 		
 		//test symbol accessibility
-		if (res && (options.public_symbols && symbol.access == Vala.SymbolAccessibility.PUBLIC) ||
-			(options.private_symbols && symbol.access == Vala.SymbolAccessibility.PRIVATE) ||
-			(options.protected_symbols && symbol.access == Vala.SymbolAccessibility.PROTECTED) ||
-			(options.internal_symbols && symbol.access == Vala.SymbolAccessibility.INTERNAL)) {
-			    res = true;
-		} else {
-			res = false;
+		if (res) {
+			if (options.public_symbols && symbol.access == Vala.SymbolAccessibility.PUBLIC ||
+			   options.private_symbols && symbol.access == Vala.SymbolAccessibility.PRIVATE ||
+			   options.protected_symbols && symbol.access == Vala.SymbolAccessibility.PROTECTED ||
+			   options.internal_symbols && symbol.access == Vala.SymbolAccessibility.INTERNAL) {
+				res = true;
+			} else {
+				res = false;
+			}
 		}
 		//GLib.debug ("(test_symbol): testing %s: %s", symbol.name, (res ? "true" : "false"));
 		return res;
@@ -348,33 +358,34 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		return (symbol is Constructor) || (symbol is Class) || (symbol is Namespace) || (symbol is CreationMethod);
 	}
 	
-	private bool symbol_is_static (Symbol symbol)
+	private bool symbol_is_static (Symbol symbol, bool instanziable_types = false)
 	{
+		bool res = false;
 		if (symbol is Method) {
-			return ((Method) symbol).binding == MemberBinding.STATIC;
+			res = ((Method) symbol).binding == MemberBinding.STATIC;
 		} else if (symbol is Field) {
-			return ((Field) symbol).binding == MemberBinding.STATIC;			
+			res = ((Field) symbol).binding == MemberBinding.STATIC;			
 		} else if (symbol is Property) {
-			return ((Property) symbol).binding == MemberBinding.STATIC;
+			res = ((Property) symbol).binding == MemberBinding.STATIC;
 		} else if (symbol is Constructor) {
-			return ((Constructor) symbol).binding == MemberBinding.STATIC;
+			res = ((Constructor) symbol).binding == MemberBinding.STATIC;
 		} else if (symbol is Destructor) {
-			return ((Destructor) symbol).binding == MemberBinding.STATIC;
+			res = ((Destructor) symbol).binding == MemberBinding.STATIC;
 		} else if (symbol is Enum) {
-			return true;
+			res = true;
 		} else if (symbol is Constant) {
-			return true;
+			res = true;
 		} else if (symbol is Namespace) {
-			return true;
+			res = true;
 		} else if (symbol is Class) {
 			//class is fully visited only if looking for
 			//static symbols
 			if (_options.static_symbols) {
 				var cl = (Class) symbol;
-				return class_is_static (cl);
+				res = class_is_static (cl);
 			}
 		}
-		return false;
+		return res;
 	}
 	
 	private bool class_is_static (Class cl)		

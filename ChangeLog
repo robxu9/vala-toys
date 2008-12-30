@@ -1,5 +1,14 @@
 2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionfilteroptions.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	include static symbols in key-binded completion, closes issue #26
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala:
 
 	qualified the namespace name when searching for a type

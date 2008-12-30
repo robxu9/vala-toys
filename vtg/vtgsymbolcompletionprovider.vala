@@ -606,6 +606,7 @@ namespace Vtg
 				if (line.str ("= new ") != null || line.str ("=new ") != null) {
 					options.constructors = true;
 					options.instance_symbols = false;
+					options.static_symbols = false;
 				}
 				if (typename != null) {
 					GLib.debug ("datatype '%s' for: %s",typename, word);
@@ -644,6 +645,7 @@ namespace Vtg
 								options.private_symbols = true;
 								options.protected_symbols = true;
 								options.local_variables = true;
+								options.imported_namespaces = true;
 								result = _completion.get_completions_for_name (options, typename, _sb.name, lineno + 1, colno);
 							}
 							timer.stop ();

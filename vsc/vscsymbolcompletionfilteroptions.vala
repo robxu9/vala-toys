@@ -29,6 +29,7 @@ namespace Vsc
 		public bool constructors;
 		public bool instance_symbols;
 		
+		public bool imported_namespaces;		
 		public bool local_variables;
 		public bool private_symbols;
 		public bool public_symbols;
@@ -48,6 +49,7 @@ namespace Vsc
 			interface_symbols = true;
 			instance_symbols = true;
 			constructors = false;
+			imported_namespaces = false;
 			local_variables = false;
 			private_symbols = true;
 			public_symbols = true;
