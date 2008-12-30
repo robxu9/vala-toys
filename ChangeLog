@@ -1,5 +1,12 @@
 2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+
+	added a confirm rebuild dialog, closes issue #27
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala:
 	* vtg/vtgprojectmanagerbuilder.vala:
 

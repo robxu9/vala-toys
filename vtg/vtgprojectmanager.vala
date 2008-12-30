@@ -441,17 +441,46 @@ namespace Vtg.ProjectManager
 		{
 			GLib.debug ("Action %s activated", action.name);
 			if (_prj_view.current_project != null) {
+				string pars = null;
 				var cache = Vtg.Caches.get_build_cache ();
-				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Build Project"), _plugin.gedit_window, cache);
-				if (params_dialog.run () == ResponseType.OK) {
-					var project = _prj_view.current_project;
-					var params = params_dialog.parameters;
-					if (!Vtg.Caches.cache_contains (cache, params)) {
-						Vtg.Caches.cache_add (cache, params);
+								
+				if (_prj_builder.is_building) {
+					//ask if stop the current build process and restart a new one
+					var dialog = new MessageDialog (
+						_plugin.gedit_window,
+						DialogFlags.MODAL,
+						MessageType.QUESTION,
+						ButtonsType.YES_NO,
+						_("Stop the current build process and restart a new one?"));
+					dialog.secondary_text = _("Stop the current build process and start a new one with the same command line parameters");
+					int res = dialog.run ();
+					dialog.destroy ();
+					if (res == ResponseType.YES) {
+						_prj_builder.stop_build ();
+						TreeIter iter;
+						if (cache.get_iter_first (out iter)) {
+							cache.get (iter, 0, out pars);
+						}
+					} else {
+						return;
 					}
-					project_save_all (project);
-					_prj_builder.build (project, params);
+					
 				}
+
+				if (pars == null) {
+					var params_dialog = new Vtg.Interaction.ParametersDialog (_("Build Project"), _plugin.gedit_window, cache);
+					if (params_dialog.run () != ResponseType.OK)
+						return;
+						
+					pars = params_dialog.parameters;
+					if (!Vtg.Caches.cache_contains (cache, pars)) {
+						Vtg.Caches.cache_add (cache, pars);
+					}
+				}
+				
+				var project = _prj_view.current_project;
+				project_save_all (project);
+				_prj_builder.build (project, pars);
 			}
 		}
 
