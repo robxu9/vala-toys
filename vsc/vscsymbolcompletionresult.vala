@@ -36,6 +36,7 @@ namespace Vsc
 		public Gee.List<SymbolCompletionItem> namespaces = new Gee.ArrayList<SymbolCompletionItem> ();
 		public Gee.List<SymbolCompletionItem> enums = new Gee.ArrayList<SymbolCompletionItem> ();
 		public Gee.List<SymbolCompletionItem> constants = new Gee.ArrayList<SymbolCompletionItem> ();
+		public Gee.List<SymbolCompletionItem> error_domains = new Gee.ArrayList<SymbolCompletionItem> ();
 		
 		public bool is_empty
 		{
@@ -56,6 +57,7 @@ namespace Vsc
 				    + signals.size
 				    + namespaces.size
 				    + enums.size
+				    + error_domains.size
 				    + constants.size
 				    + others.size;
 			}

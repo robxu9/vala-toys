@@ -322,6 +322,29 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 		
 		_current_typename = previous_typename;
 	}
+
+       	public override void visit_error_domain (ErrorDomain ed) 
+	{
+		if (_result != null) //found
+			return;
+
+		var previous_typename = _current_typename;
+	
+		if (_current_typename == null) {
+			_current_typename = ed.name;
+		} else {
+			_current_typename = "%s.%s".printf (_current_typename, ed.name);
+		}
+	
+		if (_current_typename == _searched_typename) {
+			_result = ed;
+			qualified_typename = _current_typename;
+		} else {
+			ed.accept_children (this);
+		}
+		
+		_current_typename = previous_typename;
+	}
 	
 	public override void visit_method (Method m) 
 	{

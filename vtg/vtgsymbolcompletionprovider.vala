@@ -389,6 +389,9 @@ namespace Vtg
 				if (result.enums.size > 0) {
 					append_symbols (result.enums, _icon_enum);
 				}
+				if (result.error_domains.size > 0) {
+					append_symbols (result.error_domains, _icon_struct);
+				}
 				if (result.constants.size > 0) {
 					append_symbols (result.constants, _icon_const);
 				}
@@ -608,9 +611,20 @@ namespace Vtg
 					options.instance_symbols = false;
 					options.static_symbols = false;
 				}
+				bool search_error_domains = false;
+				bool search_error_base = false;
+				if (line.str ("throws ") != null) {
+					search_error_domains = true;
+					search_error_base = true;
+				} else if (line.str ("throw ") != null) {
+					search_error_domains = true;
+				}
+				
 				if (typename != null) {
 					GLib.debug ("datatype '%s' for: %s",typename, word);
 					options.static_symbols = false;
+					options.error_domains = search_error_domains;
+					options.error_base = search_error_base;
 					if (word == "this") {
 						options.private_symbols = true;
 						options.protected_symbols = true;
@@ -628,6 +642,8 @@ namespace Vtg
 					if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
 						options.static_symbols = true;
 						options.interface_symbols = false;
+						options.error_domains = search_error_domains;
+						options.error_base = search_error_base;
 						GLib.debug ("(find_proposals): START STATIC completion for: '%s'",word);
 						timer.start ();
 						result = _completion.get_completions_for_name (options, word, _sb.name, lineno + 1, colno);
@@ -640,6 +656,8 @@ namespace Vtg
 							if (typename != null) {
 								options.defaults ();
 								options.public_only ();
+								options.error_domains = search_error_domains;
+								options.error_base = search_error_base;
 								options.constructors = true;
 								options.static_symbols = true;
 								options.private_symbols = true;

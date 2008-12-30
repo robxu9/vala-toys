@@ -31,6 +31,9 @@ namespace Vsc
 		
 		public bool imported_namespaces;		
 		public bool local_variables;
+		public bool error_domains;
+		public bool error_base;
+				
 		public bool private_symbols;
 		public bool public_symbols;
 		public bool protected_symbols;
@@ -51,6 +54,8 @@ namespace Vsc
 			constructors = false;
 			imported_namespaces = false;
 			local_variables = false;
+			error_domains = false;
+			error_base = false;			
 			private_symbols = true;
 			public_symbols = true;
 			protected_symbols = true;
