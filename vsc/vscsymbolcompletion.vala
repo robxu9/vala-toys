@@ -93,12 +93,12 @@ namespace Vsc
 			if (parent_node != null && node.parent_node == null && node != parent_node)
 				node.parent_node = parent_node;
 				
-			if (node is Property) {
-				var prop = (Property) node;
+			if (node is Vala.Property) {
+				var prop = (Vala.Property) node;
 				if (prop.get_accessor != null) {
 					result = find_sub_codenode (prop.get_accessor, line, column, node);
 					if (result != null)
-						return result;						
+						return result;
 				}
 				if (prop.set_accessor != null) {
 					result = find_sub_codenode (prop.set_accessor, line, column, node);
@@ -108,7 +108,38 @@ namespace Vsc
 
 				if (node_contains_position (prop, line, column))
 					return prop;
-			} if (node is Method) {
+			} else if (node is Vala.PropertyAccessor) {
+				var pa = (Vala.PropertyAccessor) node;
+				result = find_sub_codenode (pa.body, line, column, node);
+				if (result != null)
+					return result;
+
+				if (node_contains_position (pa, line, column)) {
+					return pa;
+				}
+			} else if (node is Constructor) {
+				var cs = (Constructor) node;
+
+				result = find_sub_codenode (cs.body, line, column, node);
+				if (result != null)
+					return result;
+
+				if (node_contains_position (cs.body, line, column) ||
+				    node_contains_position (cs, line, column)) {
+					return cs;
+				}
+			} else if (node is Destructor) {
+				var ds = (Destructor) node;
+
+				result = find_sub_codenode (ds.body, line, column, node);
+				if (result != null)
+					return result;
+
+				if (node_contains_position (ds.body, line, column) ||
+				    node_contains_position (ds, line, column)) {
+					return ds;
+				}				
+			} else if (node is Method) {
 				var md = (Method) node;
 
 				result = find_sub_codenode (md.body, line, column, node);
@@ -118,6 +149,41 @@ namespace Vsc
 				if (node_contains_position (md.body, line, column) ||
 				    node_contains_position (md, line, column)) {
 					return md;
+				}
+			} else if (node is TryStatement) {
+				var tr = (TryStatement) node;
+				result = find_sub_codenode (tr.body, line, column, tr);
+				if (result != null)
+					return result;
+
+				if (node_contains_position (tr.body, line, column))
+					return tr.body;
+			
+				result = find_sub_codenode (tr.finally_body, line, column, tr); 
+				if (result != null)
+					return result;
+
+				if (node_contains_position (tr.finally_body, line, column))
+					return tr.finally_body;
+
+				foreach (CatchClause clause in tr.get_catch_clauses ()) {
+					result = find_sub_codenode (clause, line, column, tr);
+					if (result != null)
+						return result;
+				}
+
+				if (node_contains_position (tr, line, column)) {
+					return tr;
+				}
+			} else if (node is CatchClause) {
+				var cc = (CatchClause) node;
+				result = find_sub_codenode (cc.body, line, column, cc); 
+				if (result != null)
+					return result;
+					
+				if (node_contains_position (cc.body, line, column) ||
+				    node_contains_position (cc, line, column)) {
+					return cc;
 				}
 			} else if (node is ExpressionStatement) {
 				result = find_sub_codenode (((ExpressionStatement) node).expression, line, column, node);
@@ -215,15 +281,6 @@ namespace Vsc
 				if (node_contains_position (node, line, column)) {
 					return node;
 				}
-			} else if (node is PropertyAccessor) {
-				var pa = (PropertyAccessor) node;
-				result = find_sub_codenode (pa.body, line, column, node);
-				if (result != null)
-					return result;
-
-				if (node_contains_position (pa, line, column)) {
-					return pa;
-				}
 			} else {
 				warning ("incomplete support for %s", Reflection.get_type_from_instance (node).name ());
 			}
@@ -246,21 +303,15 @@ namespace Vsc
 				} else if (node is Class) {
 					cl = (Class) node;
 					if (cl.constructor != null) {
-						if (node_contains_position (cl.constructor, line, column)) {
-							return cl.constructor;
-						}
-						if (node_contains_position (cl.constructor.body, line, column)) {
-							return cl.constructor;
-						}
+						result = find_sub_codenode (cl.constructor, line, column, cl);
+						if (result != null)
+							return result;
 					}
 
 					if (cl.destructor != null) {
-						if (node_contains_position (cl.destructor, line, column)) {
-							return cl.destructor;
-						}
-						if (node_contains_position (cl.destructor.body, line, column)) {
-							return cl.destructor;
-						}
+						result = find_sub_codenode (cl.destructor, line, column, cl);
+						if (result != null)
+							return result;
 					}
 
 					foreach (Method md in cl.get_methods ()) {
@@ -456,8 +507,12 @@ namespace Vsc
 				body = ((WhileStatement) codenode).body;
 			} else if (codenode is Block) {
 				body = (Block) codenode;
+			} else if (codenode is CatchClause) {
+				body = ((CatchClause) codenode).body;
+			} else if (codenode is PropertyAccessor) {
+				body = ((PropertyAccessor) codenode).body;
 			} else {
-				warning ("(get_datatype_for_name_with_context) unsupported type %s", Reflection.get_type_from_instance (codenode).name ());
+				warning ("(get_codenode_body) unsupported type %s", Reflection.get_type_from_instance (codenode).name ());
 			}
 			return body;					
 		}
