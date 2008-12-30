@@ -50,8 +50,8 @@ namespace Vtg.ProjectManager
 			get {
 				return _child_watch_id != 0;
 			}
-			
 		}
+
 		construct
 		{
 			this._build_view = new BuildLogView (_plugin);

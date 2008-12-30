@@ -743,7 +743,7 @@ namespace Vsc
 		{
 			string ns_name = null;
 			Symbol ns = namespace_symbol;
-			while (ns != null) {
+			while (ns != null && ns.name != null) {
 				if (ns_name == null) {
 					ns_name = ns.name;
 				} else {
@@ -816,6 +816,7 @@ namespace Vsc
 						var ns = (Namespace) node;
 						string ns_name = get_qualified_namespace_name (ns);
 						var name = normalize_typename (symbolname, ns_name);
+						debug ("source namespace %s, normalized name %s", ns_name, name);
 						finder.searched_typename = name;
 						finder.visit_namespace (ns);
 						if (finder.result != null) {
