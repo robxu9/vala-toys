@@ -1,3 +1,25 @@
+2009-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	changed from ValueType to StructValueType class
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgprojectmanagerexecuter.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerprojectgroup.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	removed all debug messages
+
 2009-01-02  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsymbolcompletionprovider.vala:

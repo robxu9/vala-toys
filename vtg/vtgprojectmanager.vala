@@ -207,13 +207,10 @@ namespace Vtg.ProjectManager
 
 		public void deactivate ()
 		{
-			GLib.debug ("prjm deactvate");			
-			GLib.debug ("prjm deactvated");
 		}
 
 		private void on_prepare_changelog (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			try {
 				_changelog.prepare ();
 			} catch (Error err) {
@@ -223,7 +220,6 @@ namespace Vtg.ProjectManager
 
 		private void on_prepare_single_file_changelog (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			try {
 				var doc = _plugin.gedit_window.get_active_document ();
 				if (doc != null) {
@@ -245,7 +241,6 @@ namespace Vtg.ProjectManager
 		
 		private void on_complete_word (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			var project = _prj_view.current_project;
 			return_if_fail (project != null);
 			
@@ -262,7 +257,6 @@ namespace Vtg.ProjectManager
 		
 		private void on_project_open (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			var dialog = new Gtk.FileChooserDialog (_("Open Project"),
 				      _plugin.gedit_window,
 				      Gtk.FileChooserAction.SELECT_FOLDER,
@@ -280,7 +274,6 @@ namespace Vtg.ProjectManager
 
 		private void on_project_close (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			var project = _prj_view.current_project;
 			return_if_fail (project != null);
 
@@ -316,7 +309,6 @@ namespace Vtg.ProjectManager
 			    
 		private void on_project_new (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			//save dialog
 			var dialog = new Gtk.FileChooserDialog (_("Save Project"),
 				      _plugin.gedit_window,
@@ -343,7 +335,6 @@ namespace Vtg.ProjectManager
 		
 		private void on_project_goto_document (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			var project = _prj_view.current_project;
 			return_if_fail (project != null);
 			
@@ -364,8 +355,6 @@ namespace Vtg.ProjectManager
 
 		private void on_project_goto_method (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
-			
 			var project = _prj_view.current_project;
 			return_if_fail (project != null);
 			
@@ -416,7 +405,6 @@ namespace Vtg.ProjectManager
 
 		private void on_standalone_file_compile (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			var doc = _plugin.gedit_window.get_active_document ();
 			if (doc != null) {
 				string file = doc.get_uri ();
@@ -436,7 +424,6 @@ namespace Vtg.ProjectManager
 						Vtg.Caches.cache_add (cache, params);
 					}
 					file = file.replace ("file://", ""); //HACK
-					GLib.debug ("compiling file %s", file);
 					if (!doc.is_untouched () && _plugin.config.save_before_build)
 						doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
 						
@@ -447,7 +434,6 @@ namespace Vtg.ProjectManager
 		
 		private void on_project_build (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			if (_prj_view.current_project != null) {
 				string pars = null;
 				var cache = Vtg.Caches.get_build_cache ();
@@ -494,7 +480,6 @@ namespace Vtg.ProjectManager
 
 		private void on_project_configure (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			if (_prj_view.current_project != null) {
 				var cache = Vtg.Caches.get_configure_cache ();
 				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Configure Project"), _plugin.gedit_window, cache);
@@ -522,10 +507,8 @@ namespace Vtg.ProjectManager
 
 		private void on_project_execute_process (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			if (_prj_view.current_project != null) {
 				var project = _prj_view.current_project;
-				GLib.debug ("executing project %s", project.name);
 				var exec_dialog = new Vtg.ProjectManager.ExecuterDialog (_plugin.gedit_window, project);
 				if (exec_dialog.run () == ResponseType.OK) {
 					var command_line = exec_dialog.command_line;
@@ -537,7 +520,6 @@ namespace Vtg.ProjectManager
 
 		private void on_project_kill_process (Gtk.Action action)
 		{
-			GLib.debug ("killing last executed process");
 			//TODO: implement a kill (project);
 			_prj_executer.kill_last ();
 		}
@@ -552,13 +534,11 @@ namespace Vtg.ProjectManager
 
 		private void on_project_error_next (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			_prj_builder.next_error ();
 		}
 
 		private void on_project_error_previuos (Gtk.Action action)
 		{
-			GLib.debug ("Action %s activated", action.name);
 			_prj_builder.previous_error ();
 		}
 

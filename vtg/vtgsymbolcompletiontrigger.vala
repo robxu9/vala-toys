@@ -63,8 +63,6 @@ namespace Vtg
 				string delimiter;
 				string filter = get_filter_word (sender, out delimiter);
 				if (delimiter != "." && delimiter != "") {
-					GLib.debug ("trigger finish completion, delimiter '%s'", delimiter);
-					
 					_completion.finish_completion ();
 				} else  {
 					Gsc.ManagerEventOptions opts;

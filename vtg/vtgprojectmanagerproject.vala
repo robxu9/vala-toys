@@ -226,7 +226,6 @@ namespace Vtg.ProjectManager
 
 		private void on_project_updated (Gbf.Project sender)
 		{
-			GLib.debug ("project updated");
 			if (in_update)
 				return;
 
@@ -236,11 +235,8 @@ namespace Vtg.ProjectManager
 			} catch (Error err) {
 				GLib.warning ("on_project_upadted: error: %s", err.message);
 			}
-			GLib.debug ("project reloaded");
 			parse_project ();
-			GLib.debug ("project reparsed");
 			build_tree_model ();
-			GLib.debug ("project build model regenerated");
 			this.updated ();
 			in_update = false;
 		}

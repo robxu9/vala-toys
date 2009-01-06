@@ -80,7 +80,6 @@ namespace Vtg
 
 		~SymbolCompletionProvider ()
 		{
-			GLib.debug ("SymbolCompletionProvider: destructor, start");
 			_view.key_press_event -= this.on_view_key_press;
 			this._completion.parser.cache_building -= this.on_cache_building;
 			this._completion.parser.cache_builded -= this.on_cache_builded;
@@ -97,7 +96,6 @@ namespace Vtg
 			}
 			
 			_completion.parser.remove_source_buffer (_sb);
-			GLib.debug ("SymbolCompletionProvider: destructor, end");
 		}
 		
 		construct { 
@@ -254,8 +252,6 @@ namespace Vtg
 					_calltip_window.move_to_cursor (_view);
 					_calltip_window.show_all ();
 				}
-			} else {
-				GLib.debug ("calltip no proposal found");
 			}
 		}
 
@@ -316,7 +312,6 @@ namespace Vtg
 			var timer = new Timer ();
 			transform_result (get_completions ((SymbolCompletionTrigger) trigger));
 			timer.stop ();
-			GLib.debug ("TOTAL TIME ELAPSED: %f", timer.elapsed ());
 			if (list.length () == 0 && cache_building) {
 				_last_trigger = (SymbolCompletionTrigger) trigger;
 			} else {
@@ -404,7 +399,6 @@ namespace Vtg
 			}
 
 			timer.stop ();
-			GLib.debug ("     TRANSFORM TOTAL TIME ELAPSED: %f", timer.elapsed ());
 		}
 
 		private void parse_current_line (bool skip_leading_spaces, out string symbolname, out string last_symbolname, out string line, out int lineno, out int colno)
@@ -580,10 +574,8 @@ namespace Vtg
 			SymbolCompletionResult result = null;
 			try {
 				string typename = null;
-				GLib.debug ("(find_proposals): START search datatype for: '%s'",word);
 				var timer = new Timer ();
 				typename = _completion.get_datatype_name_for_name (word, _sb.name, lineno + 1, colno);
-				GLib.debug ("(find_proposals): END search datatype for: '%s'",word);
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
 				options.public_only ();
 				if (line.str ("= new ") != null || line.str ("=new ") != null) {
@@ -601,7 +593,6 @@ namespace Vtg
 				}
 				
 				if (typename != null) {
-					GLib.debug ("datatype '%s' for: %s",typename, word);
 					options.static_symbols = false;
 					options.error_domains = search_error_domains;
 					options.error_base = search_error_base;
@@ -612,25 +603,19 @@ namespace Vtg
 						options.protected_symbols = true;
 					}
 					options.exclude_type = typename;						
-					GLib.debug ("(find_proposals): START completion for: '%s'",typename);
 					timer.start ();
 					result = _completion.get_completions_for_name (options, typename, _sb.name, lineno + 1, colno);
 					timer.stop ();
-					GLib.debug ("(find_proposals): END completion for: '%s', Count %d, TIME Elapsed: %f",typename, result.count, timer.elapsed ());
 				} else {
-					GLib.debug ("data type not found for: %s", word);
 					if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
 						options.static_symbols = true;
 						options.interface_symbols = false;
 						options.error_domains = search_error_domains;
 						options.error_base = search_error_base;
-						GLib.debug ("(find_proposals): START STATIC completion for: '%s'",word);
 						timer.start ();
 						result = _completion.get_completions_for_name (options, word, _sb.name, lineno + 1, colno);
 						timer.stop ();
-						GLib.debug ("(find_proposals): END STATIC completion for: '%s', Count %d, TIME Elapsed: %f",word, result.count, timer.elapsed ());
 						if (result.is_empty && (trigger == null || trigger.shortcut_triggered)) {
-							GLib.debug ("(find_proposals): START THIS completion for: '%s'",word);
 							timer.start ();
 							typename = _completion.get_datatype_name_for_name ("this", _sb.name, lineno + 1, colno);
 							if (typename != null) {
@@ -647,7 +632,6 @@ namespace Vtg
 								result = _completion.get_completions_for_name (options, typename, _sb.name, lineno + 1, colno);
 							}
 							timer.stop ();
-							GLib.debug ("(find_proposals): END THIS completion for: '%s' in type '%s', Count %d, TIME Elapsed: %f",word, typename, result.count, timer.elapsed ());
 						}
 					}
 				}

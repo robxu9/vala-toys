@@ -154,7 +154,6 @@ namespace Vtg
 
 		private void deactivate_modules (DeactivateModuleOptions options = DeactivateModuleOptions.ALL)
 		{
-			GLib.debug ("deactvate");
 			int size;
 			if (options == DeactivateModuleOptions.ALL || options == DeactivateModuleOptions.SYMBOL) {
 				size = 0;
@@ -171,15 +170,12 @@ namespace Vtg
 					deactivate_bracket (_bcs.get(0));
 				}
 			}
-			GLib.debug ("deactvated");
 		}
 
 
 		private void activate_modules (DeactivateModuleOptions options = DeactivateModuleOptions.ALL)
 		{
-			GLib.debug ("actvate");
 			initialize_views (this._window);
-			GLib.debug ("actvated");
 		}
 
 		private void activate_bracket (Gedit.View view)
@@ -221,7 +217,6 @@ namespace Vtg
 
 		private static void on_tab_removed (Gedit.Window sender, Gedit.Tab tab, Vtg.Plugin instance)
 		{
-			GLib.debug ("tab removed");
 			var view = tab.get_view ();
 			var doc = tab.get_document ();
 
@@ -408,8 +403,7 @@ namespace Vtg
 			/* setup referenced packages */
 			foreach (ProjectManager.ProjectModule module in project.modules) {
 				foreach (ProjectManager.ProjectPackage package in module.packages) {
-					if (!completion.parser.try_add_package (package.name))
-						GLib.debug ("package %s not added", package.name);
+					completion.parser.try_add_package (package.name);
 				}
 			}
 
@@ -422,8 +416,7 @@ namespace Vtg
 					completion.parser.add_path_to_vapi_search_dir (path);
 				}
 				foreach(string package in group.packages) {
-					if (!completion.parser.try_add_package (package))
-						GLib.debug ("package %s not added", package);
+					completion.parser.try_add_package (package);
 				}
 			}
 			

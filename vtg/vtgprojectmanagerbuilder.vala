@@ -284,9 +284,8 @@ namespace Vtg.ProjectManager
 		public void stop_build ()
 		{
 			if ((int) _child_pid != 0) {
-				GLib.debug ("killing %d", (int) _child_pid);
 				if (Posix.Processes.kill ((int) _child_pid, 9) != 0) {
-					GLib.debug ("kill failed");
+					GLib.warning ("stop build error: kill failed");
 				} else {
 					var ctx = GLib.MainContext.default ();
 					while (_child_watch_id != 0 && ctx.pending ())

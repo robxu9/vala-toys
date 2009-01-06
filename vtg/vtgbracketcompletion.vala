@@ -53,9 +53,7 @@ namespace Vtg
 
 		public void deactivate ()
 		{
-			GLib.debug ("bc deactvate");
 			disconnect_view (_view);
-			GLib.debug ("bc deactvated");
 		}
 
 		private void connect_view (Gedit.View view)

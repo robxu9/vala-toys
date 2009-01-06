@@ -91,9 +91,8 @@ namespace Vtg.ProjectManager
 		public void kill_last ()
 		{
 			if ((int) child_pid != 0) {
-				GLib.debug ("killing %d", (int) child_pid);
 				if (Posix.Processes.kill ((int) child_pid, 9) != 0) {
-					GLib.debug ("kill failed");
+					GLib.warning ("exec error: kill failed");
 				}
 			}
 		}

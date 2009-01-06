@@ -45,7 +45,6 @@ namespace Vsc
 
 		public void cleanup ()
 		{
-			debug ("vsc: symbol completion cleanup");
 			_parser = null;
 		}
 
@@ -394,10 +393,8 @@ namespace Vsc
 			var dt = get_datatype_for_name (symbolname, sourcefile, line, column);
 			timer.stop ();
 			
-			debug ("(get_datatype_name_for_name) time elapsed: %f", timer.elapsed ());
 			if (dt != null) {
 				typename = get_qualified_name_for_datatype (dt);
-				debug ("(get_datatype_name_for_name) found DataType: %s", typename);
 			}
 			return typename;
 		}
@@ -419,7 +416,6 @@ namespace Vsc
 			}
 
 			if (result != null && source != null && toks[1] != null) {
-				debug ("(get_datatype_for_name): found type for token 0: %s", get_qualified_name_for_datatype (result));
 				result = get_inner_datatype (result, toks[1], source);
 			}
 			_parser.unlock_all_contexts ();
@@ -444,7 +440,6 @@ namespace Vsc
 				var vl = (ValueType) datatype;
 				vl.type_symbol.accept (finder);
 			} else {
-				debug ("looking in %s", Reflection.get_type_from_instance (datatype).name ());
 				datatype.accept (finder);
 			}
 			
@@ -475,7 +470,7 @@ namespace Vsc
 				var prop = (Property) symbol;
 				result = prop.property_type;
 			} else if (symbol is Struct) {
-				result = new ValueType ((Struct) symbol);
+				result = new StructValueType ((Struct) symbol);
 			} else if (symbol is Method) {
 				var method = (Method) symbol;
 				result = method.return_type;
@@ -520,7 +515,6 @@ namespace Vsc
 		
  		private DataType? get_datatype_for_name_in_code_node_with_context (CodeNode codenode, CodeContext context, string symbolname, SourceFile? source, int line, int column) throws SymbolCompletionError
  		{
-			debug ("(get_datatype_for_name_with_context) found codenode - %s for %s: %s", Reflection.get_type_from_instance (codenode).name (), symbolname, codenode.to_string ());
 			if (symbolname != "this" && symbolname != "base") {
 				Block body = get_codenode_body (codenode);
 				if (body != null) {
@@ -537,9 +531,7 @@ namespace Vsc
 					foreach (Statement st in body.get_statements ()) {
 						if (st is DeclarationStatement) {
 							var decl = (DeclarationStatement) st;
-							debug ("decl in method %s vs %s", decl.declaration.name, symbolname);
 							if (decl.declaration.name == symbolname) {
-								debug ("decl in method found:  %s", decl.declaration.name);
 								if (decl.declaration is LocalVariable) {
 									var type = datatype_for_localvariable (context, source, line, column, (LocalVariable) (decl.declaration));
 									if (type != null)
@@ -666,7 +658,6 @@ namespace Vsc
 					}
 					
 					if (vt == null) {
-						debug ("(datatype_for_localvariable): resolving: %s-%s", class_name, member_name);
 						string name;
 						if (member_name != null && class_name != null) {
 							name = "%s.%s".printf (class_name, member_name);
@@ -676,8 +667,6 @@ namespace Vsc
 							name = member_name;
 						}
 						
-						debug ("(datatype_for_localvariable): using directives resolving type %s", name);
-
 						var finder = new TypeFinderVisitor ();
 						finder.searched_typename = name;
 						finder.visit_namespace (_parser.pri_context.root);
@@ -685,7 +674,6 @@ namespace Vsc
 						if (vt == null) {
 							foreach (UsingDirective item in source.get_using_directives ()) {
 								var using_name = "%s.%s".printf (item.namespace_symbol.name, name);
-								debug ("(datatype_for_localvariable): using directives resolving type %s", name);
 								finder.searched_typename = using_name;
 								finder.visit_namespace (_parser.pri_context.root);
 								if (finder.result != null) {
@@ -817,7 +805,6 @@ namespace Vsc
 						var ns = (Namespace) node;
 						string ns_name = get_qualified_namespace_name (ns);
 						var name = normalize_typename (symbolname, ns_name);
-						debug ("source namespace %s, normalized name %s", ns_name, name);
 						finder.searched_typename = name;
 						finder.visit_namespace (ns);
 						if (finder.result != null) {
@@ -855,7 +842,6 @@ namespace Vsc
 				string prev_symbol = finder.searched_typename;
 				foreach (UsingDirective item in source.get_using_directives ()) {
 					string ns_name = get_qualified_namespace_name (item.namespace_symbol);
-					GLib.debug ("imported namespaces %s", ns_name);
 					finder.searched_typename = ns_name;
 					get_completion_for_name_in_namespace_with_context (ns_name, 
 						ns_name, finder, completion, _parser.pri_context);

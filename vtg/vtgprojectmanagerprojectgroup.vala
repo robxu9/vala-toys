@@ -88,17 +88,14 @@ namespace Vtg.ProjectManager
 									if (tmp.has_prefix (".")) {
 										tmp = Path.build_filename (project_path, id, tmp);
 									}
-									GLib.debug ("vapidir reference: %s", tmp);
 									vapidirs.add (tmp);
 									idx++;
 								} else if (tmps[idx] == "--pkg" && (idx + 1) < count) {
 									var tmp = tmps[idx+1];
-									GLib.debug ("package reference: %s", tmp);
 									packages.add (tmp);
 									idx++;
 								} else if (tmps[idx] == "--library") {
 									var tmp = tmps[idx+1];
-									GLib.debug ("library generated: %s", tmp);
 									built_libraries.add (tmp);
 									idx++;
 								}

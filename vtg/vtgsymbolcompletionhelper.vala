@@ -56,18 +56,14 @@ namespace Vtg
 
 		~SymbolCompletionHelper ()
 		{
-			GLib.debug ("completion helper after cleanup");
 			_manager.deactivate ();
 			_manager.unregister_trigger (_trigger);
 			_manager.unregister_provider (_provider, "SymbolComplete");
 			_manager = null;
-			GLib.debug ("completion helper manager deactivated");
 		}
 
 		public void deactivate ()
 		{
-			GLib.debug ("sc deactvate");			
-			GLib.debug ("sc deactvated");
 		}
 
 		private void setup_gsc_completion (Gedit.View view)

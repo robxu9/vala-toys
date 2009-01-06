@@ -51,7 +51,6 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			_searched_typename = value;
 			_result = null;
 			qualified_typename = null;
-			debug ("type finder, armed with %s", _searched_typename);
 		}
 	}
 	
@@ -289,7 +288,6 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			_current_typename = "%s.%s".printf (_current_typename, st.name);
 		}
 		
-		//GLib.debug ("(visit_struct): class %s for %s", _current_typename, _searched_typename);
 		if (_current_typename == _searched_typename) {
 			_result = st;
 			qualified_typename = _current_typename;
@@ -458,7 +456,6 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 
 
 			//trying on the root context
-			debug ("(resolve_type): root namespace type %s", name);
 			typefinder.searched_typename = name;
 			typefinder.visit_namespace (_context.root);
 			sym = typefinder.result;
@@ -471,7 +468,6 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 						break; //exit since symbol is fully qualified
 						
 					var using_name = "%s.%s".printf (ns_name, name);
-					debug ("(resolve_type): using directives resolving type %s", using_name);
 					typefinder.searched_typename = using_name;
 					typefinder.visit_namespace (_context.root);
 					if (typefinder.result != null) {
@@ -483,8 +479,6 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 
 		}
 
-		if (sym != null)
-			debug ("(resolve_type): type solved %s", sym.get_full_name ());
 		return sym;
 	}
 	

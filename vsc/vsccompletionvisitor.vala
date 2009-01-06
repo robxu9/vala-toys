@@ -240,7 +240,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		
 		var unresolved_type = (UnresolvedType) data_type;
 		var sym = resolve_type (unresolved_type);
-		debug ("resolving type started");
 		if (sym == null) {
 			GLib.warning ("(visit-data-type): can't resolve type");
 			return;
@@ -252,7 +251,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			_parent_type_already_visited = true;
 			sym.accept_children (this);
 		}
-		debug ("resolving type ended");
 	}
 		
        	public override void visit_method (Method m) 
@@ -371,7 +369,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			}
 		}
 		
-		//GLib.debug ("(test_symbol): testing %s: %s", symbol.name, (res ? "true" : "false"));
 		return res;
 	}
 	
@@ -478,7 +475,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 
 
 			//trying on the root context
-			debug ("(resolve_type): root namespace type %s", name);
 			typefinder.searched_typename = name;
 			typefinder.visit_namespace (_context.root);
 			sym = typefinder.result;
@@ -491,7 +487,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 						break; //exit since symbol is fully qualified
 
 					var using_name = "%s.%s".printf (ns_name, name);
-					debug ("(resolve_type): using directives resolving type %s", using_name);
 					typefinder.searched_typename = using_name;
 					typefinder.visit_namespace (_context.root);
 					if (typefinder.result != null) {
@@ -503,8 +498,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 
 		}
 
-		if (sym != null)
-			debug ("(resolve_type): type solved %s", sym.get_full_name ());
 		return sym;
 	}
 	
