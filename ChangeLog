@@ -1,3 +1,9 @@
+2008-12-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	unified calltip and proposals routines
+
 2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanager.vala:

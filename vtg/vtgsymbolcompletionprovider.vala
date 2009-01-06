@@ -207,7 +207,7 @@ namespace Vtg
 			
 			if (ch == '(') {
 				this.show_calltip ();
-			} else if (evt.keyval == Gdk.Key_Escape || ch == ')' || ch == ';' || ch == '.' || evt.keyval == Gdk.Key_Return) {
+			} else if (evt.keyval == Gdk.Key_Escape || ch == ')') { // || ch == ';' || ch == '.' || evt.keyval == Gdk.Key_Return
 				this.hide_calltip ();
 			}
 			if (counter <= 0) {
@@ -243,7 +243,7 @@ namespace Vtg
 		
 		private void show_calltip ()
 		{
-			SymbolCompletionItem result = find_method_signature ();
+			SymbolCompletionItem result = get_method_signature ();
 			if (result != null) {
 				if (_calltip_window == null) {
 					initialize_calltip_window ();
@@ -314,7 +314,7 @@ namespace Vtg
 		public GLib.List<Gsc.Proposal> get_proposals (Gsc.Trigger trigger)
 		{
 			var timer = new Timer ();
-			transform_result (find_proposals ((SymbolCompletionTrigger) trigger));
+			transform_result (get_completions ((SymbolCompletionTrigger) trigger));
 			timer.stop ();
 			GLib.debug ("TOTAL TIME ELAPSED: %f", timer.elapsed ());
 			if (list.length () == 0 && cache_building) {
@@ -501,9 +501,8 @@ namespace Vtg
 			}
 		}
 
-		private SymbolCompletionItem? find_method_signature ()
+		private SymbolCompletionItem? get_method_signature ()
 		{
-			SymbolCompletionResult result = null;
 			string line, word;
 			int lineno, colno;
 
@@ -533,46 +532,15 @@ namespace Vtg
 			
 			string method = tmp[count-1];
 			if (first_part == null) {
-				first_part = method;
+				first_part = "this"; //HACK: this doesn't work for static methods
 			}
 			//don't try to find method signature if is a: for, foreach, if, while etc...
-			if (is_a_vala_keyword (method)) {
+			if (is_vala_keyword (method)) {
 				return null;
 			}
-			try {			
-				string typename = null;
-				var dt = _completion.get_datatype_for_name (first_part, _sb.name, lineno + 1, colno);
-				if (dt != null) {
-					typename = _completion.get_qualified_name_for_datatype (dt);
-				}
-				
-				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
-				options.public_only ();				
-				if (line.str ("= new ") != null || line.str ("=new ") != null) {
-					options.constructors = true;
-					options.instance_symbols = false;
-				}
-				if (typename != null) {
-					GLib.debug ("datatype '%s' for: %s",typename, word);
-					options.static_symbols = false;
-					if (word == "this") {
-						options.private_symbols = true;
-						options.protected_symbols = true;
-					} else if (word == "base") {
-						options.protected_symbols = true;
-					}
-					result = _completion.get_completions_for_name (options, typename, _sb.name, lineno + 1, colno);
-				} else {
-					if (first_part.has_prefix ("this.") == false && first_part.has_prefix ("base.") == false) {
-						options.static_symbols = true;
-						options.interface_symbols = false;
-					
-						result = _completion.get_completions_for_name (options, first_part, _sb.name, lineno + 1, colno);
-					}
-				}
-			} catch (Error err) {
-				GLib.warning ("error: %s", err.message);
-			}
+			
+			SymbolCompletionResult result = null;
+			result = complete (null, line, first_part, lineno, colno);
 			if (result != null && result.methods.size > 0) {
 				foreach (SymbolCompletionItem item in result.methods) {
 					if (item.name == method) {
@@ -583,9 +551,8 @@ namespace Vtg
 			return null;
 		}
 
-		private SymbolCompletionResult? find_proposals (SymbolCompletionTrigger trigger)
+		private SymbolCompletionResult? get_completions (SymbolCompletionTrigger trigger)
 		{
-			SymbolCompletionResult result = null;
 			string line, word;
 			int lineno, colno;
 
@@ -594,6 +561,13 @@ namespace Vtg
 			if (word == null && word == "")
 				return null;
 
+			
+			return complete (trigger, line, word, lineno, colno);
+		}
+		
+		private SymbolCompletionResult? complete (SymbolCompletionTrigger? trigger, string line, string word, int lineno, int colno)
+		{
+			SymbolCompletionResult result = null;
 			try {
 				string typename = null;
 				GLib.debug ("(find_proposals): START search datatype for: '%s'",word);
@@ -649,7 +623,7 @@ namespace Vtg
 						result = _completion.get_completions_for_name (options, word, _sb.name, lineno + 1, colno);
 						timer.stop ();
 						GLib.debug ("(find_proposals): END STATIC completion for: '%s', Count %d, TIME Elapsed: %f",word, result.count, timer.elapsed ());
-						if (trigger.shortcut_triggered && result.is_empty) {
+						if (trigger == null || (trigger.shortcut_triggered && result.is_empty)) {
 							GLib.debug ("(find_proposals): START THIS completion for: '%s'",word);
 							timer.start ();
 							typename = _completion.get_datatype_name_for_name ("this", _sb.name, lineno + 1, colno);
@@ -678,7 +652,7 @@ namespace Vtg
 			return result;
 		}
 		
-		private bool is_a_vala_keyword (string keyword)
+		private bool is_vala_keyword (string keyword)
 		{
 			return (keyword == "if"
 				|| keyword == "for"
