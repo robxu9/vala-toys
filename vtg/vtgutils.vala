@@ -47,6 +47,7 @@ namespace Vtg
 		private const int CACHE_LIMIT = 20;
 		
 		private static Gtk.ListStore _build_cache = null;
+		private static Gtk.ListStore _compile_cache = null;
 		private static Gtk.ListStore _configure_cache = null;
 		private static Gtk.ListStore _executer_cache = null;
 		
@@ -57,6 +58,15 @@ namespace Vtg
 			}
 			
 			return _build_cache;
+		}
+
+		public static Gtk.ListStore get_compile_cache ()		
+		{
+			if (_compile_cache == null) {
+				_compile_cache = new Gtk.ListStore (1, typeof (string));
+			}
+			
+			return _compile_cache;
 		}
 
 		public static Gtk.ListStore get_configure_cache ()		

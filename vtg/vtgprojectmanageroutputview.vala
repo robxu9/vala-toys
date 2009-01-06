@@ -184,7 +184,7 @@ namespace Vtg.ProjectManager
 						source.read_chars (buff, out len);
 					}
 
-					if (message != "") {
+					if (!StringUtils.is_null_or_empty(message)) {
 						log_message (message);
 					}
 				}

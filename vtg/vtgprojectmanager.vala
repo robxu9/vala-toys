@@ -428,12 +428,20 @@ namespace Vtg.ProjectManager
 						return;
 					}
 				}
-				file = file.replace ("file://", ""); //HACK
-				GLib.debug ("compiling file %s", file);
-				if (!doc.is_untouched () && _plugin.config.save_before_build)
-					doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
+				var cache = Vtg.Caches.get_compile_cache ();
+				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Compile File"), _plugin.gedit_window, cache);
+				if (params_dialog.run () == ResponseType.OK) {
+					var params = params_dialog.parameters;
+					if (!Vtg.Caches.cache_contains (cache, params)) {
+						Vtg.Caches.cache_add (cache, params);
+					}
+					file = file.replace ("file://", ""); //HACK
+					GLib.debug ("compiling file %s", file);
+					if (!doc.is_untouched () && _plugin.config.save_before_build)
+						doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
 						
-				_prj_builder.compile_file (file);
+					_prj_builder.compile_file (file, params);
+				}
 			}
 		}
 		
