@@ -1,5 +1,12 @@
 2009-01-02  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	first rough support for array types
+
+2009-01-02  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanager.vala:
 	* vtg/vtgprojectmanagerbuilder.vala:
 	* vtg/vtgprojectmanageroutputview.vala:

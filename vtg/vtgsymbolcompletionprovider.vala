@@ -407,10 +407,8 @@ namespace Vtg
 			GLib.debug ("     TRANSFORM TOTAL TIME ELAPSED: %f", timer.elapsed ());
 		}
 
-		private void parse_current_line (bool skip_leading_spaces, out string word, out string line, out int lineno, out int colno)
+		private void parse_current_line (bool skip_leading_spaces, out string symbolname, out string last_symbolname, out string line, out int lineno, out int colno)
 		{
-			var tmp = new StringBuilder ();
-			
  			weak Gedit.Document doc = (Gedit.Document) _view.get_buffer ();
 			weak TextMark mark = (TextMark) doc.get_insert ();
 			TextIter end;
@@ -420,93 +418,116 @@ namespace Vtg
 
 			lineno = start.get_line ();
 			colno = start.get_line_offset ();
-			word = "";
+			symbolname = "";
+			last_symbolname = "";
 			line = "";
 
 			end = start;
 			start.set_line_offset (0);
 			line = start.get_text (end);
+			
+			if (colno > 0) {
+				var tmp = new StringBuilder ();
+			
+				int bracket_lev_1 = 0;
+				int bracket_lev_2 = 0;
+				int bracket_lev_3 = 0;
+				int string_lev = 0;
+				int status = (skip_leading_spaces ? 1 : 0);
+				unichar prev_char = end.get_char ();
 
-			if (colno > 1) {
-				start = end;
 				while (true) {
-					start.backward_char ();
-					if (start.starts_line ())
+					if (!end.backward_char ())
+						break; // end of buffer
+						
+					if (end.get_line_offset () == 0 || end.get_line () < lineno)
 						break;
 
-					unichar ch = start.get_char ();
-					if (skip_leading_spaces && ch == ' ') {
-						while (true) {
-							start.backward_char ();
-							if (start.starts_line ()) {
-								break;								
-							}
-							ch = start.get_char ();
-							if (ch != ' ')
-								break;
-						}
-						start.forward_char ();
-					} else if (ch == ')') {
-						//tmp.append_unichar (ch);
-						//find where the method invocation begin
-						while (true) {
-							start.backward_char ();
-							if (start.starts_line ())
-								break;
+					unichar ch = end.get_char ();
+					GLib.debug ("char '%c'", (char) ch);
+					
+					if (status == 1 && (ch != ' ' && ch != '\t')) {
+						status = 0; //back to normal
+					} if (status == 0 && (ch == ' ' || ch == '\t'))
+						break; //word interruption
 
-							ch = start.get_char ();
-							if (ch == '(') {
-								//tmp.append_unichar (ch);
-								break;
+					switch (status) {
+						case 0: //normal state
+							if (ch == ')') {
+								status = 2;
+								bracket_lev_1++;
+							} else if (ch == ']') {
+								status = 2;
+								bracket_lev_2++;
+							} else if (ch == '}') {
+								status = 2;
+								bracket_lev_3++;
+							} else if (ch == '.' || (ch == '-' && prev_char == '>')) {
+								if (last_symbolname == "")
+									last_symbolname = tmp.str.reverse ();
+								if (ch == '-' && prev_char == '>')
+									tmp.append_unichar ('.'); //all dots
+								else
+									tmp.append_unichar (ch);
+								status = 1; //skip spaces
+							} else if (ch == '=') {
+								if (last_symbolname == "")
+									last_symbolname = tmp.str.reverse ();
+									
+								tmp.truncate (0);
+								status = 1; //skip spaces								
+							} else if (ch == '\"') {
+								string_lev++;
+								status = 3;
+							} else if (ch != '\n') {
+								tmp.append_unichar (ch);
 							}
-						}
-						//skip spaces
-						if (!start.starts_line ()) {
-							while (true) {
-								start.backward_char ();
-								if (start.starts_line ())
-									break;
-
-								ch = start.get_char ();
-								if (ch != ' ')
-									break;
+							break;
+						case 1: //skip spaces
+							break;
+						case 2: //skip to close bracket
+							if (bracket_lev_1 > 0 && ch == '(') {
+								bracket_lev_1--;
+							} else if (bracket_lev_2 > 0 && ch == '[') {
+								bracket_lev_2--;
+							} else if (bracket_lev_3 > 0 && ch == '{') {
+								bracket_lev_3--;
+							} else if (ch == ')') {
+								bracket_lev_1++;
+							} else if (ch == ']') {
+								bracket_lev_2++;
+							} else if (ch == '{') {
+								bracket_lev_3++;
 							}
-						}
-						if (!start.starts_line ()) {
-							tmp.append_unichar (ch);
-						}
-					} else if (ch == '\"') {
-						//find where the string literal begin
-						tmp.append_unichar (ch);
-						while (true) {
-							start.backward_char ();
-							if (start.starts_line ())
-								break;
-
-							ch = start.get_char ();
-							tmp.append_unichar (ch);
-							if (ch == '\"')
-								break;
-						}
-					} else if (!(ch.isalnum () ||
-					      ch == '.' ||
-					      ch == '_')) {
-						break;
-					} else {
-						tmp.append_unichar (ch);
+							if (bracket_lev_1 <= 0 && bracket_lev_2 <= 0 && bracket_lev_3 <= 0) {
+								status = 1; //back to skip spaces
+							}
+							break;
+						case 3: //inside string literal
+							if (ch == '\"') {
+								tmp.append ("string".reverse ());
+								string_lev--;
+								if (string_lev <= 0) {
+									status = 0;
+								}
+							}
+							break;
 					}
-					skip_leading_spaces = false;
+					prev_char = ch;
 				}
-				word = tmp.str.reverse ();
+				symbolname = tmp.str.reverse ();
+				if (last_symbolname == "")
+					last_symbolname = symbolname;
 			}
+			
 		}
 
 		private SymbolCompletionItem? get_method_signature ()
 		{
-			string line, word;
+			string line, word, last_part;
 			int lineno, colno;
 
-			parse_current_line (true, out word, out line, out lineno, out colno);
+			parse_current_line (true, out word, out last_part, out line, out lineno, out colno);
 
 			if (word == null || word == "")
 				return null;
@@ -553,10 +574,10 @@ namespace Vtg
 
 		private SymbolCompletionResult? get_completions (SymbolCompletionTrigger trigger)
 		{
-			string line, word;
+			string line, word, last_part;
 			int lineno, colno;
 
-			parse_current_line (false, out word, out line, out lineno, out colno);
+			parse_current_line (false, out word, out last_part, out line, out lineno, out colno);
 
 			if (word == null && word == "")
 				return null;
@@ -623,7 +644,7 @@ namespace Vtg
 						result = _completion.get_completions_for_name (options, word, _sb.name, lineno + 1, colno);
 						timer.stop ();
 						GLib.debug ("(find_proposals): END STATIC completion for: '%s', Count %d, TIME Elapsed: %f",word, result.count, timer.elapsed ());
-						if (trigger == null || (trigger.shortcut_triggered && result.is_empty)) {
+						if (result.is_empty && (trigger == null || trigger.shortcut_triggered)) {
 							GLib.debug ("(find_proposals): START THIS completion for: '%s'",word);
 							timer.start ();
 							typename = _completion.get_datatype_name_for_name ("this", _sb.name, lineno + 1, colno);

@@ -361,6 +361,7 @@ namespace Vsc
 				//generic type definition. delete the generic part from the typename
 				typename = typename.split ("<", 2)[0];
 			}
+			typename = typename.replace ("[]", "");
 			return typename;
 		}
 		
