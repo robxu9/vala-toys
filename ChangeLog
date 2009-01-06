@@ -1,5 +1,11 @@
 2009-01-02  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	used the new parse_current_line function in the calltip routine
+
+2009-01-02  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala:
 	* vtg/vtgsymbolcompletionprovider.vala:
 

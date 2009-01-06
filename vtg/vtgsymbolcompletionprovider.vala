@@ -444,7 +444,6 @@ namespace Vtg
 						break;
 
 					unichar ch = end.get_char ();
-					GLib.debug ("char '%c'", (char) ch);
 					
 					if (status == 1 && (ch != ' ' && ch != '\t')) {
 						status = 0; //back to normal
@@ -537,24 +536,14 @@ namespace Vtg
 			  eg. for demos.demo.demo_method obtains
 			  demos.demo + demo_method
 			*/
-
-			string[] tmp = word.split (".");
-			int count = 0;
-			string first_part = null;
-			while (tmp[count] != null) {
-				if (tmp [count+1] != null) {
-					if (first_part == null)
-						first_part = tmp[count];
-					else
-						first_part = first_part.concat (".", tmp[count]);
-				}
-				count++;
+			string first_part;
+			if (word != last_part) {
+				first_part = word.substring (0, word.length - last_part.length - 1);
+			} else {
+				first_part = "this"; //HACK: this won't work for static methods
 			}
+			string method = last_part;
 			
-			string method = tmp[count-1];
-			if (first_part == null) {
-				first_part = "this"; //HACK: this doesn't work for static methods
-			}
 			//don't try to find method signature if is a: for, foreach, if, while etc...
 			if (is_vala_keyword (method)) {
 				return null;
@@ -593,11 +582,7 @@ namespace Vtg
 				string typename = null;
 				GLib.debug ("(find_proposals): START search datatype for: '%s'",word);
 				var timer = new Timer ();
-				if (word.has_prefix ("\"") && word.has_suffix ("\"")) {
-					typename = "string";
-				} else {
-					typename = _completion.get_datatype_name_for_name (word, _sb.name, lineno + 1, colno);
-				}
+				typename = _completion.get_datatype_name_for_name (word, _sb.name, lineno + 1, colno);
 				GLib.debug ("(find_proposals): END search datatype for: '%s'",word);
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
 				options.public_only ();
