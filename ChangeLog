@@ -1,5 +1,11 @@
 2009-01-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	post release version bump
+
+2009-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* po/POTFILES.skip:
 
 	added the new generated c file to POTFILES.skip so that
