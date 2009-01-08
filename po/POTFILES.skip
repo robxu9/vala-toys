@@ -8,4 +8,8 @@ vtg/vtgprojectmanageroutputview.c
 vtg/vtgprojectmanagerproject.c
 vtg/vtgprojectmanagerprojectgroup.c
 vtg/vtgprojectmanagerview.c
+vtg/vtgchangelog.c
+vtg/vtgvcsbackendsbzr.c
+vtg/vtgvcsbackendsgit.c
+vtg/vtgvcsbackendssvn.c
 gen-project/valaprojectgenerator.c
