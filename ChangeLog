@@ -1,5 +1,11 @@
 2009-01-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+
+	updated the news for version 0.3.0
+
+2009-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	replaced the old # syntax with the new (owned) one

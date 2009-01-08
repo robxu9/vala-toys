@@ -1,3 +1,15 @@
+Vala toys for gEdit version 0.3.0
+=================================
+
+* New simple and "version control system" based ChangeLog support. 
+  Just press CTRL+SHIT+C and a new ChangeLog entry will be created
+  in the project ChangeLog file with all the modified and added files.
+  Supported vcs backends: svn, git, bzr
+* Added the possibility to stop and restart quickly the compilation
+  process
+* Lot of improvements in the completion engine
+
+
 Vala toys for gEdit version 0.2.0
 =================================
 
