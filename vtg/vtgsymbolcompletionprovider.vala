@@ -317,7 +317,7 @@ namespace Vtg
 			} else {
 				_last_trigger = null;
 			}
-			return #list;
+			return (owned) list;
 		}
 
 		private void append_symbols (Gee.List<SymbolCompletionItem> symbols, Gdk.Pixbuf icon)
