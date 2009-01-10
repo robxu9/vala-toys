@@ -106,7 +106,6 @@ namespace Vtg
 					name = doc.get_short_name_for_display ();
 				}
 				_sb = new Vsc.SourceBuffer (name, null);
-				_sb.data = (void *) doc;
 
 				_view.key_press_event += this.on_view_key_press;
 
@@ -241,12 +240,12 @@ namespace Vtg
 		
 		private void show_calltip ()
 		{
-			SymbolCompletionItem result = get_method_signature ();
-			if (result != null) {
+			SymbolCompletionItem? completion_result = get_method_signature ();
+			if (completion_result != null) {
 				if (_calltip_window == null) {
 					initialize_calltip_window ();
 				}
-				string calltip_text = result.info;
+				string calltip_text = completion_result.info;
 				if (calltip_text != null) {
 					_calltip_window.set_markup (calltip_text);
 					_calltip_window.move_to_cursor (_view);
@@ -543,10 +542,10 @@ namespace Vtg
 				return null;
 			}
 			
-			SymbolCompletionResult result = null;
-			result = complete (null, line, first_part, lineno, colno);
-			if (result != null && result.methods.size > 0) {
-				foreach (SymbolCompletionItem item in result.methods) {
+			SymbolCompletionResult completion_result = null;
+			completion_result = complete (null, line, first_part, lineno, colno);
+			if (completion_result != null && completion_result.methods.size > 0) {
+				foreach (SymbolCompletionItem item in completion_result.methods) {
 					if (item.name == method) {
 						return item;
 					}

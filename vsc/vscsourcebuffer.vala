@@ -26,7 +26,6 @@ namespace Vsc
 	{
 		public string name { get; set construct; }
 		public string source { get; set construct; }
-		public void *data { get; set; default = null; }
 
 		public SourceBuffer (string name, string? source)
 		{
