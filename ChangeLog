@@ -1,5 +1,11 @@
 2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	post release version bump
+
+2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc-shell/vsccompletionshell.vala:
 	* vsc/vscparsermanager.vala:
 	* vsc/vscsourcebuffer.vala:
