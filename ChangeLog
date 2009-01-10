@@ -1,5 +1,11 @@
 2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+
+	merged the news from the 0.3.1 release
+
+2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 
 	better glib/gobject-2.0.vapi file check
