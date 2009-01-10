@@ -59,13 +59,21 @@ namespace Vsc
 			add_path_to_vapi_search_dir ("/usr/share/vala/vapi");
 			add_path_to_vapi_search_dir ("/usr/local/share/vala/vapi");
 			try {
-				glib_file = find_vala_package_filename ("glib-2.0")[0];
+				var pkg = find_vala_package_filename ("glib-2.0");
+				if (pkg.size > 0)
+					glib_file = pkg[0];
+				else
+					throw new GLib.FileError.EXIST("no glib-2.0.vapi file found");
 			} catch (Error err) {
 				error ("Can't find glib vapi file: %s", err.message);
 			}
 
 			try {
-				gobject_file = find_vala_package_filename ("gobject-2.0")[0];
+				var pkg = find_vala_package_filename ("gobject-2.0");
+				if (pkg.size > 0)
+					gobject_file = pkg[0];
+				else
+					throw new GLib.FileError.EXIST("no gobject-2.0.vapi file found");
 			} catch (Error err) {
 				error ("Can't find gobject vapi file: %s", err.message);
 			}

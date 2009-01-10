@@ -1,5 +1,11 @@
 2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscparsermanager.vala:
+
+	better glib/gobject-2.0.vapi file check
+
+2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc-shell/vsccompletionshell.vala:
 	* vsc/vscparsermanager.vala:
 	* vsc/vscsourcebuffer.vala:
