@@ -560,7 +560,6 @@ namespace Vsc
 		{
 			context.assert = false;
 			context.checking = false;
-			context.non_null = false;
 			context.non_null_experimental = false;
 			context.compile_only = true;
 

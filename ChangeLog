@@ -1,3 +1,14 @@
+2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsourcebuffer.vala:
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed api changes in libvala version 0.5.5
+
 2009-01-08  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure.ac:

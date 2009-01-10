@@ -85,19 +85,19 @@ namespace Vtg.ProjectManager
 		public bool run ()
 		{
 			_dialog.show_all ();
-			int result = _dialog.run ();
-			if (result > 0) {
+			int dialog_result = _dialog.run ();
+			if (dialog_result > 0) {
 				TreeIter iter;
 				if (_treeview.get_selection ().get_selected (null, out iter)) {
 					TreeIter sort;
 					_sorted.convert_iter_to_child_iter (out sort, iter);
 					_model.convert_iter_to_child_iter (out selected_iter, sort);
 				} else
-					result = 0;
+					dialog_result = 0;
 			}
 			_dialog.destroy ();
 			
-			return result > 0;
+			return dialog_result > 0;
 		}
 		
 		private void on_row_changed (Gtk.TreeModel tree_model, Gtk.TreePath path, Gtk.TreeIter iter)

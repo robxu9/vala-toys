@@ -257,8 +257,8 @@ namespace Vsc
 		{
 			try {
 				var options = new SymbolCompletionFilterOptions ();
-				var result = _completion.get_completions_for_name (options, typename, source, 0 ,0);
-				display_result (result);
+				var completion_result = _completion.get_completions_for_name (options, typename, source, 0 ,0);
+				display_result (completion_result);
 			} catch (Error err) {
 				print_error (err.message);
 			} 
@@ -271,45 +271,45 @@ namespace Vsc
 			}
 		}
 
-		private void display_result (SymbolCompletionResult result)
+		private void display_result (SymbolCompletionResult completions)
 		{
-			if (!result.is_empty) {
+			if (!completions.is_empty) {
 				var sb = new StringBuilder ();
 
 				print_message ("symbols found");
-				if (result.enums.size > 0) {
-					append_symbols ("enums", sb, result.interfaces);
+				if (completions.enums.size > 0) {
+					append_symbols ("enums", sb, completions.interfaces);
 				}
-				if (result.constants.size > 0) {
-					append_symbols ("constants", sb, result.interfaces);
+				if (completions.constants.size > 0) {
+					append_symbols ("constants", sb, completions.interfaces);
 				}
-				if (result.namespaces.size > 0) {
-					append_symbols ("namespaces", sb, result.interfaces);
+				if (completions.namespaces.size > 0) {
+					append_symbols ("namespaces", sb, completions.interfaces);
 				}
-				if (result.fields.size > 0) {
-					append_symbols ("field", sb, result.fields);
+				if (completions.fields.size > 0) {
+					append_symbols ("field", sb, completions.fields);
 				}
-				if (result.properties.size > 0) {
-					append_symbols ("property", sb, result.properties);
+				if (completions.properties.size > 0) {
+					append_symbols ("property", sb, completions.properties);
 				}
-				if (result.methods.size > 0) {
-					append_symbols ("method", sb, result.methods);
+				if (completions.methods.size > 0) {
+					append_symbols ("method", sb, completions.methods);
 				}
 
-				if (result.signals.size > 0) {
-					append_symbols ("signal", sb, result.signals);
+				if (completions.signals.size > 0) {
+					append_symbols ("signal", sb, completions.signals);
 				}
-				if (result.classes.size > 0) {
-					append_symbols ("class", sb, result.classes);
+				if (completions.classes.size > 0) {
+					append_symbols ("class", sb, completions.classes);
 				}
-				if (result.interfaces.size > 0) {
-					append_symbols ("interface", sb, result.interfaces);
+				if (completions.interfaces.size > 0) {
+					append_symbols ("interface", sb, completions.interfaces);
 				}
-				if (result.structs.size > 0) {
-					append_symbols ("struct", sb, result.structs);
+				if (completions.structs.size > 0) {
+					append_symbols ("struct", sb, completions.structs);
 				}
-				if (result.others.size > 0) {
-					append_symbols ("other", sb, result.others);
+				if (completions.others.size > 0) {
+					append_symbols ("other", sb, completions.others);
 				}
 				print_message (sb.str);
 			} else {

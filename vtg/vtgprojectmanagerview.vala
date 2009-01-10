@@ -223,19 +223,19 @@ namespace Vtg.ProjectManager
 
 		private void update_view (string? project_name)
 		{
-			Project result = null;
+			Project? prj = null;
 
 			if (project_name != null) {
 				//find project
 				foreach (ProjectDescriptor item in _plugin.projects) {
 					if (item.project.name == project_name) {
-						result = item.project;
+						prj = item.project;
 						break;
 					}
 				}
 			}
 			
-			current_project = result;
+			current_project = prj;
 		}
 
 		private void on_current_project_updated (Project sender)
