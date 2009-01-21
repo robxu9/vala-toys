@@ -124,8 +124,8 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 				sig.accept (this);
 			}
 		
-			foreach (Class cl in cl.get_classes()) {
-				cl.accept (this);
+			foreach (Class subcl in cl.get_classes()) {
+				subcl.accept (this);
 			}
 		
 			foreach (Struct st in cl.get_structs()) {
@@ -193,13 +193,13 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			if (!_results.structs_contain (st.name) && test_symbol (_options, st)) {
 				_results.structs.add (new SymbolCompletionItem.with_struct (st));
 			}
-			foreach (DataType type in st.get_base_types()) {
-				type.accept (this);
+			if (st.base_type != null) {
+				st.base_type.accept (this);
 			}
 		} else {
 			_parent_type_already_visited = true;
-			foreach (DataType type in st.get_base_types()) {
-				type.accept (this);
+			if (st.base_type != null) {
+				st.base_type.accept (this);
 			}
 			foreach (TypeParameter p in st.get_type_parameters()) {
 				p.accept (this);
@@ -453,8 +453,8 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 				return true;
 		}
 		
-		foreach (Class cl in cl.get_classes()) {
-			if (symbol_is_static(cl))
+		foreach (Class subcl in cl.get_classes()) {
+			if (symbol_is_static(subcl))
 				return true;
 		}
 		

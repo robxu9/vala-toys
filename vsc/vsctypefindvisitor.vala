@@ -162,8 +162,8 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			}
 			//Minor optimization
 			if (_result == null) {
-				foreach (Class cl in cl.get_classes()) {
-					cl.accept (this);
+				foreach (Class subcl in cl.get_classes()) {
+					subcl.accept (this);
 					if (_result != null) {
 						break;
 					}
