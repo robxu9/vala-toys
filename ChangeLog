@@ -1,4 +1,10 @@
-2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
+2009-01-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	post release version bump
+
+2009-01-20  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vsctypefindvisitor.vala:
 	* vsc/vsccompletionvisitor.vala:
