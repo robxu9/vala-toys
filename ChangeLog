@@ -1,3 +1,9 @@
+2009-01-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	merged the news from the 0.3.2 release
+
 2009-01-20  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vsctypefindvisitor.vala:
