@@ -7,7 +7,7 @@ SUBDIRS += vsc
 endif
 
 if HAVE_VTGPLUGIN
-SUBDIRS += vtg images ui po
+SUBDIRS += vbf vtg images ui po
 endif
 
 if HAVE_VSCSHELL

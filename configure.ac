@@ -184,6 +184,7 @@ AC_CONFIG_FILES([
 	gen-project/licenses/Makefile
 	doc/Makefile
 	vtg/Makefile
+	vbf/Makefile
 	ui/Makefile
 	images/Makefile
 	po/Makefile.in])

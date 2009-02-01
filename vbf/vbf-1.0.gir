@@ -1,0 +1,480 @@
+<?xml version="1.0"?>
+<repository version="1.0">
+<namespace name="Vbf" version="1.0">
+	<enumeration name="TargetTypes" c:type="VbfTargetTypes" glib:get-type="vbf_target_types_get_type">
+		<member name="program"/>
+		<member name="library"/>
+		<member name="data"/>
+		<member name="vala-program"/>
+	</enumeration>
+	<enumeration name="SourceTypes" c:type="VbfSourceTypes" glib:get-type="vbf_source_types_get_type">
+		<member name="unknown"/>
+		<member name="vala"/>
+	</enumeration>
+	<class name="Project" parent="Vbf.ConfigNode" glib:type-name="VbfProject" glib:get-type="vbf_project_get_type">
+		<field name="name">
+			<type name="string"/>
+		</field>
+		<field name="url">
+			<type name="string"/>
+		</field>
+		<field name="version">
+			<type name="string"/>
+		</field>
+		<field name="filename">
+			<type name="string"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_project_new">
+			<parameters>
+				<parameter name="name">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.Project"/>
+			</return-value>
+		</constructor>
+		<method name="get_groups" c:identifier="vbf_project_get_groups">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Project"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Group>"/>
+			</return-value>
+		</method>
+		<method name="get_modules" c:identifier="vbf_project_get_modules">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Project"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Module>"/>
+			</return-value>
+		</method>
+		<method name="get_variables" c:identifier="vbf_project_get_variables">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Project"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Variable>"/>
+			</return-value>
+		</method>
+		<glib:signal name="updated">
+			<parameters>
+			</parameters>
+			<return-value>
+				<type name="none"/>
+			</return-value>
+		</glib:signal>
+	</class>
+	<class name="Group" parent="GLib.Object" glib:type-name="VbfGroup" glib:get-type="vbf_group_get_type">
+		<field name="name">
+			<type name="string"/>
+		</field>
+		<field name="makefile">
+			<type name="string"/>
+		</field>
+		<field name="project">
+			<type name="Vbf.Project"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_group_new">
+			<parameters>
+				<parameter name="project">
+					<type name="Vbf.Project"/>
+				</parameter>
+				<parameter name="makefile">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.Group"/>
+			</return-value>
+		</constructor>
+		<method name="get_targets" c:identifier="vbf_group_get_targets">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Group"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Target>"/>
+			</return-value>
+		</method>
+		<method name="get_subgroups" c:identifier="vbf_group_get_subgroups">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Group"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Group>"/>
+			</return-value>
+		</method>
+		<method name="get_variables" c:identifier="vbf_group_get_variables">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Group"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Variable>"/>
+			</return-value>
+		</method>
+	</class>
+	<class name="Module" parent="GLib.Object" glib:type-name="VbfModule" glib:get-type="vbf_module_get_type">
+		<field name="name">
+			<type name="string"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_module_new">
+			<parameters>
+				<parameter name="name">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.Module"/>
+			</return-value>
+		</constructor>
+		<method name="get_packages" c:identifier="vbf_module_get_packages">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Module"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Package>"/>
+			</return-value>
+		</method>
+	</class>
+	<class name="Target" parent="GLib.Object" glib:type-name="VbfTarget" glib:get-type="vbf_target_get_type">
+		<field name="name">
+			<type name="string"/>
+		</field>
+		<field name="target_type">
+			<type name="Vbf.TargetTypes"/>
+		</field>
+		<field name="no_install">
+			<type name="bool"/>
+		</field>
+		<field name="group">
+			<type name="Vbf.Group"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_target_new">
+			<parameters>
+				<parameter name="group">
+					<type name="Vbf.Group"/>
+				</parameter>
+				<parameter name="type">
+					<type name="Vbf.TargetTypes"/>
+				</parameter>
+				<parameter name="name">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.Target"/>
+			</return-value>
+		</constructor>
+		<method name="get_sources" c:identifier="vbf_target_get_sources">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Target"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Source>"/>
+			</return-value>
+		</method>
+		<method name="get_files" c:identifier="vbf_target_get_files">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Target"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.File>"/>
+			</return-value>
+		</method>
+	</class>
+	<class name="Source" parent="Vbf.File" glib:type-name="VbfSource" glib:get-type="vbf_source_get_type">
+		<field name="type">
+			<type name="Vbf.SourceTypes"/>
+		</field>
+		<field name="target">
+			<type name="Vbf.Target"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_source_new">
+			<parameters>
+				<parameter name="target">
+					<type name="Vbf.Target"/>
+				</parameter>
+				<parameter name="filename">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.Source"/>
+			</return-value>
+		</constructor>
+		<constructor name="with_type" c:identifier="vbf_source_new_with_type">
+			<parameters>
+				<parameter name="target">
+					<type name="Vbf.Target"/>
+				</parameter>
+				<parameter name="filename">
+					<type name="string"/>
+				</parameter>
+				<parameter name="type">
+					<type name="Vbf.SourceTypes"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.Source"/>
+			</return-value>
+		</constructor>
+	</class>
+	<class name="File" parent="GLib.Object" glib:type-name="VbfFile" glib:get-type="vbf_file_get_type">
+		<field name="filename">
+			<type name="string"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_file_new">
+			<parameters>
+				<parameter name="filename">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.File"/>
+			</return-value>
+		</constructor>
+	</class>
+	<class name="Package" parent="GLib.Object" glib:type-name="VbfPackage" glib:get-type="vbf_package_get_type">
+		<field name="name">
+			<type name="string"/>
+		</field>
+		<field name="constraint">
+			<type name="string"/>
+		</field>
+		<field name="version">
+			<type name="Vbf.ConfigNode"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_package_new">
+			<parameters>
+				<parameter name="name">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.Package"/>
+			</return-value>
+		</constructor>
+	</class>
+	<class name="Variable" parent="Vbf.ConfigNode" glib:type-name="VbfVariable" glib:get-type="vbf_variable_get_type">
+		<field name="name">
+			<type name="string"/>
+		</field>
+		<field name="data">
+			<type name="Vbf.ConfigNode?"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_variable_new">
+			<parameters>
+				<parameter name="name">
+					<type name="string"/>
+				</parameter>
+				<parameter name="parent">
+					<type name="Vbf.ConfigNode"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.Variable"/>
+			</return-value>
+		</constructor>
+		<method name="get_childs" c:identifier="vbf_variable_get_childs">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Variable"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Variable>"/>
+			</return-value>
+		</method>
+		<method name="add_child" c:identifier="vbf_variable_add_child">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Variable"/>
+				</parameter>
+				<parameter name="variable">
+					<type name="Vbf.Variable"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="none"/>
+			</return-value>
+		</method>
+		<method name="get_value" c:identifier="vbf_variable_get_value">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Variable"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Vbf.ConfigNode"/>
+			</return-value>
+		</method>
+	</class>
+	<class name="StringLiteral" parent="Vbf.ConfigNode" glib:type-name="VbfStringLiteral" glib:get-type="vbf_string_literal_get_type">
+		<field name="data">
+			<type name="string"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_string_literal_new">
+			<parameters>
+				<parameter name="data">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.StringLiteral"/>
+			</return-value>
+		</constructor>
+	</class>
+	<class name="ConfigNode" parent="GLib.Object" glib:type-name="VbfConfigNode" glib:get-type="vbf_config_node_get_type">
+		<field name="parent">
+			<type name="Vbf.ConfigNode"/>
+		</field>
+		<method name="to_string" c:identifier="vbf_config_node_to_string">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.ConfigNode"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="string"/>
+			</return-value>
+		</method>
+	</class>
+	<class name="ConfigNodePair" parent="GLib.Object" glib:type-name="VbfConfigNodePair" glib:get-type="vbf_config_node_pair_get_type">
+		<field name="source">
+			<type name="Vbf.ConfigNode"/>
+		</field>
+		<field name="destination">
+			<type name="Vbf.ConfigNode?"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_config_node_pair_new">
+			<parameters>
+				<parameter name="source">
+					<type name="Vbf.ConfigNode"/>
+				</parameter>
+				<parameter name="destination">
+					<type name="Vbf.ConfigNode?"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.ConfigNodePair"/>
+			</return-value>
+		</constructor>
+	</class>
+	<class name="ConfigNodeList" parent="Vbf.ConfigNode" glib:type-name="VbfConfigNodeList" glib:get-type="vbf_config_node_list_get_type">
+		<field name="values">
+			<type name="Gee.List<Vbf.ConfigNode>"/>
+		</field>
+		<method name="get_values" c:identifier="vbf_config_node_list_get_values">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.ConfigNodeList"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.ConfigNode>"/>
+			</return-value>
+		</method>
+		<method name="add_value" c:identifier="vbf_config_node_list_add_value">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.ConfigNodeList"/>
+				</parameter>
+				<parameter name="val">
+					<type name="Vbf.ConfigNode"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="none"/>
+			</return-value>
+		</method>
+		<method name="replace_config_node" c:identifier="vbf_config_node_list_replace_config_node">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.ConfigNodeList"/>
+				</parameter>
+				<parameter name="source">
+					<type name="Vbf.ConfigNode"/>
+				</parameter>
+				<parameter name="target">
+					<type name="Vbf.ConfigNode"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="none"/>
+			</return-value>
+		</method>
+		<constructor name="new" c:identifier="vbf_config_node_list_new">
+			<parameters>
+			</parameters>
+			<return-value>
+				<type name="Vbf.ConfigNodeList"/>
+			</return-value>
+		</constructor>
+	</class>
+	<class name="UnresolvedConfigNode" parent="Vbf.ConfigNode" glib:type-name="VbfUnresolvedConfigNode" glib:get-type="vbf_unresolved_config_node_get_type">
+		<field name="name">
+			<type name="string"/>
+		</field>
+		<constructor name="new" c:identifier="vbf_unresolved_config_node_new">
+			<parameters>
+				<parameter name="name">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.UnresolvedConfigNode"/>
+			</return-value>
+		</constructor>
+	</class>
+	<interface name="IProjectManager" glib:get-type="vbf_iproject_manager_get_type">
+		<requires>
+			<object name="GLib.Object"/>
+		</requires>
+		<method name="probe" c:identifier="vbf_iproject_manager_probe">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.IProjectManager"/>
+				</parameter>
+				<parameter name="project_file">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="bool"/>
+			</return-value>
+		</method>
+		<method name="open" c:identifier="vbf_iproject_manager_open">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.IProjectManager"/>
+				</parameter>
+				<parameter name="project_file">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Vbf.Project?"/>
+			</return-value>
+		</method>
+	</interface>
+</namespace>
+</repository>

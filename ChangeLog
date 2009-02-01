@@ -1,3 +1,33 @@
+2009-02-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/Makefile.am:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbf-1.0.gir:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfcodenodepair.vala:
+	* vbf/vbfconfignode.vala:
+	* vbf/vbfconfignodelist.vala:
+	* vbf/vbfconfignodepair.vala:
+	* vbf/vbfconstantliteral.vala:
+	* vbf/vbffile.vala:
+	* vbf/vbfgroup.vala:
+	* vbf/vbfiprojectmanager.vala:
+	* vbf/vbfmanager.vala:
+	* vbf/vbfmodule.vala:
+	* vbf/vbfpackage.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbfsource.vala:
+	* vbf/vbfstringliteral.vala:
+	* vbf/vbftarget.vala:
+	* vbf/vbftest.vala:
+	* vbf/vbfunresolvedconfignode.vala:
+	* vbf/vbfvariable.vala:
+	* Makefile.am:
+	* configure.ac:
+
+	merged the first version of Vala Build Framework that will
+	replace Gnome Build Framework aka libgbf dependency
+
 2009-01-21  Andrea Del Signore  <sejerpz@tin.it>
 
 	* NEWS:
