@@ -1,5 +1,11 @@
 2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
 
+	* .gitignore:
+
+	updated .gitignore
+
+2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 	* vbf/Makefile.am:
 	* vbf/am/vbfamprojectmanager.vala:

@@ -63,3 +63,5 @@ gen-project/vala-gen-project
 tests/
 vtg-*.tar.bz2
 vtg-*.tar.gz
+vbf/vbftest
+vbf/am/.dirstamp
