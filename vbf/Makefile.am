@@ -57,11 +57,11 @@ libvbf_la_SOURCES = \
 	$(NULL)
 
 vbftest.vala.stamp: $(vbftest_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --vapidir ../vapi --pkg config --pkg vala-1.0 --pkg gtk+-2.0 --pkg utils vbf-1.0.vapi $^
+	$(VALAC) $(DEBUG) -C  --vapidir ../vapi --pkg config --pkg vala-1.0 --pkg utils vbf-1.0.vapi $^
 	touch $@
 
 libvbf.vala.stamp: $(libvbf_la_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --library vbf-1.0 --vapidir ../vapi --pkg config --pkg vala-1.0 --pkg gtk+-2.0 --pkg utils --basedir $(top_srcdir)/vbf $^
+	$(VALAC) $(DEBUG) -C  --library vbf-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/vbf $^
 	touch $@
 
 libvbf_la_LDFLAGS = \

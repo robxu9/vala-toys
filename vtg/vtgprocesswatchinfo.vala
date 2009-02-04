@@ -1,5 +1,5 @@
 /*
- *  vtgprojectmanagerprojectsource.vala - Vala developer toys for GEdit
+ *  vtgprocesswatchinfo.vala - Vala developer toys for GEdit
  *  
  *  Copyright (C) 2008 - Andrea Del Signore <sejerpz@tin.it>
  *  
@@ -24,17 +24,44 @@ using Gedit;
 using Gdk;
 using Gtk;
 
-namespace Vtg.ProjectManager
+namespace Vtg
 {
-	public class ProjectPackage : GLib.Object
+	internal class ProcessWatchInfo
 	{
-		public string name;
-		public string id;
+		public uint id = 0;
+		public IOChannel stdin = null;
+		public IOChannel stdout = null;
+		public IOChannel stderr = null;
 
-		public ProjectPackage (string name)
+		public uint stdout_watch_id = 0;
+		public uint stderr_watch_id = 0;
+
+		public ProcessWatchInfo (uint id)
 		{
-			this.name = name;
-			this.id = name;
+			this.id = id;
+		}
+
+		public void cleanup ()
+		{
+			try {
+				if (stdin != null)
+					stdin.flush ();      
+
+				stdout.flush ();
+				stderr.flush ();
+
+				if (stdout_watch_id != 0) {
+					Source.remove (stdout_watch_id);
+				}
+				if (stderr_watch_id != 0) {
+					Source.remove (stderr_watch_id);
+				}
+				stdin = null;
+				stdout = null;
+				stderr = null;
+			} catch (Error err) {
+				GLib.warning ("cleanup - error: %s", err.message);
+			}
 		}
 	}
 }

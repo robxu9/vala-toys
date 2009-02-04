@@ -1,5 +1,5 @@
 /*
- *  vtgprojectmanagerfilteredlistdialog.vala - Vala developer toys for GEdit
+ *  vtgfilteredlistdialog.vala - Vala developer toys for GEdit
  *  
  *  Copyright (C) 2008 - Andrea Del Signore <sejerpz@tin.it>
  *  
@@ -24,7 +24,7 @@ using Gedit;
 using Gdk;
 using Gtk;
 
-namespace Vtg.ProjectManager
+namespace Vtg
 {
 	public class FilteredListDialog : GLib.Object
 	{

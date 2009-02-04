@@ -10,6 +10,7 @@ AM_CPPFLAGS = \
 	-DPACKAGE_DATADIR=\""$(pkgdatadir)"\" \
 	-include $(CONFIG_HEADER) \
 	-I $(top_srcdir)/vsc \
+	-I $(top_srcdir)/vbf \
 	$(NULL)
 
 BUILT_SOURCES = libvtg.vala.stamp
@@ -30,22 +31,16 @@ libvtg_la_VALASOURCES = \
 	vtgsymbolcompletionprovider.vala \
 	vtgsymbolcompletiontrigger.vala \
 	vtgsymbolcompletionhelper.vala \
+	vtgprojectmanagerui.vala \
+	vtgprojectview.vala \
+	vtgprojectbuilder.vala \
+	vtgprojectexecuter.vala \
+	vtgprojectexecuterdialog.vala \
+	vtgoutputview.vala \
+	vtgprocesswatchinfo.vala \
+	vtgbuildlogview.vala \
 	vtgprojectmanager.vala \
-	vtgprojectmanagerview.vala \
-	vtgprojectmanagerbuilder.vala \
-	vtgprojectmanagerexecuter.vala \
-	vtgprojectmanagerexecuterdialog.vala \
-	vtgprojectmanageroutputview.vala \
-	vtgprojectmanagerprocesswatchinfo.vala \
-	vtgprojectmanagerbuildlogview.vala \
-	vtgprojectmanagerproject.vala \
-	vtgprojectmanagerprojectmodule.vala \
-	vtgprojectmanagerprojectpackage.vala \
-	vtgprojectmanagerprojectgroup.vala \
-	vtgprojectmanagerprojecttarget.vala \
-	vtgprojectmanagerprojectsource.vala \
-	vtgprojectmanagerpackagesdialog.vala \
-	vtgprojectmanagerfilteredlistdialog.vala \
+	vtgfilteredlistdialog.vala \
 	vtgvcsbackendsivcs.vala \
 	vtgvcsbackendsgit.vala \
 	vtgvcsbackendsbzr.vala \
@@ -64,7 +59,7 @@ libvtg_la_SOURCES = \
 	$(NULL)
 
 libvtg.vala.stamp: $(libvtg_la_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --vapidir ../vapi --vapidir ../vsc --pkg config --pkg vsc-1.0 --pkg vala-1.0 --pkg gtksourcecompletion-1.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms --pkg gnome-build-1.0 --pkg gconf-2.0 $^
+	$(VALAC) $(DEBUG) -C  --vapidir ../vapi --vapidir ../vsc --vapidir ../vbf --pkg config --pkg vbf-1.0 --pkg vsc-1.0 --pkg vala-1.0 --pkg gtksourcecompletion-1.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms --pkg gnome-build-1.0 --pkg gconf-2.0 $^
 	touch $@
 
 libvtg_la_LDFLAGS = \
@@ -73,6 +68,7 @@ libvtg_la_LDFLAGS = \
 
 libvtg_la_LIBADD = \
 	../vsc/libvsc.la \
+	../vbf/libvbf.la \
 	$(VTGPLUGIN_LIBS) \
 	$(NULL)
 

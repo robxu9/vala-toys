@@ -24,14 +24,14 @@ using Gedit;
 using Gdk;
 using Gtk;
 using Vsc;
-using Vtg.ProjectManager;
+using Vbf;
 
 namespace Vtg
 {
 	internal class ProjectDescriptor : GLib.Object
 	{
 		public Vsc.SymbolCompletion completion;
-		public ProjectManager.Project project;
+		public ProjectManager project;
 
 		~ProjectDescriptor ()
 		{
@@ -49,7 +49,7 @@ namespace Vtg
 		private Gee.List<Vtg.ProjectDescriptor> _projects = new Gee.ArrayList<Vtg.ProjectDescriptor> ();
 		private Configuration _config = null;
 		private Vtg.ProjectDescriptor _default_project = null;
-		private ProjectManager.PluginHelper _prj_man;
+		private ProjectManagerUi _project_manager_ui;
 		
 		private enum DeactivateModuleOptions
 		{
@@ -63,10 +63,10 @@ namespace Vtg
 			get { return _projects; }
 		}
 
-		public ProjectManager.OutputView output_view { get; set; }
-		public ProjectManager.PluginHelper project_manager 
+		public OutputView output_view { get; set; }
+		public ProjectManagerUi project_manager_ui
 		{ 
-			get { return _prj_man; }
+			get { return _project_manager_ui; }
 		}
 		
 		public Configuration config 
@@ -94,8 +94,8 @@ namespace Vtg
 				initialize_document (doc);
 			}
 
-			_output_view = new ProjectManager.OutputView (this);
-			_prj_man = new ProjectManager.PluginHelper (this);
+			_output_view = new OutputView (this);
+			_project_manager_ui = new ProjectManagerUi (this);
 			//_prj_man.project_loaded += this.on_project_loaded;
 			
 		}
@@ -103,7 +103,7 @@ namespace Vtg
 		public override void deactivate (Gedit.Window window)
 		{
 			deactivate_modules ();
-			_prj_man = null;
+			_project_manager_ui = null;
 			_output_view = null;
 			_window = null;
 		}
@@ -124,7 +124,7 @@ namespace Vtg
 			if (doc != null) {
 				var prj = project_descriptor_find_from_document (doc);
 				if (!(prj.project == null && (doc.language == null || doc.language.id != "vala"))) {
-					_prj_man.project_view.current_project = prj.project;
+					_project_manager_ui.project_view.current_project = prj.project;
 				}
 			}
 		}
@@ -382,7 +382,7 @@ namespace Vtg
 			return tab;		
 		}
 		
-		internal void on_project_closed (ProjectManager.PluginHelper sender, ProjectManager.Project project)
+		internal void on_project_closed (ProjectManagerUi sender, ProjectManager project)
 		{
 			return_if_fail (project != _default_project.project);
 
@@ -395,35 +395,36 @@ namespace Vtg
 
 		}
 
-		internal void on_project_loaded (ProjectManager.PluginHelper sender, ProjectManager.Project project)
+		internal void on_project_loaded (ProjectManagerUi sender, ProjectManager project_manager)
 		{
 			var prj = new ProjectDescriptor ();
 			var completion = new Vsc.SymbolCompletion ();
-
+			var project = project_manager.project;
+			
 			/* setup referenced packages */
-			foreach (ProjectManager.ProjectModule module in project.modules) {
-				foreach (ProjectManager.ProjectPackage package in module.packages) {
+			foreach (Vbf.Module module in project.get_modules ()) {
+				foreach (Vbf.Package package in module.get_packages ()) {
 					completion.parser.try_add_package (package.name);
 				}
 			}
 
 			/* setup vapidir, built libraries and local packages */
-			foreach (ProjectGroup group in project.groups) {
-				foreach(string package in group.built_libraries) {
+			foreach (Group group in project.get_groups ()) {
+				foreach(string package in group.get_built_libraries ()) {
 					completion.parser.add_built_package (package);
 				}
-				foreach(string path in group.vapidirs) {
+				foreach(string path in group.get_include_dirs ()) {
 					completion.parser.add_path_to_vapi_search_dir (path);
 				}
-				foreach(string package in group.packages) {
-					completion.parser.try_add_package (package);
+				foreach(Package package in group.get_packages ()) {
+					completion.parser.try_add_package (package.id);
 				}
 			}
 			
 			/* setup source files */
-			foreach (ProjectGroup group in project.groups) {
-				foreach (ProjectTarget target in group.targets) {
-					foreach (ProjectSource source in target.sources) {
+			foreach (Group group in project.get_groups ()) {
+				foreach (Target target in group.get_targets ()) {
+					foreach (Vbf.Source source in target.get_sources ()) {
 						if (source.uri.has_suffix (".vala") && source.uri.has_prefix ("file://")) {
 							string filename = source.uri.substring (7, source.uri.length - 7);
 							try {
@@ -437,7 +438,7 @@ namespace Vtg
 			}
 			
 			prj.completion = completion;
-			prj.project = project;
+			prj.project = project_manager;
 			_projects.add (prj);
 			completion.parser.resume_parsing ();
 		}

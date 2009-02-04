@@ -23,27 +23,28 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
+using Vbf;
 
-namespace Vtg.ProjectManager
+namespace Vtg
 {
-	public class ExecuterDialog
+	public class ProjectExecuterDialog
 	{
 		private Gtk.EntryCompletion _completion;
 		private Gtk.Dialog _dialog;
 		private TreeView _tree;
 		private Button _button_exec;
 		
-		public ExecuterDialog (Gtk.Window parent, Project project)
+		public ProjectExecuterDialog (Gtk.Window parent, ProjectManager project)
 		{
 			initialize_ui (parent, project);
 		}
 		
-		~ExecuterDialog ()
+		~ProjectExecuterDialog ()
 		{
 			_dialog.destroy ();	
 		}
 		
-		private void initialize_ui (Gtk.Window parent, Project project)
+		private void initialize_ui (Gtk.Window parent, ProjectManager project)
 		{
 			var completions = Vtg.Caches.get_executer_cache ();
 			var builder = new Gtk.Builder ();

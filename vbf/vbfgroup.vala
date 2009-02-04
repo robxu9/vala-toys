@@ -27,21 +27,28 @@ namespace Vbf
 	public class Group : GLib.Object
 	{
 		public string name;
-		public string makefile;
+		public string id;
 		public unowned Project project = null;
+
+		private Gee.List<Package> packages = new Gee.ArrayList<Package> ();
+		private Gee.List<string> include_dirs = new Gee.ArrayList<string> ();
+		private Gee.List<string> built_libraries = new Gee.ArrayList<string> ();
 		
 		private Gee.List<Target> targets = new Gee.ArrayList<Target> ();
 		private Gee.List<Variable> variables = new Gee.ArrayList<Variable> ();
 		private Gee.List<Group> subgroups = new Gee.ArrayList<Group> ();
 
-		public Group (Project project, string makefile)
+		public Group (Project project, string id)
 		{
 			this.project = project;
-			this.makefile = makefile;
-			this.name = makefile.split ("/")[0];
-			setup_file_monitor ();
+			this.id = id;
+			this.name = id.replace (project.id, "");
+			if (this.name.has_prefix ("/"))
+				this.name = this.name.split ("/")[1];
+			else
+				this.name = this.name.split ("/")[0];
 		}
-
+		
 		public Gee.List<Target> get_targets ()
 		{
 			return new ReadOnlyList<Target> (targets);
@@ -52,16 +59,41 @@ namespace Vbf
 			targets.add (target);
 		}
 		
+		public Gee.List<Package> get_packages ()
+		{
+			return new ReadOnlyList<Package> (packages);
+		}
+		
+		internal void add_package (Package package)
+		{
+			packages.add (package);
+		}
+				
+		public Gee.List<string> get_include_dirs ()
+		{
+			return new ReadOnlyList<string> (include_dirs);
+		}
+		
+		internal void add_include_dir (string dir)
+		{
+			include_dirs.add (dir);
+		}
+
+		public Gee.List<string> get_built_libraries ()
+		{
+			return new ReadOnlyList<string> (built_libraries);
+		}
+		
+		internal void add_built_library (string dir)
+		{
+			built_libraries.add (dir);
+		}
+						
 		public Gee.List<Group> get_subgroups ()
 		{
 			return new ReadOnlyList<Group> (subgroups);
 		}
-/*
-		internal void add_subgroup (Group group)
-		{
-			subgroups.add (group);
-		}
-*/
+
 		public Gee.List<Variable> get_variables ()
 		{
 			return new ReadOnlyList<Variable> (variables);
@@ -70,11 +102,6 @@ namespace Vbf
 		internal void add_variable (Variable variable)
 		{
 			variables.add (variable);
-		}
-		
-		internal void setup_file_monitor ()
-		{
-			
 		}
 	}
 }

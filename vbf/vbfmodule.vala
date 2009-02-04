@@ -26,13 +26,17 @@ namespace Vbf
 {
 	public class Module : GLib.Object
 	{
+		public string id;
 		public string name;
+		public unowned Project project;
 		
 		private Gee.List<Package> packages = new Gee.ArrayList<Package> ();
 		
-		public Module (string name)
+		public Module (Project project, string id)
 		{
-			this.name = name;
+			this.id = id;
+			this.name = id;
+			this.project = project;
 		}
 		
 		public Gee.List<Package> get_packages ()

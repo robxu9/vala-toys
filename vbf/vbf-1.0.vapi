@@ -31,41 +31,52 @@ namespace Vbf {
 	[CCode (cheader_filename = "vbffile.h")]
 	public class File : GLib.Object {
 		public string filename;
+		public string name;
+		public string uri;
 		public File (string filename);
 	}
 	[CCode (cheader_filename = "vbfgroup.h")]
 	public class Group : GLib.Object {
-		public string makefile;
+		public string id;
 		public string name;
 		public weak Vbf.Project project;
+		public Gee.List<string> get_built_libraries ();
+		public Gee.List<string> get_include_dirs ();
+		public Gee.List<Vbf.Package> get_packages ();
 		public Gee.List<Vbf.Group> get_subgroups ();
 		public Gee.List<Vbf.Target> get_targets ();
 		public Gee.List<Vbf.Variable> get_variables ();
-		public Group (Vbf.Project project, string makefile);
+		public Group (Vbf.Project project, string id);
 	}
 	[CCode (cheader_filename = "vbfmodule.h")]
 	public class Module : GLib.Object {
+		public string id;
 		public string name;
+		public weak Vbf.Project project;
 		public Gee.List<Vbf.Package> get_packages ();
-		public Module (string name);
+		public Module (Vbf.Project project, string id);
 	}
 	[CCode (cheader_filename = "vbfpackage.h")]
 	public class Package : GLib.Object {
 		public string constraint;
+		public string id;
 		public string name;
 		public Vbf.ConfigNode version;
-		public Package (string name);
+		public Package (string id);
 	}
 	[CCode (cheader_filename = "vbfproject.h")]
 	public class Project : Vbf.ConfigNode {
-		public string filename;
+		public string id;
 		public string name;
 		public string url;
 		public string version;
+		public string working_dir;
+		public Vbf.Group? get_group (string id);
 		public Gee.List<Vbf.Group> get_groups ();
 		public Gee.List<Vbf.Module> get_modules ();
 		public Gee.List<Vbf.Variable> get_variables ();
-		public Project (string name);
+		public Project (string id);
+		public void update ();
 		public signal void updated ();
 	}
 	[CCode (cheader_filename = "vbfsource.h")]
@@ -83,12 +94,13 @@ namespace Vbf {
 	[CCode (cheader_filename = "vbftarget.h")]
 	public class Target : GLib.Object {
 		public weak Vbf.Group group;
+		public string id;
 		public string name;
 		public bool no_install;
-		public Vbf.TargetTypes target_type;
-		public Gee.List<Vbf.File> get_files ();
+		public Vbf.TargetTypes type;
 		public Gee.List<Vbf.Source> get_sources ();
-		public Target (Vbf.Group group, Vbf.TargetTypes type, string name);
+		public bool has_sources_of_type (Vbf.SourceTypes type);
+		public Target (Vbf.Group group, Vbf.TargetTypes type, string id);
 	}
 	[CCode (cheader_filename = "vbfunresolvedconfignode.h")]
 	public class UnresolvedConfigNode : Vbf.ConfigNode {
@@ -108,6 +120,7 @@ namespace Vbf {
 	public interface IProjectManager : GLib.Object {
 		public abstract Vbf.Project? open (string project_file);
 		public abstract bool probe (string project_file);
+		public abstract void refresh (Vbf.Project project);
 	}
 	[CCode (cprefix = "VBF_SOURCE_TYPES_", cheader_filename = "vbfsource.h")]
 	public enum SourceTypes {
@@ -119,6 +132,6 @@ namespace Vbf {
 		PROGRAM,
 		LIBRARY,
 		DATA,
-		VALA_PROGRAM
+		BUILT_SOURCES
 	}
 }

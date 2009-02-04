@@ -25,13 +25,15 @@ namespace Vbf
 {
 	public class Package : GLib.Object
 	{
+		public string id;
 		public string name;
 		public string constraint;
 		public ConfigNode version;
 		
-		public Package (string name)
+		public Package (string id)
 		{
-			this.name = name;
+			this.id = id;
+			this.name = id;
 		}
 	}
 }

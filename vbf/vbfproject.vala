@@ -26,20 +26,25 @@ namespace Vbf
 {
 	public class Project : ConfigNode
 	{
+		public string id;
 		public string name;
 		public string url;
 		public string version;
-		public string filename;
-				
-		public signal void updated();
+		public string working_dir;
+			
+		public signal void updated ();
 		
 		private Gee.List<Group> groups = new Gee.ArrayList<Group> ();	
 		private Gee.List<Module> modules = new Gee.ArrayList<Module> ();
 		private Gee.List<Variable> variables = new Gee.ArrayList<Variable> ();
+		private Gee.List<FileMonitor> file_mons = new Gee.ArrayList<FileMonitor> ();
+		private bool in_refresh = false;
 		
-		public Project (string name)
+		internal IProjectManager backend = null;
+		
+		public Project (string id)
 		{
-			this.name = name;
+			this.id = id;
 		}
 		
 		public Gee.List<Group> get_groups ()
@@ -47,6 +52,17 @@ namespace Vbf
 			return new ReadOnlyList<Group> (groups);
 		}
 		
+		public Group? get_group (string id)
+		{
+			foreach (Group group in groups) {
+				if (group.id == id) {
+					return group;
+				}
+			}
+			
+			return null;
+		}
+
 		internal void add_group (Group group)
 		{
 			groups.add (group);
@@ -74,7 +90,62 @@ namespace Vbf
 		
 		public override string to_string ()
 		{
-			return "%s %s: %s".printf (name, version, filename);
+			return "%s %s: %s".printf (name, version, id);
+		}
+		
+		internal void clear ()		
+		{
+			groups.clear ();
+			variables.clear ();
+			modules.clear ();
+			cleanup_file_monitors ();
+		}
+		
+		internal void setup_file_monitors ()
+		{
+			try {
+				string fname;
+				GLib.File file;
+				foreach (Group group in groups) {
+					fname = Path.build_filename (group.id, "Makefile.am");
+					file = GLib.File.new_for_path (fname);
+					var file_mon = FileMonitor.file (file, FileMonitorFlags.NONE, null);
+					file_mons.add (file_mon);
+					file_mon.changed += this.on_project_file_changed;
+				}
+				fname = Path.build_filename (id, "configure.ac");
+				file = GLib.File.new_for_path (fname);
+				var file_mon = FileMonitor.file (file, FileMonitorFlags.NONE, null);
+				file_mons.add (file_mon);
+				file_mon.changed += this.on_project_file_changed;
+			} catch (Error err) {
+				critical ("setup_file_monitors error: %s", err.message);
+			}
+		}
+		
+		internal void cleanup_file_monitors ()
+		{
+			foreach (FileMonitor file_mon in file_mons) {
+				file_mon.changed -= this.on_project_file_changed;
+				file_mon.cancel ();
+			}
+			file_mons.clear ();
+		}
+		
+		private void on_project_file_changed (FileMonitor sender, GLib.File file, GLib.File? other_file, GLib.FileMonitorEvent event_type)
+		{
+			update ();
+		}
+		
+		public void update ()
+		{
+			if (in_refresh)
+				return;
+				
+			in_refresh = true;
+			backend.refresh (this);
+			this.updated ();
+			in_refresh = false;
 		}
 	}
 }

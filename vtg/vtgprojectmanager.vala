@@ -23,686 +23,256 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
+using Vbf;
 
-namespace Vtg.ProjectManager
+namespace Vtg
 {
-	public class PluginHelper : GLib.Object
+	public class ProjectManager : GLib.Object
 	{
-		/* UI Code */
-		private string _ui_def = """<ui>
-                                            <menubar name="MenuBar">
-                                                <menu name="FileMenu" action="File">
-                                                    <placeholder name="FileOps_2">
-                                                        <separator />
-                                                        <menuitem name="ProjectNew" action="ProjectNew"/>
-                                                        <menuitem name="ProjectOpen" action="ProjectOpen"/>
-                                                        <separator />
-                                                        <menuitem name="ProjectClose" action="ProjectClose"/>
-                                                        <separator />
-                                                    </placeholder>
-                                                </menu>
-                                            </menubar>
+		private Project _project = null;
+		private Gtk.TreeStore _model;
+		private bool in_update = false;
 
-                                            <menubar name="MenuBar">
-                                              <menu name="EditMenu" action="Edit">
-                                                 <placeholder name="EditOps_3">
-                                                     <separator />
-                                                     <menuitem name="ProjectCompleteWord" action="ProjectCompleteWord"/>
-                                                 </placeholder>
-                                              </menu>
-                                            </menubar>
+		public virtual signal void updated ();
+		public string filename = null;
 
-                                            <menubar name="MenuBar">
-                                              <placeholder name="ExtraMenu_1">
-                                                <menu name="BuildMenu" action="ProjectBuildMenuAction">
-                                                    <placeholder name="BuildMenuOps_1">
-                                                        <menuitem name="ProjectBuild" action="ProjectBuild"/>
-                                                        <menuitem name="ProjectBuildClean" action="ProjectBuildClean"/>
-                                                        <separator />
-                                                        <menuitem name="ProjectBuildCleanStamps" action="ProjectBuildCleanStamps"/>
-                                                        <separator />
-                                                        <menuitem name="ProjectBuildConfigure" action="ProjectBuildConfigure"/>
-                                                        <separator />
-                                                        <menuitem name="ProjectBuildCompileFile" action="ProjectBuildCompileFile"/>
-                                                    </placeholder>
-                                                    <placeholder name="BuildMenuOps_2">
-                                                        <separator />
-                                                        <menuitem name="NextError" action="ProjectBuildNextError"/>
-                                                        <menuitem name="PreviousError" action="ProjectBuildPreviousError"/>
-                                                    </placeholder>
-                                                    <placeholder name="BuildMenuOps_3">
-                                                        <separator />
-                                                        <menuitem name="Execute" action="ProjectBuildExecute"/>
-                                                        <menuitem name="KillProcess" action="ProjectBuildKill"/>
-                                                    </placeholder>
-                                                </menu>
-                                              </placeholder>                                              
-                                            </menubar>
-                                            
-                                            <menubar name="MenuBar">
-                                                <menu name="DocumentsMenu" action="Documents">
-                                                    <placeholder name="DocumentsOps_3">
-                                                        <menuitem name="GotoDocument" action="ProjectGotoDocument"/>
-                                                        <separator />
-                                                    </placeholder>
-                                                </menu>
-                                            </menubar>
-
-                                             <menubar name="MenuBar">
-                                                <menu name="SearchMenu" action="Search">
-                                                    <placeholder name="SearchOps_8">
-                                                    	<separator />
-                                                        <menuitem name="GotoMethod" action="ProjectGotoMethod"/>
-
-                                                    </placeholder>
-                                                </menu>
-                                            </menubar>
-                                            
-                                            <menubar name="MenuBar">
-                                            	 <menu name="ToolsMenu" action="Tools">
-						 	<placeholder name="ToolsOps_1"> 
-						 		<separator />
-							 	<menuitem name="PrepareSingleFileChangeLog" action="ProjectPrepareSingleFileChangeLog"/>
-							 	<menuitem name="PrepareChangeLog" action="ProjectPrepareChangeLog"/>
-						 		<separator />							 	
-                                                	</placeholder>
-                                                 </menu>
-                                            </menubar>
-                                        </ui>""";
-		private uint _ui_id;
-
-		const ActionEntry[] _action_entries = {
-			{"ProjectNew", null, N_("_New Project..."), null, N_("Create a new project"), on_project_new},
-			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
-			{"ProjectClose", null, N_("_Close Current Project"), null, N_("Close current selected project"), on_project_close},
-			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
-			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
-			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project using 'make clean'"), on_project_clean},
-			{"ProjectBuildCleanStamps", null, N_("_Clean Project and Vala 'Stamp' Files"), null, N_("Clean the current project stamp files"), on_project_clean_stamps},
-			{"ProjectBuildConfigure", null, N_("C_onfigure Project"), null, N_("Configure or reconfigure the current project"), on_project_configure},
-			{"ProjectBuildCompileFile", null, N_("_Compile File"), "<control>B", N_("Compile the current file with the vala compiler"), on_standalone_file_compile},			
-			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
-			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
-			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute target program"), on_project_execute_process},
-			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process},
-			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
-			{"ProjectGotoMethod", null, N_("_Go To Method..."), "<control>M", N_("Goto to a specific method in the current source document"), on_project_goto_method},
-			{"ProjectCompleteWord", null, N_("Complete _Word"), "<control>space", N_("Try to complete the word in the current source document"), on_complete_word},
-			{"ProjectPrepareChangeLog", null, N_("_Prepare ChangeLog"), null, N_("Add an entry to the ChangeLog with all added/modified files"), on_prepare_changelog},
-			{"ProjectPrepareSingleFileChangeLog", null, N_("_Add Current File To ChangeLog"), null, N_("Add the current file to the ChangeLog"), on_prepare_single_file_changelog}
-		};
-
-
-		/* END UI */
-		private Gee.List<Project> _projects = new Gee.ArrayList<Project> ();
-		private ActionGroup _actions = null;
-		private Vtg.Plugin _plugin;
-		private ProjectManager.View _prj_view = null;
-		private ProjectManager.Builder _prj_builder = null;
-		private ProjectManager.Executer _prj_executer = null;
-		private ChangeLog _changelog = null;
+		public Gee.List<string> exec_targets = new Gee.ArrayList<string> ();
+		public Gee.List<Vbf.Source> all_vala_sources = new Gee.ArrayList<Vbf.Source> ();
 		
- 		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
-
-		//public signal void project_loaded (Project project);
-
-		public PluginHelper (Vtg.Plugin plugin)
+		public Gtk.TreeModel model { get { return _model; } }
+		public Vbf.Project project { get { return _project; } }
+		
+		public VcsTypes vcs_type = VcsTypes.NONE;
+		public string changelog_uri = null;
+		
+		~ProjectManager ()
 		{
-			this.plugin = plugin;
-		}
-
-
-		~PluginHelper ()
-		{
-			var manager = _plugin.gedit_window.get_ui_manager ();
-			manager.remove_ui (_ui_id);
-			manager.remove_action_group (_actions);
-		}
-
-		construct	
-		{
-			_prj_view = new ProjectManager.View (_plugin);
-			_prj_view.notify["current-project"] += this.on_current_project_changed;
-			_prj_builder = new ProjectManager.Builder (_plugin);
-			_prj_executer = new ProjectManager.Executer (_plugin);
-			
-			_prj_executer.process_start += (sender) => {
-				update_ui (_prj_view.current_project == null);
-			};
-			_prj_executer.process_exit += (sender, exit_status) => {
-				update_ui (_prj_view.current_project == null);
-			};
-			_prj_builder.build_start += (sender) => {
-				update_ui (_prj_view.current_project == null);
-			};
-			_prj_builder.build_exit += (sender, exit_status) => {
-				update_ui (_prj_view.current_project == null);
-			};
-						
-			initialize_ui ();
-			_changelog = new ChangeLog (_plugin);
-			update_ui (_prj_view.current_project == null);
-		}
-
-		public ProjectManager.View project_view 
-		{
-			get {
-				return _prj_view;
-			}
+			GLib.debug ("project manager destroyes");
 		}
 		
-		private void initialize_ui ()
+		public bool contains_source_file (string uri)
 		{
-			_actions = new ActionGroup ("ProjectManagerActionGroup");
-			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
-			_actions.add_actions (_action_entries, this);
-			var manager = plugin.gedit_window.get_ui_manager ();
-			manager.insert_action_group (_actions, -1);
-			try {
-				_ui_id = manager.add_ui_from_string (_ui_def, -1);
-			} catch (Error err) {
-				GLib.warning ("Error %s", err.message);
-			}
-		}
-
-		public void deactivate ()
-		{
-		}
-
-		private void on_prepare_changelog (Gtk.Action action)
-		{
-			try {
-				_changelog.prepare ();
-			} catch (Error err) {
-				Vtg.Interaction.error_message (_("Can't prepare the ChangeLog entry"), err);
-			}
-		}
-
-		private void on_prepare_single_file_changelog (Gtk.Action action)
-		{
-			try {
-				var doc = _plugin.gedit_window.get_active_document ();
-				if (doc != null) {
-					var prj = _prj_view.current_project;
-					string uri = doc.get_uri ();
-					string file = doc.get_short_name_for_display ();
-					if (prj != null) {
-						var src = prj.get_source_file_from_uri (uri);
-						if (src != null) {
-							file = src.name;
+			foreach (Group group in _project.get_groups ()) {
+				foreach (Target target in group.get_targets ()) {
+					foreach (Vbf.Source source in target.get_sources ()) {
+						if (source.uri == uri) {
+							return true;
 						}
 					}
-					_changelog.prepare (file);
-				}
-			} catch (Error err) {
-				Vtg.Interaction.error_message (_("Can't prepare the ChangeLog entry"), err);
-			}
-		}
-		
-		private void on_complete_word (Gtk.Action action)
-		{
-			var project = _prj_view.current_project;
-			return_if_fail (project != null);
-			
-			var view = _plugin.gedit_window.get_active_view ();
-			if (view == null)
-				return;
-						
-			var sch = _plugin.scs_find_from_view (view);
-			if (sch == null)
-				return;
-				
-			sch.trigger.complete_word ();			
-		}
-		
-		private void on_project_open (Gtk.Action action)
-		{
-			var dialog = new Gtk.FileChooserDialog (_("Open Project"),
-				      _plugin.gedit_window,
-				      Gtk.FileChooserAction.SELECT_FOLDER,
-				      Gtk.STOCK_CANCEL, ResponseType.CANCEL,
-				      Gtk.STOCK_OPEN, ResponseType.ACCEPT,
-				      null);
-
-			if (dialog.run () == ResponseType.ACCEPT) {
-				dialog.hide_all ();
-				var foldername = dialog.get_filename ();
-				open_project (foldername);				
-			}
-			dialog.destroy ();
-		}
-
-		private void on_project_close (Gtk.Action action)
-		{
-			var project = _prj_view.current_project;
-			return_if_fail (project != null);
-
-			bool save_required = false;
-			foreach (Gedit.Document doc in _plugin.gedit_window.get_unsaved_documents ()) {
-				if (project.contains_source_file (doc.get_uri ())) {
-					save_required = true;
 				}
 			}
-			
-			//there are some files that require saving: ask it!
-			if (save_required) {
-				var dialog = new Gtk.MessageDialog (_plugin.gedit_window,
-                                  DialogFlags.DESTROY_WITH_PARENT,
-                                  MessageType.QUESTION,
-                                  ButtonsType.NONE,
-				    _("Project files need to be saved"));
-				dialog.add_buttons (Gtk.STOCK_CLOSE, ResponseType.CLOSE,
-				    Gtk.STOCK_CANCEL, ResponseType.CANCEL,
-				    Gtk.STOCK_SAVE, ResponseType.ACCEPT);
-				var response = dialog.run ();
-				dialog.destroy ();
-				if (response == ResponseType.CANCEL) {
-					return;
-				} else if (response == ResponseType.ACCEPT) {
-					project_save_all (project);
+			return false;
+		}
+
+		public Vbf.Source? get_source_file_from_uri (string uri)
+		{
+			foreach (Group group in _project.get_groups ()) {
+				foreach (Target target in group.get_targets ()) {
+					foreach (Vbf.Source source in target.get_sources ()) {
+						if (source.uri == uri) {
+							return source;
+						}
+					}
 				}
 			}
-
-			//close project
-			close_project (project);
-		}
-			    
-		private void on_project_new (Gtk.Action action)
-		{
-			//save dialog
-			var dialog = new Gtk.FileChooserDialog (_("Save Project"),
-				      _plugin.gedit_window,
-				      Gtk.FileChooserAction.SELECT_FOLDER,
-				      Gtk.STOCK_CANCEL, ResponseType.CANCEL,
-				      Gtk.STOCK_SAVE, ResponseType.ACCEPT,
-				      null);
-			string foldername = null;
-
-			if (dialog.run () == ResponseType.ACCEPT) {
-				foldername = dialog.get_filename ();
-			}
-			dialog.destroy ();
-			//HACK: need to going to async code in create_project
-			while (MainContext.@default ().pending ()) {
-				MainContext.@default ().iteration (false);
-			}
-
-			if (foldername != null) {
-				create_project (foldername);
-				open_project (foldername);
-			}
-		}
-		
-		private void on_project_goto_document (Gtk.Action action)
-		{
-			var project = _prj_view.current_project;
-			return_if_fail (project != null);
-			
-			TreeIter iter;
-			Gtk.ListStore model = new Gtk.ListStore (2, typeof(string), typeof (GLib.Object));
-			foreach (ProjectSource src in project.all_vala_sources) {
-				model.append (out iter);
-				model.set (iter, 0, src.name, 1, src);
-			}
-						
-			var dialog = new FilteredListDialog (model);
-			if (dialog.run ()) {
-				ProjectSource src;
-				model.get (dialog.selected_iter , 1, out src);
-				_plugin.activate_uri (src.uri);
-			}
-		}
-
-		private void on_project_goto_method (Gtk.Action action)
-		{
-			var project = _prj_view.current_project;
-			return_if_fail (project != null);
-			
-			var pdes = get_projectdescriptor_for_project (project);
-			return_if_fail (pdes != null);
-			
-			var view = _plugin.gedit_window.get_active_view ();
-			if (view == null)
-				return;
-				
-			var doc = (Gedit.Document) view.get_buffer ();
-			return_if_fail (doc != null);
-
-			var uri = doc.get_uri ();
-			if (uri == null)
-				return;
-				
-			var methods = pdes.completion.get_methods_for_source (uri);
-			if (methods.size <= 0)
-				return;
-				
-			TreeIter iter;
-			Gtk.ListStore model = new Gtk.ListStore (2, typeof(string), typeof (Vsc.SymbolCompletionItem));
-			foreach (Vsc.SymbolCompletionItem method in methods) {
-				model.append (out iter);
-				model.set (iter, 0, method.name, 1, method);
-			}
-			
-			var dialog = new FilteredListDialog (model);
-			if (dialog.run ()) {
-				Vsc.SymbolCompletionItem method;
-				model.get (dialog.selected_iter , 1, out method);
-				doc.goto_line (method.line - 1);
-				view.scroll_to_cursor ();
-			}
-		}
-
-
-		private ProjectDescriptor? get_projectdescriptor_for_project (Project project)
-		{
-			foreach (ProjectDescriptor current in _plugin.projects) {
-				if (current.project == project)
-					return current;
-			}
-			
 			return null;
 		}
 
-		private void on_standalone_file_compile (Gtk.Action action)
+		public bool contains_vala_source_file (string uri)
 		{
-			var doc = _plugin.gedit_window.get_active_document ();
-			if (doc != null) {
-				string file = doc.get_uri ();
-				var project = _prj_view.current_project;
-				if (project != null) {
-					if (project.contains_source_file (file)) {
-						//TODO: we should get the group an issue a make in that subfolder
-						GLib.warning ("Can't compile a project file (for now)");
-						return;
-					}
-				}
-				var cache = Vtg.Caches.get_compile_cache ();
-				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Compile File"), _plugin.gedit_window, cache);
-				if (params_dialog.run () == ResponseType.OK) {
-					var params = params_dialog.parameters;
-					if (!Vtg.Caches.cache_contains (cache, params)) {
-						Vtg.Caches.cache_add (cache, params);
-					}
-					file = file.replace ("file://", ""); //HACK
-					if (!doc.is_untouched () && _plugin.config.save_before_build)
-						doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
-						
-					_prj_builder.compile_file (file, params);
+			foreach (Vbf.Source source in all_vala_sources) {
+				if (source.uri == uri) {
+					return true;
 				}
 			}
+
+			return false;
 		}
 		
-		private void on_project_build (Gtk.Action action)
+		public string? source_uri_for_name (string name)
 		{
-			if (_prj_view.current_project != null) {
-				string pars = null;
-				var cache = Vtg.Caches.get_build_cache ();
+			string[] name_parts = name.split ("/");
+			foreach (Group group in _project.get_groups ()) {
+				foreach (Target target in group.get_targets ()) {
+					foreach (Vbf.Source source in target.get_sources ()) {
+						if (name_parts.length == 1) {
+							if (source.name == name) {
+								return source.uri;
+							}
+						} else if (source.uri != null) {
+							string[] src_parts = source.uri.split ("/");
+							
+							if (name_parts.length <= src_parts.length) {
+								bool equals = true;
+								for(int idx=0; idx < name_parts.length; idx++) {
+									if (src_parts[src_parts.length - idx] != name_parts[name_parts.length - idx]) {
+										equals = false;
+										break;
+									}
+								}
 								
-				if (_prj_builder.is_building) {
-					//ask if stop the current build process and restart a new one
-					var dialog = new MessageDialog (
-						_plugin.gedit_window,
-						DialogFlags.MODAL,
-						MessageType.QUESTION,
-						ButtonsType.YES_NO,
-						_("Stop the current build process and restart a new one?"));
-					dialog.secondary_text = _("Stop the current build process and start a new one with the same command line parameters");
-					int res = dialog.run ();
-					dialog.destroy ();
-					if (res == ResponseType.YES) {
-						_prj_builder.stop_build ();
-						TreeIter iter;
-						if (cache.get_iter_first (out iter)) {
-							cache.get (iter, 0, out pars);
+								if (equals) {
+									return source.uri;
+								}
+							}
 						}
-					} else {
-						return;
 					}
+				}
+			}
+
+			return null;
+		}
+
+		public bool open (string project_filename) throws GLib.Error
+		{
+			IProjectManager pm = new Am.ProjectManager (); 
+			bool res = pm.probe (project_filename);
+			if (res) {
+				_project = pm.open (project_filename);
+				if (_project == null)
+					return false;
 					
-				}
-
-				if (pars == null) {
-					var params_dialog = new Vtg.Interaction.ParametersDialog (_("Build Project"), _plugin.gedit_window, cache);
-					if (params_dialog.run () != ResponseType.OK)
-						return;
-						
-					pars = params_dialog.parameters;
-					if (!Vtg.Caches.cache_contains (cache, pars)) {
-						Vtg.Caches.cache_add (cache, pars);
-					}
-				}
-				
-				var project = _prj_view.current_project;
-				project_save_all (project);
-				_prj_builder.build (project, pars);
+				parse_project ();
+				build_tree_model ();
+				vcs_test (project_filename);
+				_project.updated += this.on_project_updated;
+				return true;
+			} else {
+				throw new ProjectManagerError.NO_BACKEND (_("Can't load project, no suitable backend found"));
 			}
 		}
 
-		private void on_project_configure (Gtk.Action action)
-		{
-			if (_prj_view.current_project != null) {
-				var cache = Vtg.Caches.get_configure_cache ();
-				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Configure Project"), _plugin.gedit_window, cache);
-				if (params_dialog.run () == ResponseType.OK) {
-					var project = _prj_view.current_project;
-					var params = params_dialog.parameters;
-					if (!Vtg.Caches.cache_contains (cache, params)) {
-						Vtg.Caches.cache_add (cache, params);
-					}
-					project_save_all (project);
-					_prj_builder.configure (project, params);
-				}
-			}
-		}
 
-		private void on_project_clean (Gtk.Action action)
+		private void vcs_test (string filename)
 		{
-			clean_project ();
-		}
-
-		private void on_project_clean_stamps (Gtk.Action action)
-		{
-			clean_project (true);
-		}
-
-		private void on_project_execute_process (Gtk.Action action)
-		{
-			if (_prj_view.current_project != null) {
-				var project = _prj_view.current_project;
-				var exec_dialog = new Vtg.ProjectManager.ExecuterDialog (_plugin.gedit_window, project);
-				if (exec_dialog.run () == ResponseType.OK) {
-					var command_line = exec_dialog.command_line;
-					_prj_executer.execute (project, command_line);
-				}
-				
-			}
-		}
-
-		private void on_project_kill_process (Gtk.Action action)
-		{
-			//TODO: implement a kill (project);
-			_prj_executer.kill_last ();
-		}
-
-		private void clean_project (bool stamps = false)
-		{
-			if (_prj_view.current_project != null) {
-				var project = _prj_view.current_project;
-				_prj_builder.clean (project, stamps);
-			}
-		}
-
-		private void on_project_error_next (Gtk.Action action)
-		{
-			_prj_builder.next_error ();
-		}
-
-		private void on_project_error_previuos (Gtk.Action action)
-		{
-			_prj_builder.previous_error ();
-		}
-
-		private void on_current_project_changed (GLib.Object sender, ParamSpec pspec)
-		{
-			ProjectManager.View view = (ProjectManager.View) sender;
-			update_ui (view.current_project == null);
-		}
-		
-		private void update_ui (bool default_project)
-		{
-			var action = _actions.get_action ("ProjectClose");
-			action.set_sensitive (!default_project);
-			action = _actions.get_action ("ProjectBuild");
-			action.set_sensitive (!default_project);
-			action = _actions.get_action ("ProjectBuildClean");
-			action.set_sensitive (!default_project);
-			action = _actions.get_action ("ProjectBuildCleanStamps");
-			action.set_sensitive (!default_project);
-			
-			var doc = _plugin.gedit_window.get_active_document ();
-			bool is_vala_source = (doc != null && doc.language != null && doc.language.id == "vala");
-			action = _actions.get_action ("ProjectBuildCompileFile");
-			action.set_sensitive (default_project && is_vala_source);
-			action = _actions.get_action ("ProjectGotoMethod");
-			action.set_sensitive (is_vala_source);
-			
-			action = _actions.get_action ("ProjectGotoDocument");
-			action.set_sensitive (!default_project);
-			
-			bool has_errors = _prj_builder.error_pane.error_count > 0;
-			action = _actions.get_action ("ProjectBuildNextError");
-			action.set_sensitive (has_errors);
-			action = _actions.get_action ("ProjectBuildPreviousError");
-			action.set_sensitive (has_errors);
-			
-			action = _actions.get_action ("ProjectBuildExecute");
-			action.set_sensitive (!_prj_executer.is_executing && !default_project);
-			action = _actions.get_action ("ProjectBuildKill");
-			action.set_sensitive (_prj_executer.is_executing && !default_project);
-			
-			bool can_complete = false;
-			var view = _plugin.gedit_window.get_active_view ();
-			if (view != null) {
-				var sch = _plugin.scs_find_from_view (view);
-				can_complete = (sch != null);
-			}
-			action = _actions.get_action ("ProjectCompleteWord");
-			action.set_sensitive (can_complete);
-			
-			bool has_changelog = false;
-			bool has_vcs_backend = false;
-			if (_prj_view.current_project != null 
-			    && _prj_view.current_project.changelog_uri != null) {
-				has_changelog = true;
-				if (_prj_view.current_project.vcs_type != VcsTypes.NONE)
-					has_vcs_backend = true;
-			}
-			action = _actions.get_action ("ProjectPrepareChangeLog");
-			action.set_sensitive (has_changelog && has_vcs_backend);
-			action = _actions.get_action ("ProjectPrepareSingleFileChangeLog");
-			action.set_sensitive (has_changelog);
-		}
-		
-		private void open_project (string name)
-		{
-			try {
-				var project = new Project ();
-				if (project.open (name)) {
-					_projects.add (project);
-					//HACK: why the signal isn't working?!?!
-					//this.project_loaded (project);
-					_plugin.on_project_loaded (this, project);
-					_prj_view.add_project (project);
-				}
-			} catch (Error err) {
-				Vtg.Interaction.error_message (_("Error opening project %s").printf (name), err);
-			}
-		}
-
-		private void close_project (Project project)
-		{
-			foreach (Gedit.Document doc in _plugin.gedit_window.get_documents ()) {
-				if (project.contains_source_file (doc.get_uri ())) {
-					//close tab
-					var tab = Tab.get_from_document (doc);
-					_plugin.gedit_window.close_tab (tab);
-				}
-			}
-			_prj_view.remove_project (project);
-			_plugin.on_project_closed (this, project);
-			project.close ();
-			_projects.remove (project);
-		}
-
-		private void project_save_all (Project project)
-		{
-			foreach (Gedit.Document doc in _plugin.gedit_window.get_unsaved_documents ()) {
-				if (project.contains_source_file (doc.get_uri ())) {
-					doc.save (DocumentSaveFlags.IGNORE_MTIME);
-				}
-			}
-		}
-
-		private void create_project (string project_path)
-		{
-			try {
-				var log = _plugin.output_view;
-				if (!is_dir_empty (project_path)) {
-					log.log_message ("project directory %s not empty\n".printf (project_path));
-					return;
-				}
-				string process_file = "vala-gen-project";
-				int status = 0;
-				int stdo, stde;
-				Pid child_pid;
-
-				//vala-gen-project
-				if (Process.spawn_sync (project_path, new string[] { process_file, "--projectdir", project_path }, null, 
-					SpawnFlags.SEARCH_PATH,
-					null, null, null, out status)) {
-					if (Process.exit_status (status) == 0) {
-						//autogen
-						var start_message = _("Autogenerating project: %s\n").printf (project_path);
-						log.log_message (start_message);
-						log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
-						Process.spawn_async_with_pipes (project_path, new string[] { "./autogen.sh" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
-						if (child_pid != (Pid) null) {
-							ChildWatch.add (child_pid, this.on_child_watch);
-							log.start_watch ((uint) child_pid, stdo, stde);
-							log.activate ();
-						} else {
-							log.log_message ("error spawning ./autogen.sh process\n");
-						}
-					} else {
-						log.log_message ("error executing vala-gen-project process\n");
-					}
+			//test if the project is under some known revision control system
+			Vtg.Vcs.Backends.IVcs backend = new Vtg.Vcs.Backends.Git ();
+			vcs_type = VcsTypes.NONE;
+			if (backend.test (filename)) {
+				vcs_type = VcsTypes.GIT;
+			} else {
+				backend = new Vtg.Vcs.Backends.Bzr ();
+				if (backend.test (filename)) {
+					vcs_type = VcsTypes.BZR;
 				} else {
-					log.log_message ("error spawning vala-gen-project process\n");
+					backend = new Vtg.Vcs.Backends.Svn ();
+					if (backend.test (filename)) {
+						vcs_type = VcsTypes.SVN;
+					}
 				}
-			} catch (Error err) {
-				GLib.warning ("error creating project: %s", err.message);
 			}
 		}
-
-		private bool is_dir_empty (string dir_path)
+		
+		public void close ()
 		{
-			try {
-				var dir = Dir.open (dir_path);
-				return dir.read_name () == null;
-			} catch (Error err) {
-				GLib.warning ("cannot open directort %s", dir_path);
-				return false;
-			}
+			this.exec_targets.clear ();
+			this.all_vala_sources.clear ();
+
+			this._model = null;
+			this._project = null;
 		}
 
-		private void on_child_watch (Pid pid, int status)
+		private void on_project_updated (Vbf.Project sender)
 		{
-			var log = _plugin.output_view;
+			if (in_update)
+				return;
 
-			Process.close_pid (pid);
+			in_update = true;
+			parse_project ();
+			build_tree_model ();
+			this.updated ();
+			in_update = false;
+		}
 
-			log.stop_watch ((uint) pid);
-			log.log_message (_("\nautogeneration end with exit status %d\n").printf(status));
+		private void build_tree_model ()
+		{
+			TreeIter project_iter;
+			TreeIter modules_iter;
+			TreeIter groups_iter;
+
+			_model = new Gtk.TreeStore (5, typeof(string), typeof(string), typeof(string), typeof(GLib.Object), typeof(string));
+			_model.append (out project_iter, null);
+			_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, _project.name, 2, "project-root", 4, "");
+			_model.append (out modules_iter, project_iter);
+			_model.set (modules_iter, 0, Gtk.STOCK_DIRECTORY, 1, _("References"), 2, "project-reference", 4, "1");
+			foreach (Module module in _project.get_modules ()) {
+				TreeIter module_iter;
+				_model.append (out module_iter, modules_iter);
+				_model.set (module_iter, 0, Gtk.STOCK_DIRECTORY, 1, module.name, 2, module.id, 3, module, 4, module.name);
+				foreach (Package package in module.get_packages ()) {
+					TreeIter package_iter;
+					_model.append (out package_iter, module_iter);
+					_model.set (package_iter, 0, Gtk.STOCK_FILE, 1, package.name, 2, package.id, 3, package, 4, package.name);
+				}
+			}
+			_model.append (out groups_iter, project_iter);
+			_model.set (groups_iter, 0, Gtk.STOCK_DIRECTORY, 1, _("Files"), 2, "project-files", 4, "2");
+			foreach (Group group in _project.get_groups ()) {
+				foreach (Target target in group.get_targets ()) {
+					if (target.has_sources_of_type (SourceTypes.VALA)) {
+						TreeIter target_iter = groups_iter;
+						bool target_added = false;
+
+						foreach (Vbf.Source source in target.get_sources ()) {
+							if (source.name.has_prefix (".") ||
+							    source.name.has_suffix (".c") ||
+							    source.name.has_suffix (".h") ||
+							    source.name.has_suffix (".stamp"))
+								continue;
+
+							if (!target_added) {
+								_model.append (out target_iter, groups_iter);
+								_model.set (target_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, target.id, 3, target, 4, group.name);
+								target_added = true;
+							}
+							TreeIter source_iter;
+							_model.append (out source_iter, target_iter);
+							_model.set (source_iter, 0, Gtk.STOCK_FILE, 1, source.name, 2, source.uri, 3, source, 4, source.name);
+						}
+					}
+				}
+			}
+			_model.set_sort_column_id (4, Gtk.SortType.ASCENDING);
+			_model.set_sort_func (4, this.sort_model);
+		}
+
+		private void parse_project ()
+		{
+			//this.modules.clear ();
+			//this.groups.clear ();
+			this.exec_targets.clear ();
+			this.all_vala_sources.clear ();
+			changelog_uri = null;
+			
+			foreach (Group group in _project.get_groups ()) {
+				foreach (Target target in group.get_targets ()) {
+					if (target.type == TargetTypes.PROGRAM) {
+						exec_targets.add (target.name);
+					}
+					foreach (Vbf.Source source in target.get_sources ()) {
+						if (source.type == SourceTypes.VALA) {
+							all_vala_sources.add (source);
+						}
+					}								
+				}
+			}
+			
+			if (FileUtils.test (Path.build_filename ( _project.working_dir, "changelog"), FileTest.EXISTS)) {
+				changelog_uri = "file://%s".printf (Path.build_filename ( _project.working_dir, "changelog"));
+			} else if (FileUtils.test (Path.build_filename ( _project.working_dir, "ChangeLog"), FileTest.EXISTS)) {
+				changelog_uri = "file://%s".printf (Path.build_filename ( _project.working_dir, "ChangeLog"));
+			}
+		}
+		
+		private int sort_model (TreeModel model, TreeIter a, TreeIter b)
+		{
+			string vala;
+			string valb;
+			
+			model.get (a, 4, out vala);
+			model.get (b, 4, out valb);
+			
+			return PathUtils.compare_vala_filenames (vala,valb);
 		}
 	}
 }

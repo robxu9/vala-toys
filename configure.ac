@@ -29,7 +29,6 @@ GTK_REQUIRED=2.10.0
 GEDIT_REQUIRED=2.22.0
 GTKSOURCECOMPLETION_REQUIRED=0.5.2
 VALA_REQUIRED=0.3.6
-GNOME_BUILD_REQUIRED=2.23.90
 GCONF_REQUIRED=2.22.0
 
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
@@ -93,7 +92,7 @@ AM_CONDITIONAL([HAVE_GENPRJ], [test "x$HAVE_GENPRJ" = x1])
 
 if test "x${vtgplugin}" != xno -o "x${vscshell}" != xno; then
 	PKG_CHECK_MODULES(VSC, 
-		[glib-2.0 >= $GLIB_REQUIRED 
+		[glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED
 		gobject-2.0 >= $GLIB_REQUIRED 
 		gthread-2.0 >= $GTHREAD_REQUIRED 
 		vala-1.0 >= $VALA_REQUIRED],
@@ -116,7 +115,7 @@ AM_CONDITIONAL([HAVE_VSC], [test "x$HAVE_VSC" = x1])
 ### vsc-shell #################################################
 if test "x${vscshell}" != xno ; then
 	PKG_CHECK_MODULES(VSCSHELL, 
-		[glib-2.0 >= $GLIB_REQUIRED 
+		[glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED
 		gobject-2.0 >= $GLIB_REQUIRED 
 		gthread-2.0 >= $GTHREAD_REQUIRED
 		vala-1.0 >= $VALA_REQUIRED],
@@ -156,7 +155,6 @@ if test "x${vtgplugin}" != xno ; then
 		gtk+-2.0 >= $GTK_REQUIRED 
 		gedit-2.20 >= $GEDIT_REQUIRED 
 		gtksourcecompletion-1.0 >= $GTKSOURCECOMPLETION_REQUIRED 
-		gnome-build-1.0 >= $GNOME_BUILD_REQUIRED 
 		vala-1.0 >= $VALA_REQUIRED 
 		gconf-2.0 >= $GCONF_REQUIRED],
 		HAVE_VTGPLUGIN=1,

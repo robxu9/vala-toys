@@ -38,8 +38,8 @@ namespace Vtg
 		
 		public bool prepare (string? file = null) throws GLib.Error
 		{
-			var project = _plugin.project_manager.project_view.current_project;
-			if (project == null)
+			var project_manager = _plugin.project_manager_ui.project_view.current_project;
+			if (project_manager == null)
 				return false;
 			
 			string file_list = "";
@@ -49,18 +49,18 @@ namespace Vtg
 				file_list += "\t* %s:\n".printf (file);
 				force_add_new = false;
 			} else {
-				IVcs backend = vcs_backend_factory (project.vcs_type);
+				IVcs backend = vcs_backend_factory (project_manager.vcs_type);
 				if (backend == null)
 					return false;
 
-				Gee.List<Item> items = backend.get_items (project.filename);
+				Gee.List<Item> items = backend.get_items (project_manager.project.working_dir);
 				foreach (Item item in items) {
 					file_list += "\t* %s:\n".printf (item.name);		
 				}
 			}
 			
 			if (file_list != "") {
-				var tab = _plugin.activate_uri (project.changelog_uri);
+				var tab = _plugin.activate_uri (project_manager.changelog_uri);
 				if (tab == null)
 					return false;
 				var doc = tab.get_document ();		
@@ -118,18 +118,18 @@ namespace Vtg
 			return false;
 		}
 		
-		private IVcs? vcs_backend_factory (Vtg.ProjectManager.VcsTypes type)
+		private IVcs? vcs_backend_factory (Vtg.VcsTypes type)
 		{
 			IVcs backend;
 			
 			switch (type) {
-				case Vtg.ProjectManager.VcsTypes.GIT:
+				case Vtg.VcsTypes.GIT:
 					backend = new Vtg.Vcs.Backends.Git ();
 					break;
-				case Vtg.ProjectManager.VcsTypes.BZR:
+				case Vtg.VcsTypes.BZR:
 					backend = new Vtg.Vcs.Backends.Bzr ();
 					break;
-				case Vtg.ProjectManager.VcsTypes.SVN:
+				case Vtg.VcsTypes.SVN:
 					backend = new Vtg.Vcs.Backends.Svn ();
 					break;
 				default:

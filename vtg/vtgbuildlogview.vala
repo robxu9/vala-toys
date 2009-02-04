@@ -1,5 +1,5 @@
 /*
- *  vtgprojectmanagerbuildlogview.vala - Vala developer toys for GEdit
+ *  vtgbuildlogview.vala - Vala developer toys for GEdit
  *  
  *  Copyright (C) 2008 - Andrea Del Signore <sejerpz@tin.it>
  *  
@@ -23,8 +23,9 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
+using Vbf;
 
-namespace Vtg.ProjectManager
+namespace Vtg
 {
 	public class BuildLogView : GLib.Object
 	{
@@ -35,7 +36,7 @@ namespace Vtg.ProjectManager
 		private int current_error_row = 0;
 		private int _error_count = 0;
 		private Vtg.Plugin _plugin;
-		private Project _project;
+		private unowned ProjectManager _project;
 
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 		
@@ -99,7 +100,7 @@ namespace Vtg.ProjectManager
 			_plugin.output_view.message_added += this.on_message_added;
 		}
 
-		public void initialize (Project? project = null)
+		public void initialize (ProjectManager? project = null)
 		{
 			this._project = project;
 			current_error_row = 0;
@@ -143,7 +144,7 @@ namespace Vtg.ProjectManager
 			if (_model.get_iter (out iter, path)) {
 				string name;
 				int line, col;
-				Project? proj;
+				ProjectManager? proj;
 
 				_model.get (iter, 2, out name, 3, out line, 4, out col, 5, out proj);
 

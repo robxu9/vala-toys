@@ -23,10 +23,23 @@ using GLib;
 using Gsc;
 using Gtk;
 using Vsc;
-using Vtg.ProjectManager;
+using Vbf;
 
 namespace Vtg
 {
+	public errordomain ProjectManagerError
+	{
+		NO_BACKEND
+	}
+	
+	public enum VcsTypes
+	{
+		NONE,
+		GIT,
+		BZR,
+		SVN
+	}
+	
 	namespace Interaction
 	{
 		public static void error_message (string message, Error err)
@@ -204,7 +217,7 @@ namespace Vtg
 	{
 		private static bool _initialized = false;
 		private static Proposal[] _proposals = null;
-		private static Gee.List<ProjectPackage> _available_packages = null;
+		private static Gee.List<Package> _available_packages = null;
 		private static Gtk.Builder _builder = null;
 		
 		public const int prealloc_count = 500;
@@ -257,7 +270,7 @@ namespace Vtg
 			}
 		}
 
-		public static Gee.List<ProjectPackage> get_available_packages ()
+		public static Gee.List<Package> get_available_packages ()
 		{
 			if (_available_packages == null) {
 				initialize_packages_cache ();
@@ -271,7 +284,7 @@ namespace Vtg
 		        vapidirs.append ("/usr/share/vala/vapi");
 			vapidirs.append ("/usr/local/share/vala/vapi");
 
-			_available_packages = new Gee.ArrayList<ProjectPackage> ();
+			_available_packages = new Gee.ArrayList<Package> ();
 
 			foreach (string vapidir in vapidirs) {
 				Dir dir;
@@ -285,7 +298,7 @@ namespace Vtg
 				while (filename != null) {
 					if (filename.has_suffix (".vapi")) {
 						filename = filename.down ();
-						_available_packages.add (new ProjectPackage (filename.substring (0, filename.length - 5)));
+						_available_packages.add (new Package (filename.substring (0, filename.length - 5)));
 					}
 					filename = dir.read_name ();
 				}

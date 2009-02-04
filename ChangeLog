@@ -1,3 +1,34 @@
+2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+	* vbf/Makefile.am:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbf-1.0.gir:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbffile.vala:
+	* vbf/vbfgroup.vala:
+	* vbf/vbfiprojectmanager.vala:
+	* vbf/vbfmodule.vala:
+	* vbf/vbfpackage.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbftarget.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgfilteredlistdialog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprocesswatchinfo.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectexecuterdialog.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgutils.vala:
+
+	replaced libgbf with libvbg, bye bye Gnome Build Framework!
+
 2009-02-02  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vbf/Makefile.am:

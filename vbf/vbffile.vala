@@ -25,11 +25,18 @@ namespace Vbf
 {
 	public class File : GLib.Object
 	{
+		public string name;
 		public string filename;	
+		public string uri;
 		
 		public File (string filename)
 		{
 			this.filename = filename;
+			this.uri = "file://%s".printf (filename); //HACK
+			if (filename != null) {
+				string[] tmp = filename.split ("/");
+				this.name = tmp[tmp.length -1];
+			}
 		}
 	}
 }

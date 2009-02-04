@@ -1,5 +1,5 @@
 /*
- *  vtgprojectmanagerexecuter.vala - Vala developer toys for GEdit
+ *  vtgprojectexecuter.vala - Vala developer toys for GEdit
  *  
  *  Copyright (C) 2008 - Andrea Del Signore <sejerpz@tin.it>
  *  
@@ -23,10 +23,11 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
+using Vbf;
 
-namespace Vtg.ProjectManager
+namespace Vtg
 {
-	public class Executer : GLib.Object
+	public class ProjectExecuter : GLib.Object
 	{
 		private Vtg.Plugin _plugin;
 		private BuildLogView _build_view = null;
@@ -44,7 +45,7 @@ namespace Vtg.ProjectManager
 			}
 		}
 		
-		public Executer (Vtg.Plugin plugin)
+		public ProjectExecuter (Vtg.Plugin plugin)
 		{
 			this.plugin = plugin;
 		}
@@ -54,7 +55,7 @@ namespace Vtg.ProjectManager
 			if (_child_watch_id != 0)
 				return false;
 
-			var working_dir = project.filename;
+			var working_dir = project.id;
 			int stdo, stde, stdi;
 			try {
 				var log = _plugin.output_view;
@@ -65,7 +66,7 @@ namespace Vtg.ProjectManager
 					log.log_message ("No command line specified for project %s".printf(project.name));
 					return false;
 				} else {
-					cmd = Path.build_filename (project.filename, command_line);
+					cmd = Path.build_filename (project.id, command_line);
 				}
 				string[] cmds;
 				Shell.parse_argv (cmd, out cmds);

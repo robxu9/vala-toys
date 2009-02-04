@@ -5,13 +5,16 @@
 		<member name="program"/>
 		<member name="library"/>
 		<member name="data"/>
-		<member name="vala-program"/>
+		<member name="built-sources"/>
 	</enumeration>
 	<enumeration name="SourceTypes" c:type="VbfSourceTypes" glib:get-type="vbf_source_types_get_type">
 		<member name="unknown"/>
 		<member name="vala"/>
 	</enumeration>
 	<class name="Project" parent="Vbf.ConfigNode" glib:type-name="VbfProject" glib:get-type="vbf_project_get_type">
+		<field name="id">
+			<type name="string"/>
+		</field>
 		<field name="name">
 			<type name="string"/>
 		</field>
@@ -21,12 +24,12 @@
 		<field name="version">
 			<type name="string"/>
 		</field>
-		<field name="filename">
+		<field name="working_dir">
 			<type name="string"/>
 		</field>
 		<constructor name="new" c:identifier="vbf_project_new">
 			<parameters>
-				<parameter name="name">
+				<parameter name="id">
 					<type name="string"/>
 				</parameter>
 			</parameters>
@@ -42,6 +45,19 @@
 			</parameters>
 			<return-value transfer-ownership="full">
 				<type name="Gee.List<Vbf.Group>"/>
+			</return-value>
+		</method>
+		<method name="get_group" c:identifier="vbf_project_get_group">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Project"/>
+				</parameter>
+				<parameter name="id">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Vbf.Group?"/>
 			</return-value>
 		</method>
 		<method name="get_modules" c:identifier="vbf_project_get_modules">
@@ -64,6 +80,16 @@
 				<type name="Gee.List<Vbf.Variable>"/>
 			</return-value>
 		</method>
+		<method name="update" c:identifier="vbf_project_update">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Project"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="none"/>
+			</return-value>
+		</method>
 		<glib:signal name="updated">
 			<parameters>
 			</parameters>
@@ -76,7 +102,7 @@
 		<field name="name">
 			<type name="string"/>
 		</field>
-		<field name="makefile">
+		<field name="id">
 			<type name="string"/>
 		</field>
 		<field name="project">
@@ -87,7 +113,7 @@
 				<parameter name="project">
 					<type name="Vbf.Project"/>
 				</parameter>
-				<parameter name="makefile">
+				<parameter name="id">
 					<type name="string"/>
 				</parameter>
 			</parameters>
@@ -103,6 +129,36 @@
 			</parameters>
 			<return-value transfer-ownership="full">
 				<type name="Gee.List<Vbf.Target>"/>
+			</return-value>
+		</method>
+		<method name="get_packages" c:identifier="vbf_group_get_packages">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Group"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Package>"/>
+			</return-value>
+		</method>
+		<method name="get_include_dirs" c:identifier="vbf_group_get_include_dirs">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Group"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<string>"/>
+			</return-value>
+		</method>
+		<method name="get_built_libraries" c:identifier="vbf_group_get_built_libraries">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Group"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<string>"/>
 			</return-value>
 		</method>
 		<method name="get_subgroups" c:identifier="vbf_group_get_subgroups">
@@ -127,12 +183,21 @@
 		</method>
 	</class>
 	<class name="Module" parent="GLib.Object" glib:type-name="VbfModule" glib:get-type="vbf_module_get_type">
+		<field name="id">
+			<type name="string"/>
+		</field>
 		<field name="name">
 			<type name="string"/>
 		</field>
+		<field name="project">
+			<type name="Vbf.Project"/>
+		</field>
 		<constructor name="new" c:identifier="vbf_module_new">
 			<parameters>
-				<parameter name="name">
+				<parameter name="project">
+					<type name="Vbf.Project"/>
+				</parameter>
+				<parameter name="id">
 					<type name="string"/>
 				</parameter>
 			</parameters>
@@ -152,10 +217,13 @@
 		</method>
 	</class>
 	<class name="Target" parent="GLib.Object" glib:type-name="VbfTarget" glib:get-type="vbf_target_get_type">
+		<field name="id">
+			<type name="string"/>
+		</field>
 		<field name="name">
 			<type name="string"/>
 		</field>
-		<field name="target_type">
+		<field name="type">
 			<type name="Vbf.TargetTypes"/>
 		</field>
 		<field name="no_install">
@@ -172,7 +240,7 @@
 				<parameter name="type">
 					<type name="Vbf.TargetTypes"/>
 				</parameter>
-				<parameter name="name">
+				<parameter name="id">
 					<type name="string"/>
 				</parameter>
 			</parameters>
@@ -190,14 +258,17 @@
 				<type name="Gee.List<Vbf.Source>"/>
 			</return-value>
 		</method>
-		<method name="get_files" c:identifier="vbf_target_get_files">
+		<method name="has_sources_of_type" c:identifier="vbf_target_has_sources_of_type">
 			<parameters>
 				<parameter name="self">
 					<type name="Vbf.Target"/>
 				</parameter>
+				<parameter name="type">
+					<type name="Vbf.SourceTypes"/>
+				</parameter>
 			</parameters>
 			<return-value transfer-ownership="full">
-				<type name="Gee.List<Vbf.File>"/>
+				<type name="bool"/>
 			</return-value>
 		</method>
 	</class>
@@ -239,7 +310,13 @@
 		</constructor>
 	</class>
 	<class name="File" parent="GLib.Object" glib:type-name="VbfFile" glib:get-type="vbf_file_get_type">
+		<field name="name">
+			<type name="string"/>
+		</field>
 		<field name="filename">
+			<type name="string"/>
+		</field>
+		<field name="uri">
 			<type name="string"/>
 		</field>
 		<constructor name="new" c:identifier="vbf_file_new">
@@ -254,6 +331,9 @@
 		</constructor>
 	</class>
 	<class name="Package" parent="GLib.Object" glib:type-name="VbfPackage" glib:get-type="vbf_package_get_type">
+		<field name="id">
+			<type name="string"/>
+		</field>
 		<field name="name">
 			<type name="string"/>
 		</field>
@@ -265,7 +345,7 @@
 		</field>
 		<constructor name="new" c:identifier="vbf_package_new">
 			<parameters>
-				<parameter name="name">
+				<parameter name="id">
 					<type name="string"/>
 				</parameter>
 			</parameters>
@@ -473,6 +553,19 @@
 			</parameters>
 			<return-value transfer-ownership="full">
 				<type name="Vbf.Project?"/>
+			</return-value>
+		</method>
+		<method name="refresh" c:identifier="vbf_iproject_manager_refresh">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.IProjectManager"/>
+				</parameter>
+				<parameter name="project">
+					<type name="Vbf.Project"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="none"/>
 			</return-value>
 		</method>
 	</interface>

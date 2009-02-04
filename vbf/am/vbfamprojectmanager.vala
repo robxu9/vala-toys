@@ -43,25 +43,37 @@ namespace Vbf.Am
 			
 			return res;
 		}
-		
+
+				
 		public Project? open (string project_file)
 		{
+			Project project = new Project(project_file);
+			project.backend = this;
+			refresh (project);
+			
+			if (project.name == null)
+				return null; //parse failed!
+			else
+				return project;
+		}
+		
+		public void refresh (Project project)
+		{
 			try {
-				string file = Path.build_filename (project_file, "configure.ac");
-				Project project = null;
+				string file = Path.build_filename (project.id, "configure.ac");
 				string buffer;
 				ulong length;
 
 				if (!FileUtils.get_contents (file, out buffer, out length)) {
-					return null;
+					return;
 				}
-			
+				
 				Regex reg = new GLib.Regex ("AC_INIT\\(([^\\,\\)]+)\\)");
 				MatchInfo match;
 				string name = null;
 				string version = null;
 				string url = null;
-			
+		
 				if (reg.match (buffer, RegexMatchFlags.NEWLINE_ANY, out match)) {
 					name = match.fetch (1);
 				} else {
@@ -86,20 +98,19 @@ namespace Vbf.Am
 					}
 				}
 			
-				if (name == null)
-					return null; //parse failed!
-				
-				project = new Project (normalize_string (name));
+				project.clear ();
+				project.name = normalize_string (name);
 				project.version = normalize_string (version);
 				project.url = normalize_string (url);
-
+				project.working_dir = project.id;
+					
 				//Extract pkg-config packages
 				reg = new GLib.Regex ("PKG_CHECK_MODULES\\([\\s\\[]*([^\\,\\)\\]]+)[\\s\\]]*\\,(.+?)\\)");
 				if (reg.match (buffer, RegexMatchFlags.NEWLINE_CR, out match)) {
 					while (match.matches ()) {
 						string mod_name =  match.fetch (1);
 						string pacs = "";
-				
+			
 						string line = match.fetch (2);
 						Regex mod = new Regex ("^[\\s\\]]*([^\\,\\]]+)[\\s\\]]*,([^\\,]+),([^\\,]+)$");
 						MatchInfo pac;
@@ -113,7 +124,7 @@ namespace Vbf.Am
 								pacs = line;
 							}
 						}
-						var module = new Module (mod_name);
+						var module = new Module (project, mod_name);
 						project.add_module (module);
 						if (pacs != "") {
 							string[] pkgs = normalize_string (pacs).split (" ");
@@ -145,11 +156,11 @@ namespace Vbf.Am
 						match.next ();
 					}
 				}
-				
+			
 				parse_variables (project, buffer);
 				resolve_variables (project, project.get_variables ());
 				resolve_package_variables (project);
-				
+			
 				//Extract AC_CONFIG_FILES
 				reg = new GLib.Regex ("AC_CONFIG_FILES\\(\\[(.*)\\]\\)", RegexCompileFlags.MULTILINE);
 				bool res = reg.match (buffer, RegexMatchFlags.NEWLINE_CR, out match);
@@ -161,27 +172,31 @@ namespace Vbf.Am
 					string tmp = normalize_string (match.fetch (1));
 					string[] makefiles = tmp.split(" ");
 					foreach (string makefile in makefiles) {
-						parse_makefile (project, project_file, makefile);
+						parse_makefile (project, project.id, makefile);
 					}
 				}
-				return project;
+			
+				project.setup_file_monitors ();
 			} catch (Error err) {
 				critical ("open: %s", err.message);
-				return null;
+				return;
 			}
 		}
 		
 		private void add_vala_source (Group group, Target target, ConfigNode source)
 		{
+			string src_name;
 			if (source is StringLiteral) {
-				var src = new Source.with_type (target, ((StringLiteral) source).data, SourceTypes.VALA);
+				src_name = Path.build_filename (group.project.id, group.name, ((StringLiteral) source).data);
+				var src = new Source.with_type (target, src_name, SourceTypes.VALA);
 				target.add_source (src);
 			} else if (source is Variable) {
 				add_vala_source (group, target, ((Variable) source).get_value ());
 			} else if (source is ConfigNodeList) {
 				foreach (ConfigNode item in ((ConfigNodeList) source).get_values ()) {
 					if (item is StringLiteral) {
-						var src = new Source.with_type (target, ((StringLiteral) item).data, SourceTypes.VALA);
+						src_name = Path.build_filename (group.project.id, group.name, ((StringLiteral) item).data);
+						var src = new Source.with_type (target, src_name, SourceTypes.VALA);
 						target.add_source (src);
 					} else if (item is Variable) {
 						add_vala_source (group, target, ((Variable) item).get_value ());
@@ -237,7 +252,7 @@ namespace Vbf.Am
 					add_targets (group, variable.get_value (), TargetTypes.LIBRARY);
 				//} else if (variable.name.has_suffix ("_DATA")) {
 				} else if (variable.name == "BUILT_SOURCES") {
-					add_targets (group, variable.get_value (), TargetTypes.VALA_PROGRAM);
+					add_targets (group, variable.get_value (), TargetTypes.BUILT_SOURCES);
 				}
 			}
 		}
@@ -531,15 +546,46 @@ namespace Vbf.Am
 			string file = Path.build_filename (project_file, makefile) + ".am";
 			
 			if (FileUtils.get_contents (file, out buffer)) {
-				var group = new Group (project, makefile);
+				var group = new Group (project, file.replace ("Makefile.am", ""));
 				project.add_group (group);
 				buffer = process_include_directives (file, buffer);
 				parse_variables (project, buffer, group);
 				resolve_variables (project, group.get_variables ());
+				parse_group_extended_info (group, buffer);
 				parse_targets (group);
 			}
 		}
-				
+		
+		private void parse_group_extended_info (Group group, string buffer)
+		{
+			string[] lines = buffer.split ("\n");
+			foreach (string line in lines) {
+				string[] tmps = line.split (" ");
+				int count = 0;
+				while (tmps[count] != null)
+					count++;
+			
+				for(int idx=0; idx < count; idx++) {
+					if (tmps[idx] == "--vapidir" && (idx + 1) < count) {
+						var tmp = tmps[idx+1];
+						if (tmp.has_prefix (".")) {
+							tmp = Path.build_filename (group.project.id, group.name, tmp);
+						}
+						group.add_include_dir (tmp);
+						idx++;
+					} else if (tmps[idx] == "--pkg" && (idx + 1) < count) {
+						var tmp = tmps[idx+1];
+						group.add_package (new Package (tmp));
+						idx++;
+					} else if (tmps[idx] == "--library") {
+						var tmp = tmps[idx+1];
+						group.add_built_library (tmp);
+						idx++;
+					}
+				}
+			}
+		}
+		
 		private string? normalize_string (string? data)
 		{
 			if (data == null) {

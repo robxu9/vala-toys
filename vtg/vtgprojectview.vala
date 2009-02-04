@@ -23,25 +23,25 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
+using Vbf;
 
-namespace Vtg.ProjectManager
+namespace Vtg
 {
-	public class View : GLib.Object
+	public class ProjectView : GLib.Object
 	{
 		private Vtg.Plugin _plugin = null;
 		private Gtk.ComboBox _prjs_combo;
 		private Gtk.TreeView _prj_view;
 		private int _project_count = 0;
 
-		private ProjectModule _last_selected_module;
-		private ProjectTarget _last_selected_target;
+		private Module _last_selected_module;
+		private Target _last_selected_target;
 		
 		private Gtk.Menu _popup_modules;
 		private uint _popup_modules_ui_id;
 		private string _popup_modules_ui_def = """
                                         <ui>
                                         <popup name='ProjectManagerPopupPackagesEdit'>
-                                            <menuitem action='packages-edit'/>
                                             <menuitem action='packages-open-configure'/>
                                         </popup>
                                         </ui>""";
@@ -57,7 +57,6 @@ namespace Vtg.ProjectManager
 
 
 		const ActionEntry[] _action_entries = {
-			{"packages-edit", Gtk.STOCK_ADD, N_("Add/Remove Packages..."), "<control><shift>P", N_("Manage packages references"), on_packages_edit},
 			{"packages-open-configure", Gtk.STOCK_OPEN, N_("Open configure file..."), "<control><shift>C", N_("Open configure.ac file"), on_packages_open_configure},
 			{"target-open-makefile", Gtk.STOCK_OPEN, N_("Open makefile"), "<control><shift>M", N_("Open makefile.am file"), on_target_open_makefile}
 		};
@@ -65,9 +64,9 @@ namespace Vtg.ProjectManager
 
 		private ActionGroup _actions;
 		private VBox _side_panel;
-		private Project _current_project = null;
+		private ProjectManager _current_project = null;
 		
-		public Project current_project 
+		public ProjectManager current_project 
 		{ 
 			get { 
 				return _current_project; 
@@ -89,12 +88,12 @@ namespace Vtg.ProjectManager
 		
 		public Vtg.Plugin plugin { construct { _plugin = value; } }
 
-		public View (Vtg.Plugin plugin)
+		public ProjectView (Vtg.Plugin plugin)
 		{
 			this.plugin = plugin;
 		}
 		
-		~View ()
+		~ProjectView ()
 		{
 			var manager = _plugin.gedit_window.get_ui_manager ();
 			manager.remove_action_group (_actions);
@@ -197,11 +196,11 @@ namespace Vtg.ProjectManager
 					string name;
 					model.get_iter (out iter, path);
 					model.get (iter, 1, out name, 3, out obj);
-					if (obj is ProjectModule) {
-						_last_selected_module = (ProjectModule) obj;
+					if (obj is Module) {
+						_last_selected_module = (Module) obj;
 						_popup_modules.popup (null, null, null, event.button, event.time);
-					} else if (obj is ProjectTarget) {
-						_last_selected_target = (ProjectTarget) obj;
+					} else if (obj is Target) {
+						_last_selected_target = (Target) obj;
 						_popup_targets.popup (null, null, null, event.button, event.time);
 					}
 				}
@@ -215,20 +214,14 @@ namespace Vtg.ProjectManager
 			update_view (project_name);
 		}
 
-		private void show_packages_dialog (ProjectModule module)
-		{
-			var dialog = new PackagesDialog (module, current_project.modules);
-			dialog.show ();
-		}
-
 		private void update_view (string? project_name)
 		{
-			Project? prj = null;
+			ProjectManager? prj = null;
 
 			if (project_name != null) {
 				//find project
 				foreach (ProjectDescriptor item in _plugin.projects) {
-					if (item.project.name == project_name) {
+					if (item.project.project.name == project_name) {
 						prj = item.project;
 						break;
 					}
@@ -238,21 +231,16 @@ namespace Vtg.ProjectManager
 			current_project = prj;
 		}
 
-		private void on_current_project_updated (Project sender)
+		private void on_current_project_updated (ProjectManager sender)
 		{
 			_prj_view.set_model (sender.model);
 			_prj_view.expand_all ();
 		}
 
-		private void on_packages_edit (Gtk.Action action)
-		{
-			show_packages_dialog (_last_selected_module);
-		}
-		
 		private void on_packages_open_configure (Gtk.Action action)
 		{
 			return_if_fail (_last_selected_module != null);
-			string file = Path.build_filename (_last_selected_module.project.filename, "configure.ac");
+			string file = Path.build_filename (_last_selected_module.project.id, "configure.ac");
 			
 			if (FileUtils.test (file, FileTest.EXISTS)) {
 				_plugin.activate_uri ("file://%s".printf (file));
@@ -262,8 +250,8 @@ namespace Vtg.ProjectManager
 		private void on_target_open_makefile (Gtk.Action action)
 		{
 			return_if_fail (_last_selected_target != null);
-			string file = Path.build_filename (_last_selected_target.group.project.filename, _last_selected_target.group.id, "Makefile.am");
-			
+			string file = Path.build_filename (_last_selected_target.group.id, "Makefile.am");
+
 			if (FileUtils.test (file, FileTest.EXISTS)) {
 				_plugin.activate_uri ("file://%s".printf (file));
 			}

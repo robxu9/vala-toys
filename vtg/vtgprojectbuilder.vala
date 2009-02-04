@@ -1,5 +1,5 @@
 /*
- *  vtgprojectmanagerbuilder.vala - Vala developer toys for GEdit
+ *  vtgprojectbuilder.vala - Vala developer toys for GEdit
  *  
  *  Copyright (C) 2008 - Andrea Del Signore <sejerpz@tin.it>
  *  
@@ -23,10 +23,11 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
+using Vbf;
 
-namespace Vtg.ProjectManager
+namespace Vtg
 {
-	public class Builder : GLib.Object
+	public class ProjectBuilder : GLib.Object
 	{
 		private const string MAKE = "make";
 
@@ -59,7 +60,7 @@ namespace Vtg.ProjectManager
 			is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
 		}
 
-		public Builder (Vtg.Plugin plugin)
+		public ProjectBuilder (Vtg.Plugin plugin)
 		{
 			this.plugin = plugin;
 		}
@@ -109,13 +110,14 @@ namespace Vtg.ProjectManager
 		
 		}
 		
-		public bool build (Project project, string? params = null)
+		public bool build (ProjectManager project_manager, string? params = null)
 		{
 			if (_child_watch_id != 0)
 				return false;
 
-			var working_dir = project.filename;
-			
+
+			var project = project_manager.project;
+			var working_dir = project.id;
 			int stdo, stde;
 			try {
 				var log = _plugin.output_view;
@@ -136,7 +138,7 @@ namespace Vtg.ProjectManager
 				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
-					_build_view.initialize (project);
+					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
 						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
@@ -152,12 +154,13 @@ namespace Vtg.ProjectManager
 			}
 		}
 
-		public bool configure (Project project, string? params = null)
+		public bool configure (ProjectManager project_manager, string? params = null)
 		{
 			if (_child_watch_id != 0)
 				return false;
 
-			var working_dir = project.filename;
+			var project = project_manager.project;
+			var working_dir = project.id;
 			int stdo, stde;
 			string configure_command = null;
 			foreach (string item in new string[] { "./configure", "./autogen.sh"}) {
@@ -189,7 +192,7 @@ namespace Vtg.ProjectManager
 				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
-					_build_view.initialize (project);
+					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
 						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
@@ -205,12 +208,13 @@ namespace Vtg.ProjectManager
 			}
 		}
 
-		public bool clean (Project project, bool vala_stamp = false)
+		public bool clean (ProjectManager project_manager, bool vala_stamp = false)
 		{
 			if (_child_watch_id != 0)
 				return false;
-
-			var working_dir = project.filename;
+				
+			var project = project_manager.project;
+			var working_dir = project.working_dir;
 			int stdo, stde;
 			try {
 				var log = _plugin.output_view;
@@ -233,7 +237,7 @@ namespace Vtg.ProjectManager
 				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE, "clean" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
-					_build_view.initialize (project);
+					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
 						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);

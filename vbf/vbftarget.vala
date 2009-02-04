@@ -29,24 +29,25 @@ namespace Vbf
 		PROGRAM,
 		LIBRARY,
 		DATA,
-		VALA_PROGRAM
+		BUILT_SOURCES
 	}
 	
 	public class Target : GLib.Object
 	{
+		public string id;
 		public string name;
-		public TargetTypes target_type;
+		public TargetTypes type;
 		public bool no_install = false;
 		public unowned Group group;
 		
 		private Gee.List<Source> sources = new Gee.ArrayList<Source> ();
-		private Gee.List<File> files = new Gee.ArrayList<File> ();
 		
-		public Target (Group group, TargetTypes type, string name)
+		public Target (Group group, TargetTypes type, string id)
 		{
 			this.group = group;
-			this.name = name;
-			this.target_type = type;
+			this.id = id;
+			this.name = id;
+			this.type = type;
 		}
 		
 		public Gee.List<Source> get_sources ()
@@ -54,21 +55,21 @@ namespace Vbf
 			return new ReadOnlyList<Source> (sources);
 		}
 		
+		public bool has_sources_of_type (SourceTypes type)
+		{
+			foreach (Source source in sources) {
+				if (source.type == type) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
 		internal void add_source (Source source)
 		{
 			sources.add (source);
 		}
-		
-		public Gee.List<File> get_files ()
-		{
-			return new ReadOnlyList<File> (files);
-		}
-/*
-		internal void add_file (File file)
-		{
-			files.add (file);
-		}
-*/
 	}
 }
 

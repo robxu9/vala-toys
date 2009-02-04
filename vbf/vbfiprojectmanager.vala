@@ -25,5 +25,6 @@ namespace Vbf
 	{
 		public abstract bool probe (string project_file);
 		public abstract Project? open (string project_file);
+		public abstract void refresh (Project project);
 	}
 }
