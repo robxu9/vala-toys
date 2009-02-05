@@ -1,5 +1,26 @@
 2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* vtg/vtgprojectmanager.vala:
+
+	show data files in the project treeview
+	(included previous missing changelog notice)
+
+2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
+
+        * vbf/am/vbfamprojectmanager.vala:
+        * vbf/vbf-1.0.gir:
+        * vbf/vbf-1.0.vapi:
+        * vbf/vbffile.vala:
+        * vbf/vbfsource.vala:
+        * vbf/vbftarget.vala:
+        * vbf/vbftest.vala:
+        * vtg/vtgprojectmanager.vala:
+
+        added support for "data" files
+
+2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
+
 	* .gitignore:
 
 	updated .gitignore

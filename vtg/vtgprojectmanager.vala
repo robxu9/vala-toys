@@ -209,7 +209,7 @@ namespace Vtg
 			_model.set (groups_iter, 0, Gtk.STOCK_DIRECTORY, 1, _("Files"), 2, "project-files", 4, "2");
 			foreach (Group group in _project.get_groups ()) {
 				foreach (Target target in group.get_targets ()) {
-					if (target.has_sources_of_type (FileTypes.VALA_SOURCE)) {
+					if (target.has_sources_of_type (FileTypes.VALA_SOURCE) || target.get_files ().size > 0) {
 						TreeIter target_iter = groups_iter;
 						bool target_added = false;
 
@@ -229,7 +229,19 @@ namespace Vtg
 							_model.append (out source_iter, target_iter);
 							_model.set (source_iter, 0, Gtk.STOCK_FILE, 1, source.name, 2, source.uri, 3, source, 4, source.name);
 						}
+						foreach (Vbf.File file in target.get_files ()) {
+							if (!target_added) {
+								_model.append (out target_iter, groups_iter);
+								_model.set (target_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, target.id, 3, target, 4, group.name);
+								target_added = true;
+							}
+
+							TreeIter file_iter;
+							_model.append (out file_iter, target_iter);
+							_model.set (file_iter, 0, Gtk.STOCK_FILE, 1, file.name, 2, file.uri, 3, file, 4, file.name);
+						}
 					}
+					
 				}
 			}
 			_model.set_sort_column_id (4, Gtk.SortType.ASCENDING);
@@ -253,7 +265,7 @@ namespace Vtg
 						if (source.type == FileTypes.VALA_SOURCE) {
 							all_vala_sources.add (source);
 						}
-					}								
+					}
 				}
 			}
 			
