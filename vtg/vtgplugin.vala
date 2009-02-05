@@ -231,7 +231,7 @@ namespace Vtg
 				file = document.get_short_name_for_display ();
 			}
 			foreach (ProjectDescriptor project in _projects) {
-				if (project.project.contains_source_file (file)) {
+				if (project.project.contains_file (file)) {
 					return project;
 				}
 			}

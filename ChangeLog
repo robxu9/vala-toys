@@ -1,5 +1,14 @@
 2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed a bug that prevents the save of data file before compiling
+	Now we are Vbf has all the features that I used from the old GBF!
+
+2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* vtg/vtgprojectmanager.vala:
 

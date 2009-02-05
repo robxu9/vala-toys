@@ -50,12 +50,17 @@ namespace Vtg
 			GLib.debug ("project manager destroyes");
 		}
 		
-		public bool contains_source_file (string uri)
+		public bool contains_file (string uri)
 		{
 			foreach (Group group in _project.get_groups ()) {
 				foreach (Target target in group.get_targets ()) {
 					foreach (Vbf.Source source in target.get_sources ()) {
 						if (source.uri == uri) {
+							return true;
+						}
+					}
+					foreach (Vbf.File file in target.get_files ()) {
+						if (file.uri == uri) {
 							return true;
 						}
 					}

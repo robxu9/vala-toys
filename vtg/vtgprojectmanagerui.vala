@@ -280,7 +280,7 @@ namespace Vtg
 
 			bool save_required = false;
 			foreach (Gedit.Document doc in _plugin.gedit_window.get_unsaved_documents ()) {
-				if (project.contains_source_file (doc.get_uri ())) {
+				if (project.contains_file (doc.get_uri ())) {
 					save_required = true;
 				}
 			}
@@ -411,7 +411,7 @@ namespace Vtg
 				string file = doc.get_uri ();
 				var project = _prj_view.current_project;
 				if (project != null) {
-					if (project.contains_source_file (file)) {
+					if (project.contains_vala_source_file (file)) {
 						//TODO: we should get the group an issue a make in that subfolder
 						GLib.warning ("Can't compile a project file (for now)");
 						return;
@@ -623,7 +623,7 @@ namespace Vtg
 		private void close_project (ProjectManager project)
 		{
 			foreach (Gedit.Document doc in _plugin.gedit_window.get_documents ()) {
-				if (project.contains_source_file (doc.get_uri ())) {
+				if (project.contains_file (doc.get_uri ())) {
 					//close tab
 					var tab = Tab.get_from_document (doc);
 					_plugin.gedit_window.close_tab (tab);
@@ -638,7 +638,7 @@ namespace Vtg
 		private void project_save_all (ProjectManager project)
 		{
 			foreach (Gedit.Document doc in _plugin.gedit_window.get_unsaved_documents ()) {
-				if (project.contains_source_file (doc.get_uri ())) {
+				if (project.contains_file (doc.get_uri ())) {
 					doc.save (DocumentSaveFlags.IGNORE_MTIME);
 				}
 			}
