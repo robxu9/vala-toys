@@ -41,6 +41,7 @@ namespace Vbf
 		public unowned Group group;
 		
 		private Gee.List<Source> sources = new Gee.ArrayList<Source> ();
+		private Gee.List<Vbf.File> files = new Gee.ArrayList<Vbf.File> ();
 		
 		public Target (Group group, TargetTypes type, string id)
 		{
@@ -55,7 +56,7 @@ namespace Vbf
 			return new ReadOnlyList<Source> (sources);
 		}
 		
-		public bool has_sources_of_type (SourceTypes type)
+		public bool has_sources_of_type (FileTypes type)
 		{
 			foreach (Source source in sources) {
 				if (source.type == type) {
@@ -69,6 +70,26 @@ namespace Vbf
 		internal void add_source (Source source)
 		{
 			sources.add (source);
+		}
+
+		public bool has_file_of_type (FileTypes type)
+		{
+			foreach (File file in files) {
+				if (file.type == type) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		public Gee.List<Vbf.File> get_files ()
+		{
+			return new ReadOnlyList<Vbf.File> (files);
+		}
+		
+		internal void add_file (Vbf.File file)
+		{
+			files.add (file);
 		}
 	}
 }

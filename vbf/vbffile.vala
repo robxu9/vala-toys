@@ -23,20 +23,38 @@ using GLib;
 
 namespace Vbf
 {
+	public enum FileTypes
+	{
+		UNKNOWN,
+		DATA,
+		VALA_SOURCE
+	}
+	
 	public class File : GLib.Object
 	{
 		public string name;
 		public string filename;	
 		public string uri;
+		public FileTypes type;
+		public unowned Target target;
 		
-		public File (string filename)
+		public File (Target target, string filename)
 		{
-			this.filename = filename;
-			this.uri = "file://%s".printf (filename); //HACK
-			if (filename != null) {
-				string[] tmp = filename.split ("/");
-				this.name = tmp[tmp.length -1];
+			this.with_type (target, filename, FileTypes.UNKNOWN);
+		}
+		
+		public File.with_type (Target target, string filename, FileTypes type)
+		{
+			string file = filename;
+			if (!Path.is_absolute (file)) {
+				var f = GLib.File.new_for_path (file);
+				file = f.resolve_relative_path (file).get_path ();
 			}
+			this.filename = file;
+			this.uri = Filename.to_uri (file);
+			this.name = Filename.display_basename (file);
+			this.target = target;
+			this.type = type;
 		}
 	}
 }

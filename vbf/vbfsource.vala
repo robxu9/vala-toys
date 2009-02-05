@@ -22,28 +22,17 @@
 using GLib;
 
 namespace Vbf
-{
-	public enum SourceTypes
-	{
-		UNKNOWN,
-		VALA
-	}
-	
+{	
 	public class Source : Vbf.File
 	{
-		public SourceTypes type = SourceTypes.UNKNOWN;
-		public unowned Target target;
-		
 		public Source (Target target, string filename)
 		{
-			this.with_type (target, filename, SourceTypes.UNKNOWN);
+			this.with_type (target, filename, FileTypes.UNKNOWN);
 		}
 		
-		public Source.with_type (Target target, string filename, SourceTypes type)
+		public Source.with_type (Target target, string filename, FileTypes type)
 		{
-			base (filename);
-			this.target = target;
-			this.type = type;
+			base.with_type (target, filename, type);
 		}
 	}
 }

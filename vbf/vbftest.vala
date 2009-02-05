@@ -87,6 +87,11 @@ namespace Vbf.Tests
 					foreach (Source source in target.get_sources ()) {
 						print ("            SOURCE filename %s\n", source.filename);
 					}
+					print ("          OTHER FILES\n");
+					foreach (Vbf.File file in target.get_files ()) {
+						print ("            FILES filename %s\n", file.filename);
+					}
+
 				}
 				if (dump_variables) {
 					print ("      GROUP VARIABLES\n");

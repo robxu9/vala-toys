@@ -32,8 +32,11 @@ namespace Vbf {
 	public class File : GLib.Object {
 		public string filename;
 		public string name;
+		public weak Vbf.Target target;
+		public Vbf.FileTypes type;
 		public string uri;
-		public File (string filename);
+		public File (Vbf.Target target, string filename);
+		public File.with_type (Vbf.Target target, string filename, Vbf.FileTypes type);
 	}
 	[CCode (cheader_filename = "vbfgroup.h")]
 	public class Group : GLib.Object {
@@ -81,10 +84,8 @@ namespace Vbf {
 	}
 	[CCode (cheader_filename = "vbfsource.h")]
 	public class Source : Vbf.File {
-		public weak Vbf.Target target;
-		public Vbf.SourceTypes type;
 		public Source (Vbf.Target target, string filename);
-		public Source.with_type (Vbf.Target target, string filename, Vbf.SourceTypes type);
+		public Source.with_type (Vbf.Target target, string filename, Vbf.FileTypes type);
 	}
 	[CCode (cheader_filename = "vbfstringliteral.h")]
 	public class StringLiteral : Vbf.ConfigNode {
@@ -98,8 +99,10 @@ namespace Vbf {
 		public string name;
 		public bool no_install;
 		public Vbf.TargetTypes type;
+		public Gee.List<Vbf.File> get_files ();
 		public Gee.List<Vbf.Source> get_sources ();
-		public bool has_sources_of_type (Vbf.SourceTypes type);
+		public bool has_file_of_type (Vbf.FileTypes type);
+		public bool has_sources_of_type (Vbf.FileTypes type);
 		public Target (Vbf.Group group, Vbf.TargetTypes type, string id);
 	}
 	[CCode (cheader_filename = "vbfunresolvedconfignode.h")]
@@ -122,10 +125,11 @@ namespace Vbf {
 		public abstract bool probe (string project_file);
 		public abstract void refresh (Vbf.Project project);
 	}
-	[CCode (cprefix = "VBF_SOURCE_TYPES_", cheader_filename = "vbfsource.h")]
-	public enum SourceTypes {
+	[CCode (cprefix = "VBF_FILE_TYPES_", cheader_filename = "vbffile.h")]
+	public enum FileTypes {
 		UNKNOWN,
-		VALA
+		DATA,
+		VALA_SOURCE
 	}
 	[CCode (cprefix = "VBF_TARGET_TYPES_", cheader_filename = "vbftarget.h")]
 	public enum TargetTypes {

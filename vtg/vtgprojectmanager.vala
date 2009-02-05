@@ -209,7 +209,7 @@ namespace Vtg
 			_model.set (groups_iter, 0, Gtk.STOCK_DIRECTORY, 1, _("Files"), 2, "project-files", 4, "2");
 			foreach (Group group in _project.get_groups ()) {
 				foreach (Target target in group.get_targets ()) {
-					if (target.has_sources_of_type (SourceTypes.VALA)) {
+					if (target.has_sources_of_type (FileTypes.VALA_SOURCE)) {
 						TreeIter target_iter = groups_iter;
 						bool target_added = false;
 
@@ -250,7 +250,7 @@ namespace Vtg
 						exec_targets.add (target.name);
 					}
 					foreach (Vbf.Source source in target.get_sources ()) {
-						if (source.type == SourceTypes.VALA) {
+						if (source.type == FileTypes.VALA_SOURCE) {
 							all_vala_sources.add (source);
 						}
 					}								

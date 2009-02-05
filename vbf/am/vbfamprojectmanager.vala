@@ -188,7 +188,7 @@ namespace Vbf.Am
 			string src_name;
 			if (source is StringLiteral) {
 				src_name = Path.build_filename (group.project.id, group.name, ((StringLiteral) source).data);
-				var src = new Source.with_type (target, src_name, SourceTypes.VALA);
+				var src = new Source.with_type (target, src_name, FileTypes.VALA_SOURCE);
 				target.add_source (src);
 			} else if (source is Variable) {
 				add_vala_source (group, target, ((Variable) source).get_value ());
@@ -196,7 +196,7 @@ namespace Vbf.Am
 				foreach (ConfigNode item in ((ConfigNodeList) source).get_values ()) {
 					if (item is StringLiteral) {
 						src_name = Path.build_filename (group.project.id, group.name, ((StringLiteral) item).data);
-						var src = new Source.with_type (target, src_name, SourceTypes.VALA);
+						var src = new Source.with_type (target, src_name, FileTypes.VALA_SOURCE);
 						target.add_source (src);
 					} else if (item is Variable) {
 						add_vala_source (group, target, ((Variable) item).get_value ());
@@ -242,6 +242,32 @@ namespace Vbf.Am
 			}
 		}
 		
+		private void add_data_files (Group group, Target target, ConfigNode file)
+		{
+			string name;
+			if (file is StringLiteral) {
+				name = Path.build_filename (group.project.id, group.name, ((StringLiteral) file).data);
+				var f = new File.with_type (target, name, FileTypes.DATA);
+				target.add_file (f);
+			} else if (file is Variable) {
+				add_data_files (group, target, ((Variable) file).get_value ());
+			} else if (file is ConfigNodeList) {
+				foreach (ConfigNode item in ((ConfigNodeList) file).get_values ()) {
+					if (item is StringLiteral) {
+						name = Path.build_filename (group.project.id, group.name, ((StringLiteral) item).data);
+						var f = new File.with_type (target, name, FileTypes.DATA);
+						target.add_file (f);
+					} else if (item is Variable) {
+						add_data_files (group, target, ((Variable) item).get_value ());
+					} else if (item is ConfigNodeList){
+						add_data_files (group, target, item);
+					}
+				}
+			} else {
+				warning ("add_vala_source: unsupported source type");
+			}
+		}
+		
 		private void parse_targets (Group group)
 		{
 			foreach (Variable variable in group.get_variables ())	{
@@ -250,7 +276,10 @@ namespace Vbf.Am
 				} else if (variable.name.has_suffix ("_LTLIBRARIES") || 
 					   variable.name.has_suffix ("_LIBRARIES")) {
 					add_targets (group, variable.get_value (), TargetTypes.LIBRARY);
-				//} else if (variable.name.has_suffix ("_DATA")) {
+				} else if (variable.name.has_suffix ("_DATA")) {
+					var target = new Target (group, TargetTypes.DATA, "data");
+					add_data_files (group, target, variable.get_value ());
+					group.add_target (target);
 				} else if (variable.name == "BUILT_SOURCES") {
 					add_targets (group, variable.get_value (), TargetTypes.BUILT_SOURCES);
 				}

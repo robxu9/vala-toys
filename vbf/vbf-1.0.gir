@@ -7,9 +7,10 @@
 		<member name="data"/>
 		<member name="built-sources"/>
 	</enumeration>
-	<enumeration name="SourceTypes" c:type="VbfSourceTypes" glib:get-type="vbf_source_types_get_type">
+	<enumeration name="FileTypes" c:type="VbfFileTypes" glib:get-type="vbf_file_types_get_type">
 		<member name="unknown"/>
-		<member name="vala"/>
+		<member name="data"/>
+		<member name="vala-source"/>
 	</enumeration>
 	<class name="Project" parent="Vbf.ConfigNode" glib:type-name="VbfProject" glib:get-type="vbf_project_get_type">
 		<field name="id">
@@ -264,21 +265,38 @@
 					<type name="Vbf.Target"/>
 				</parameter>
 				<parameter name="type">
-					<type name="Vbf.SourceTypes"/>
+					<type name="Vbf.FileTypes"/>
 				</parameter>
 			</parameters>
 			<return-value transfer-ownership="full">
 				<type name="bool"/>
 			</return-value>
 		</method>
+		<method name="has_file_of_type" c:identifier="vbf_target_has_file_of_type">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Target"/>
+				</parameter>
+				<parameter name="type">
+					<type name="Vbf.FileTypes"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="bool"/>
+			</return-value>
+		</method>
+		<method name="get_files" c:identifier="vbf_target_get_files">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Target"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.File>"/>
+			</return-value>
+		</method>
 	</class>
 	<class name="Source" parent="Vbf.File" glib:type-name="VbfSource" glib:get-type="vbf_source_get_type">
-		<field name="type">
-			<type name="Vbf.SourceTypes"/>
-		</field>
-		<field name="target">
-			<type name="Vbf.Target"/>
-		</field>
 		<constructor name="new" c:identifier="vbf_source_new">
 			<parameters>
 				<parameter name="target">
@@ -301,7 +319,7 @@
 					<type name="string"/>
 				</parameter>
 				<parameter name="type">
-					<type name="Vbf.SourceTypes"/>
+					<type name="Vbf.FileTypes"/>
 				</parameter>
 			</parameters>
 			<return-value>
@@ -319,10 +337,35 @@
 		<field name="uri">
 			<type name="string"/>
 		</field>
+		<field name="type">
+			<type name="Vbf.FileTypes"/>
+		</field>
+		<field name="target">
+			<type name="Vbf.Target"/>
+		</field>
 		<constructor name="new" c:identifier="vbf_file_new">
 			<parameters>
+				<parameter name="target">
+					<type name="Vbf.Target"/>
+				</parameter>
 				<parameter name="filename">
 					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value>
+				<type name="Vbf.File"/>
+			</return-value>
+		</constructor>
+		<constructor name="with_type" c:identifier="vbf_file_new_with_type">
+			<parameters>
+				<parameter name="target">
+					<type name="Vbf.Target"/>
+				</parameter>
+				<parameter name="filename">
+					<type name="string"/>
+				</parameter>
+				<parameter name="type">
+					<type name="Vbf.FileTypes"/>
 				</parameter>
 			</parameters>
 			<return-value>
