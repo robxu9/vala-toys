@@ -1,5 +1,11 @@
 2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+
+	crash during a normal completion. Patch by Levi Bard. Fixed issue #46
+
+2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* vsc-shell/vsccompletionshell.vala:
 	* vsc/vsccompletionvisitor.vala:

@@ -346,13 +346,16 @@ namespace Vsc
 
 		public string get_qualified_name_for_datatype (DataType dt)
 		{
-			string typename;
+			string? typename;
 			
 			if (dt is Vala.ClassType) {
 				typename = ((Vala.ClassType) dt).class_symbol.get_full_name ();
 			} else {
 				typename = dt.to_qualified_string ();
 			}
+			
+			if (null == typename){ return ""; }
+			
 			if (typename.has_suffix ("?")) {
 				typename = typename.substring (0, typename.length - 1);
 			}
