@@ -206,5 +206,12 @@ namespace Vsc
 			    (param_count > 2 ? "\n" : ""),
 			    params);
 		}
+
+		public SymbolCompletionItem.with_namespace (Namespace item)
+		{
+			this.name = item.name;
+			this.info = "Namespace: %s".printf (item.name);
+			this.line = item.source_reference.first_line;
+		}
 	}
 }

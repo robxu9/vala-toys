@@ -84,6 +84,8 @@ namespace Vsc
 					case "complete":
 						if (count == 3)
 							complete (toks[1], toks[2]);
+						else if (count == 2)
+							complete (toks[1], null);
 						else
 							print_error ("invalid command arguments");
 						break;
@@ -133,6 +135,9 @@ namespace Vsc
 						print_message ("waiting parser engine...");
 						while (_completion.parser.is_cache_building ()) 
 							;
+						break;
+					case "get-namespaces":
+						get_namespaces ();
 						break;
 					default:
 						print_error ("unknown command '%s'".printf (command));
@@ -253,7 +258,7 @@ namespace Vsc
 			}
 		}
 		
-		private void complete (string typename, string source)
+		private void complete (string typename, string? source)
 		{
 			try {
 				var options = new SymbolCompletionFilterOptions ();
@@ -262,6 +267,11 @@ namespace Vsc
 			} catch (Error err) {
 				print_error (err.message);
 			} 
+		}
+
+		private void get_namespaces ()
+		{
+			display_result (_completion.get_namespaces ());
 		}
 		
 		private void append_symbols (string type, StringBuilder sb, Gee.List<SymbolCompletionItem> symbols)
@@ -278,13 +288,13 @@ namespace Vsc
 
 				print_message ("symbols found");
 				if (completions.enums.size > 0) {
-					append_symbols ("enums", sb, completions.interfaces);
+					append_symbols ("enums", sb, completions.enums);
 				}
 				if (completions.constants.size > 0) {
-					append_symbols ("constants", sb, completions.interfaces);
+					append_symbols ("constants", sb, completions.constants);
 				}
 				if (completions.namespaces.size > 0) {
-					append_symbols ("namespaces", sb, completions.interfaces);
+					append_symbols ("namespaces", sb, completions.namespaces);
 				}
 				if (completions.fields.size > 0) {
 					append_symbols ("field", sb, completions.fields);
