@@ -393,17 +393,108 @@ namespace Vsc
 			
 			_parser.lock_all_contexts ();
 
-			CodeContext? context = (null != _parser.sec_context)? _parser.sec_context: _parser.pri_context;
-			
-			if (null != context) {
-				foreach(Namespace ns in context.root.get_namespaces()) {
-					stdout.printf("Adding %s\n", ns.name);
-					results.add(new SymbolCompletionItem.with_namespace(ns));
+			try {
+				CodeContext? context = (null != _parser.sec_context)? _parser.sec_context: _parser.pri_context;
+				
+				if (null != context) {
+					foreach(Namespace ns in context.root.get_namespaces()) {
+						results.add(new SymbolCompletionItem.with_namespace(ns));
+					}
 				}
+			} finally {
+				_parser.unlock_all_contexts ();
 			}
-			_parser.unlock_all_contexts ();
 
 			result.namespaces = results;
+			return result;
+		}
+		
+		public SymbolCompletionResult get_visible_symbols (SymbolCompletionFilterOptions options, string? sourcefile, int line, int column, bool types_only)
+		{
+			SymbolCompletionResult result = new SymbolCompletionResult ();
+			if (null == sourcefile){ return result; }
+			
+			warn_if_fail (_parser != null);
+			
+			_parser.lock_all_contexts ();
+			try {
+				SourceFile? source = find_sourcefile (_parser.sec_context, sourcefile);
+				if (null == source){ source = find_sourcefile (_parser.pri_context, sourcefile); }
+				if (null == source){ return result; }
+				
+				// Check root namespace
+				Gee.ArrayList<Namespace> namespaces = new Gee.ArrayList<Namespace> ();
+				namespaces.add (source.context.root);
+				
+				// Check included namespaces
+				foreach (UsingDirective item in source.get_using_directives ()) {
+					namespaces.add ((Namespace)item.namespace_symbol);
+				}
+				
+				// Check the current namespace
+				Class? kl;
+				Method? method;
+				find_codenode (source, line, column, out kl, out method);
+				if (null != kl && null != kl.parent_symbol && (kl.parent_symbol is Namespace)) {
+					namespaces.add ((Namespace)kl.parent_symbol); 
+				}
+				
+				foreach (Namespace ns in namespaces) {
+					foreach (Namespace cl in ns.get_namespaces ()) {
+						result.namespaces.add (new SymbolCompletionItem.with_namespace (cl));
+					}
+					foreach (Class cl in ns.get_classes ()) {
+						result.classes.add (new SymbolCompletionItem.with_class (cl));
+					}
+					foreach (Interface cl in ns.get_interfaces ()) {
+						result.interfaces.add (new SymbolCompletionItem.with_interface (cl));
+					}
+					foreach (Struct cl in ns.get_structs ()) {
+						result.structs.add (new SymbolCompletionItem.with_struct (cl));
+					}
+					if (!types_only) {
+						foreach (Method cl in ns.get_methods ()) {
+							result.methods.add (new SymbolCompletionItem.with_method (cl));
+						}
+						foreach (Field cl in ns.get_fields ()) {
+							result.fields.add (new SymbolCompletionItem.with_field (cl));
+						}
+						foreach (Constant cl in ns.get_constants ()) {
+							result.constants.add (new SymbolCompletionItem (cl.name));
+						}
+						foreach (Delegate cl in ns.get_delegates ()) {
+							result.others.add (new SymbolCompletionItem (cl.name));
+						}
+						foreach (Enum cl in ns.get_enums ()) {
+							result.enums.add (new SymbolCompletionItem (cl.name));
+						}
+						if (null != kl) {
+							foreach (Method cl in kl.get_methods ()) {
+								result.methods.add (new SymbolCompletionItem.with_method (cl));
+							}
+							foreach (Field cl in kl.get_fields ()) {
+								result.fields.add (new SymbolCompletionItem.with_field (cl));
+							}
+							foreach (Constant cl in kl.get_constants ()) {
+								result.constants.add (new SymbolCompletionItem (cl.name));
+							}
+							foreach (Delegate cl in kl.get_delegates ()) {
+								result.others.add (new SymbolCompletionItem (cl.name));
+							}
+							foreach (Enum cl in ns.get_enums ()) {
+								result.enums.add (new SymbolCompletionItem (cl.name));
+							}
+							foreach (Vala.Signal cl in kl.get_signals ()) {
+								result.signals.add (new SymbolCompletionItem.with_signal (cl));
+							}
+						}
+					}// Not just types
+				}
+				
+			} finally {
+				_parser.unlock_all_contexts ();
+			}
+			
 			return result;
 		}
 		

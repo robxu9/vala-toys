@@ -147,6 +147,20 @@ namespace Vsc
 					case "get-namespaces":
 						get_namespaces ();
 						break;
+					case "visible-types":
+						if (4 == count) {
+							visible_types (toks[1], toks[2].to_int(), toks[3].to_int());
+						} else {
+ 							print_error ("invalid command arguments");
+						}
+						break;
+					case "visible-symbols":
+						if (4 == count) {
+							visible_symbols (toks[1], toks[2].to_int(), toks[3].to_int());
+						} else {
+ 							print_error ("invalid command arguments");
+						}
+						break;
 					default:
 						print_error ("unknown command '%s'".printf (command));
 						break;
@@ -282,6 +296,16 @@ namespace Vsc
 			display_result (_completion.get_namespaces ());
 		}
 		
+		private void visible_types (string filename, int line, int column)
+		{
+			display_result (_completion.get_visible_symbols (new SymbolCompletionFilterOptions (), filename, line, column, true));
+		}
+		
+		private void visible_symbols (string filename, int line, int column)
+		{
+			display_result (_completion.get_visible_symbols (new SymbolCompletionFilterOptions (), filename, line, column, false));
+		}
+		
 		private void append_symbols (string type, StringBuilder sb, Gee.List<SymbolCompletionItem> symbols)
 		{
 			foreach (SymbolCompletionItem symbol in symbols) {
@@ -311,7 +335,7 @@ namespace Vsc
 						typename = "";
 					}
 					
-					sb.append("method:%s:%s;%s:%s;%s:".printf (method.name, get_access(item), "", typename, is_owned));
+					sb.append("method:%s:%s;%s:%s;%s:".printf (item.name, get_access(item), "", typename, is_owned));
 					foreach (FormalParameter param in method.get_parameters ()) {
 						//  name,vala type,OWNERSHIP
 						sometype = param.parameter_type;

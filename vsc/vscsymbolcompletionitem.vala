@@ -141,6 +141,26 @@ namespace Vsc
 			    params);
 		}
 
+		public SymbolCompletionItem.with_creation_method (CreationMethod item)
+		{
+			this.name = ("new" == item.name)? 
+			            item.parent_symbol.name: 
+			            "%s.%s".printf (item.parent_symbol.name, item.name);
+			this.line = item.source_reference.first_line;
+			this.symbol = item;
+			
+			int param_count = item.get_parameters ().size;
+			var params = formal_parameters_to_string (item.get_parameters ());
+
+			this.info = "CreationMethod: %s\n\n%s%s<b>%s</b> (%s%s)".printf (
+			    name,
+			    data_type_to_string (item.return_type),
+			    (param_count > 2 ? "\n" : " "),
+			    name, 
+			    (param_count > 2 ? "\n" : ""),
+			    params);
+		}
+
 		public SymbolCompletionItem.with_field (Field item)
 		{
 			this.name = item.name;

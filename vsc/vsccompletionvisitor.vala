@@ -268,7 +268,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	public override void visit_creation_method (Vala.CreationMethod m)
 	{
 		if (test_symbol (_options, m)) {
-			_results.methods.add (new SymbolCompletionItem.with_method (m));
+			_results.methods.add (new SymbolCompletionItem.with_creation_method (m));
 		}		
 	}
 

@@ -1,5 +1,23 @@
 2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+
+	get visible symbols from a given context. Patch by Levi Bard. Fixed issue #47
+
+2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+
+	expose creation methods in vsc-shell output. Patch by Levi Bard. Fixed issue #44
+
+2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc-shell/vsccompletionshell.vala:
 	* vsc/vscsymbolcompletion.vala:
 	* vsc/vscsymbolcompletionitem.vala:
