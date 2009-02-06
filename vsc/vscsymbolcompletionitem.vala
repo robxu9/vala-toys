@@ -29,6 +29,7 @@ namespace Vsc
 		public string type_name = null;
 		public string info;
 		public int line = 0;
+		public Symbol? symbol;
 		
 		public SymbolCompletionItem (string name)
 		{
@@ -117,6 +118,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.line = item.source_reference.first_line;
+			this.symbol = item;
 			
 			if (name.has_prefix ("new")) {
 				name = name.substring (3, name.length - 3);
@@ -143,6 +145,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.line = item.source_reference.first_line;
+			this.symbol = item;
 			
 			string default_expr = "";
 			if (item.initializer != null) {
@@ -158,6 +161,7 @@ namespace Vsc
 		public SymbolCompletionItem.with_property (Property item)
 		{
 			this.name = item.name;
+			this.symbol = item;
 			string default_expr = "";
 			if (item.default_expression != null) {
 				default_expr = " = " + item.default_expression.to_string ();
@@ -174,6 +178,7 @@ namespace Vsc
 			this.name = item.name;
 			this.info = "Struct: %s".printf (item.name);
 			this.line = item.source_reference.first_line;
+			this.symbol = item;
 		}
 
  		public SymbolCompletionItem.with_class (Class item)
@@ -181,6 +186,7 @@ namespace Vsc
 			this.name = item.name;
 			this.info = "Class: %s".printf (item.name);
 			this.line = item.source_reference.first_line;
+			this.symbol = item;
 		}
 
  		public SymbolCompletionItem.with_interface (Interface item)
@@ -188,6 +194,7 @@ namespace Vsc
 			this.name = item.name;
 			this.info = "Interface: %s".printf (item.name);
 			this.line = item.source_reference.first_line;
+			this.symbol = item;
 		}
 
  		public SymbolCompletionItem.with_signal (Vala.Signal item)
@@ -195,6 +202,7 @@ namespace Vsc
 			this.name = item.name;
 			this.info = "Signal: %s".printf (item.name);
 			this.line = item.source_reference.first_line;
+			this.symbol = item;
 			int param_count = item.get_parameters ().size;
 			var params = formal_parameters_to_string (item.get_parameters ());
 
@@ -212,6 +220,7 @@ namespace Vsc
 			this.name = item.name;
 			this.info = "Namespace: %s".printf (item.name);
 			this.line = item.source_reference.first_line;
+			this.symbol = item;
 		}
 	}
 }

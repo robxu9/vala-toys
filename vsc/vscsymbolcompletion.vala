@@ -777,10 +777,11 @@ namespace Vsc
 		{
 			warn_if_fail (_parser != null);
 			SymbolCompletionResult result = new SymbolCompletionResult ();
-			SourceFile source = null;
+			SourceFile? source = null;
 			
 			if (sourcefile != null) {
 				source = find_sourcefile (_parser.sec_context, sourcefile);
+				if (null == source){ source = find_sourcefile (_parser.pri_context, sourcefile); }
 			}
 			
 			//first look in the namespaces defined in the source file

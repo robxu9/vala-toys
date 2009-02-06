@@ -4,6 +4,14 @@
 	* vsc/vscsymbolcompletion.vala:
 	* vsc/vscsymbolcompletionitem.vala:
 
+	expand vsc-shell output format. Patch by Levi Bard. Fixed issue #43
+
+2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+
 	add get-namespaces to libvsc and vsc-shell. Patch by Levi Bard. Fixed issue #39
 
 2009-02-05  Andrea Del Signore  <sejerpz@tin.it>

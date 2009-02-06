@@ -82,12 +82,20 @@ namespace Vsc
 
 						break;
 					case "complete":
-						if (count == 3)
-							complete (toks[1], toks[2]);
-						else if (count == 2)
-							complete (toks[1], null);
-						else
-							print_error ("invalid command arguments");
+ 						switch (count) {
+ 						case 5:
+ 							complete (toks[1], toks[2], toks[3].to_int (), toks[4].to_int ());
+ 							break;
+ 						case 3:
+ 							complete (toks[1], toks[2], 0, 0);
+ 							break;
+ 						case 2:
+ 							complete (toks[1], null, 0, 0);
+ 							break;
+ 						default:
+ 							print_error ("invalid command arguments");
+ 							break;
+ 						}
 						break;
 					case "add-source":
 						if (count == 2)
@@ -134,7 +142,7 @@ namespace Vsc
 					case "wait-parser-engine":
 						print_message ("waiting parser engine...");
 						while (_completion.parser.is_cache_building ()) 
-							;
+							Thread.usleep(10000);
 						break;
 					case "get-namespaces":
 						get_namespaces ();
@@ -258,11 +266,11 @@ namespace Vsc
 			}
 		}
 		
-		private void complete (string typename, string? source)
+		private void complete (string typename, string? source, int line, int col)
 		{
 			try {
 				var options = new SymbolCompletionFilterOptions ();
-				var completion_result = _completion.get_completions_for_name (options, typename, source, 0 ,0);
+				var completion_result = _completion.get_completions_for_name (options, typename, source, line, col);
 				display_result (completion_result);
 			} catch (Error err) {
 				print_error (err.message);
@@ -277,8 +285,82 @@ namespace Vsc
 		private void append_symbols (string type, StringBuilder sb, Gee.List<SymbolCompletionItem> symbols)
 		{
 			foreach (SymbolCompletionItem symbol in symbols) {
-				sb.append ("%s:%s\n".printf(type, symbol.name));
+ 				sb.append ("%s:%s:%s;\n".printf(type, symbol.name, get_access(symbol)));
+ 			}
+ 		}
+ 		
+ 		private static void append_methods (StringBuilder sb, Gee.List<SymbolCompletionItem> methods)
+ 		{
+			Method? method;
+			DataType? sometype;
+			string is_owned;
+			string typename;
+			string paramname;
+			
+			foreach (SymbolCompletionItem item in methods) {
+				method = (Method?)item.symbol;
+				if (null != method) {
+					// TYPE:NAME:MODIFIER;STATIC:RETURN_TYPE;OWNERSHIP:ARGS;
+					sometype = method.return_type;
+					if (null != sometype) {
+						typename = sometype.to_string();
+						is_owned = sometype.value_owned? "": "unowned";
+					}
+					else { 
+						is_owned = "";
+						typename = "";
+					}
+					
+					sb.append("method:%s:%s;%s:%s;%s:".printf (method.name, get_access(item), "", typename, is_owned));
+					foreach (FormalParameter param in method.get_parameters ()) {
+						//  name,vala type,OWNERSHIP
+						sometype = param.parameter_type;
+						if (null != sometype) {
+							typename = sometype.to_string();
+							is_owned = sometype.value_owned? "": "unowned";
+						}
+						else { 
+							is_owned = "";
+							typename = "";
+						}
+						
+						paramname = ("(null)" == param.name.strip ())? "...": param.name;
+						
+						sb.append ("%s,%s,%s;".printf( paramname, typename, is_owned));
+					}
+
+					sb.append ("\n");
+				} else {
+					sb.append ("method:%s:;\n".printf (item.name));
+				}
 			}
+ 		}
+ 
+ 		private static string get_access(SymbolCompletionItem symbol) 
+ 		{
+ 			Symbol? sym_real = symbol.symbol;
+ 			string access = "";
+ 			
+ 			if (null != sym_real) {
+ 				switch (sym_real.access) {
+ 							case SymbolAccessibility.PUBLIC:
+ 								access = "public";
+ 								break;
+ 							case SymbolAccessibility.PRIVATE:
+ 								access = "private";
+ 								break;
+ 							case SymbolAccessibility.PROTECTED:
+ 								access = "protected";
+ 								break;
+ 							case SymbolAccessibility.INTERNAL:
+ 								access = "internal";
+ 								break;
+ 							default:
+ 								break;
+ 				}
+ 			}
+ 
+ 			return access;
 		}
 
 		private void display_result (SymbolCompletionResult completions)
@@ -303,7 +385,7 @@ namespace Vsc
 					append_symbols ("property", sb, completions.properties);
 				}
 				if (completions.methods.size > 0) {
-					append_symbols ("method", sb, completions.methods);
+					append_methods (sb, completions.methods);
 				}
 
 				if (completions.signals.size > 0) {
