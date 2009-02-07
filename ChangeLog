@@ -1,5 +1,11 @@
 2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbuildlogview.vala:
+
+	errors are sorted first in build results messages pane. Fixes issue #49
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/am/vbfamprojectmanager.vala:
 
 	fixed a regression cause by the change in the group display name	

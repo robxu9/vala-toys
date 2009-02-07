@@ -35,6 +35,7 @@ namespace Vtg
 
 		private int current_error_row = 0;
 		private int _error_count = 0;
+		private int _warning_count = 0;
 		private Vtg.Plugin _plugin;
 		private unowned ProjectManager _project;
 
@@ -43,6 +44,12 @@ namespace Vtg
 		public int error_count {
 			get {
 				return _error_count;
+			}
+		}
+
+		public int warning_count {
+			get {
+				return _warning_count;
 			}
 		}
 		
@@ -61,7 +68,7 @@ namespace Vtg
 		{
 			var panel = _plugin.gedit_window.get_bottom_panel ();
 			_ui = new Gtk.VBox (false, 8);
-			this._model = new ListStore (6, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof(GLib.Object));
+			this._model = new ListStore (7, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof (int), typeof(GLib.Object));
 			_build_view = new Gtk.TreeView.with_model (_model);
 			CellRenderer renderer = new CellRendererPixbuf ();
 			var column = new TreeViewColumn ();
@@ -98,6 +105,7 @@ namespace Vtg
 			_ui.show_all ();
 			panel.add_item_with_stock_icon (_ui, _("Build results"), Gtk.STOCK_EXECUTE);
 			_plugin.output_view.message_added += this.on_message_added;
+			_model.set_sort_column_id (5, SortType.ASCENDING);
 		}
 
 		public void initialize (ProjectManager? project = null)
@@ -105,6 +113,7 @@ namespace Vtg
 			this._project = project;
 			current_error_row = 0;
 			_error_count = 0;
+			_warning_count = 0;
 			_model.clear ();
 		}
 
@@ -146,7 +155,7 @@ namespace Vtg
 				int line, col;
 				ProjectManager? proj;
 
-				_model.get (iter, 2, out name, 3, out line, 4, out col, 5, out proj);
+				_model.get (iter, 2, out name, 3, out line, 4, out col, 6, out proj);
 
 				if (proj != null) {
 					string uri = proj.source_uri_for_name (name);
@@ -167,7 +176,7 @@ namespace Vtg
 				activate_path (path);
 				_build_view.scroll_to_cell (path, null, false, 0, 0);
 				_build_view.get_selection ().select_path (path);
-				if (current_error_row < _error_count - 1)
+				if (current_error_row < (_error_count + _warning_count) - 1)
 					current_error_row++;
 				else
 					current_error_row = 0;
@@ -184,7 +193,7 @@ namespace Vtg
 				if (current_error_row > 0)
 					current_error_row--;
 				else
-					current_error_row = _error_count - 1;
+					current_error_row = (_error_count + _warning_count) - 1;
 			}
 		}
 
@@ -212,18 +221,25 @@ namespace Vtg
 			string stock_id = null;
 
 			if (parts[1] != null) {
+				int sort_id = 0;
 				if (parts[1].has_suffix ("error")) {
 					stock_id = Gtk.STOCK_DIALOG_ERROR;
+					_error_count++;
+					sort_id = -error_count; //errors come first
 				} else if (parts[1].has_suffix ("warning")) {
 					stock_id = Gtk.STOCK_DIALOG_WARNING;
+					_warning_count++;
+					sort_id = warning_count;
+				} else {
+					_error_count++;
+					sort_id = -error_count; //errors come first
 				}
 
 
 				if (parts[2] != null) {
 					TreeIter iter;
 					_model.append (out iter);
-					_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, _project);
-					_error_count++;
+					_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, sort_id, 6, _project);
 				}
 			}
 		}
