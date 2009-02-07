@@ -1,5 +1,11 @@
 2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscparsermanager.vala:
+
+	removed double gee-1.0 library inclusion when vala-1.0 library is used
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	fixed completion inside when the word is close to an open parenthesis	

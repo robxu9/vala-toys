@@ -285,6 +285,7 @@ namespace Vsc
 			if (list_contains_string (_built_packages, vapi_file)) {
 				return false;
 			}
+
 			
 			Gee.List<string> files = find_vala_package_filename (vapi_file);
 			if (files.size > 0) {
@@ -293,7 +294,15 @@ namespace Vsc
 				lock_pri_context ();
 				foreach (string filename in files) {
 					if (!list_contains_string (_packages, filename)) {
+						//HACK: gee is already include with vala-1.0 vapi so we have to check
+						//also for vala-1.0 when adding gee-1.0
+						if (filename.has_suffix ("gee-1.0.vapi") && 
+							list_contains_string (_packages, filename.replace ("gee-1.0.vapi", "vala-1.0.vapi"))) {
+							continue; //next one
+						}
+						
 						_packages.add (filename);
+						debug ("adding package file: %s", filename);
 						need_parse = true;
 					}
 				}
