@@ -1,3 +1,10 @@
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+	* vtg/vtgplugin.vala:
+
+	fixed a bug introduced with the vbf migration
+
 2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscsymbolcompletion.vala:

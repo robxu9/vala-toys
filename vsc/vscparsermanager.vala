@@ -285,7 +285,7 @@ namespace Vsc
 			if (list_contains_string (_built_packages, vapi_file)) {
 				return false;
 			}
-
+			
 			Gee.List<string> files = find_vala_package_filename (vapi_file);
 			if (files.size > 0) {
 				bool need_parse = false;

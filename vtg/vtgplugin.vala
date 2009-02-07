@@ -400,7 +400,7 @@ namespace Vtg
 			var prj = new ProjectDescriptor ();
 			var completion = new Vsc.SymbolCompletion ();
 			var project = project_manager.project;
-			
+								
 			/* setup referenced packages */
 			foreach (Vbf.Module module in project.get_modules ()) {
 				foreach (Vbf.Package package in module.get_packages ()) {
@@ -408,11 +408,15 @@ namespace Vtg
 				}
 			}
 
-			/* setup vapidir, built libraries and local packages */
+			/* first adding a built packages*/
 			foreach (Group group in project.get_groups ()) {
 				foreach(string package in group.get_built_libraries ()) {
 					completion.parser.add_built_package (package);
 				}
+			}
+
+			/* setup vapidir, built libraries and local packages */
+			foreach (Group group in project.get_groups ()) {
 				foreach(string path in group.get_include_dirs ()) {
 					completion.parser.add_path_to_vapi_search_dir (path);
 				}
@@ -425,12 +429,11 @@ namespace Vtg
 			foreach (Group group in project.get_groups ()) {
 				foreach (Target target in group.get_targets ()) {
 					foreach (Vbf.Source source in target.get_sources ()) {
-						if (source.uri.has_suffix (".vala") && source.uri.has_prefix ("file://")) {
-							string filename = source.uri.substring (7, source.uri.length - 7);
+						if (source.type == FileTypes.VALA_SOURCE) {
 							try {
-								completion.parser.add_source (filename);
+								completion.parser.add_source (source.filename);
 							} catch (Error err) {
-								GLib.warning ("Error adding source %s: %s", filename, err.message);
+								GLib.warning ("Error adding source %s: %s", source.filename, err.message);
 							}
 						}
 					}
