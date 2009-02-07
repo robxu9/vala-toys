@@ -197,7 +197,7 @@ namespace Vtg
 
 			_model = new Gtk.TreeStore (5, typeof(string), typeof(string), typeof(string), typeof(GLib.Object), typeof(string));
 			_model.append (out project_iter, null);
-			_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, _project.name, 2, "project-root", 4, "");
+			_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, "%s - %s".printf (_project.name, _project.version), 2, "project-root", 4, "");
 			_model.append (out modules_iter, project_iter);
 			_model.set (modules_iter, 0, Gtk.STOCK_DIRECTORY, 1, _("References"), 2, "project-reference", 4, "1");
 			foreach (Module module in _project.get_modules ()) {

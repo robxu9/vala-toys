@@ -1,5 +1,23 @@
 2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* vtg/vtgprojectmanager.vala:
+	
+	added project version information in the project pane
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	better handling of keys when the calltip is shown. Fixes issue #37
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	the method / file list dialog is now modal
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/am/vbfamprojectmanager.vala:
 	* vbf/vbf-1.0.gir:
 	* vbf/vbf-1.0.vapi:

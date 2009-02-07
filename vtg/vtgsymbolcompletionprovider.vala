@@ -204,7 +204,8 @@ namespace Vtg
 			
 			if (ch == '(') {
 				this.show_calltip ();
-			} else if (evt.keyval == Gdk.Key_Escape || ch == ')') { // || ch == ';' || ch == '.' || evt.keyval == Gdk.Key_Return
+			} else if (evt.keyval == Gdk.Key_Escape || ch == ')' || ch == ';' ||
+					(evt.keyval == Gdk.Key_Return && (evt.state & ModifierType.SHIFT_MASK) != 0)) {
 				this.hide_calltip ();
 			}
 			if (counter <= 0) {
@@ -218,7 +219,7 @@ namespace Vtg
 					need_parse = true;
 				} else if (evt.keyval == Gdk.Key_Up
 					   || evt.keyval == Gdk.Key_Down) {
-					current_edited_line = -1; //moved so parse the buffer is its needed
+					current_edited_line = -1; //moved so a parse buffer is needed
 				} 
 			} else {
 				if (evt.keyval == Gdk.Key_Return || ch == ';') {
