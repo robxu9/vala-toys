@@ -18,7 +18,9 @@ root
  |                  vala distribution. It's used by vtg to create
  |                  a new project.
  |
- +---- vsc:  static library containing the completion engine
+ +---- vsc: static library containing the completion engine
+ |
+ +---- vbf: static library that implements the autotools support
  |
  +---- vsc-shell: unfinished shell useful to debug the
  |                completion engine, but it could be used

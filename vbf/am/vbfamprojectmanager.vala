@@ -119,7 +119,7 @@ namespace Vbf.Am
 						} else {
 							mod = new Regex ("^[\\s\\]]*([^\\,\\]]+)[\\s\\]]*,([^\\,]+)$");
 							if (mod.match (line, RegexMatchFlags.NEWLINE_CR, out pac)) {
-								print ("submatch 2\n");	
+								pacs = pac.fetch (1);
 							} else {
 								pacs = line;
 							}

@@ -1,5 +1,13 @@
 2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* README:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbfgroup.vala:
+
+	added a default name for the root project group
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 
 	removed double gee-1.0 library inclusion when vala-1.0 library is used

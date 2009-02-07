@@ -47,6 +47,10 @@ namespace Vbf
 				this.name = this.name.split ("/")[1];
 			else
 				this.name = this.name.split ("/")[0];
+			
+			if (name == "") {
+				name = "/ - " + project.name;
+			}
 		}
 		
 		public Gee.List<Target> get_targets ()
