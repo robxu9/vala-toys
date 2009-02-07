@@ -91,7 +91,16 @@ namespace Vbf.Tests
 					foreach (Vbf.File file in target.get_files ()) {
 						print ("            FILES filename %s\n", file.filename);
 					}
+					print ("          REFERENCED PACKAGES\n");
+					foreach (Package package in target.get_packages ()) {
+						print ("            name....... %s\n", package.name);
+					}
 
+				}
+				print ("      REFERENCED PACKAGES\n");
+				foreach (Package package in group.get_packages ()) {
+					print ("        PACAKGE: %s", package.name);
+					print ("\n");
 				}
 				if (dump_variables) {
 					print ("      GROUP VARIABLES\n");

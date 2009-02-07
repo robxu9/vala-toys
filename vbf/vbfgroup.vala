@@ -57,6 +57,21 @@ namespace Vbf
 		{
 			return new ReadOnlyList<Target> (targets);
 		}
+
+		public bool contains_target (string id)
+		{
+			return (get_target_for_id (id) != null);
+		}
+		
+		public Target? get_target_for_id (string id)
+		{
+			foreach (Target target in targets) {
+				if (target.id == id) {
+					return target;
+				}
+			}
+			return null;
+		}
 		
 		internal void add_target (Target target)
 		{

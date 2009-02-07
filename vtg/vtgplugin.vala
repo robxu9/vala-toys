@@ -413,15 +413,28 @@ namespace Vtg
 				foreach(string package in group.get_built_libraries ()) {
 					completion.parser.add_built_package (package);
 				}
+				foreach(Target target in group.get_targets ()) {
+					foreach(string package in target.get_built_libraries ()) {
+						completion.parser.add_built_package (package);
+					}
+				}
 			}
 
-			/* setup vapidir, built libraries and local packages */
+			/* setup vapidir and local packages */
 			foreach (Group group in project.get_groups ()) {
 				foreach(string path in group.get_include_dirs ()) {
 					completion.parser.add_path_to_vapi_search_dir (path);
 				}
 				foreach(Package package in group.get_packages ()) {
 					completion.parser.try_add_package (package.id);
+				}
+				foreach(Target target in group.get_targets ()) {
+					foreach(string path in target.get_include_dirs ()) {
+						completion.parser.add_path_to_vapi_search_dir (path);
+					}
+					foreach(Package package in target.get_packages ()) {
+						completion.parser.try_add_package (package.id);
+					}
 				}
 			}
 			

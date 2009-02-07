@@ -132,6 +132,32 @@
 				<type name="Gee.List<Vbf.Target>"/>
 			</return-value>
 		</method>
+		<method name="contains_target" c:identifier="vbf_group_contains_target">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Group"/>
+				</parameter>
+				<parameter name="id">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="bool"/>
+			</return-value>
+		</method>
+		<method name="get_target_for_id" c:identifier="vbf_group_get_target_for_id">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Group"/>
+				</parameter>
+				<parameter name="id">
+					<type name="string"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Vbf.Target?"/>
+			</return-value>
+		</method>
 		<method name="get_packages" c:identifier="vbf_group_get_packages">
 			<parameters>
 				<parameter name="self">
@@ -293,6 +319,36 @@
 			</parameters>
 			<return-value transfer-ownership="full">
 				<type name="Gee.List<Vbf.File>"/>
+			</return-value>
+		</method>
+		<method name="get_packages" c:identifier="vbf_target_get_packages">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Target"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<Vbf.Package>"/>
+			</return-value>
+		</method>
+		<method name="get_include_dirs" c:identifier="vbf_target_get_include_dirs">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Target"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<string>"/>
+			</return-value>
+		</method>
+		<method name="get_built_libraries" c:identifier="vbf_target_get_built_libraries">
+			<parameters>
+				<parameter name="self">
+					<type name="Vbf.Target"/>
+				</parameter>
+			</parameters>
+			<return-value transfer-ownership="full">
+				<type name="Gee.List<string>"/>
 			</return-value>
 		</method>
 	</class>

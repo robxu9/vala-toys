@@ -1,5 +1,18 @@
 2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbf-1.0.gir:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfgroup.vala:
+	* vbf/vbftarget.vala:
+	* vbf/vbftest.vala:
+	* vsc/vscparsermanager.vala:
+	* vtg/vtgplugin.vala:
+
+	added support for per target packages, build libraries and include dirs
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* README:
 	* vbf/am/vbfamprojectmanager.vala:
 	* vbf/vbfgroup.vala:

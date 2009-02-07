@@ -43,10 +43,12 @@ namespace Vbf {
 		public string id;
 		public string name;
 		public weak Vbf.Project project;
+		public bool contains_target (string id);
 		public Gee.List<string> get_built_libraries ();
 		public Gee.List<string> get_include_dirs ();
 		public Gee.List<Vbf.Package> get_packages ();
 		public Gee.List<Vbf.Group> get_subgroups ();
+		public Vbf.Target? get_target_for_id (string id);
 		public Gee.List<Vbf.Target> get_targets ();
 		public Gee.List<Vbf.Variable> get_variables ();
 		public Group (Vbf.Project project, string id);
@@ -99,7 +101,10 @@ namespace Vbf {
 		public string name;
 		public bool no_install;
 		public Vbf.TargetTypes type;
+		public Gee.List<string> get_built_libraries ();
 		public Gee.List<Vbf.File> get_files ();
+		public Gee.List<string> get_include_dirs ();
+		public Gee.List<Vbf.Package> get_packages ();
 		public Gee.List<Vbf.Source> get_sources ();
 		public bool has_file_of_type (Vbf.FileTypes type);
 		public bool has_sources_of_type (Vbf.FileTypes type);

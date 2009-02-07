@@ -302,7 +302,6 @@ namespace Vsc
 						}
 						
 						_packages.add (filename);
-						debug ("adding package file: %s", filename);
 						need_parse = true;
 					}
 				}

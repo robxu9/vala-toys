@@ -42,7 +42,10 @@ namespace Vbf
 		
 		private Gee.List<Source> sources = new Gee.ArrayList<Source> ();
 		private Gee.List<Vbf.File> files = new Gee.ArrayList<Vbf.File> ();
-		
+		private Gee.List<Package> packages = new Gee.ArrayList<Package> ();
+		private Gee.List<string> include_dirs = new Gee.ArrayList<string> ();
+		private Gee.List<string> built_libraries = new Gee.ArrayList<string> ();
+
 		public Target (Group group, TargetTypes type, string id)
 		{
 			this.group = group;
@@ -91,6 +94,36 @@ namespace Vbf
 		{
 			files.add (file);
 		}
+
+		public Gee.List<Package> get_packages ()
+		{
+			return new ReadOnlyList<Package> (packages);
+		}
+				
+		internal void add_package (Package package)
+		{
+			packages.add (package);
+		}
+
+		public Gee.List<string> get_include_dirs ()
+		{
+			return new ReadOnlyList<string> (include_dirs);
+		}
+		
+		internal void add_include_dir (string dir)
+		{
+			include_dirs.add (dir);
+		}
+
+		public Gee.List<string> get_built_libraries ()
+		{
+			return new ReadOnlyList<string> (built_libraries);
+		}
+		
+		internal void add_built_library (string dir)
+		{
+			built_libraries.add (dir);
+		}		
 	}
 }
 

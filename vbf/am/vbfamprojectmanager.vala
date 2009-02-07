@@ -580,19 +580,42 @@ namespace Vbf.Am
 				buffer = process_include_directives (file, buffer);
 				parse_variables (project, buffer, group);
 				resolve_variables (project, group.get_variables ());
-				parse_group_extended_info (group, buffer);
 				parse_targets (group);
+				parse_group_extended_info (group, buffer);
 			}
 		}
 		
 		private void parse_group_extended_info (Group group, string buffer)
 		{
 			string[] lines = buffer.split ("\n");
+			Target? target = null;
+			
 			foreach (string line in lines) {
+				line = normalize_string (line);
+				if (line == "")
+				{
+					if (target != null) {
+						target = null;
+					}
+					continue; //skip this line
+				}
+				//try extract the the rule target name
+				if (target == null) {
+					string[] rule_parts = line.split (":", 2);
+					if (rule_parts.length == 2) {
+						string[] trgs = rule_parts[0].split (" ");
+						//TODO: add support for multitarget rules if required
+						foreach (string trg in trgs) {
+							target = group.get_target_for_id (trg);
+							if (target != null) {
+								break;
+							}
+						}
+					}
+				}
+
 				string[] tmps = line.split (" ");
-				int count = 0;
-				while (tmps[count] != null)
-					count++;
+				int count = tmps.length;
 			
 				for(int idx=0; idx < count; idx++) {
 					if (tmps[idx] == "--vapidir" && (idx + 1) < count) {
@@ -600,15 +623,27 @@ namespace Vbf.Am
 						if (tmp.has_prefix (".")) {
 							tmp = Path.build_filename (group.project.id, group.name, tmp);
 						}
-						group.add_include_dir (tmp);
+						if (target != null) {
+							target.add_include_dir (tmp);
+						} else {
+							group.add_include_dir (tmp);
+						}
 						idx++;
 					} else if (tmps[idx] == "--pkg" && (idx + 1) < count) {
 						var tmp = tmps[idx+1];
-						group.add_package (new Package (tmp));
+						if (target != null) {
+							target.add_package (new Package (tmp));
+						} else {
+							group.add_package (new Package (tmp));
+						}
 						idx++;
 					} else if (tmps[idx] == "--library") {
 						var tmp = tmps[idx+1];
-						group.add_built_library (tmp);
+						if (target != null) {
+							target.add_built_library (tmp);
+						} else {
+							group.add_built_library (tmp);
+						}
 						idx++;
 					}
 				}
