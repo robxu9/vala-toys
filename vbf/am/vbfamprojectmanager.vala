@@ -187,7 +187,7 @@ namespace Vbf.Am
 		{
 			string src_name;
 			if (source is StringLiteral) {
-				src_name = Path.build_filename (group.project.id, group.name, ((StringLiteral) source).data);
+				src_name = Path.build_filename (group.id, ((StringLiteral) source).data);
 				var src = new Source.with_type (target, src_name, FileTypes.VALA_SOURCE);
 				target.add_source (src);
 			} else if (source is Variable) {
@@ -195,7 +195,7 @@ namespace Vbf.Am
 			} else if (source is ConfigNodeList) {
 				foreach (ConfigNode item in ((ConfigNodeList) source).get_values ()) {
 					if (item is StringLiteral) {
-						src_name = Path.build_filename (group.project.id, group.name, ((StringLiteral) item).data);
+						src_name = Path.build_filename (group.id, ((StringLiteral) item).data);
 						var src = new Source.with_type (target, src_name, FileTypes.VALA_SOURCE);
 						target.add_source (src);
 					} else if (item is Variable) {
@@ -246,7 +246,7 @@ namespace Vbf.Am
 		{
 			string name;
 			if (file is StringLiteral) {
-				name = Path.build_filename (group.project.id, group.name, ((StringLiteral) file).data);
+				name = Path.build_filename (group.id, ((StringLiteral) file).data);
 				var f = new File.with_type (target, name, FileTypes.DATA);
 				target.add_file (f);
 			} else if (file is Variable) {
@@ -254,7 +254,7 @@ namespace Vbf.Am
 			} else if (file is ConfigNodeList) {
 				foreach (ConfigNode item in ((ConfigNodeList) file).get_values ()) {
 					if (item is StringLiteral) {
-						name = Path.build_filename (group.project.id, group.name, ((StringLiteral) item).data);
+						name = Path.build_filename (group.id, ((StringLiteral) item).data);
 						var f = new File.with_type (target, name, FileTypes.DATA);
 						target.add_file (f);
 					} else if (item is Variable) {
