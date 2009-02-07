@@ -347,6 +347,7 @@ namespace Vtg
 			}
 						
 			var dialog = new FilteredListDialog (model);
+			dialog.set_transient_for (_plugin.gedit_window);
 			if (dialog.run ()) {
 				Vbf.Source src;
 				model.get (dialog.selected_iter , 1, out src);
@@ -385,6 +386,7 @@ namespace Vtg
 			}
 			
 			var dialog = new FilteredListDialog (model);
+			dialog.set_transient_for (_plugin.gedit_window);
 			if (dialog.run ()) {
 				Vsc.SymbolCompletionItem method;
 				model.get (dialog.selected_iter , 1, out method);

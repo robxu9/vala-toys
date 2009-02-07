@@ -82,8 +82,14 @@ namespace Vtg
 			select_result ();
 		}
 
+		public void set_transient_for (Gtk.Window parent)
+		{
+			_dialog.set_transient_for (parent);
+		}
+		
 		public bool run ()
 		{
+			_dialog.set_modal (true);
 			_dialog.show_all ();
 			int dialog_result = _dialog.run ();
 			if (dialog_result > 0) {
