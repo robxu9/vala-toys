@@ -440,7 +440,10 @@ namespace Vtg
 					
 					if (status == 1 && (ch != ' ' && ch != '\t')) {
 						status = 0; //back to normal
-					} if (status == 0 && (ch == ' ' || ch == '\t'))
+					} if (status == 0 && (ch == ' ' || ch == '\t' || 
+						(ch == '(' && bracket_lev_1 == 0) ||
+						(ch == '[' && bracket_lev_2 == 0) ||
+						(ch == '{' && bracket_lev_3 == 0)))
 						break; //word interruption
 
 					switch (status) {

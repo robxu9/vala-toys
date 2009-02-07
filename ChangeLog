@@ -1,5 +1,11 @@
 2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed completion inside when the word is close to an open parenthesis	
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 	* vtg/vtgplugin.vala:
 
