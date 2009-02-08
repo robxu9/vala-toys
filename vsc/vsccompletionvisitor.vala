@@ -83,6 +83,9 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 				_results.classes.add (item);
 			}
 		} else {
+			if (_results.classes_contain (cl.name)) {
+				return; //already visited
+			}
 			bool tmp = _parent_type_already_visited;
 			foreach (DataType type in cl.get_base_types ()) {
 				if (type is Vala.ObjectType) {
@@ -140,6 +143,9 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 
        	public override void visit_interface (Interface iface) 
 	{
+		if (_results.interfaces_contain (iface.name)) {
+			return; //already visited
+		}
 		foreach (DataType type in iface.get_prerequisites ()) {
 			if (type.data_type != null) {
 				type.data_type.accept (this);	
@@ -255,7 +261,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		
        	public override void visit_method (Method m) 
 	{
-		if (test_symbol (_options, m)) {
+		if (!m.overrides && !_results.methods_contain (m.name) && test_symbol (_options, m)) {
 			_results.methods.add (new SymbolCompletionItem.with_method (m));
 		}
 	}
@@ -267,42 +273,42 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	
 	public override void visit_creation_method (Vala.CreationMethod m)
 	{
-		if (test_symbol (_options, m)) {
+		if (!_results.methods_contain (m.name) && test_symbol (_options, m)) {
 			_results.methods.add (new SymbolCompletionItem.with_creation_method (m));
 		}		
 	}
 
        	public override void visit_delegate (Delegate d) 
 	{
-		if (test_symbol (_options, d)) {
+		if (!_results.delegates_contain (d.name) && test_symbol (_options, d)) {
 			_results.others.add (new SymbolCompletionItem (d.name));
 		}
 	}
 
        	public override void visit_signal (Vala.Signal s) 
 	{
-		if (test_symbol (_options, s)) {
+		if (!_results.signals_contain (s.name) && test_symbol (_options, s)) {
 			_results.signals.add (new SymbolCompletionItem.with_signal (s));
 		}
 	}
 
        	public override void visit_field (Field f) 
 	{
-		if (test_symbol (_options, f)) {
+		if (!_results.fields_contain (f.name) && test_symbol (_options, f)) {
 			_results.fields.add (new SymbolCompletionItem.with_field (f));
 		}
 	}
 
        	public override void visit_constant (Vala.Constant c) 
 	{
-		if (test_symbol (_options, c)) {
+		if (!_results.constants_contain (c.name) && test_symbol (_options, c)) {
 			_results.constants.add (new SymbolCompletionItem (c.name));
 		}
 	}
 	
        	public override void visit_property (Property p) 
 	{
-		if (test_symbol (_options, p)) {
+		if (!_results.properties_contain (p.name) && test_symbol (_options, p)) {
 			_results.properties.add (new SymbolCompletionItem.with_property (p));
 		}
 	}
@@ -312,7 +318,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		if (!_options.error_domains)
 			return;
 			
-		if (_parent_type_already_visited) {
+		if (_parent_type_already_visited && !_results.error_domains_contain (ed.name)) {
 			_results.error_domains.add (new SymbolCompletionItem (ed.name));
 		} else {
 			_parent_type_already_visited = true;

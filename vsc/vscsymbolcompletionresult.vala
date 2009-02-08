@@ -86,6 +86,30 @@ namespace Vsc
 		public bool enums_contain (string name) {
 			return symbols_contain (enums, name);
 		}
+
+		public bool methods_contain (string name) {
+			return symbols_contain (methods, name);
+		}
+
+		public bool delegates_contain (string name) {
+			return symbols_contain (others, name);
+		}
+
+		public bool signals_contain (string name) {
+			return symbols_contain (signals, name);
+		}
+
+		public bool fields_contain (string name) {
+			return symbols_contain (fields, name);
+		}
+
+		public bool properties_contain (string name) {
+			return symbols_contain (properties, name);
+		}
+
+		public bool error_domains_contain (string name) {
+			return symbols_contain (error_domains, name);
+		}
 		
 		private bool symbols_contain (Gee.List<SymbolCompletionItem> data, string name)
 		{

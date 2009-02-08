@@ -1,5 +1,12 @@
 2009-02-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletionresult.vala:
+
+	remove duplicate entries from completion popup. Fixes issue #25
+
+2009-02-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 	* vsc/vscsymbolcompletion.vala:
 
