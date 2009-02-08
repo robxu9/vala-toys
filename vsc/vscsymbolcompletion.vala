@@ -521,7 +521,7 @@ namespace Vsc
 			DataType? result = null;
 			string[] toks = symbolname.split (".", 2);
 			SourceFile source = null;
-			CodeContext?[] contexts = { _parser.sec_context, _parser.pri_context, null };
+			CodeContext?[] contexts = { _parser.sec_context, _parser.pri_context };
 
 			_parser.lock_all_contexts ();
 			foreach (CodeContext? context in contexts) {
@@ -536,7 +536,9 @@ namespace Vsc
 				if (result != null && source != null && toks[1] != null) {
 					result = get_inner_datatype (result, toks[1], source);
 				}
-				if (null != result){ break; }
+				if (result != null) { 
+					break; 
+				}
 			}
 			_parser.unlock_all_contexts ();
 			return result;

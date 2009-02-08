@@ -104,6 +104,8 @@ namespace Vtg
 				string name = doc.get_uri ();
 				if (name == null) {
 					name = doc.get_short_name_for_display ();
+				} else {
+					name = Filename.from_uri (name);
 				}
 				_sb = new Vsc.SourceBuffer (name, null);
 

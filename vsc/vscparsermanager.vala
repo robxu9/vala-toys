@@ -97,14 +97,14 @@ namespace Vsc
 			mutex_sec_context = null;
 		}
 
-		internal weak CodeContext pri_context
+		internal CodeContext pri_context
 		{
 			get {
 				return _pri_context;
 			}
 		}
 		
-		internal weak CodeContext sec_context
+		internal CodeContext sec_context
 		{
 			get {
 				return _sec_context;

@@ -30,7 +30,8 @@ namespace Vtg
 	public class BuildLogView : GLib.Object
 	{
 		private Gtk.VBox _ui;
-		private ListStore _model = null;
+		private ListStore _child_model = null;
+		private Gtk.TreeModelFilter _model;
 		private TreeView _build_view = null;
 
 		private int current_error_row = 0;
@@ -38,7 +39,10 @@ namespace Vtg
 		private int _warning_count = 0;
 		private Vtg.Plugin _plugin;
 		private unowned ProjectManager _project;
-
+		
+		private bool show_warnings = true;
+		private bool show_errors = true;
+		
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 		
 		public int error_count {
@@ -68,7 +72,34 @@ namespace Vtg
 		{
 			var panel = _plugin.gedit_window.get_bottom_panel ();
 			_ui = new Gtk.VBox (false, 8);
-			this._model = new ListStore (7, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof (int), typeof(GLib.Object));
+			
+			//toobar
+			var toolbar = new Gtk.Toolbar ();
+			toolbar.set_style (ToolbarStyle.BOTH_HORIZ);
+			toolbar.set_icon_size (IconSize.SMALL_TOOLBAR);
+			
+			var toggle = new Gtk.ToggleToolButton ();
+			toggle.set_label (_("Warnings"));
+			toggle.set_is_important (true);
+			toggle.set_icon_name (Gtk.STOCK_DIALOG_WARNING);
+			toggle.set_active (true);
+			toggle.toggled += on_toggle_warnings_toggled;
+			toggle.set_tooltip_text (_("Show or hide the warnings from the build result view"));
+			toolbar.insert (toggle, -1);
+			toggle = new Gtk.ToggleToolButton ();
+			toggle.set_label (_("Errors"));
+			toggle.set_is_important (true);
+			toggle.set_icon_name (Gtk.STOCK_DIALOG_ERROR);
+			toggle.toggled += on_toggle_errors_toggled;
+			toggle.set_tooltip_text (_("Show or hide the errors from the build result view"));
+			toggle.set_active (true);
+			toolbar.insert (toggle, -1);
+			_ui.pack_start (toolbar, false, true, 0);
+			
+			//error / warning list view
+			this._child_model = new ListStore (7, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof (int), typeof(GLib.Object));
+			_model = new Gtk.TreeModelFilter (_child_model, null);
+			_model.set_visible_func (this.filter_model);
 			_build_view = new Gtk.TreeView.with_model (_model);
 			CellRenderer renderer = new CellRendererPixbuf ();
 			var column = new TreeViewColumn ();
@@ -101,11 +132,11 @@ namespace Vtg
 			_build_view.set_rules_hint (true);
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_build_view);
-			_ui.pack_start (scroll, true, true, 4);
+			_ui.pack_start (scroll, true, true, 0);
 			_ui.show_all ();
 			panel.add_item_with_stock_icon (_ui, _("Build results"), Gtk.STOCK_EXECUTE);
 			_plugin.output_view.message_added += this.on_message_added;
-			_model.set_sort_column_id (5, SortType.ASCENDING);
+			_child_model.set_sort_column_id (5, SortType.ASCENDING);
 		}
 
 		public void initialize (ProjectManager? project = null)
@@ -114,7 +145,7 @@ namespace Vtg
 			current_error_row = 0;
 			_error_count = 0;
 			_warning_count = 0;
-			_model.clear ();
+			_child_model.clear ();
 		}
 
 		public void activate ()
@@ -127,6 +158,18 @@ namespace Vtg
 			}
 		}
 
+		private void on_toggle_warnings_toggled (Gtk.ToggleToolButton sender)
+		{
+			show_warnings = sender.get_active ();
+			_model.refilter ();
+		}
+
+		private void on_toggle_errors_toggled (Gtk.ToggleToolButton sender)
+		{
+			show_errors = sender.get_active ();
+			_model.refilter ();
+		}
+		
 		public bool on_message_added (OutputView sender, string message)
 		{
 			string[] lines = message.split ("\n");
@@ -150,12 +193,12 @@ namespace Vtg
 		private void activate_path (TreePath path)
 		{
 			TreeIter iter;
-			if (_model.get_iter (out iter, path)) {
+			if (_child_model.get_iter (out iter, path)) {
 				string name;
 				int line, col;
 				ProjectManager? proj;
 
-				_model.get (iter, 2, out name, 3, out line, 4, out col, 6, out proj);
+				_child_model.get (iter, 2, out name, 3, out line, 4, out col, 6, out proj);
 
 				if (proj != null) {
 					string uri = proj.source_uri_for_name (name);
@@ -225,23 +268,39 @@ namespace Vtg
 				if (parts[1].has_suffix ("error")) {
 					stock_id = Gtk.STOCK_DIALOG_ERROR;
 					_error_count++;
-					sort_id = -error_count; //errors come first
+					sort_id = 0; //errors come first
 				} else if (parts[1].has_suffix ("warning")) {
 					stock_id = Gtk.STOCK_DIALOG_WARNING;
 					_warning_count++;
-					sort_id = warning_count;
+					sort_id = 1;
 				} else {
 					_error_count++;
-					sort_id = -error_count; //errors come first
+					sort_id = 0; //errors come first
 				}
 
 
 				if (parts[2] != null) {
 					TreeIter iter;
-					_model.append (out iter);
-					_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, sort_id, 6, _project);
+					_child_model.append (out iter);
+					_child_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, sort_id, 6, _project);
 				}
 			}
 		}
+		
+		private bool filter_model (TreeModel model, TreeIter iter)
+		{
+			if (show_warnings && show_errors)
+				return true;
+			
+			int val;
+			model.get (iter, 5, out val);
+			if (val == 0 && show_errors)
+				return true;
+			else if (val == 1 && show_warnings)
+				return true;
+				
+			return false;
+		}
+
 	}
 }

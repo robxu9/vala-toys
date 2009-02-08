@@ -1,3 +1,18 @@
+2009-02-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed a crash in get_datatype_for_name. Fixes issue #48
+
+	* vtg/vtgbuildlogview.vala:
+
+	added the possibility to filter warnings out from the build result pane. Fixes issue #50
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	drop the schema from the source name when creating the SourceBuffer object
+
 2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbuildlogview.vala:
