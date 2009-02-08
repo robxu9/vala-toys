@@ -161,13 +161,15 @@ namespace Vtg
 		private void on_toggle_warnings_toggled (Gtk.ToggleToolButton sender)
 		{
 			show_warnings = sender.get_active ();
-			_model.refilter ();
+			if (_model != null)
+				_model.refilter ();
 		}
 
 		private void on_toggle_errors_toggled (Gtk.ToggleToolButton sender)
 		{
 			show_errors = sender.get_active ();
-			_model.refilter ();
+			if (_model != null)
+				_model.refilter ();
 		}
 		
 		public bool on_message_added (OutputView sender, string message)

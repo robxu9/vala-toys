@@ -1,5 +1,11 @@
 2009-02-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbuildlogview.vala:
+
+	fixed a warning on gedit startup caused by uninitialized model
+
+2009-02-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vsccompletionvisitor.vala:
 	* vsc/vscsymbolcompletionresult.vala:
 
