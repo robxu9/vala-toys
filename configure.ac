@@ -45,7 +45,7 @@ AC_ARG_ENABLE([gen-project],
                 *) AC_MSG_ERROR(bad value ${enableval} for --disable-gen-project) ;;
             esac
         ],
-        [genprj=auto])
+        [genprj=yes])
 
 AC_ARG_ENABLE([vtg-plugin],
     AS_HELP_STRING([--disable-vtg-plugin],[Disable vtg gEdit plugin]),
@@ -56,7 +56,7 @@ AC_ARG_ENABLE([vtg-plugin],
                 *) AC_MSG_ERROR(bad value ${enableval} for --disable-vtg-plugin) ;;
             esac
         ],
-        [vtgplugin=auto])
+        [vtgplugin=yes])
 
 AC_ARG_ENABLE([vsc-shell],
     AS_HELP_STRING([--disable-vsc-shell],[Disable vsc-shell program]),

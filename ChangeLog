@@ -1,5 +1,11 @@
 2009-02-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	change the default vtg plugin build setting from auto to yes
+
+2009-02-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala:
 
 	fixed a race condition that causes issue #48 again!
