@@ -48,6 +48,8 @@ libvtg_la_VALASOURCES = \
 	vtgchangelog.vala \
 	vtgparametersdialog.vala \
 	vtgconfiguration.vala \
+	vtgsourcebookmark.vala \
+	vtgsourcebookmarks.vala \
 	vtgplugin.vala \
 	vtgutils.vala \
 	$(NULL)

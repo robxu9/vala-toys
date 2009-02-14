@@ -85,6 +85,9 @@ namespace Vtg
                                                     <placeholder name="DocumentsOps_3">
                                                         <menuitem name="GotoDocument" action="ProjectGotoDocument"/>
                                                         <separator />
+                                                        <menuitem name="GotoNextPosition" action="ProjectGotoNextPosition"/>
+                                                        <menuitem name="GotoPrevPosition" action="ProjectGotoPrevPosition"/>
+                                                        <separator />
                                                     </placeholder>
                                                 </menu>
                                             </menubar>
@@ -127,6 +130,8 @@ namespace Vtg
 			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute target program"), on_project_execute_process},
 			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process},
 			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
+			{"ProjectGotoNextPosition", Gtk.STOCK_GO_FORWARD, N_("_Go To Next Source Position"), null, N_("Go to the next source position"), on_project_goto_next_position},
+			{"ProjectGotoPrevPosition", Gtk.STOCK_GO_BACK, N_("_Go To Previous Source Position"), "<alt>Left", N_("Go to the previous or last saved source position"), on_project_goto_prev_position},
 			{"ProjectGotoMethod", null, N_("_Go To Method..."), "<control>M", N_("Goto to a specific method in the current source document"), on_project_goto_method},
 			{"ProjectCompleteWord", null, N_("Complete _Word"), "<control>space", N_("Try to complete the word in the current source document"), on_complete_word},
 			{"ProjectPrepareChangeLog", null, N_("_Prepare ChangeLog"), null, N_("Add an entry to the ChangeLog with all added/modified files"), on_prepare_changelog},
@@ -142,6 +147,7 @@ namespace Vtg
 		private ProjectBuilder _prj_builder = null;
 		private ProjectExecuter _prj_executer = null;
 		private ChangeLog _changelog = null;
+		private SourceBookmarks _bookmarks = null;
 		
  		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
 
@@ -183,6 +189,8 @@ namespace Vtg
 			initialize_ui ();
 			_changelog = new ChangeLog (_plugin);
 			update_ui (_prj_view.current_project == null);
+			_bookmarks = new SourceBookmarks (_plugin);
+			_bookmarks.current_bookmark_changed += this.on_current_bookmark_changed;
 		}
 
 		public ProjectView project_view 
@@ -209,7 +217,15 @@ namespace Vtg
 		public void deactivate ()
 		{
 		}
-
+		
+		private void on_current_bookmark_changed (SourceBookmarks sender)
+		{
+			var book = sender.get_current_bookmark ();
+			if (book != null) {
+				_plugin.activate_uri (book.uri, book.line, book.column);
+			}
+		}
+		
 		private void on_prepare_changelog (Gtk.Action action)
 		{
 			try {
@@ -332,6 +348,16 @@ namespace Vtg
 				create_project (foldername);
 				open_project (foldername);
 			}
+		}
+		
+		private void on_project_goto_next_position (Gtk.Action action)
+		{
+			_bookmarks.move_next ();
+		}
+		
+		private void on_project_goto_prev_position (Gtk.Action action)
+		{
+			_bookmarks.move_previous ();
 		}
 		
 		private void on_project_goto_document (Gtk.Action action)
@@ -604,6 +630,10 @@ namespace Vtg
 			action.set_sensitive (has_changelog && has_vcs_backend);
 			action = _actions.get_action ("ProjectPrepareSingleFileChangeLog");
 			action.set_sensitive (has_changelog);
+			action = _actions.get_action ("ProjectGotoNextPosition");
+			action.set_sensitive (!_bookmarks.is_empty);
+			action = _actions.get_action ("ProjectGotoPreviousPosition");
+			action.set_sensitive (!_bookmarks.is_empty);
 		}
 		
 		private void open_project (string name)

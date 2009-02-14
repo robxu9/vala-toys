@@ -521,10 +521,10 @@ namespace Vsc
 			DataType? result = null;
 			string[] toks = symbolname.split (".", 2);
 			SourceFile source = null;
-			CodeContext?[] contexts = { _parser.sec_context, _parser.pri_context, null };
 
 			_parser.lock_all_contexts ();
 			try {
+				CodeContext?[] contexts = { _parser.sec_context, _parser.pri_context, null };
 				int idx = 0;
 				while (contexts[idx] != null) {
 					var context = contexts[idx];
@@ -532,13 +532,13 @@ namespace Vsc
 					if (source != null) {
 						//first local
 						result = get_datatype_for_name_with_context (context, toks[0], source, line, column);
+						if (result != null && toks[1] != null) {
+							result = get_inner_datatype (result, toks[1], source);
+						}
 					} else {
 						warning ("(get_datatype_for_name) no sourcefile found %s", sourcefile);
 					}
 	
-					if (result != null && source != null && toks[1] != null) {
-						result = get_inner_datatype (result, toks[1], source);
-					}
 					if (result != null) { 
 						break;
 					}
