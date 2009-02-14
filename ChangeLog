@@ -1,3 +1,12 @@
+2009-02-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	changed the array iteration from foreach to a while loop since
+	vala 0.5.6 generates wrong C code and double unref the context
+	variable. Ensure that unlock is really called event another valac
+	bug. I hope this really fixes issue #48.
+
 2009-02-08  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbuildlogview.vala:

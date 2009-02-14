@@ -521,26 +521,34 @@ namespace Vsc
 			DataType? result = null;
 			string[] toks = symbolname.split (".", 2);
 			SourceFile source = null;
-			CodeContext?[] contexts = { _parser.sec_context, _parser.pri_context };
+			CodeContext?[] contexts = { _parser.sec_context, _parser.pri_context, null };
 
 			_parser.lock_all_contexts ();
-			foreach (CodeContext? context in contexts) {
-				source = find_sourcefile (context, sourcefile);
-				if (source != null) {
-					//first local
-					result = get_datatype_for_name_with_context (context, toks[0], source, line, column);
-				} else {
-					warning ("(get_datatype_for_name) no sourcefile found %s", sourcefile);
-				}
+			try {
+				int idx = 0;
+				while (contexts[idx] != null) {
+					var context = contexts[idx];
+					source = find_sourcefile (context, sourcefile);
+					if (source != null) {
+						//first local
+						result = get_datatype_for_name_with_context (context, toks[0], source, line, column);
+					} else {
+						warning ("(get_datatype_for_name) no sourcefile found %s", sourcefile);
+					}
 	
-				if (result != null && source != null && toks[1] != null) {
-					result = get_inner_datatype (result, toks[1], source);
+					if (result != null && source != null && toks[1] != null) {
+						result = get_inner_datatype (result, toks[1], source);
+					}
+					if (result != null) { 
+						break;
+					}
+					idx++;
 				}
-				if (result != null) { 
-					break; 
-				}
+			} catch (Error err) {
+				throw err;
+			} finally {
+				_parser.unlock_all_contexts ();
 			}
-			_parser.unlock_all_contexts ();
 			return result;
 		}
 
