@@ -1,3 +1,10 @@
+2009-02-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed a regression in the quick method picker dialog
+
 2009-02-14  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure.ac:

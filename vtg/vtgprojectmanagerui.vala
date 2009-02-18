@@ -399,7 +399,8 @@ namespace Vtg
 			var uri = doc.get_uri ();
 			if (uri == null)
 				return;
-				
+
+			uri = Filename.from_uri (uri);
 			var methods = pdes.completion.get_methods_for_source (uri);
 			if (methods.size <= 0)
 				return;

@@ -382,6 +382,8 @@ namespace Vsc
 				if (source != null) {
 					var ml = new MethodList (results);
 					source.accept (ml);
+				} else {
+					warning ("get_methods_for_source: source '%s' not found", sourcefile);
 				}
 				_parser.unlock_all_contexts ();
 			}
