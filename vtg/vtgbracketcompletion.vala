@@ -207,21 +207,41 @@ namespace Vtg
 						instance.move_backwards (src, 1);
 					}
 				} else if (ch == '*') {
-					pos.backward_char ();
-					if (pos.get_char () == '/') {
-						indent = instance.current_indentation_text (src);
-						buffer = "*\n%s \n%s*/".printf(indent, indent);
+					indent = instance.current_indentation_text (src);
+					if (src.has_selection) {
+						TextIter sel_start;
+						TextIter sel_end;
+					
+						src.get_selection_bounds (out sel_start, out sel_end);
+						sel_start.backward_char ();
+						if (sel_start.get_char () == '/' && instance.enclose_selection_with_delimiters (src, "*", "*/")) {
+							src.get_iter_at_mark (out pos, mark);
+							src.place_cursor (pos);
+						}
+					} else {
+						pos.backward_char ();
+						if (pos.get_char () == '/') {
+
+							buffer = "*\n%s \n%s*/".printf(indent, indent);
+							instance.insert_chars (src, buffer);
+							sender.scroll_to_mark (mark, 0, false, 0, 0);
+							instance.move_backwards (src, 2 + (int) indent.length + 1);
+						}
+					}
+					result = true;
+				} else if (ch == '{') {
+					indent = instance.current_indentation_text (src);
+					if (src.has_selection) {
+						if (instance.enclose_selection_with_delimiters (src, "{", "} ")) {
+							src.get_iter_at_mark (out pos, mark);
+							src.place_cursor (pos);
+						}
+					} else {
+						buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);
 						instance.insert_chars (src, buffer);
 						sender.scroll_to_mark (mark, 0, false, 0, 0);
-						instance.move_backwards (src, 2 + (int) indent.length + 1);
-						result = true;
+						instance.move_backwards (src, 2 + (int) indent.length);
 					}
-				} else if (ch == '{') {
-				        indent = instance.current_indentation_text (src);
-					buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);
-				        instance.insert_chars (src, buffer);
-					sender.scroll_to_mark (mark, 0, false, 0, 0);
-					instance.move_backwards (src, 2 + (int) indent.length);
 					result = true;
 				} else if (evt.keyval == Gdk.Key_Return) {
 					indent = instance.current_indentation_text (src);

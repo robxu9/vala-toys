@@ -1,5 +1,11 @@
 2009-02-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+
+	bracket completion plays better with current selection. Fixes issue #16
+
+2009-02-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourcebookmarks.vala:
 
 	removed some debugging code
