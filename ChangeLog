@@ -1,5 +1,11 @@
 2009-02-18  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed a warning on startup cause by the use of an uninitialized variable
+
+2009-02-18  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala:
 	* vtg/vtgprojectmanagerui.vala:
 

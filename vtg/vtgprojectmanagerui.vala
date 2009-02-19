@@ -188,9 +188,9 @@ namespace Vtg
 						
 			initialize_ui ();
 			_changelog = new ChangeLog (_plugin);
-			update_ui (_prj_view.current_project == null);
 			_bookmarks = new SourceBookmarks (_plugin);
 			_bookmarks.current_bookmark_changed += this.on_current_bookmark_changed;
+			update_ui (_prj_view.current_project == null);
 		}
 
 		public ProjectView project_view 
