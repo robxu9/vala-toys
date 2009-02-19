@@ -1,5 +1,11 @@
 2009-02-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourcebookmarks.vala:
+
+	removed some debugging code
+
+2009-02-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 
 	fixed a typo

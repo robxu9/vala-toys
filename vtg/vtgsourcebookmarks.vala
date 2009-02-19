@@ -70,7 +70,7 @@ namespace Vtg
 			}
 		}
 
-
+/*
 		private void debug_dump_list ()
 		{
 			print ("DUMP Bookmarks:\n");
@@ -85,6 +85,7 @@ namespace Vtg
 				print ("   current index is %d\n", _current_bookmark_index);
 			}
 		}
+*/
 	
 		public void add_bookmark (SourceBookmark item)
 		{
@@ -146,14 +147,13 @@ namespace Vtg
 			if (_bookmarks.size == 0) {
 				return;
 			}
-			debug_dump_list ();
+			
 			if (_current_bookmark_index < (_bookmarks.size - 1))	{
 				_current_bookmark_index++;
 			} else {
 				_current_bookmark_index = 0;
 				wrap = true;
 			}
-			debug_dump_list ();
 			current_bookmark_changed ();
 			if (wrap)
 				move_wrapped ();
