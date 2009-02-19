@@ -1,8 +1,22 @@
+2009-02-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+
+	fixed a typo
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed a wrong name when retrieving an action item in update_ui
+	
+	* vtg/vtgsourcebookmarks.vala:
+	
+	simplified the bookmarks function
+
 2009-02-18  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerui.vala:
 
-	fixed a warning on startup cause by the use of an uninitialized variable
+	fixed a warning on startup caused by the use of an uninitialized variable
 
 2009-02-18  Andrea Del Signore  <sejerpz@tin.it>
 

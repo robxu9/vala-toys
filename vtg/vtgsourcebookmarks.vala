@@ -70,7 +70,7 @@ namespace Vtg
 			}
 		}
 
-	/*
+
 		private void debug_dump_list ()
 		{
 			print ("DUMP Bookmarks:\n");
@@ -85,7 +85,7 @@ namespace Vtg
 				print ("   current index is %d\n", _current_bookmark_index);
 			}
 		}
-	*/		
+	
 		public void add_bookmark (SourceBookmark item)
 		{
 			if (_bookmarks.size > 0) {
@@ -102,9 +102,10 @@ namespace Vtg
 				_bookmarks.remove_at (0);
 			}
 			
-			if (_current_bookmark_index == -1 || _current_bookmark_index == (_bookmarks.size - 1))
+			if (_current_bookmark_index == (_bookmarks.size - 1)) {
 				_bookmarks.add (item);
-			else {
+				 _current_bookmark_index = _bookmarks.size - 1;
+			} else {
 				_current_bookmark_index++;
 				_bookmarks.insert (_current_bookmark_index, item);
 			}
@@ -117,9 +118,7 @@ namespace Vtg
 			var item = get_current_bookmark ();
 			if (item != null) {
 				_bookmarks.remove (item);
-				if (_bookmarks.size <= _current_bookmark_index) {
-					_current_bookmark_index = -1; //past the end
-				}
+				_current_bookmark_index = _bookmarks.size - 1;
 			}
 		}
 		
@@ -147,18 +146,14 @@ namespace Vtg
 			if (_bookmarks.size == 0) {
 				return;
 			}
-			
-			if (_current_bookmark_index == -1) {
-				_current_bookmark_index = _bookmarks.size - 1;
+			debug_dump_list ();
+			if (_current_bookmark_index < (_bookmarks.size - 1))	{
+				_current_bookmark_index++;
 			} else {
-				if (_current_bookmark_index < (_bookmarks.size - 1))	{
-					_current_bookmark_index++;
-				} else {
-					_current_bookmark_index = 0;
-					wrap = true;
-				}
+				_current_bookmark_index = 0;
+				wrap = true;
 			}
-				
+			debug_dump_list ();
 			current_bookmark_changed ();
 			if (wrap)
 				move_wrapped ();
@@ -170,18 +165,14 @@ namespace Vtg
 			if (_bookmarks.size == 0) {
 				return;
 			}
-			
-			if (_current_bookmark_index == -1) {
-				_current_bookmark_index = _bookmarks.size - 1;
+
+			if (_current_bookmark_index > 0) {
+				_current_bookmark_index--;
 			} else {
-				if (_current_bookmark_index > 0) {
-					_current_bookmark_index--;
-				} else {
-					_current_bookmark_index = _bookmarks.size - 1;
-					wrap = true;
-				}
+				_current_bookmark_index = _bookmarks.size - 1;
+				wrap = true;
 			}
-				
+			
 			current_bookmark_changed ();
 			if (wrap)
 				move_wrapped ();

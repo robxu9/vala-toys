@@ -633,7 +633,7 @@ namespace Vtg
 			action.set_sensitive (has_changelog);
 			action = _actions.get_action ("ProjectGotoNextPosition");
 			action.set_sensitive (!_bookmarks.is_empty);
-			action = _actions.get_action ("ProjectGotoPreviousPosition");
+			action = _actions.get_action ("ProjectGotoPrevPosition");
 			action.set_sensitive (!_bookmarks.is_empty);
 		}
 		
