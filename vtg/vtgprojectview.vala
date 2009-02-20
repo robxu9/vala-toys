@@ -27,9 +27,9 @@ using Vbf;
 
 namespace Vtg
 {
-	public class ProjectView : GLib.Object
+	internal class ProjectView : GLib.Object
 	{
-		private Vtg.Plugin _plugin = null;
+		private Vtg.PluginInstance _plugin_instance = null;
 		private Gtk.ComboBox _prjs_combo;
 		private Gtk.TreeView _prj_view;
 		private int _project_count = 0;
@@ -86,24 +86,24 @@ namespace Vtg
 			} 
 		}
 		
-		public Vtg.Plugin plugin { construct { _plugin = value; } }
+		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } }
 
-		public ProjectView (Vtg.Plugin plugin)
+		public ProjectView (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin = plugin;
+			this.plugin_instance = plugin_instance;
 		}
 		
 		~ProjectView ()
 		{
-			var manager = _plugin.gedit_window.get_ui_manager ();
+			var manager = _plugin_instance.window.get_ui_manager ();
 			manager.remove_action_group (_actions);
-			var panel = _plugin.gedit_window.get_side_panel ();
+			var panel = _plugin_instance.window.get_side_panel ();
 			panel.remove_item (_side_panel);
 		}
 		
 		construct
 		{
-			var panel = _plugin.gedit_window.get_side_panel ();
+			var panel = _plugin_instance.window.get_side_panel ();
 			_side_panel = new Gtk.VBox (false, 8);
 			_prjs_combo = new Gtk.ComboBox.text ();
 			_prjs_combo.changed += this.on_project_combobox_changed;
@@ -131,7 +131,7 @@ namespace Vtg
 			_actions = new ActionGroup ("ProjectManagerActionGroup");
 			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
-			var manager = _plugin.gedit_window.get_ui_manager ();
+			var manager = _plugin_instance.window.get_ui_manager ();
 			manager.insert_action_group (_actions, -1);
 			try {
 				_popup_modules_ui_id = manager.add_ui_from_string (_popup_modules_ui_def, -1);
@@ -178,7 +178,7 @@ namespace Vtg
 				model.get (iter, 1, out name, 2, out id);
 				string file = StringUtils.replace (id, "file://", ""); //HACK
 				if (name != null && FileUtils.test (file, FileTest.EXISTS)) {
-					_plugin.activate_uri (id);
+					_plugin_instance.activate_uri (id);
 				}
 			}
 		}
@@ -220,7 +220,7 @@ namespace Vtg
 
 			if (project_name != null) {
 				//find project
-				foreach (ProjectDescriptor item in _plugin.projects) {
+				foreach (ProjectDescriptor item in _plugin_instance.plugin.projects) {
 					if (item.project.project.name == project_name) {
 						prj = item.project;
 						break;
@@ -243,7 +243,7 @@ namespace Vtg
 			string file = Path.build_filename (_last_selected_module.project.id, "configure.ac");
 			
 			if (FileUtils.test (file, FileTest.EXISTS)) {
-				_plugin.activate_uri ("file://%s".printf (file));
+				_plugin_instance.activate_uri ("file://%s".printf (file));
 			}
 		}
 
@@ -253,7 +253,7 @@ namespace Vtg
 			string file = Path.build_filename (_last_selected_target.group.id, "Makefile.am");
 
 			if (FileUtils.test (file, FileTest.EXISTS)) {
-				_plugin.activate_uri ("file://%s".printf (file));
+				_plugin_instance.activate_uri ("file://%s".printf (file));
 			}
 		}
 	}

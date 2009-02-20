@@ -27,7 +27,7 @@ using Vbf;
 
 namespace Vtg
 {
-	public class ProjectManagerUi : GLib.Object
+	internal class ProjectManagerUi : GLib.Object
 	{
 		/* UI Code */
 		private string _ui_def = """<ui>
@@ -142,36 +142,39 @@ namespace Vtg
 		/* END UI */
 		private Gee.List<ProjectManager> _projects = new Gee.ArrayList<ProjectManager> ();
 		private ActionGroup _actions = null;
-		private Vtg.Plugin _plugin;
+		private Vtg.PluginInstance _plugin_instance;
 		private ProjectView _prj_view = null;
 		private ProjectBuilder _prj_builder = null;
 		private ProjectExecuter _prj_executer = null;
 		private ChangeLog _changelog = null;
 		private SourceBookmarks _bookmarks = null;
 		
- 		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 
 		//public signal void project_loaded (Project project);
 
-		public ProjectManagerUi (Vtg.Plugin plugin)
+		public ProjectManagerUi (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin = plugin;
+			this.plugin_instance = plugin_instance;
 		}
 
 
 		~ProjectManagerUi ()
 		{
-			var manager = _plugin.gedit_window.get_ui_manager ();
+			var manager = _plugin_instance.window.get_ui_manager ();
 			manager.remove_ui (_ui_id);
 			manager.remove_action_group (_actions);
 		}
 
 		construct	
 		{
-			_prj_view = new ProjectView (_plugin);
+			_prj_view = new ProjectView (_plugin_instance);
+			foreach (ProjectDescriptor prj in _plugin_instance.plugin.projects) {
+				_prj_view.add_project (prj.project.project);
+			}			
 			_prj_view.notify["current-project"] += this.on_current_project_changed;
-			_prj_builder = new ProjectBuilder (_plugin);
-			_prj_executer = new ProjectExecuter (_plugin);
+			_prj_builder = new ProjectBuilder (_plugin_instance);
+			_prj_executer = new ProjectExecuter (_plugin_instance);
 			
 			_prj_executer.process_start += (sender) => {
 				update_ui (_prj_view.current_project == null);
@@ -187,8 +190,8 @@ namespace Vtg
 			};
 						
 			initialize_ui ();
-			_changelog = new ChangeLog (_plugin);
-			_bookmarks = new SourceBookmarks (_plugin);
+			_changelog = new ChangeLog (_plugin_instance);
+			_bookmarks = new SourceBookmarks (_plugin_instance);
 			_bookmarks.current_bookmark_changed += this.on_current_bookmark_changed;
 			update_ui (_prj_view.current_project == null);
 		}
@@ -205,7 +208,7 @@ namespace Vtg
 			_actions = new ActionGroup ("ProjectManagerActionGroup");
 			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
-			var manager = plugin.gedit_window.get_ui_manager ();
+			var manager = _plugin_instance.window.get_ui_manager ();
 			manager.insert_action_group (_actions, -1);
 			try {
 				_ui_id = manager.add_ui_from_string (_ui_def, -1);
@@ -222,7 +225,7 @@ namespace Vtg
 		{
 			var book = sender.get_current_bookmark ();
 			if (book != null) {
-				_plugin.activate_uri (book.uri, book.line, book.column);
+				_plugin_instance.activate_uri (book.uri, book.line, book.column);
 			}
 		}
 		
@@ -238,7 +241,7 @@ namespace Vtg
 		private void on_prepare_single_file_changelog (Gtk.Action action)
 		{
 			try {
-				var doc = _plugin.gedit_window.get_active_document ();
+				var doc = _plugin_instance.window.get_active_document ();
 				if (doc != null) {
 					var prj = _prj_view.current_project;
 					string uri = doc.get_uri ();
@@ -261,11 +264,11 @@ namespace Vtg
 			var project = _prj_view.current_project;
 			return_if_fail (project != null);
 			
-			var view = _plugin.gedit_window.get_active_view ();
+			var view = _plugin_instance.window.get_active_view ();
 			if (view == null)
 				return;
 						
-			var sch = _plugin.scs_find_from_view (view);
+			var sch = _plugin_instance.scs_find_from_view (view);
 			if (sch == null)
 				return;
 				
@@ -275,7 +278,7 @@ namespace Vtg
 		private void on_project_open (Gtk.Action action)
 		{
 			var dialog = new Gtk.FileChooserDialog (_("Open Project"),
-				      _plugin.gedit_window,
+				      _plugin_instance.window,
 				      Gtk.FileChooserAction.SELECT_FOLDER,
 				      Gtk.STOCK_CANCEL, ResponseType.CANCEL,
 				      Gtk.STOCK_OPEN, ResponseType.ACCEPT,
@@ -294,16 +297,9 @@ namespace Vtg
 			var project = _prj_view.current_project;
 			return_if_fail (project != null);
 
-			bool save_required = false;
-			foreach (Gedit.Document doc in _plugin.gedit_window.get_unsaved_documents ()) {
-				if (project.contains_file (doc.get_uri ())) {
-					save_required = true;
-				}
-			}
-			
 			//there are some files that require saving: ask it!
-			if (save_required) {
-				var dialog = new Gtk.MessageDialog (_plugin.gedit_window,
+			if (_plugin_instance.plugin.project_need_save (project)) {
+				var dialog = new Gtk.MessageDialog (_plugin_instance.window,
                                   DialogFlags.DESTROY_WITH_PARENT,
                                   MessageType.QUESTION,
                                   ButtonsType.NONE,
@@ -316,7 +312,7 @@ namespace Vtg
 				if (response == ResponseType.CANCEL) {
 					return;
 				} else if (response == ResponseType.ACCEPT) {
-					project_save_all (project);
+					_plugin_instance.plugin.project_save_all (project);
 				}
 			}
 
@@ -328,7 +324,7 @@ namespace Vtg
 		{
 			//save dialog
 			var dialog = new Gtk.FileChooserDialog (_("Save Project"),
-				      _plugin.gedit_window,
+				      _plugin_instance.window,
 				      Gtk.FileChooserAction.SELECT_FOLDER,
 				      Gtk.STOCK_CANCEL, ResponseType.CANCEL,
 				      Gtk.STOCK_SAVE, ResponseType.ACCEPT,
@@ -373,11 +369,11 @@ namespace Vtg
 			}
 						
 			var dialog = new FilteredListDialog (model);
-			dialog.set_transient_for (_plugin.gedit_window);
+			dialog.set_transient_for (_plugin_instance.window);
 			if (dialog.run ()) {
 				Vbf.Source src;
 				model.get (dialog.selected_iter , 1, out src);
-				_plugin.activate_uri (src.uri);
+				_plugin_instance.activate_uri (src.uri);
 			}
 		}
 
@@ -389,7 +385,7 @@ namespace Vtg
 			var pdes = get_projectdescriptor_for_project (project);
 			return_if_fail (pdes != null);
 			
-			var view = _plugin.gedit_window.get_active_view ();
+			var view = _plugin_instance.window.get_active_view ();
 			if (view == null)
 				return;
 				
@@ -413,7 +409,7 @@ namespace Vtg
 			}
 			
 			var dialog = new FilteredListDialog (model);
-			dialog.set_transient_for (_plugin.gedit_window);
+			dialog.set_transient_for (_plugin_instance.window);
 			if (dialog.run ()) {
 				Vsc.SymbolCompletionItem method;
 				model.get (dialog.selected_iter , 1, out method);
@@ -422,10 +418,9 @@ namespace Vtg
 			}
 		}
 
-
 		private ProjectDescriptor? get_projectdescriptor_for_project (ProjectManager project)
 		{
-			foreach (ProjectDescriptor current in _plugin.projects) {
+			foreach (ProjectDescriptor current in _plugin_instance.plugin.projects) {
 				if (current.project == project)
 					return current;
 			}
@@ -435,7 +430,7 @@ namespace Vtg
 
 		private void on_standalone_file_compile (Gtk.Action action)
 		{
-			var doc = _plugin.gedit_window.get_active_document ();
+			var doc = _plugin_instance.window.get_active_document ();
 			if (doc != null) {
 				string file = doc.get_uri ();
 				var project = _prj_view.current_project;
@@ -447,14 +442,14 @@ namespace Vtg
 					}
 				}
 				var cache = Vtg.Caches.get_compile_cache ();
-				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Compile File"), _plugin.gedit_window, cache);
+				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Compile File"), _plugin_instance.window, cache);
 				if (params_dialog.run () == ResponseType.OK) {
 					var params = params_dialog.parameters;
 					if (!Vtg.Caches.cache_contains (cache, params)) {
 						Vtg.Caches.cache_add (cache, params);
 					}
 					file = file.replace ("file://", ""); //HACK
-					if (!doc.is_untouched () && _plugin.config.save_before_build)
+					if (!doc.is_untouched () && _plugin_instance.plugin.config.save_before_build)
 						doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
 						
 					_prj_builder.compile_file (file, params);
@@ -471,7 +466,7 @@ namespace Vtg
 				if (_prj_builder.is_building) {
 					//ask if stop the current build process and restart a new one
 					var dialog = new MessageDialog (
-						_plugin.gedit_window,
+						_plugin_instance.window,
 						DialogFlags.MODAL,
 						MessageType.QUESTION,
 						ButtonsType.YES_NO,
@@ -492,7 +487,7 @@ namespace Vtg
 				}
 
 				if (pars == null) {
-					var params_dialog = new Vtg.Interaction.ParametersDialog (_("Build Project"), _plugin.gedit_window, cache);
+					var params_dialog = new Vtg.Interaction.ParametersDialog (_("Build Project"), _plugin_instance.window, cache);
 					if (params_dialog.run () != ResponseType.OK)
 						return;
 						
@@ -503,7 +498,7 @@ namespace Vtg
 				}
 				
 				var project = _prj_view.current_project;
-				project_save_all (project);
+				_plugin_instance.plugin.project_save_all (project);
 				_prj_builder.build (project, pars);
 			}
 		}
@@ -512,14 +507,14 @@ namespace Vtg
 		{
 			if (_prj_view.current_project != null) {
 				var cache = Vtg.Caches.get_configure_cache ();
-				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Configure Project"), _plugin.gedit_window, cache);
+				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Configure Project"), _plugin_instance.window, cache);
 				if (params_dialog.run () == ResponseType.OK) {
 					var project = _prj_view.current_project;
 					var params = params_dialog.parameters;
 					if (!Vtg.Caches.cache_contains (cache, params)) {
 						Vtg.Caches.cache_add (cache, params);
 					}
-					project_save_all (project);
+					_plugin_instance.plugin.project_save_all (project);
 					_prj_builder.configure (project, params);
 				}
 			}
@@ -539,7 +534,7 @@ namespace Vtg
 		{
 			if (_prj_view.current_project != null) {
 				var project = _prj_view.current_project;
-				var exec_dialog = new ProjectExecuterDialog (_plugin.gedit_window, project);
+				var exec_dialog = new ProjectExecuterDialog (_plugin_instance.window, project);
 				if (exec_dialog.run () == ResponseType.OK) {
 					var command_line = exec_dialog.command_line;
 					_prj_executer.execute (project.project, command_line);
@@ -589,7 +584,7 @@ namespace Vtg
 			action = _actions.get_action ("ProjectBuildCleanStamps");
 			action.set_sensitive (!default_project);
 			
-			var doc = _plugin.gedit_window.get_active_document ();
+			var doc = _plugin_instance.window.get_active_document ();
 			bool is_vala_source = (doc != null && doc.language != null && doc.language.id == "vala");
 			action = _actions.get_action ("ProjectBuildCompileFile");
 			action.set_sensitive (default_project && is_vala_source);
@@ -611,9 +606,9 @@ namespace Vtg
 			action.set_sensitive (_prj_executer.is_executing && !default_project);
 			
 			bool can_complete = false;
-			var view = _plugin.gedit_window.get_active_view ();
+			var view = _plugin_instance.window.get_active_view ();
 			if (view != null) {
-				var sch = _plugin.scs_find_from_view (view);
+				var sch = _plugin_instance.scs_find_from_view (view);
 				can_complete = (sch != null);
 			}
 			action = _actions.get_action ("ProjectCompleteWord");
@@ -645,7 +640,7 @@ namespace Vtg
 					_projects.add (project);
 					//HACK: why the signal isn't working?!?!
 					//this.project_loaded (project);
-					_plugin.on_project_loaded (this, project);
+					_plugin_instance.plugin.on_project_loaded (this, project);
 					_prj_view.add_project (project.project);
 				}
 			} catch (Error err) {
@@ -653,34 +648,18 @@ namespace Vtg
 			}
 		}
 
-		private void close_project (ProjectManager project)
+		internal void close_project (ProjectManager project)
 		{
-			foreach (Gedit.Document doc in _plugin.gedit_window.get_documents ()) {
-				if (project.contains_file (doc.get_uri ())) {
-					//close tab
-					var tab = Tab.get_from_document (doc);
-					_plugin.gedit_window.close_tab (tab);
-				}
-			}
 			_prj_view.remove_project (project.project);
-			_plugin.on_project_closed (this, project);
+			_plugin_instance.plugin.on_project_closed (this, project);
 			project.close ();
 			_projects.remove (project);
-		}
-
-		private void project_save_all (ProjectManager project)
-		{
-			foreach (Gedit.Document doc in _plugin.gedit_window.get_unsaved_documents ()) {
-				if (project.contains_file (doc.get_uri ())) {
-					doc.save (DocumentSaveFlags.IGNORE_MTIME);
-				}
-			}
 		}
 
 		private void create_project (string project_path)
 		{
 			try {
-				var log = _plugin.output_view;
+				var log = _plugin_instance.output_view;
 				if (!is_dir_empty (project_path)) {
 					log.log_message ("project directory %s not empty\n".printf (project_path));
 					return;
@@ -731,7 +710,7 @@ namespace Vtg
 
 		private void on_child_watch (Pid pid, int status)
 		{
-			var log = _plugin.output_view;
+			var log = _plugin_instance.output_view;
 
 			Process.close_pid (pid);
 

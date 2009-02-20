@@ -28,7 +28,7 @@ using Vsc;
 
 namespace Vtg
 {
-	public class SymbolCompletionProvider : GLib.Object, Gsc.Provider
+	internal class SymbolCompletionProvider : GLib.Object, Gsc.Provider
 	{
 		private Vsc.SourceBuffer _sb = null;
 		private SymbolCompletion _completion = null;
@@ -60,7 +60,7 @@ namespace Vtg
 		private uint sb_msg_id = 0;
 		private uint sb_context_id = 0;
 
-		private Vtg.Plugin _plugin;
+		private Vtg.PluginInstance _plugin_instance;
 		private Gsc.Info _calltip_window = null;
 
 		private bool need_parse = true;
@@ -68,12 +68,12 @@ namespace Vtg
 		
 		public SymbolCompletion completion { construct { _completion = value;} }
 		public Gedit.View view { construct { _view = value; } }
- 		public Vtg.Plugin plugin { construct { _plugin = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } default = null; }
 
 
-		public SymbolCompletionProvider (Vtg.Plugin plugin, Gedit.View view, SymbolCompletion completion)
+		public SymbolCompletionProvider (Vtg.PluginInstance plugin_instance, Gedit.View view, SymbolCompletion completion)
 		{
-			this.plugin = plugin;
+			this.plugin_instance = plugin_instance;
 			this.completion = completion;
 			this.view = view;
 		}
@@ -85,7 +85,7 @@ namespace Vtg
 			this._completion.parser.cache_builded -= this.on_cache_builded;
 			
 			if (sb_msg_id != 0) {
-				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
+				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				status_bar.remove (sb_context_id, sb_msg_id);
 			}
 			if (timeout_id != 0) {
@@ -127,7 +127,7 @@ namespace Vtg
 				this._completion.parser.cache_building += this.on_cache_building;
 				this._completion.parser.cache_builded += this.on_cache_builded;
 
-				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
+				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				sb_context_id = status_bar.get_context_id ("symbol status");
 				
 				cache_building = true; 
@@ -158,12 +158,12 @@ namespace Vtg
 		
 		private bool on_idle ()
 		{
-			if (_plugin == null)
+			if (_plugin_instance == null)
 				return false;
 				
 			if (cache_building && !tooltip_is_visible && prev_cache_building == false) {
 				prev_cache_building = cache_building;
-				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
+				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				if (sb_msg_id != 0) {
 					status_bar.remove (sb_context_id, sb_msg_id);
 				}
@@ -171,7 +171,7 @@ namespace Vtg
 			} else if (cache_building == false && prev_cache_building == true) {
 				prev_cache_building = false;
 				//hide tip, show proposal list
-				var status_bar = (Gedit.Statusbar) _plugin.gedit_window.get_statusbar ();
+				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				status_bar.remove (sb_context_id, sb_msg_id);
 				sb_msg_id = 0;
 				if (_last_trigger != null) {
@@ -269,7 +269,7 @@ namespace Vtg
 		{
 			_calltip_window = new Gsc.Info ();
 			_calltip_window.set_info_type (InfoType.EXTENDED);
-			_calltip_window.set_transient_for (_plugin.gedit_window);
+			_calltip_window.set_transient_for (_plugin_instance.window);
 			_calltip_window.set_adjust_width (true, 800);
 			_calltip_window.set_adjust_height (true, 600);
 			_calltip_window.allow_grow = true;

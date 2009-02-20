@@ -27,18 +27,18 @@ namespace Vtg
 {
 	internal class ChangeLog : GLib.Object
 	{
-		private Vtg.Plugin _plugin;
+		private Vtg.PluginInstance _plugin_instance;
 		
- 		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
  		
-		public ChangeLog (Vtg.Plugin plugin)
+		public ChangeLog (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin = plugin;
+			this.plugin_instance = plugin_instance;
 		}
 		
 		public bool prepare (string? file = null) throws GLib.Error
 		{
-			var project_manager = _plugin.project_manager_ui.project_view.current_project;
+			var project_manager = _plugin_instance.project_manager_ui.project_view.current_project;
 			if (project_manager == null)
 				return false;
 			
@@ -60,7 +60,7 @@ namespace Vtg
 			}
 			
 			if (file_list != "") {
-				var tab = _plugin.activate_uri (project_manager.changelog_uri);
+				var tab = _plugin_instance.activate_uri (project_manager.changelog_uri);
 				if (tab == null)
 					return false;
 				var doc = tab.get_document ();		
@@ -72,8 +72,8 @@ namespace Vtg
 					ctx.iteration (false);
 				
 				Gtk.TextIter iter;
-				string author = _plugin.config.author;
-				string email = _plugin.config.email_address;
+				string author = _plugin_instance.plugin.config.author;
+				string email = _plugin_instance.plugin.config.email_address;
 				var today = Time.local (time_t ());
 				
 				if (StringUtils.is_null_or_empty (author))

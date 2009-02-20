@@ -32,6 +32,7 @@ libvtg_la_VALASOURCES = \
 	vtgsymbolcompletiontrigger.vala \
 	vtgsymbolcompletionhelper.vala \
 	vtgprojectmanagerui.vala \
+	vtgprojectdescriptor.vala \
 	vtgprojectview.vala \
 	vtgprojectbuilder.vala \
 	vtgprojectexecuter.vala \
@@ -50,6 +51,7 @@ libvtg_la_VALASOURCES = \
 	vtgconfiguration.vala \
 	vtgsourcebookmark.vala \
 	vtgsourcebookmarks.vala \
+	vtgplugininstance.vala \
 	vtgplugin.vala \
 	vtgutils.vala \
 	$(NULL)

@@ -47,7 +47,6 @@ namespace Vtg
 		
 		~ProjectManager ()
 		{
-			GLib.debug ("project manager destroyes");
 		}
 		
 		public bool contains_file (string uri)

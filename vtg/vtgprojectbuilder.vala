@@ -27,11 +27,11 @@ using Vbf;
 
 namespace Vtg
 {
-	public class ProjectBuilder : GLib.Object
+	internal class ProjectBuilder : GLib.Object
 	{
 		private const string MAKE = "make";
 
-		private Vtg.Plugin _plugin;
+		private Vtg.PluginInstance _plugin_instance;
 		private BuildLogView _build_view = null;
 		private uint _child_watch_id = 0;
 		private bool is_bottom_pane_visible;
@@ -41,7 +41,8 @@ namespace Vtg
 		public signal void build_start ();
 		public signal void build_exit (int exit_status);
 		
- 		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		
 		public BuildLogView error_pane {
 			get {
 				return _build_view;
@@ -56,13 +57,13 @@ namespace Vtg
 
 		construct
 		{
-			this._build_view = new BuildLogView (_plugin);
-			is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
+			this._build_view = new BuildLogView (_plugin_instance);
+			is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
 		}
 
-		public ProjectBuilder (Vtg.Plugin plugin)
+		public ProjectBuilder (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin = plugin;
+			this.plugin_instance = plugin_instance;
 		}
 
 
@@ -73,7 +74,7 @@ namespace Vtg
 
 			var working_dir = Path.get_dirname (filename);
 			int stdo, stde;
-			var log = _plugin.output_view;
+			var log = _plugin_instance.output_view;
 			try {
 				string cmd;
 				if (params != null) {
@@ -93,7 +94,7 @@ namespace Vtg
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize ();
 					if (last_exit_code == 0)
-						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
+						is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
 					this.build_start ();
@@ -120,7 +121,7 @@ namespace Vtg
 			var working_dir = project.id;
 			int stdo, stde;
 			try {
-				var log = _plugin.output_view;
+				var log = _plugin_instance.output_view;
 
 				log.clean_output ();
 				var start_message = _("Start building project: %s\n").printf (project.name);
@@ -140,7 +141,7 @@ namespace Vtg
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
-						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
+						is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
 					this.build_start ();
@@ -174,7 +175,7 @@ namespace Vtg
 				return false;
 			}
 			try {
-				var log = _plugin.output_view;
+				var log = _plugin_instance.output_view;
 
 				log.clean_output ();
 				var start_message = _("Start configure project: %s\n").printf (project.name);
@@ -194,7 +195,7 @@ namespace Vtg
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
-						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
+						is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
 					this.build_start ();
@@ -217,7 +218,7 @@ namespace Vtg
 			var working_dir = project.working_dir;
 			int stdo, stde;
 			try {
-				var log = _plugin.output_view;
+				var log = _plugin_instance.output_view;
 
 				log.clean_output ();
 				var start_message = _("Start cleaning project: %s\n").printf (project.name);
@@ -239,7 +240,7 @@ namespace Vtg
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
-						is_bottom_pane_visible = _plugin.gedit_window.get_bottom_panel ().visible;
+						is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
 					log.start_watch (_child_watch_id, stdo, stde);
 					log.activate ();
 					this.build_start ();
@@ -265,7 +266,7 @@ namespace Vtg
 
 		private void on_child_watch (Pid pid, int status)
 		{
-			var log = _plugin.output_view;
+			var log = _plugin_instance.output_view;
 
 			log.stop_watch (_child_watch_id);
 			last_exit_code = Process.exit_status (status);
@@ -277,7 +278,7 @@ namespace Vtg
 			Process.close_pid (pid);			
 			if (last_exit_code == 0) {
 				if (!this.is_bottom_pane_visible) {
-					_plugin.gedit_window.get_bottom_panel ().hide ();
+					_plugin_instance.window.get_bottom_panel ().hide ();
 				}
 			} else {
 				Gdk.beep ();				

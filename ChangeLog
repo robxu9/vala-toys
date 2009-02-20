@@ -1,3 +1,27 @@
+2009-02-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectdescriptor.vala:
+	* ChangeLog:
+	* vtg/Makefile.am:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	refactored vtg to better suite the gEdit application model of multiple
+	main windows per application. Fixes issue #40
+
 2009-02-19  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbracketcompletion.vala:
@@ -62,8 +86,8 @@
 
 	changed the array iteration from foreach to a while loop since
 	vala 0.5.6 generates wrong C code and double unref the context
-	variable. Ensure that unlock is really called event another valac
-	bug. I hope this really fixes issue #48.
+	variable. Ensure that unlock is really called (another valac
+	bug). I hope this really fixes issue #48.
 
 2009-02-08  Andrea Del Signore  <sejerpz@tin.it>
 

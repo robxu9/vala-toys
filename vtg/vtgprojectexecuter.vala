@@ -27,9 +27,9 @@ using Vbf;
 
 namespace Vtg
 {
-	public class ProjectExecuter : GLib.Object
+	internal class ProjectExecuter : GLib.Object
 	{
-		private Vtg.Plugin _plugin;
+		private Vtg.PluginInstance _plugin_instance;
 		private BuildLogView _build_view = null;
 		//TODO: hashtable with Project as key
 		private uint _child_watch_id = 0;
@@ -38,16 +38,17 @@ namespace Vtg
 		public signal void process_start ();
 		public signal void process_exit (int exit_status);
 		
- 		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		
 		public bool is_executing {
 			get {
 				return _child_watch_id != 0;
 			}
 		}
 		
-		public ProjectExecuter (Vtg.Plugin plugin)
+		public ProjectExecuter (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin = plugin;
+			this.plugin_instance = plugin_instance;
 		}
 
 		public bool execute (Project project, string command_line)
@@ -58,7 +59,7 @@ namespace Vtg
 			var working_dir = project.id;
 			int stdo, stde, stdi;
 			try {
-				var log = _plugin.output_view;
+				var log = _plugin_instance.output_view;
 				
 				string cmd;
 				log.clean_output ();
@@ -100,7 +101,7 @@ namespace Vtg
 
 		private void on_child_watch (Pid pid, int status)
 		{
-			var log = _plugin.output_view;
+			var log = _plugin_instance.output_view;
 
 			Process.close_pid (child_pid);
 			log.stop_watch (_child_watch_id);

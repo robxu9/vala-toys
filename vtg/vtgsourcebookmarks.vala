@@ -27,7 +27,7 @@ namespace Vtg
 {
 	internal class SourceBookmarks : GLib.Object
 	{
-		private Vtg.Plugin _plugin;
+		private Vtg.PluginInstance _plugin_instance;
 		private ulong signal_id;
 		private const int MAX_BOOKMARKS = 20;
 		private Gee.List<SourceBookmark> _bookmarks = new Gee.ArrayList<SourceBookmark> ();
@@ -36,12 +36,12 @@ namespace Vtg
 		public signal void current_bookmark_changed ();
 		public signal void move_wrapped ();		
 		
- 		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 
-		public SourceBookmarks (Vtg.Plugin plugin)
+		public SourceBookmarks (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin = plugin;
-			var window = _plugin.gedit_window;
+			this.plugin_instance = plugin_instance;
+			var window = _plugin_instance.window;
 			signal_id = Signal.connect (window, "active_tab_changed", (GLib.Callback) on_tab_changed, this);
 		}
 		
@@ -58,7 +58,7 @@ namespace Vtg
 			doc.get_iter_at_mark (out start, mark);
 						
 			string uri = doc.get_uri ();
-			var prj = instance._plugin.project_manager_ui.project_view.current_project;
+			var prj = instance._plugin_instance.project_manager_ui.project_view.current_project;
 			if (prj != null && prj.contains_vala_source_file (uri)) {
 				int line = start.get_line ();
 				int col = start.get_line_offset ();
@@ -96,14 +96,17 @@ namespace Vtg
 				
 				var prev = _bookmarks.get (index);
 				
-				if (prev.uri == item.uri)
+				if (prev.uri == item.uri) {
+					prev.line = item.line;
+					prev.column = item.column;
 					return; //avoid duplicate item
+				}
 			}
 			if (_bookmarks.size == MAX_BOOKMARKS) {
 				_bookmarks.remove_at (0);
 			}
 			
-			if (_current_bookmark_index == (_bookmarks.size - 1)) {
+			if (_current_bookmark_index >= (_bookmarks.size - 1)) {
 				_bookmarks.add (item);
 				 _current_bookmark_index = _bookmarks.size - 1;
 			} else {

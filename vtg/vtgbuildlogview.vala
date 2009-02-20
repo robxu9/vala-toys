@@ -27,7 +27,7 @@ using Vbf;
 
 namespace Vtg
 {
-	public class BuildLogView : GLib.Object
+	internal class BuildLogView : GLib.Object
 	{
 		private Gtk.VBox _ui;
 		private ListStore _child_model = null;
@@ -37,13 +37,13 @@ namespace Vtg
 		private int current_error_row = 0;
 		private int _error_count = 0;
 		private int _warning_count = 0;
-		private Vtg.Plugin _plugin;
+		private Vtg.PluginInstance _plugin_instance;
 		private unowned ProjectManager _project;
 		
 		private bool show_warnings = true;
 		private bool show_errors = true;
 		
- 		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 		
 		public int error_count {
 			get {
@@ -57,20 +57,20 @@ namespace Vtg
 			}
 		}
 		
-		public BuildLogView (Vtg.Plugin plugin)
+		public BuildLogView (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin = plugin;
+			this.plugin_instance = plugin_instance;
 		}
 
 		~BuildLogView ()
 		{
-			var panel = _plugin.gedit_window.get_bottom_panel ();
+			var panel = _plugin_instance.window.get_bottom_panel ();
 			panel.remove_item (_ui);
 		}
 
 		construct 
 		{
-			var panel = _plugin.gedit_window.get_bottom_panel ();
+			var panel = _plugin_instance.window.get_bottom_panel ();
 			_ui = new Gtk.VBox (false, 8);
 			
 			//toobar
@@ -135,7 +135,7 @@ namespace Vtg
 			_ui.pack_start (scroll, true, true, 0);
 			_ui.show_all ();
 			panel.add_item_with_stock_icon (_ui, _("Build results"), Gtk.STOCK_EXECUTE);
-			_plugin.output_view.message_added += this.on_message_added;
+			_plugin_instance.output_view.message_added += this.on_message_added;
 			_child_model.set_sort_column_id (5, SortType.ASCENDING);
 		}
 
@@ -150,9 +150,9 @@ namespace Vtg
 
 		public void activate ()
 		{
-			var panel = _plugin.gedit_window.get_bottom_panel ();
+			var panel = _plugin_instance.window.get_bottom_panel ();
 			panel.activate_item (this._ui);
-			var view = _plugin.gedit_window.get_active_view ();
+			var view = _plugin_instance.window.get_active_view ();
 			if (view != null && !view.is_focus) {
 				view.grab_focus ();
 			}
@@ -205,11 +205,11 @@ namespace Vtg
 				if (proj != null) {
 					string uri = proj.source_uri_for_name (name);
 					if (uri != null)
-						_plugin.activate_uri (uri, line, col);
+						_plugin_instance.activate_uri (uri, line, col);
 					else
 						GLib.warning ("Couldn't find uri for source: %s", name);
 				} else {
-					_plugin.activate_display_name (name, line, col);
+					_plugin_instance.activate_display_name (name, line, col);
 				}
 			}
 		}

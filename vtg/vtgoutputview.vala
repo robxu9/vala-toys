@@ -26,9 +26,9 @@ using Gtk;
 
 namespace Vtg
 {
-	public class OutputView : GLib.Object
+	internal class OutputView : GLib.Object
 	{
-		protected Vtg.Plugin _plugin;
+		protected Vtg.PluginInstance _plugin_instance;
 
 		private Gee.List<ProcessWatchInfo> _processes = new Gee.ArrayList<ProcessWatchInfo> ();
 		private StringBuilder line = new StringBuilder ();
@@ -37,22 +37,22 @@ namespace Vtg
 		
 		private Gtk.ScrolledWindow _ui = null;
 		
- 		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 
-		public OutputView (Vtg.Plugin plugin)
+		public OutputView (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin = plugin;
+			this.plugin_instance = plugin_instance;
 		}
 		
 		~OutputView ()
 		{
-			var panel = _plugin.gedit_window.get_bottom_panel ();
+			var panel = _plugin_instance.window.get_bottom_panel ();
 			panel.remove_item (_ui);
 		}
 		
 		construct 
 		{
-			var panel = _plugin.gedit_window.get_bottom_panel ();
+			var panel = _plugin_instance.window.get_bottom_panel ();
 			_messages = new TextBuffer (null);
 			_textview = new TextView.with_buffer (_messages);
 			_textview.key_press_event += this.on_textview_key_press;
@@ -141,7 +141,7 @@ namespace Vtg
 				//target.stderr.set_buffered (false);
 				line.erase (0, -1);
 				//activate bottom pane if not visible
-				var panel = _plugin.gedit_window.get_bottom_panel ();
+				var panel = _plugin_instance.window.get_bottom_panel ();
 				if (!panel.visible)
 					panel.show_all ();
 				
@@ -207,7 +207,7 @@ namespace Vtg
 
 		public void activate ()
 		{
-			var panel = _plugin.gedit_window.get_bottom_panel ();
+			var panel = _plugin_instance.window.get_bottom_panel ();
 			panel.activate_item (_ui);
 		}
 

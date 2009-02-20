@@ -26,18 +26,18 @@ using Gtk;
 
 namespace Vtg
 {
-	public class BracketCompletion : GLib.Object 
+	internal class BracketCompletion : GLib.Object 
 	{
-		private Vtg.Plugin _plugin;
+		private Vtg.PluginInstance _plugin_instance;
 		private Gedit.View _view;
 		private string tab_chars = "";
 
- 		public Vtg.Plugin plugin { get { return _plugin; } construct { _plugin = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 		public Gedit.View view { get { return _view; } construct { _view = value; } default = null; }
 
-		public BracketCompletion (Vtg.Plugin plugin, Gedit.View view)
+		public BracketCompletion (Vtg.PluginInstance plugin_instance, Gedit.View view)
 		{
-			this.plugin = plugin;
+			this.plugin_instance = plugin_instance;
 			this.view = view;
 		}
 
