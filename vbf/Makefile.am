@@ -19,9 +19,9 @@ else
         DEBUG = --Xcc "-D G_DISABLE_DEBUG"
 endif
 
-noinst_PROGRAMS = vbftest
-
 noinst_LTLIBRARIES = libvbf.la
+
+noinst_PROGRAMS = vbftest
 
 vbftest_VALASOURCES = \
 	vbftest.vala \
@@ -56,12 +56,12 @@ libvbf_la_SOURCES = \
 	$(libvbf_la_VALASOURCES:.vala=.h) \
 	$(NULL)
 
-vbftest.vala.stamp: $(vbftest_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --vapidir ../vapi --pkg config --pkg vala-1.0 --pkg utils vbf-1.0.vapi $^
-	touch $@
-
 libvbf.vala.stamp: $(libvbf_la_VALASOURCES)
 	$(VALAC) $(DEBUG) -C  --library vbf-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/vbf $^
+	touch $@
+
+vbftest.vala.stamp: $(vbftest_VALASOURCES)
+	$(VALAC) $(DEBUG) -C  --vapidir ../vapi --pkg vala-1.0 vbf-1.0.vapi $^
 	touch $@
 
 libvbf_la_LDFLAGS = \
@@ -79,7 +79,9 @@ vbftest_LDADD = \
 
 EXTRA_DIST = \
 	$(libvbf_la_VALASOURCES) \
+	$(vbftest_VALASOURCES) \
 	libvbf.vala.stamp \
+	vbftest.vala.stamp \
 	$(NULL)
 
 DISTCLEANFILES = \

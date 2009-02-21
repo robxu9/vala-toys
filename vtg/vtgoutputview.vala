@@ -58,7 +58,7 @@ namespace Vtg
 			_textview.key_press_event += this.on_textview_key_press;
 
 			/* Change default font throughout the widget */
-			weak Pango.FontDescription font_desc = Pango.FontDescription.from_string ("Monospace");
+			Pango.FontDescription font_desc = Pango.FontDescription.from_string ("Monospace");
 			_textview.modify_font (font_desc);
 			_textview.set_wrap_mode (Gtk.WrapMode.CHAR);
 			

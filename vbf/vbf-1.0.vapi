@@ -21,6 +21,7 @@ namespace Vbf {
 		public Gee.List<Vbf.ConfigNode> get_values ();
 		public ConfigNodeList ();
 		public void replace_config_node (Vbf.ConfigNode source, Vbf.ConfigNode target);
+		public override string to_string ();
 	}
 	[CCode (cheader_filename = "vbfconfignodepair.h")]
 	public class ConfigNodePair : GLib.Object {
@@ -81,6 +82,7 @@ namespace Vbf {
 		public Gee.List<Vbf.Module> get_modules ();
 		public Gee.List<Vbf.Variable> get_variables ();
 		public Project (string id);
+		public override string to_string ();
 		public void update ();
 		public signal void updated ();
 	}
@@ -93,6 +95,7 @@ namespace Vbf {
 	public class StringLiteral : Vbf.ConfigNode {
 		public string data;
 		public StringLiteral (string data);
+		public override string to_string ();
 	}
 	[CCode (cheader_filename = "vbftarget.h")]
 	public class Target : GLib.Object {
@@ -114,6 +117,7 @@ namespace Vbf {
 	public class UnresolvedConfigNode : Vbf.ConfigNode {
 		public string name;
 		public UnresolvedConfigNode (string name);
+		public override string to_string ();
 	}
 	[CCode (cheader_filename = "vbfvariable.h")]
 	public class Variable : Vbf.ConfigNode {
@@ -123,6 +127,7 @@ namespace Vbf {
 		public Gee.List<Vbf.Variable> get_childs ();
 		public Vbf.ConfigNode get_value ();
 		public Variable (string name, Vbf.ConfigNode parent);
+		public override string to_string ();
 	}
 	[CCode (cheader_filename = "vbfiprojectmanager.h")]
 	public interface IProjectManager : GLib.Object {

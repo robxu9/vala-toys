@@ -1,3 +1,16 @@
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+	* vbf/Makefile.am:
+	* vbf/vbf-1.0.vapi:
+
+	fixes to make diskcheck pass
+
+	* vtg/vtgoutputview.vala:
+
+	fixes to use vala 0.5.7 compiler	
+
 2009-02-20  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgplugininstance.vala:
