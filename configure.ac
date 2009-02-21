@@ -1,4 +1,4 @@
-AC_INIT([vtg], [0.4.0], [sejerpz@tin.it], [vtg])
+AC_INIT([vtg], [0.4.1], [sejerpz@tin.it], [vtg])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([dist-bzip2])
@@ -28,7 +28,7 @@ GTHREAD_REQUIRED=2.16.0
 GTK_REQUIRED=2.10.0
 GEDIT_REQUIRED=2.22.0
 GTKSOURCECOMPLETION_REQUIRED=0.5.2
-VALA_REQUIRED=0.3.6
+VALA_REQUIRED=0.5.7
 GCONF_REQUIRED=2.22.0
 
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
