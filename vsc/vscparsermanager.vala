@@ -487,7 +487,7 @@ namespace Vsc
 		private void parse_source_buffers ()
 		{
 			var current_context = new CodeContext ();
-			lock_sec_context ();
+			lock_all_contexts ();
 			if (_source_buffers.size != 0) {
 				SourceFile source;
 
@@ -509,9 +509,11 @@ namespace Vsc
 						current_context.add_source_file (source);
 					}
 				}
-				unlock_sec_context ();
 
+				CodeContext.push (current_context);
 				parse_context (current_context);
+				CodeContext.pop ();
+
 				bool need_reparse = false;
 				//add new namespaces to standard context)
 				foreach (SourceFile src in current_context.get_source_files ()) {
@@ -526,21 +528,20 @@ namespace Vsc
 					}
 				}
 
-				lock_sec_context ();
 				_sec_context = current_context;
 				//primary context reparse?
 				if (need_reparse) {
 					schedule_parse ();
 				}
 			}
-			unlock_sec_context ();
+			unlock_all_contexts ();
 		}
 
 		private void parse ()
 		{
 			var current_context = new CodeContext ();
 
-			lock_pri_context ();
+			lock_all_contexts ();
 			if (_packages.size != 0 || _sources.size != 0) {
 				SourceFile source;
 
@@ -561,15 +562,17 @@ namespace Vsc
 					source.add_using_directive (new UsingDirective (new UnresolvedSymbol (null, "GLib", null)));
 					current_context.add_source_file (source);
 				}
-				unlock_pri_context ();
-			
-				parse_context (current_context);
-				analyze_context (current_context);
 
-				lock_pri_context ();
+				CodeContext.push (current_context);
+				parse_context (current_context);
+				if (current_context.report.get_errors () == 0) {
+					analyze_context (current_context);
+				}
+				CodeContext.pop ();
+
 				_pri_context = current_context;
 			}
-			unlock_pri_context ();
+			unlock_all_contexts ();
 		}
 
 		public void parse_context (CodeContext context)

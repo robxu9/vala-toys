@@ -1,5 +1,15 @@
 2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+
+	updated the news file
+
+	* vsc/vscparsermanager.vala:
+
+	fixed a bug due to the introdution of the new CodeContext stack in libvala
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
 	* po/POTFILES.in:
 	* po/POTFILES.skip:
 	* vbf/Makefile.am:

@@ -1,3 +1,16 @@
+Vala toys for gEdit version 0.4.0
+=================================
+
+* Rewritten the autotool backend in vala and dropped the gnome-build
+  dependency.
+* New auto-bookmark feature: now you can go to a file and immediately go back
+  with ALT-LEFT. Bookmarks are automatically stored when you leave a source tab.
+* Improved the build result pane with the possibility to filter out warnings and
+  errors.
+* Now is relatively safe to use vtg with multiple gEdit windows.
+* Improved vsc-shell and now it can be really used by third part users (Levi Bard).
+* Lot of fixes in the completion engine.
+
 Vala toys for gEdit version 0.3.2
 =================================
 
@@ -16,7 +29,7 @@ Vala toys for gEdit version 0.3.0
 =================================
 
 * New simple and "version control system" based ChangeLog support. 
-  Just press CTRL+SHIT+C and a new ChangeLog entry will be created
+  Just press CTRL+SHIFT+C and a new ChangeLog entry will be created
   in the project ChangeLog file with all the modified and added files.
   Supported vcs backends: svn, git, bzr
 * Added the possibility to stop and restart quickly the compilation
