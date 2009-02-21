@@ -7,7 +7,7 @@ Vala toys for gEdit version 0.4.0
   with ALT-LEFT. Bookmarks are automatically stored when you leave a source tab.
 * Improved the build result pane with the possibility to filter out warnings and
   errors.
-* Now is relatively safe to use vtg with multiple gEdit windows.
+* Now is safe to use vtg with multiple gEdit windows.
 * Improved vsc-shell and now it can be really used by third party developers (Levi Bard).
 * Lot of fixes in the completion engine.
 
