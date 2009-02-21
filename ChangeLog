@@ -1,5 +1,11 @@
 2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscparsermanager.vala:
+
+	fixed a deadlock in the parser threads
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 
 	post release version bump

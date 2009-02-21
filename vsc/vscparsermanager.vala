@@ -45,7 +45,8 @@ namespace Vsc
 
 		private Mutex mutex_pri_context = null;
 		private Mutex mutex_sec_context = null;
-	
+		private Mutex mutex_context_stack = null;
+
 		private bool parsing_suspended = true;
 		
 		public signal void cache_building ();
@@ -55,6 +56,7 @@ namespace Vsc
 		{
 			mutex_pri_context = new Mutex ();
 			mutex_sec_context = new Mutex ();
+			mutex_context_stack = new Mutex ();
 			
 			add_path_to_vapi_search_dir ("/usr/share/vala/vapi");
 			add_path_to_vapi_search_dir ("/usr/local/share/vala/vapi");
@@ -95,6 +97,7 @@ namespace Vsc
 			unlock_all_contexts ();
 			mutex_pri_context = null;
 			mutex_sec_context = null;
+			mutex_context_stack = null;
 		}
 
 		internal CodeContext pri_context
@@ -487,7 +490,7 @@ namespace Vsc
 		private void parse_source_buffers ()
 		{
 			var current_context = new CodeContext ();
-			lock_all_contexts ();
+			lock_sec_context ();
 			if (_source_buffers.size != 0) {
 				SourceFile source;
 
@@ -509,11 +512,15 @@ namespace Vsc
 						current_context.add_source_file (source);
 					}
 				}
+				unlock_sec_context ();
 
+				mutex_context_stack.@lock ();
 				CodeContext.push (current_context);
 				parse_context (current_context);
 				CodeContext.pop ();
+				mutex_context_stack.@unlock ();
 
+				lock_sec_context ();
 				bool need_reparse = false;
 				//add new namespaces to standard context)
 				foreach (SourceFile src in current_context.get_source_files ()) {
@@ -529,19 +536,20 @@ namespace Vsc
 				}
 
 				_sec_context = current_context;
+				unlock_sec_context ();
 				//primary context reparse?
 				if (need_reparse) {
 					schedule_parse ();
 				}
 			}
-			unlock_all_contexts ();
+			unlock_sec_context ();
 		}
 
 		private void parse ()
 		{
 			var current_context = new CodeContext ();
 
-			lock_all_contexts ();
+			lock_pri_context ();
 			if (_packages.size != 0 || _sources.size != 0) {
 				SourceFile source;
 
@@ -562,17 +570,21 @@ namespace Vsc
 					source.add_using_directive (new UsingDirective (new UnresolvedSymbol (null, "GLib", null)));
 					current_context.add_source_file (source);
 				}
+				unlock_pri_context ();
 
+				mutex_context_stack.@lock ();
 				CodeContext.push (current_context);
 				parse_context (current_context);
 				if (current_context.report.get_errors () == 0) {
 					analyze_context (current_context);
 				}
 				CodeContext.pop ();
+				mutex_context_stack.unlock ();
 
+				lock_pri_context ();
 				_pri_context = current_context;
 			}
-			unlock_all_contexts ();
+			unlock_pri_context ();
 		}
 
 		public void parse_context (CodeContext context)
