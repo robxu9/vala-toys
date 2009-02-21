@@ -1,5 +1,12 @@
 2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	post release version bump
+	update the required vala version to 0.5.7
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
 	* NEWS:
 
 	fixed some wording :)
