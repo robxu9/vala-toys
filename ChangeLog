@@ -1,5 +1,11 @@
 2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+
+	updated the news file from the vtg 0.4.1 release
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 
 	fixed a deadlock in the parser threads

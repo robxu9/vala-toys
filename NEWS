@@ -1,3 +1,9 @@
+Vala toys for gEdit version 0.4.1
+=================================
+
+* Fixed a deadlock in the parser thread that causes gEdit 
+  to freeze when vtg plugin is enabled
+
 Vala toys for gEdit version 0.4.0
 =================================
 
