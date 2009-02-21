@@ -2,6 +2,12 @@
 
 	* NEWS:
 
+	fixed some spelling
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
 	updated the news file
 
 	* vsc/vscparsermanager.vala:

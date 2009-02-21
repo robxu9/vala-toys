@@ -8,7 +8,7 @@ Vala toys for gEdit version 0.4.0
 * Improved the build result pane with the possibility to filter out warnings and
   errors.
 * Now is relatively safe to use vtg with multiple gEdit windows.
-* Improved vsc-shell and now it can be really used by third part users (Levi Bard).
+* Improved vsc-shell and now it can be really used by third party developers (Levi Bard).
 * Lot of fixes in the completion engine.
 
 Vala toys for gEdit version 0.3.2
