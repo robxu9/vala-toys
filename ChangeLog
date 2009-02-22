@@ -1,3 +1,9 @@
+2009-02-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	now the asterisk can be type again in the source window	(ported from trunk)
+
 2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
 
 	*  ChangeLog:

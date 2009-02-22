@@ -217,6 +217,7 @@ namespace Vtg
 						if (sel_start.get_char () == '/' && instance.enclose_selection_with_delimiters (src, "*", "*/")) {
 							src.get_iter_at_mark (out pos, mark);
 							src.place_cursor (pos);
+							result = true;
 						}
 					} else {
 						pos.backward_char ();
@@ -226,9 +227,9 @@ namespace Vtg
 							instance.insert_chars (src, buffer);
 							sender.scroll_to_mark (mark, 0, false, 0, 0);
 							instance.move_backwards (src, 2 + (int) indent.length + 1);
+							result = true;
 						}
 					}
-					result = true;
 				} else if (ch == '{') {
 					indent = instance.current_indentation_text (src);
 					if (src.has_selection) {

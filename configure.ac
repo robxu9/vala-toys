@@ -1,4 +1,4 @@
-AC_INIT([vtg], [0.4.1], [sejerpz@tin.it], [vtg])
+AC_INIT([vtg], [0.4.2], [sejerpz@tin.it], [vtg])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([dist-bzip2])
