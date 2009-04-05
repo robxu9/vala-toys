@@ -1,3 +1,15 @@
+2009-02-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/Makefile.am:
+
+	removed unwanted library dependencies
+
+	* vsc/vscparsermanager.vala:
+	* vsc/vsctypefindvisitor.vala:
+
+	fixed the completion engine to support the new vala CodeContext
+	stack api with tls support. See valac bugs #573041, #573043
+
 2009-02-22  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbracketcompletion.vala:
