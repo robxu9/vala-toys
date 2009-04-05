@@ -45,7 +45,6 @@ namespace Vsc
 
 		private Mutex mutex_pri_context = null;
 		private Mutex mutex_sec_context = null;
-		private Mutex mutex_context_stack = null;
 
 		private bool parsing_suspended = true;
 		
@@ -56,7 +55,6 @@ namespace Vsc
 		{
 			mutex_pri_context = new Mutex ();
 			mutex_sec_context = new Mutex ();
-			mutex_context_stack = new Mutex ();
 			
 			add_path_to_vapi_search_dir ("/usr/share/vala/vapi");
 			add_path_to_vapi_search_dir ("/usr/local/share/vala/vapi");
@@ -81,23 +79,25 @@ namespace Vsc
 			}
 		}
 
-		~ParseManager ()
+		~ParserManager ()
 		{			
-			if (parser_pri_thread != null)
+			lock_all_contexts ();
+			parsing_suspended = true;
+			unlock_all_contexts ();
+			if (parser_pri_thread != null) {
 				parser_pri_thread.join ();
-
-			if (parser_sec_thread != null)
+				parser_pri_thread = null;
+			}
+			if (parser_sec_thread != null) {
 				parser_sec_thread.join ();
-
+				parser_sec_thread = null;
+			}
 			lock_all_contexts ();
 			_packages.clear ();
 			_built_packages.clear ();
 			_sources.clear ();
 			_source_buffers.clear ();
 			unlock_all_contexts ();
-			mutex_pri_context = null;
-			mutex_sec_context = null;
-			mutex_context_stack = null;
 		}
 
 		internal CodeContext pri_context
@@ -490,6 +490,8 @@ namespace Vsc
 		private void parse_source_buffers ()
 		{
 			var current_context = new CodeContext ();
+			CodeContext.push (current_context);
+
 			lock_sec_context ();
 			if (_source_buffers.size != 0) {
 				SourceFile source;
@@ -514,11 +516,7 @@ namespace Vsc
 				}
 				unlock_sec_context ();
 
-				mutex_context_stack.@lock ();
-				CodeContext.push (current_context);
 				parse_context (current_context);
-				CodeContext.pop ();
-				mutex_context_stack.@unlock ();
 
 				lock_sec_context ();
 				bool need_reparse = false;
@@ -536,18 +534,20 @@ namespace Vsc
 				}
 
 				_sec_context = current_context;
-				unlock_sec_context ();
+
 				//primary context reparse?
 				if (need_reparse) {
 					schedule_parse ();
 				}
 			}
 			unlock_sec_context ();
+			CodeContext.pop ();
 		}
 
 		private void parse ()
 		{
 			var current_context = new CodeContext ();
+			CodeContext.push (current_context);
 
 			lock_pri_context ();
 			if (_packages.size != 0 || _sources.size != 0) {
@@ -572,19 +572,16 @@ namespace Vsc
 				}
 				unlock_pri_context ();
 
-				mutex_context_stack.@lock ();
-				CodeContext.push (current_context);
 				parse_context (current_context);
 				if (current_context.report.get_errors () == 0) {
 					analyze_context (current_context);
 				}
-				CodeContext.pop ();
-				mutex_context_stack.unlock ();
 
 				lock_pri_context ();
 				_pri_context = current_context;
 			}
 			unlock_pri_context ();
+			CodeContext.pop ();
 		}
 
 		public void parse_context (CodeContext context)

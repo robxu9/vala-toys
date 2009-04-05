@@ -44,7 +44,7 @@ libvsc_la_SOURCES = \
 	$(NULL)
 
 libvsc.vala.stamp: $(vsc_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --library vsc-1.0 --vapidir ../vapi --pkg config --pkg vala-1.0 --pkg gtksourcecompletion-1.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms $^
+	$(VALAC) $(DEBUG) -C  --library vsc-1.0 --vapidir ../vapi --pkg config --pkg vala-1.0  --pkg utils $^
 	touch $@
 
 libvsc_la_LDFLAGS = \

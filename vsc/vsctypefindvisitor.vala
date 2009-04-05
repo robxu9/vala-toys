@@ -486,6 +486,7 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 	{
 		string ns_name = null;
 		Symbol ns = namespace_symbol;
+		int i = 0;
 		while (ns != null) {
 			if (ns_name == null) {
 				ns_name = ns.name;
@@ -497,6 +498,7 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			} else {
 				ns = ns.parent_symbol;
 			}
+			i++;
 		}
 		return ns_name;
 	}
