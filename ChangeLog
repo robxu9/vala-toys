@@ -1,5 +1,17 @@
 2009-04-05  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vapi/gtksourcecompletion-2.0.vapi:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0-custom.vala:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0.deps:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0.files:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0.gi:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0.metadata:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0.namespace:
+
+	added the updated gtksourcecompletion 2.0 vapi
+
+2009-04-05  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgconfiguration.vala:
 	* vtg/vtgsymbolcompletionhelper.vala:
 	* vtg/vtgsymbolcompletiontrigger.vala:
