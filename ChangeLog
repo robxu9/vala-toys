@@ -1,3 +1,10 @@
+2009-03-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+	
+	better error reporting when required libraries are missing.
+	(even if the configure.ac code looks so ugly ;) )
+	
 2009-02-28  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vbf/am/vbfamprojectmanager.vala:
