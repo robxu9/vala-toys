@@ -1,3 +1,15 @@
+2009-04-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbf-1.0.gir:
+
+	changed due to valac 0.6.0 compiler update
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+
+	Emit position information for SymbolCompletionItems. Patch by Levi Bard. Fixes issue #64.
+
 2009-03-03  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure.ac:

@@ -28,6 +28,7 @@ namespace Vsc
 		public string name;
 		public string type_name = null;
 		public string info;
+		public string? file;
 		public int line = 0;
 		public Symbol? symbol;
 		
@@ -117,6 +118,7 @@ namespace Vsc
 		public SymbolCompletionItem.with_method (Method item)
 		{
 			this.name = item.name;
+			this.file = item.source_reference.file.filename;
 			this.line = item.source_reference.first_line;
 			this.symbol = item;
 			
@@ -146,6 +148,7 @@ namespace Vsc
 			this.name = ("new" == item.name)? 
 			            item.parent_symbol.name: 
 			            "%s.%s".printf (item.parent_symbol.name, item.name);
+			this.file = item.source_reference.file.filename;
 			this.line = item.source_reference.first_line;
 			this.symbol = item;
 			
@@ -164,6 +167,7 @@ namespace Vsc
 		public SymbolCompletionItem.with_field (Field item)
 		{
 			this.name = item.name;
+			this.file = item.source_reference.file.filename;
 			this.line = item.source_reference.first_line;
 			this.symbol = item;
 			
@@ -197,6 +201,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Struct: %s".printf (item.name);
+			this.file = item.source_reference.file.filename;
 			this.line = item.source_reference.first_line;
 			this.symbol = item;
 		}
@@ -205,6 +210,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Class: %s".printf (item.name);
+			this.file = item.source_reference.file.filename;
 			this.line = item.source_reference.first_line;
 			this.symbol = item;
 		}
@@ -213,6 +219,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Interface: %s".printf (item.name);
+			this.file = item.source_reference.file.filename;
 			this.line = item.source_reference.first_line;
 			this.symbol = item;
 		}
@@ -221,6 +228,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Signal: %s".printf (item.name);
+			this.file = item.source_reference.file.filename;
 			this.line = item.source_reference.first_line;
 			this.symbol = item;
 			int param_count = item.get_parameters ().size;
@@ -239,6 +247,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Namespace: %s".printf (item.name);
+			this.file = item.source_reference.file.filename;
 			this.line = item.source_reference.first_line;
 			this.symbol = item;
 		}

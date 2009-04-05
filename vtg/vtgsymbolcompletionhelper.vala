@@ -69,6 +69,7 @@ namespace Vtg
 		private void setup_gsc_completion (Gedit.View view)
 		{
 			_manager = new Gsc.Completion (view);
+			_manager.remember_info_visibility = true;
 			_provider = new SymbolCompletionProvider (_plugin_instance, view, _completion);
 			_trigger = new SymbolCompletionTrigger (_manager, "SymbolComplete");
 			_manager.register_trigger (_trigger);
