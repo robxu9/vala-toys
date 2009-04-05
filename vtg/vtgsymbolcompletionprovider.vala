@@ -268,7 +268,7 @@ namespace Vtg
 		private void initialize_calltip_window ()
 		{
 			_calltip_window = new Gsc.Info ();
-			_calltip_window.set_info_type (InfoType.EXTENDED);
+			//_calltip_window.set_info_type (InfoType.EXTENDED);
 			_calltip_window.set_transient_for (_plugin_instance.window);
 			_calltip_window.set_adjust_width (true, 800);
 			_calltip_window.set_adjust_height (true, 600);

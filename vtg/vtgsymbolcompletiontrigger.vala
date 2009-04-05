@@ -29,13 +29,30 @@ namespace Vtg
 {
 	public class SymbolCompletionTrigger : GLib.Object, Gsc.Trigger
 	{
-		private Gsc.Manager _completion;
+		private Gsc.Completion _completion;
 		private string _trigger_name;
-		private Gsc.ManagerEventOptions _opts;
+		private string _filter_proposal;
+		//private Gsc.ManagerEventOptions _opts;
 
-		public Gsc.Manager completion { get { return _completion; } construct { _completion = value; } }
+		public Gsc.Completion completion { get { return _completion; } construct { _completion = value; } }
+
 		public bool shortcut_triggered = false;
+
 		public string trigger_name { construct { _trigger_name = value; } }
+
+		public string filter_proposal
+		{
+			get {
+				return _filter_proposal;
+			}
+			set {
+				if (_filter_proposal != value) {
+					_filter_proposal = value;
+					apply_filter ();
+				}
+			}
+			default = null;
+		}
 
 		public bool activate ()
 		{
@@ -59,16 +76,13 @@ namespace Vtg
 
 		private void on_buffer_changed (Gtk.TextBuffer sender)
 		{
-			if (_completion.is_visible ()) {
+			if (_completion.visible) {
 				string delimiter;
 				string filter = get_filter_word (sender, out delimiter);
 				if (delimiter != "." && delimiter != "") {
 					_completion.finish_completion ();
 				} else  {
-					Gsc.ManagerEventOptions opts;
-					_completion.get_current_event_options (out opts);
-					opts.filter_text = filter;
-					_completion.update_event_options (opts);
+					filter_proposal = filter;
 				}
 			}
 		}
@@ -81,7 +95,7 @@ namespace Vtg
 		
 		private bool on_view_key_press (Gtk.TextView view, Gdk.EventKey event)
 		{
-			if (!_completion.is_visible ()) {
+			if (!_completion.visible) {
 				if (event.keyval == '.' && 
 				    (event.state & (ModifierType.SHIFT_MASK | ModifierType.META_MASK | ModifierType.CONTROL_MASK)) == 0) {
 					trigger_event (false);
@@ -128,12 +142,8 @@ namespace Vtg
 
 		public void trigger_event (bool trigger_reason)
 		{
-			_opts.position_type = PopupPositionType.CURSOR;
-			_opts.filter_type = PopupFilterType.TREE_HIDDEN;
-			_opts.autoselect = trigger_reason;
-			_opts.show_bottom_bar = true;
 			this.shortcut_triggered = trigger_reason;			
-			_completion.trigger_event_with_opts (this._trigger_name, _opts, null);
+			_completion.trigger_event (this);
 			
 			//if completion was trigger explicitly set the filter
 			if (trigger_reason) {
@@ -141,17 +151,26 @@ namespace Vtg
 				var doc = view.get_buffer ();
 				string delimiter;
 				string filter = get_filter_word (doc, out delimiter);
-				Gsc.ManagerEventOptions opts;
-				_completion.get_current_event_options (out opts);
-				opts.filter_text = filter;
-				_completion.update_event_options (opts);
-			}			
+				filter_proposal = filter;
+			} else {
+				filter_proposal = null;
+			}
 		}
 
-		public SymbolCompletionTrigger (Gsc.Manager completion, string trigger_name)
+		public SymbolCompletionTrigger (Gsc.Completion completion, string trigger_name)
 		{
 			this.completion = completion;
 			this.trigger_name = trigger_name;
+		}
+
+		private void apply_filter ()
+		{
+			_completion.filter_proposals (this.apply_filter_proposal);
+		}
+
+		private bool apply_filter_proposal (Gsc.Proposal proposal)
+		{
+			return _filter_proposal == null || proposal.label.has_prefix (_filter_proposal);
 		}
 	}
 }

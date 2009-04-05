@@ -1,5 +1,15 @@
 2009-02-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+	* vtg/Makefile.am:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	updated the Gsc library support to the new (to be released soon) 2.0 version.
+
+2009-02-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/Makefile.am:
 
 	removed unwanted library dependencies
