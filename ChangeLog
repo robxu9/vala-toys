@@ -1,5 +1,15 @@
 2009-02-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbftarget.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectexecuterdialog.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	fixed execute project dialog that was broken during vbf migration. Fixes issue #60
+
+2009-02-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 	* vsc/vscsymbolcompletion.vala:
 

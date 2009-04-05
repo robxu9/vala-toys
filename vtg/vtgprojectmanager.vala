@@ -36,7 +36,7 @@ namespace Vtg
 		public virtual signal void updated ();
 		public string filename = null;
 
-		public Gee.List<string> exec_targets = new Gee.ArrayList<string> ();
+		public Gee.List<Vbf.Target> exec_targets = new Gee.ArrayList<Vbf.Target> ();
 		public Gee.List<Vbf.Source> all_vala_sources = new Gee.ArrayList<Vbf.Source> ();
 		
 		public Gtk.TreeModel model { get { return _model; } }
@@ -262,8 +262,9 @@ namespace Vtg
 			
 			foreach (Group group in _project.get_groups ()) {
 				foreach (Target target in group.get_targets ()) {
-					if (target.type == TargetTypes.PROGRAM) {
-						exec_targets.add (target.name);
+					if (target.type == TargetTypes.PROGRAM ||
+					    (target.type == TargetTypes.BUILT_SOURCES && !target.name.has_prefix ("lib")) ) {
+						exec_targets.add (target);
 					}
 					foreach (Vbf.Source source in target.get_sources ()) {
 						if (source.type == FileTypes.VALA_SOURCE) {

@@ -212,7 +212,7 @@ namespace Vbf.Am
 		private void add_vala_sources (Group group, Target target)
 		{
 			foreach (Variable variable in group.get_variables ()) {
-				if (variable.name == target.name) {
+				if (variable.name == target.id) {
 					var val = variable.get_value ();
 					add_vala_source (group, target, val);
 					break;

@@ -50,7 +50,8 @@ namespace Vbf
 		{
 			this.group = group;
 			this.id = id;
-			this.name = id;
+			string[] tmp = id.split (".",2);
+			this.name = tmp[0];
 			this.type = type;
 		}
 		

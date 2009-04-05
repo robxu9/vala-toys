@@ -78,12 +78,14 @@ namespace Vtg
 			_tree.get_selection ().changed += this.on_tree_selection_changed;
 			
 			//initialize the project list
-			var programs = project.exec_targets;
+			var targets = project.exec_targets;
 			TreeIter iter;
 			ListStore list = new ListStore (2, typeof(string), typeof(string));
-			foreach (string program in programs) {
+			foreach (Target target in targets) {
 				list.append (out iter);
-				list.set (iter, 0, Path.get_basename (program), 1, program);
+				string path = Path.build_filename (target.group.id, target.name).substring (target.group.project.id.length + 1);
+
+				list.set (iter, 0, target.name, 1, path);
 			}
 			_tree.set_model (list);
 			

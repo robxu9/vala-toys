@@ -67,7 +67,10 @@ namespace Vtg
 					log.log_message ("No command line specified for project %s".printf(project.name));
 					return false;
 				} else {
-					cmd = Path.build_filename (project.id, command_line);
+					if (!command_line.has_prefix ("/"))
+						cmd = Path.build_filename (project.id, command_line);
+					else
+						cmd = command_line;
 				}
 				string[] cmds;
 				Shell.parse_argv (cmd, out cmds);
