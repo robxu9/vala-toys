@@ -56,7 +56,6 @@ namespace Vtg
 
 		~SymbolCompletionHelper ()
 		{
-			_manager.deactivate ();
 			_manager.unregister_provider (_provider, _trigger);
 			_manager.unregister_trigger (_trigger);
 			_manager = null;
@@ -70,11 +69,12 @@ namespace Vtg
 		{
 			_manager = new Gsc.Completion (view);
 			_manager.remember_info_visibility = true;
+			_manager.select_on_show = true;
 			_provider = new SymbolCompletionProvider (_plugin_instance, view, _completion);
-			_trigger = new SymbolCompletionTrigger (_manager, "SymbolComplete");
+			_trigger = new SymbolCompletionTrigger (_plugin_instance, _manager, "SymbolComplete");
 			_manager.register_trigger (_trigger);
 			_manager.register_provider (_provider, _trigger);
-			_manager.activate ();
+			_manager.set_active (true);
 		}
 	}
 }

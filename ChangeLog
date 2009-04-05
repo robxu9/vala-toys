@@ -1,5 +1,13 @@
 2009-04-05  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	implemented the gsc info window persistence. Fixes issue #11
+
+2009-04-05  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/vbf-1.0.gir:
 
 	changed due to valac 0.6.0 compiler update

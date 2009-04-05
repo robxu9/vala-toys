@@ -33,14 +33,30 @@ namespace Vtg
 		private const string VTG_ENABLE_BRACKET_COMPLETION_KEY = VTG_BASE_KEY + "/symbol_completion_enabled";
 		private const string VTG_AUTHOR_KEY = VTG_BASE_KEY + "/author";
 		private const string VTG_EMAIL_ADDRESS_KEY = VTG_BASE_KEY + "/email_address";
+		private const string VTG_INFO_WINDOW_VISIBLE = VTG_BASE_KEY + "/info_window_visible";
 		
 		private GConf.Client _gconf;
 		private Gtk.Dialog _dialog;
+		
+		private bool _info_window_visible;
 
 		public bool bracket_enabled { get; set; }
 		public bool symbol_enabled { get; set; }
 		public string author { get; set; }
 		public string email_address { get; set; }
+		public bool info_window_visible
+		{ 
+			get {
+				return _info_window_visible;
+			}
+			set {
+				if (_info_window_visible != value) {
+					_info_window_visible = value;
+					_gconf.set_bool (VTG_INFO_WINDOW_VISIBLE, _info_window_visible);
+				}
+			}
+			default = false;
+		}
 		
 		public bool save_before_build 
 		{ 
@@ -98,14 +114,26 @@ namespace Vtg
 					_gconf.set_schema("/schemas" + VTG_EMAIL_ADDRESS_KEY, schema);
 					_gconf.set_string (VTG_EMAIL_ADDRESS_KEY, "");
 				}
+				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_EMAIL_ADDRESS_KEY) == null) {
+					var schema = new GConf.Schema ();
+					schema.set_short_desc (_("Store the completion info window visible status"));
+					schema.set_type (GConf.ValueType.BOOL);
+					var def_value = new GConf.Value (GConf.ValueType.BOOL);
+					def_value.set_bool (true);
+					schema.set_default_value (def_value);
+					_gconf.set_schema("/schemas" + VTG_INFO_WINDOW_VISIBLE, schema);
+					_gconf.set_bool (VTG_INFO_WINDOW_VISIBLE, false);					
+				}				
 				_gconf.engine.associate_schema (VTG_ENABLE_SYMBOL_COMPLETION_KEY, "/schemas" + VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_gconf.engine.associate_schema (VTG_ENABLE_BRACKET_COMPLETION_KEY, "/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY);
 				_gconf.engine.associate_schema (VTG_AUTHOR_KEY, "/schemas" + VTG_AUTHOR_KEY);
 				_gconf.engine.associate_schema (VTG_EMAIL_ADDRESS_KEY, "/schemas" + VTG_EMAIL_ADDRESS_KEY);
+				_gconf.engine.associate_schema (VTG_INFO_WINDOW_VISIBLE, "/schemas" + VTG_INFO_WINDOW_VISIBLE);
 				_symbol_enabled = _gconf.get_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_bracket_enabled = _gconf.get_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY);
 				_author = _gconf.get_string (VTG_AUTHOR_KEY);
 				_email_address = _gconf.get_string (VTG_EMAIL_ADDRESS_KEY);
+				_info_window_visible = _gconf.get_bool (VTG_INFO_WINDOW_VISIBLE);				
 				_gconf.add_dir (VTG_BASE_KEY, GConf.ClientPreloadType.ONELEVEL);
 				_gconf.value_changed += this.on_conf_value_changed;
 			} catch (Error err) {

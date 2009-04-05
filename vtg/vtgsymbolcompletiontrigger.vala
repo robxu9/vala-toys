@@ -27,12 +27,12 @@ using Gsc;
 
 namespace Vtg
 {
-	public class SymbolCompletionTrigger : GLib.Object, Gsc.Trigger
+	class SymbolCompletionTrigger : GLib.Object, Gsc.Trigger
 	{
+		private Vtg.PluginInstance _plugin;
 		private Gsc.Completion _completion;
 		private string _trigger_name;
 		private string _filter_proposal;
-		//private Gsc.ManagerEventOptions _opts;
 
 		public Gsc.Completion completion { get { return _completion; } construct { _completion = value; } }
 
@@ -54,18 +54,23 @@ namespace Vtg
 			default = null;
 		}
 
-		public bool activate ()
+		private bool activate ()
 		{
 			var view = _completion.get_view ();
 			view.key_press_event += this.on_view_key_press;
 			view.get_buffer ().changed += this.on_buffer_changed;
+			Gsc.Info info = _completion.get_info_widget ();
+			info.notify["visible"] += this.on_info_visible_changed;
 			return true;
 		}
 
 		public bool deactivate ()
 		{
 			var view = _completion.get_view ();
-			view.key_press_event -= this.on_view_key_press;			
+			view.key_press_event -= this.on_view_key_press;
+			view.get_buffer ().changed -= this.on_buffer_changed;
+			Gsc.Info info = _completion.get_info_widget ();
+			info.notify["visible"] -= this.on_info_visible_changed;
 			return true;
 		}
 
@@ -103,7 +108,7 @@ namespace Vtg
 			}
 			return false;
 		}
-
+		
 		private string get_filter_word (Gtk.TextBuffer doc, out string delimiter)
 		{
  			weak TextMark mark = (TextMark) doc.get_insert ();
@@ -144,6 +149,12 @@ namespace Vtg
 		{
 			this.shortcut_triggered = trigger_reason;			
 			_completion.trigger_event (this);
+			Gsc.Info info = _completion.get_info_widget ();
+			
+			if (_plugin.plugin.config.info_window_visible) {
+				
+				info.show ();
+			}
 			
 			//if completion was trigger explicitly set the filter
 			if (trigger_reason) {
@@ -157,12 +168,21 @@ namespace Vtg
 			}
 		}
 
-		public SymbolCompletionTrigger (Gsc.Completion completion, string trigger_name)
+		private void on_info_visible_changed (Gsc.Info sender, GLib.ParamSpec param)
+		{
+			//only store the visible state if completion popup is active
+			if (_completion.visible) {
+				_plugin.plugin.config.info_window_visible = sender.visible;
+			}
+		}
+		
+		public SymbolCompletionTrigger (Vtg.PluginInstance plugin, Gsc.Completion completion, string trigger_name)
 		{
 			this.completion = completion;
 			this.trigger_name = trigger_name;
+			this._plugin = plugin;
 		}
-
+		
 		private void apply_filter ()
 		{
 			_completion.filter_proposals (this.apply_filter_proposal);
