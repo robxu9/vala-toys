@@ -1,3 +1,10 @@
+2009-02-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed another deadlock when completing a type
+
 2009-02-27  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure.ac:

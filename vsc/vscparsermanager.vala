@@ -80,10 +80,8 @@ namespace Vsc
 		}
 
 		~ParserManager ()
-		{			
-			lock_all_contexts ();
-			parsing_suspended = true;
-			unlock_all_contexts ();
+		{
+			suspend_parsing ();
 			if (parser_pri_thread != null) {
 				parser_pri_thread.join ();
 				parser_pri_thread = null;

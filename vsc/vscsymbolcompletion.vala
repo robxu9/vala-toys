@@ -517,45 +517,59 @@ namespace Vsc
 			return typename;
 		}
 		
-		public DataType? get_datatype_for_name (string symbolname, string sourcefile, int line, int column) throws SymbolCompletionError
+		private DataType? get_datatype_for_name (string symbolname, string sourcefile, int line, int column) throws SymbolCompletionError
 		{
-			warn_if_fail (_parser != null);
-			DataType? result = null;
-			string[] toks = symbolname.split (".", 2);
-			SourceFile source = null;
+			DataType? res = null;
 
-			_parser.lock_all_contexts ();
+			//secondary context
+			_parser.lock_sec_context ();
 			try {
-				CodeContext?[] contexts = { _parser.sec_context, _parser.pri_context, null };
-				int idx = 0;
-				while (contexts[idx] != null) {
-					var context = contexts[idx];
-					source = find_sourcefile (context, sourcefile);
-					if (source != null) {
-						//first local
-						result = get_datatype_for_name_with_context (context, toks[0], source, line, column);
-						if (result != null && toks[1] != null) {
-							result = get_inner_datatype (result, toks[1], source);
-						}
-					} else {
-						warning ("(get_datatype_for_name) no sourcefile found %s", sourcefile);
-					}
-	
-					if (result != null) { 
-						break;
-					}
-					idx++;
-				}
+				res = get_datatype_for_name_with_context (_parser.sec_context, symbolname, sourcefile,  line,  column);
 			} catch (Error err) {
 				throw err;
 			} finally {
-				_parser.unlock_all_contexts ();
+				_parser.unlock_sec_context ();
 			}
-			return result;
+			//primary context
+			if (res == null) {
+				_parser.lock_pri_context ();
+				try {
+					res = get_datatype_for_name_with_context (_parser.pri_context, symbolname, sourcefile,  line,  column);
+				} catch (Error err) {
+					throw err;
+				} finally {
+					_parser.unlock_pri_context ();
+				}
+			}
+			return res;
+		}
+
+		private DataType? get_datatype_for_name_with_context (CodeContext context, string symbolname, string sourcefile, int line, int column) throws SymbolCompletionError
+		{
+			warn_if_fail (_parser != null);
+			DataType? res = null;
+			string[] toks = symbolname.split (".", 2);
+			SourceFile source = null;
+
+			try {
+				source = find_sourcefile (context, sourcefile);
+				if (source != null) {
+					//first local
+					res = get_datatype_for_symbolname_with_context (context, toks[0], source, line, column);
+					if (res != null && toks[1] != null) {
+						res = get_inner_symbolname_datatype (res, toks[1], source);
+					}
+				} else {
+					warning ("(get_datatype_for_name_with_context) no sourcefile found %s", sourcefile);
+				}
+			} catch (Error err) {
+				throw err;
+			}
+			return res;
 		}
 
 
-		private DataType? get_inner_datatype (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
+		private DataType? get_inner_symbolname_datatype (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
 		{
 			DataType result = null;
 			var finder = new TypeFinderVisitor (source, _parser.pri_context);
@@ -578,7 +592,7 @@ namespace Vsc
 			if (finder.result != null) {
 				result = symbol_to_datatype (finder.result);
 				if (toks[1] != null) {
-					result = get_inner_datatype (result, toks[1], source);
+					result = get_inner_symbolname_datatype (result, toks[1], source);
 				}
 			}
 			
@@ -698,7 +712,7 @@ namespace Vsc
  			}
  		}
  		
- 		private DataType? get_datatype_for_name_with_context (CodeContext context, string symbolname, SourceFile? source = null, int line = 0, int column = 0) throws SymbolCompletionError
+ 		private DataType? get_datatype_for_symbolname_with_context (CodeContext context, string symbolname, SourceFile? source = null, int line = 0, int column = 0) throws SymbolCompletionError
 		{
 			Class cl = null;
 			Method md = null;
