@@ -1,19 +1,6 @@
 <?xml version="1.0"?>
 <repository version="1.0" xmlns="http://www.gtk.org/introspection/core/1.0" xmlns:c="http://www.gtk.org/introspection/c/1.0" xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
-	<c:include name="vbfpackage.h"/>
-	<c:include name="vbfsource.h"/>
-	<c:include name="vbfiprojectmanager.h"/>
-	<c:include name="vbfvariable.h"/>
-	<c:include name="vbfconfignodelist.h"/>
-	<c:include name="vbftarget.h"/>
-	<c:include name="vbfconfignode.h"/>
-	<c:include name="vbfconfignodepair.h"/>
-	<c:include name="vbfstringliteral.h"/>
-	<c:include name="vbfproject.h"/>
-	<c:include name="vbffile.h"/>
-	<c:include name="vbfunresolvedconfignode.h"/>
-	<c:include name="vbfgroup.h"/>
-	<c:include name="vbfmodule.h"/>
+	<c:include name="vbf.h"/>
 	<namespace name="Vbf" version="1.0">
 		<enumeration name="TargetTypes" c:type="VbfTargetTypes" glib:get-type="vbf_target_types_get_type">
 			<member name="program"/>

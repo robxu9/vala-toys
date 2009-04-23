@@ -1,3 +1,16 @@
+2009-04-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/Makefile.am:
+	* vsc/Makefile.am:
+	* vtg/Makefile.am:
+
+	updated to support the new vala 0.7.x include file generation schema
+
+	* vbf/vbf-1.0.gir:
+	* vbf/vbf-1.0.vapi:
+
+	regenerated
+
 2009-04-05  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vapi/gtksourcecompletion-2.0.vapi:

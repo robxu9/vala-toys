@@ -4,17 +4,17 @@
 namespace Vbf {
 	[CCode (cprefix = "VbfAm", lower_case_cprefix = "vbf_am_")]
 	namespace Am {
-		[CCode (cheader_filename = "am/vbfamprojectmanager.h")]
+		[CCode (cheader_filename = "vbf.h")]
 		public class ProjectManager : Vbf.IProjectManager, GLib.Object {
 			public ProjectManager ();
 		}
 	}
-	[CCode (cheader_filename = "vbfconfignode.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public abstract class ConfigNode : GLib.Object {
 		public weak Vbf.ConfigNode parent;
 		public abstract string to_string ();
 	}
-	[CCode (cheader_filename = "vbfconfignodelist.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class ConfigNodeList : Vbf.ConfigNode {
 		protected Gee.List<Vbf.ConfigNode> values;
 		public void add_value (Vbf.ConfigNode val);
@@ -23,13 +23,13 @@ namespace Vbf {
 		public void replace_config_node (Vbf.ConfigNode source, Vbf.ConfigNode target);
 		public override string to_string ();
 	}
-	[CCode (cheader_filename = "vbfconfignodepair.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class ConfigNodePair : GLib.Object {
 		public Vbf.ConfigNode? destination;
 		public Vbf.ConfigNode source;
 		public ConfigNodePair (Vbf.ConfigNode source, Vbf.ConfigNode? destination);
 	}
-	[CCode (cheader_filename = "vbffile.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class File : GLib.Object {
 		public string filename;
 		public string name;
@@ -39,7 +39,7 @@ namespace Vbf {
 		public File (Vbf.Target target, string filename);
 		public File.with_type (Vbf.Target target, string filename, Vbf.FileTypes type);
 	}
-	[CCode (cheader_filename = "vbfgroup.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class Group : GLib.Object {
 		public string id;
 		public string name;
@@ -54,7 +54,7 @@ namespace Vbf {
 		public Gee.List<Vbf.Variable> get_variables ();
 		public Group (Vbf.Project project, string id);
 	}
-	[CCode (cheader_filename = "vbfmodule.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class Module : GLib.Object {
 		public string id;
 		public string name;
@@ -62,7 +62,7 @@ namespace Vbf {
 		public Gee.List<Vbf.Package> get_packages ();
 		public Module (Vbf.Project project, string id);
 	}
-	[CCode (cheader_filename = "vbfpackage.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class Package : GLib.Object {
 		public string constraint;
 		public string id;
@@ -70,7 +70,7 @@ namespace Vbf {
 		public Vbf.ConfigNode version;
 		public Package (string id);
 	}
-	[CCode (cheader_filename = "vbfproject.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class Project : Vbf.ConfigNode {
 		public string id;
 		public string name;
@@ -86,18 +86,18 @@ namespace Vbf {
 		public void update ();
 		public signal void updated ();
 	}
-	[CCode (cheader_filename = "vbfsource.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class Source : Vbf.File {
 		public Source (Vbf.Target target, string filename);
 		public Source.with_type (Vbf.Target target, string filename, Vbf.FileTypes type);
 	}
-	[CCode (cheader_filename = "vbfstringliteral.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class StringLiteral : Vbf.ConfigNode {
 		public string data;
 		public StringLiteral (string data);
 		public override string to_string ();
 	}
-	[CCode (cheader_filename = "vbftarget.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class Target : GLib.Object {
 		public weak Vbf.Group group;
 		public string id;
@@ -113,13 +113,13 @@ namespace Vbf {
 		public bool has_sources_of_type (Vbf.FileTypes type);
 		public Target (Vbf.Group group, Vbf.TargetTypes type, string id);
 	}
-	[CCode (cheader_filename = "vbfunresolvedconfignode.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class UnresolvedConfigNode : Vbf.ConfigNode {
 		public string name;
 		public UnresolvedConfigNode (string name);
 		public override string to_string ();
 	}
-	[CCode (cheader_filename = "vbfvariable.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public class Variable : Vbf.ConfigNode {
 		public Vbf.ConfigNode? data;
 		public string name;
@@ -129,19 +129,19 @@ namespace Vbf {
 		public Variable (string name, Vbf.ConfigNode parent);
 		public override string to_string ();
 	}
-	[CCode (cheader_filename = "vbfiprojectmanager.h")]
+	[CCode (cheader_filename = "vbf.h")]
 	public interface IProjectManager : GLib.Object {
 		public abstract Vbf.Project? open (string project_file);
 		public abstract bool probe (string project_file);
 		public abstract void refresh (Vbf.Project project);
 	}
-	[CCode (cprefix = "VBF_FILE_TYPES_", cheader_filename = "vbffile.h")]
+	[CCode (cprefix = "VBF_FILE_TYPES_", cheader_filename = "vbf.h")]
 	public enum FileTypes {
 		UNKNOWN,
 		DATA,
 		VALA_SOURCE
 	}
-	[CCode (cprefix = "VBF_TARGET_TYPES_", cheader_filename = "vbftarget.h")]
+	[CCode (cprefix = "VBF_TARGET_TYPES_", cheader_filename = "vbf.h")]
 	public enum TargetTypes {
 		PROGRAM,
 		LIBRARY,

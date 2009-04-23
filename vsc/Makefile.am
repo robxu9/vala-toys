@@ -37,14 +37,17 @@ vsc_VALASOURCES = \
 	vscparsermanager.vala \
 	$(NULL)
 
+noinst_HEADERS = \
+	vsc.h \
+	$(NULL)
 
 libvsc_la_SOURCES = \
+	libvsc.vala.stamp \
 	$(vsc_VALASOURCES:.vala=.c) \
-	$(vsc_VALASOURCES:.vala=.h) \
 	$(NULL)
 
 libvsc.vala.stamp: $(vsc_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --library vsc-1.0 --vapidir ../vapi --pkg config --pkg vala-1.0  --pkg utils $^
+	$(VALAC) $(DEBUG) -C --vapidir ../vapi --pkg config --pkg vala-1.0  --pkg utils -H vsc.h --library vsc-1.0 $^
 	touch $@
 
 libvsc_la_LDFLAGS = \

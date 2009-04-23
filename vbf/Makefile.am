@@ -48,16 +48,20 @@ libvbf_la_VALASOURCES = \
 
 vbftest_SOURCES = \
 	$(vbftest_VALASOURCES:.vala=.c) \
-	$(vbftest_VALASOURCES:.vala=.h) \
+	$(NULL)
+
+noinst_HEADERS = \
+	vbf.h \
 	$(NULL)
 
 libvbf_la_SOURCES = \
+	libvbf.vala.stamp \
+	vbftest.vala.stamp \
 	$(libvbf_la_VALASOURCES:.vala=.c) \
-	$(libvbf_la_VALASOURCES:.vala=.h) \
 	$(NULL)
 
 libvbf.vala.stamp: $(libvbf_la_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --library vbf-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/vbf $^
+	$(VALAC) $(DEBUG) -C -H vbf.h --library vbf-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/vbf $^
 	touch $@
 
 vbftest.vala.stamp: $(vbftest_VALASOURCES)

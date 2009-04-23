@@ -56,10 +56,8 @@ libvtg_la_VALASOURCES = \
 	vtgutils.vala \
 	$(NULL)
 
-
 libvtg_la_SOURCES = \
 	$(libvtg_la_VALASOURCES:.vala=.c) \
-	$(libvtg_la_VALASOURCES:.vala=.h) \
 	$(NULL)
 
 libvtg.vala.stamp: $(libvtg_la_VALASOURCES)
