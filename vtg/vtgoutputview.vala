@@ -36,6 +36,12 @@ namespace Vtg
 		private TextView _textview;
 		
 		private Gtk.ScrolledWindow _ui = null;
+		private string[] keywords = new string[] {
+			"checking",
+			"Checking",
+			"Running",
+			"  testing"
+		};
 		
  		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 
@@ -54,6 +60,8 @@ namespace Vtg
 		{
 			var panel = _plugin_instance.window.get_bottom_panel ();
 			_messages = new TextBuffer (null);
+			_messages.create_tag ("keyword", "weight", Pango.Weight.BOLD, null);
+
 			_textview = new TextView.with_buffer (_messages);
 			_textview.key_press_event += this.on_textview_key_press;
 
@@ -61,7 +69,7 @@ namespace Vtg
 			Pango.FontDescription font_desc = Pango.FontDescription.from_string ("Monospace");
 			_textview.modify_font (font_desc);
 			_textview.set_wrap_mode (Gtk.WrapMode.CHAR);
-			
+
 			_ui = new Gtk.ScrolledWindow (null, null);
 			_ui.add (_textview);
 			_ui.show_all ();
@@ -198,9 +206,36 @@ namespace Vtg
 		public void log_message (string message)
 		{
 			if (message != null && message_added (message)) {
-				var str = StringUtils.replace (message, "[1m", "");
-				str = StringUtils.replace (str, "[m", "");
-				_messages.insert_at_cursor (str, (int) str.length);
+				string[] lines = message.split ("\n");
+				TextIter iter;
+				_messages.get_iter_at_mark (out iter, _messages.get_insert ());
+
+				for (int count = 0; count < lines.length; count++) {
+					string line = lines[count];
+
+					if (!StringUtils.is_null_or_empty(line)) {
+						foreach (string keyword in keywords) {
+							if (line.has_prefix (keyword)) {
+								_messages.insert_with_tags_by_name (iter, keyword, (int) keyword.length, "keyword");
+								line = line.substring (keyword.length);
+							}
+						}
+
+						line = StringUtils.replace (line, "[1m", "");
+						line = StringUtils.replace (line, "[m", "");
+						line = StringUtils.replace (line, "(B", "");
+					}
+
+					if (count < (lines.length -1)) {
+						if (line == null)
+							line = "\n";
+						else
+							line += "\n";
+					}
+
+					if (!StringUtils.is_null_or_empty(line))
+						_messages.insert (iter, line, (int) line.length);
+				}
 				_textview.scroll_mark_onscreen (_messages.get_insert ());
 			}					
 		}
