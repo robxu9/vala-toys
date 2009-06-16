@@ -438,6 +438,10 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 		var unresolved_type = (UnresolvedType) data_type;
 		var sym = resolve_type (unresolved_type);
 		if (sym != null) {
+			if (sym is DataType) {
+				debug ("substituted!");
+				unresolved_type.parent_node.replace_type (unresolved_type, (DataType) sym);
+			}
 			sym.accept (this);
 		}
 	}
