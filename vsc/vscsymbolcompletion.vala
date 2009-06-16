@@ -398,17 +398,15 @@ namespace Vsc
 			
 			_parser.lock_all_contexts ();
 
-			try {
-				CodeContext? context = (null != _parser.sec_context)? _parser.sec_context: _parser.pri_context;
-				
-				if (null != context) {
-					foreach(Namespace ns in context.root.get_namespaces()) {
-						results.add(new SymbolCompletionItem.with_namespace(ns));
-					}
+			CodeContext? context = (null != _parser.sec_context)? _parser.sec_context: _parser.pri_context;
+			
+			if (null != context) {
+				foreach(Namespace ns in context.root.get_namespaces()) {
+					results.add(new SymbolCompletionItem.with_namespace(ns));
 				}
-			} finally {
-				_parser.unlock_all_contexts ();
 			}
+			
+			_parser.unlock_all_contexts ();
 
 			result.namespaces = results;
 			return result;
@@ -425,7 +423,10 @@ namespace Vsc
 			try {
 				SourceFile? source = find_sourcefile (_parser.sec_context, sourcefile);
 				if (null == source){ source = find_sourcefile (_parser.pri_context, sourcefile); }
-				if (null == source){ return result; }
+				if (null == source) { 
+					_parser.unlock_all_contexts ();
+					return result;
+				}
 				
 				// Check root namespace
 				Gee.ArrayList<Namespace> namespaces = new Gee.ArrayList<Namespace> ();
@@ -496,6 +497,8 @@ namespace Vsc
 					}// Not just types
 				}
 				
+			} catch(Error err) {
+				throw err;
 			} finally {
 				_parser.unlock_all_contexts ();
 			}
@@ -906,6 +909,7 @@ namespace Vsc
 			
 			//first look in the namespaces defined in the source file
 			_parser.lock_all_contexts ();
+			try {
 			if (options.local_variables && source != null) {
 				Class cl = null;
 				Method md = null;
@@ -1012,7 +1016,12 @@ namespace Vsc
 					}
 				}
 			}
-			_parser.unlock_all_contexts ();
+			} catch (Error err) {
+				throw err;
+			} finally {
+				_parser.unlock_all_contexts ();
+			}
+			
 			return result;
 		}
 		

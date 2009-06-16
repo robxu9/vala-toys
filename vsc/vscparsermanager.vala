@@ -120,12 +120,12 @@ namespace Vsc
 			mutex_sec_context.@lock ();
 		}
 
-	        internal void unlock_all_contexts ()
+		internal void unlock_all_contexts ()
 		{
-			return_if_fail (mutex_sec_context != null);
-			mutex_sec_context.unlock ();
-			return_if_fail (mutex_pri_context != null);
-			mutex_pri_context.unlock ();
+			if (mutex_pri_context != null)
+				mutex_pri_context.unlock ();
+			if (mutex_sec_context != null)
+				mutex_sec_context.unlock ();
 		}
 
 		internal void lock_pri_context ()

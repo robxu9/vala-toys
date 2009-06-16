@@ -1,6 +1,13 @@
 2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+
+	reduce deadlocks. Base on a patch by Levi Bard. Fixes issue #68.
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
 
 	renamed find_vala_package_filename -> find_vala_package_filenames
 
