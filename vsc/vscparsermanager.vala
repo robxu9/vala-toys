@@ -59,7 +59,7 @@ namespace Vsc
 			add_path_to_vapi_search_dir ("/usr/share/vala/vapi");
 			add_path_to_vapi_search_dir ("/usr/local/share/vala/vapi");
 			try {
-				var pkg = find_vala_package_filename ("glib-2.0");
+				var pkg = find_vala_package_filenames ("glib-2.0");
 				if (pkg.size > 0)
 					glib_file = pkg[0];
 				else
@@ -69,7 +69,7 @@ namespace Vsc
 			}
 
 			try {
-				var pkg = find_vala_package_filename ("gobject-2.0");
+				var pkg = find_vala_package_filenames ("gobject-2.0");
 				if (pkg.size > 0)
 					gobject_file = pkg[0];
 				else
@@ -255,7 +255,7 @@ namespace Vsc
 
 		public void remove_package (string package_name) throws Error
 		{
-			Gee.List<string> files = find_vala_package_filename (package_name);
+			Gee.List<string> files = find_vala_package_filenames (package_name);
 			if (list_contains_string (_packages, files[0])) {
 				lock_pri_context ();
 				files.remove (files[0]);
@@ -288,7 +288,7 @@ namespace Vsc
 			}
 
 			
-			Gee.List<string> files = find_vala_package_filename (vapi_file);
+			Gee.List<string> files = find_vala_package_filenames (vapi_file);
 			if (files.size > 0) {
 				bool need_parse = false;
 
@@ -645,7 +645,7 @@ namespace Vsc
 			}
 		}
 
-		private Gee.List<string> find_vala_package_filename (string package_name) throws FileError
+		private Gee.List<string> find_vala_package_filenames (string package_name) throws FileError
 		{
 			Gee.List<string> results = new Gee.ArrayList<string> ();
 			string found_vapidir = null;
@@ -665,7 +665,6 @@ namespace Vsc
 					break;
 				}
 			}
-
 			if (results.size > 0) {
 
 				//dependency check
@@ -676,7 +675,7 @@ namespace Vsc
 					FileUtils.get_contents (dep_file, out buffer, out len);
 					foreach (string dep_name in buffer.split("\n")) {
 						if (dep_name.length > 1) {
-							var deps = find_vala_package_filename (dep_name);
+							var deps = find_vala_package_filenames (dep_name);
 							foreach (string dep in deps) {
 								results.insert (0, dep);
 							}
