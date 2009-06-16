@@ -1,5 +1,11 @@
 2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/valaprojectgenerator.vala:
+	
+	fixed Makefile.am support for vala 0.7.x. Fixes issue #73
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 
 	check for missing gio, and summary message indicating all required libraries.

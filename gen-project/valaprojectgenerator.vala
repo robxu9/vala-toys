@@ -421,7 +421,7 @@ class Vala.ProjectGenerator {
 		s.append ("DISTCLEANFILES = \\\n");
 		s.append ("\tintltool-extract \\\n");
 		s.append ("\tintltool-merge \\\n");
-		s.append ("\tintltool-update\n");
+		s.append ("\tintltool-update \\\n");
 		s.append ("\tpo/.intltool-merge-cache \\\n");
 		s.append ("\t$(NULL)\n\n");
 
@@ -430,6 +430,7 @@ class Vala.ProjectGenerator {
 
 	private void write_src_makefile_am () throws FileError {
 		bool use_gtk = (project_type == ProjectType.GTK_APPLICATION);
+		bool am_has_vala_support = get_automake_has_native_vala_support ();
 
 		var s = new StringBuilder ();
 
@@ -440,11 +441,18 @@ class Vala.ProjectGenerator {
 		s.append ("\t-include $(CONFIG_HEADER) \\\n");
 		s.append ("\t$(NULL)\n\n");
 
-		s.append_printf ("BUILT_SOURCES = %s.vala.stamp\n\n", project_name);
+		if (!am_has_vala_support) {
+			s.append_printf ("BUILT_SOURCES = %s.vala.stamp\n\n", project_name);
+		}
 
 		s.append_printf ("bin_PROGRAMS = %s\n\n", project_name);
 
-		s.append_printf ("%s_VALASOURCES = \\\n", make_name);
+		if (am_has_vala_support) {
+			s.append_printf ("%s_SOURCES = \\\n", make_name);
+		} else {
+			s.append_printf ("%s_VALASOURCES = \\\n", make_name);
+		}
+
 		if (use_gtk) {
 			s.append ("\tmainwindow.vala \\\n");
 		} else {
@@ -452,26 +460,29 @@ class Vala.ProjectGenerator {
 		}
 		s.append ("\t$(NULL)\n\n");
 
-		s.append_printf ("%s_SOURCES = \\\n", make_name);
-		s.append_printf ("\t$(%s_VALASOURCES:.vala=.c) \\\n", make_name);
-		s.append_printf ("\t$(%s_VALASOURCES:.vala=.h) \\\n", make_name);
-		s.append ("\t$(NULL)\n\n");
+		if (!am_has_vala_support) {
+			s.append_printf ("%s_SOURCES = \\\n", make_name);
+			s.append_printf ("\t$(%s_VALASOURCES:.vala=.c) \\\n", make_name);
+			s.append ("\t$(NULL)\n\n");
 
-		s.append_printf ("%s.vala.stamp: $(%s_VALASOURCES)\n", project_name, make_name);
-		s.append ("\t$(VALAC) -C ");
-		if (use_gtk) {
-			s.append ("--pkg gtk+-2.0 ");
+			s.append_printf ("%s.vala.stamp: $(%s_VALASOURCES)\n", project_name, make_name);
+			s.append ("\t$(VALAC) -C ");
+			if (use_gtk) {
+				s.append ("--pkg gtk+-2.0 ");
+			}
+			s.append ("--basedir $(top_srcdir)/src $^\n");
+			s.append ("\ttouch $@\n\n");
 		}
-		s.append ("--basedir $(top_srcdir)/src $^\n");
-		s.append ("\ttouch $@\n\n");
 
 		s.append_printf ("%s_LDADD = \\\n", make_name);
 		s.append_printf ("\t$(%s_LIBS) \\\n", upper_case_make_name);
 		s.append ("\t$(NULL)\n\n");
 
 		s.append ("EXTRA_DIST = \\\n");
-		s.append_printf ("\t$(%s_VALASOURCES) \\\n", make_name);
-		s.append_printf ("\t%s.vala.stamp \\\n", project_name);
+		if (!am_has_vala_support) {
+			s.append_printf ("\t$(%s_VALASOURCES) \\\n", make_name);
+			s.append_printf ("\t%s.vala.stamp \\\n", project_name);
+		}
 		s.append ("\t$(NULL)\n\n");
 
 		s.append ("DISTCLEANFILES = \\\n");
@@ -714,6 +725,33 @@ class Vala.ProjectGenerator {
 		}
 
 		return null;
+	}
+
+	private bool get_automake_has_native_vala_support ()
+	{
+		bool res = false;
+		try {
+			string am_output;
+			GLib.Process.spawn_command_line_sync ("automake --version", out am_output);
+			//version example: automake (GNU automake) 1.10.2
+			if (am_output != null)
+			{
+				string first_line = am_output.split ("\n", 2)[0];
+				string[] tmps = first_line.split(" ");
+				if (tmps.length > 0)
+				{
+					string ver = tmps[tmps.length - 1];
+					tmps = ver.split(".");
+					if (tmps.length >= 2 && tmps[0].to_int() >= 1 && tmps[1].to_int() >= 11) {
+						res = true;
+
+					}
+				}
+			}
+		} catch (Error err) {
+			warning ("Cannot spawn automake: %s. Native vala support test failed.", err.message);
+		}
+		return res;
 	}
 
 	static int main (string[] args) {
