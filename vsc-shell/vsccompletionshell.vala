@@ -147,6 +147,10 @@ namespace Vsc
 					case "get-namespaces":
 						get_namespaces ();
 						break;
+					case "get-classes":
+						if (count == 2)
+							get_classes (toks[1]);
+						break;
 					case "visible-types":
 						if (4 == count) {
 							visible_types (toks[1], toks[2].to_int(), toks[3].to_int());
@@ -294,6 +298,11 @@ namespace Vsc
 		private void get_namespaces ()
 		{
 			display_result (_completion.get_namespaces ());
+		}
+
+		private void get_classes (string filename)
+		{
+			display_result (_completion.get_classes_for_source (filename));
 		}
 		
 		private void visible_types (string filename, int line, int column)

@@ -32,6 +32,7 @@ vsc_VALASOURCES = \
 	vscsymbolcompletionresult.vala \
 	vscsourcebuffer.vala \
 	vscmethodlistvisitor.vala \
+	vscclasslistvisitor.vala \
 	vsccompletionvisitor.vala \
 	vsctypefindvisitor.vala \
 	vscparsermanager.vala \

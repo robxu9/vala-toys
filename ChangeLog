@@ -1,5 +1,13 @@
 2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/Makefile.am:
+	* vsc/vscsymbolcompletion.vala:
+
+	list classes defined in a given source file. Patch by Levi Bard. Fixes issue #65.
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 	* vsc/vscsymbolcompletion.vala:
 

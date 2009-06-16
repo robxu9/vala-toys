@@ -390,6 +390,31 @@ namespace Vsc
 			return results;
 		}
 
+		public SymbolCompletionResult get_classes_for_source (string sourcefile)
+		{
+			warn_if_fail (_parser != null);
+			SourceFile source = null;
+			var results = new Gee.ArrayList<SymbolCompletionItem> ();
+			var result = new SymbolCompletionResult ();
+			
+			if (sourcefile != null) {
+				_parser.lock_all_contexts ();
+				source = find_sourcefile (_parser.sec_context, sourcefile);
+				if (source == null)
+					source = find_sourcefile (_parser.pri_context, sourcefile);
+				
+				if (source != null) {
+					var ml = new ClassList (results);
+					source.accept (ml);
+				} else {
+					warning ("get_classes_for_source: source '%s' not found", sourcefile);
+				}
+				_parser.unlock_all_contexts ();
+			}
+			result.classes = results;
+			return result;
+		}
+
 		public SymbolCompletionResult get_namespaces ()
 		{
 			warn_if_fail (_parser != null);
