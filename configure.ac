@@ -76,12 +76,12 @@ if test "x${genprj}" != xno ; then
 		HAVE_GENPRJ=1,
 		[
 			HAVE_GENPRJ=0
-			AC_MSG_RESULT([gen-project dependecies not meet:])
+			AC_MSG_RESULT([gen-project dependencies not met:])
 			PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gtk+-2.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-2.0 >= $GTK_REQUIRED: not found]))
 			if test "x$genprj" = xyes ; then
-				AC_MSG_ERROR([*** gen-project support not found])
+				AC_MSG_ERROR([gen-project dependencies not met: glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-2.0 >= $GTK_REQUIRED])
 			fi
 		])
 else
@@ -103,14 +103,15 @@ if test "x${vtgplugin}" != xno -o "x${vscshell}" != xno; then
 		HAVE_VSC=1,
 		[
 			HAVE_VSC=0
-			AC_MSG_RESULT([vsc library dependecies not meet:])
+			AC_MSG_RESULT([vsc library dependencies not met:])
 			PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([gio-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gio-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([vala-1.0 >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-1.0 >= $VALA_REQUIRED: not found]))
 
 			if test "x$vscshell" = xyes -o "x$vtgplugin" = xyes; then
-				AC_MSG_ERROR([*** vsc library dependencies])
+				AC_MSG_ERROR([vsc library dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED])
 			fi
 		])
 else
@@ -132,14 +133,15 @@ if test "x${vscshell}" != xno ; then
 		HAVE_VSCSHELL=1,
 		[
 			HAVE_VSCSHELL=0
-			AC_MSG_RESULT([vsc-shell dependecies not meet:])
+			AC_MSG_RESULT([vsc-shell dependencies not met:])
 			PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([gio-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gio-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([vala-1.0 >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-1.0 >= $VALA_REQUIRED: not found]))
 
 			if test "x$vscshell" = xyes ; then
-				AC_MSG_ERROR([*** vsc-shell dependencies])
+				AC_MSG_ERROR([vsc-shell dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED])
 			fi
 		])
 	AC_CHECK_LIB(readline,readline,, 
@@ -176,7 +178,7 @@ if test "x${vtgplugin}" != xno ; then
 		HAVE_VTGPLUGIN=1,
 		[
 			HAVE_VTGPLUGIN=0
-			AC_MSG_RESULT([vtg-plugin dependecies not meet:])
+			AC_MSG_RESULT([vtg-plugin dependencies not met:])
 			PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
@@ -186,7 +188,7 @@ if test "x${vtgplugin}" != xno ; then
 			PKG_CHECK_EXISTS([vala-1.0 >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-1.0 >= $VALA_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gconf-2.0 >= $GCONF_REQUIRED] ,, AC_MSG_RESULT([    gconf-2.0 >= $GCONF_REQUIRED: not found]))
 			if test "x$vtgplugin" = xyes ; then
-				AC_MSG_ERROR([*** vtg-plugin dependencies])
+				AC_MSG_ERROR([vtg-plugin dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED gtk+-2.0 >= $GTK_REQUIRED gedit-2.20 >= $GEDIT_REQUIRED gtksourcecompletion-2.0 >= $GTKSOURCECOMPLETION_REQUIRED gconf-2.0 >= GCONF_REQUIRED])
 			fi
 		])
 else

@@ -1,5 +1,12 @@
 2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	check for missing gio, and summary message indicating all required libraries.
+	Patch by Levi Bard. Fixes issue #70.
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscmethodlistvisitor.vala:
 
 	fixed visiting some missing symbols when looking form methods. Patch by Levi Bard.
