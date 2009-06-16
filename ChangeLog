@@ -1,5 +1,17 @@
 2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscmethodlistvisitor.vala:
+
+	fixed visiting some missing symbols when looking form methods. Patch by Levi Bard.
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	add ending lines to symbol locations. Patch by Levi Bard. Fixes issue #66.
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc-shell/vsccompletionshell.vala:
 	* vsc/Makefile.am:
 	* vsc/vscsymbolcompletion.vala:

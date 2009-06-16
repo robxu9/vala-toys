@@ -29,7 +29,8 @@ namespace Vsc
 		public string type_name = null;
 		public string info;
 		public string? file;
-		public int line = 0;
+		public int first_line = 0;
+		public int last_line = 0;
 		public Symbol? symbol;
 		
 		public SymbolCompletionItem (string name)
@@ -119,7 +120,8 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.file = item.source_reference.file.filename;
-			this.line = item.source_reference.first_line;
+			this.first_line = item.source_reference.first_line;
+			this.last_line = (0 == item.body.source_reference.last_line)? first_line: item.body.source_reference.last_line;
 			this.symbol = item;
 			
 			if (name.has_prefix ("new")) {
@@ -149,7 +151,8 @@ namespace Vsc
 			            item.parent_symbol.name: 
 			            "%s.%s".printf (item.parent_symbol.name, item.name);
 			this.file = item.source_reference.file.filename;
-			this.line = item.source_reference.first_line;
+			this.first_line = item.source_reference.first_line;
+			this.last_line = (0 == item.body.source_reference.last_line)? first_line: item.body.source_reference.last_line;
 			this.symbol = item;
 			
 			int param_count = item.get_parameters ().size;
@@ -168,7 +171,8 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.file = item.source_reference.file.filename;
-			this.line = item.source_reference.first_line;
+			this.first_line = item.source_reference.first_line;
+			this.last_line = item.source_reference.last_line;
 			this.symbol = item;
 			
 			string default_expr = "";
@@ -185,7 +189,19 @@ namespace Vsc
 		public SymbolCompletionItem.with_property (Property item)
 		{
 			this.name = item.name;
+			this.file = item.source_reference.file.filename;
+			this.first_line = item.source_reference.first_line;
+			this.last_line = item.source_reference.first_line;
 			this.symbol = item;
+			
+			// Choose later of accessors' last lines
+			if (null != item.get_accessor) {
+				this.last_line = item.get_accessor.body.source_reference.last_line;
+				if (null != item.set_accessor && item.set_accessor.body.source_reference.last_line > this.last_line) {
+					this.last_line = item.set_accessor.body.source_reference.last_line;
+				}
+			}
+			
 			string default_expr = "";
 			if (item.default_expression != null) {
 				default_expr = " = " + item.default_expression.to_string ();
@@ -202,7 +218,8 @@ namespace Vsc
 			this.name = item.name;
 			this.info = "Struct: %s".printf (item.name);
 			this.file = item.source_reference.file.filename;
-			this.line = item.source_reference.first_line;
+			this.first_line = item.source_reference.first_line;
+			this.last_line = item.source_reference.last_line;
 			this.symbol = item;
 		}
 
@@ -211,7 +228,8 @@ namespace Vsc
 			this.name = item.name;
 			this.info = "Class: %s".printf (item.name);
 			this.file = item.source_reference.file.filename;
-			this.line = item.source_reference.first_line;
+			this.first_line = item.source_reference.first_line;
+			this.last_line = item.source_reference.last_line;
 			this.symbol = item;
 		}
 
@@ -220,7 +238,8 @@ namespace Vsc
 			this.name = item.name;
 			this.info = "Interface: %s".printf (item.name);
 			this.file = item.source_reference.file.filename;
-			this.line = item.source_reference.first_line;
+			this.first_line = item.source_reference.first_line;
+			this.last_line = item.source_reference.last_line;
 			this.symbol = item;
 		}
 
@@ -229,7 +248,8 @@ namespace Vsc
 			this.name = item.name;
 			this.info = "Signal: %s".printf (item.name);
 			this.file = item.source_reference.file.filename;
-			this.line = item.source_reference.first_line;
+			this.first_line = item.source_reference.first_line;
+			this.last_line = item.source_reference.last_line;
 			this.symbol = item;
 			int param_count = item.get_parameters ().size;
 			var params = formal_parameters_to_string (item.get_parameters ());
@@ -248,7 +268,8 @@ namespace Vsc
 			this.name = item.name;
 			this.info = "Namespace: %s".printf (item.name);
 			this.file = item.source_reference.file.filename;
-			this.line = item.source_reference.first_line;
+			this.first_line = item.source_reference.first_line;
+			this.last_line = item.source_reference.last_line;
 			this.symbol = item;
 		}
 	}

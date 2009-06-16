@@ -413,7 +413,7 @@ namespace Vtg
 			if (dialog.run ()) {
 				Vsc.SymbolCompletionItem method;
 				model.get (dialog.selected_iter , 1, out method);
-				doc.goto_line (method.line - 1);
+				doc.goto_line (method.first_line - 1);
 				view.scroll_to_cursor ();
 			}
 		}

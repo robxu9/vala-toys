@@ -33,31 +33,40 @@ public class Vsc.MethodList : CodeVisitor {
 		_methods = methods;
 	}
 	
-        public override void visit_source_file (SourceFile file) {
-                file.accept_children (this);
+	public override void visit_source_file (SourceFile file) {
+		file.accept_children (this);
 	}
 	
 	public override void visit_namespace (Namespace ns) 
 	{
-                foreach (Namespace item in ns.get_namespaces()) {
-                        item.accept (this);
-                }		
-                foreach (Method m in ns.get_methods ()) {
-                        m.accept (this);
-                }
-                foreach (Class cl in ns.get_classes ()) {
-                        cl.accept_children (this);
-                }                
-        }
+		foreach (Namespace item in ns.get_namespaces()) {
+			item.accept (this);
+		}
+		foreach (Method m in ns.get_methods ()) {
+			m.accept (this);
+		}
+		foreach (Class cl in ns.get_classes ()) {
+			cl.accept_children (this);
+		}                
+		foreach (Struct st in ns.get_structs ()) {
+			st.accept_children (this);
+		}                
+		foreach (Interface cl in ns.get_interfaces ()) {
+			cl.accept_children (this);
+		}                
+	}
         
-       	public override void visit_class (Class cl) 
+	public override void visit_class (Class cl) 
 	{
 		foreach (Class item in cl.get_classes()) {
 			item.accept_children (this);
-                }    
+		}    
+		foreach (Struct item in cl.get_structs()) {
+			item.accept_children (this);
+		}    
 	}
 	
-       	public override void visit_method (Method m) 
+	public override void visit_method (Method m) 
 	{
 		_methods.add (new SymbolCompletionItem.with_method(m));
 	}

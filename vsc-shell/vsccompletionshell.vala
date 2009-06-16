@@ -318,7 +318,7 @@ namespace Vsc
 		private void append_symbols (string type, StringBuilder sb, Gee.List<SymbolCompletionItem> symbols)
 		{
 			foreach (SymbolCompletionItem symbol in symbols) {
- 				sb.append ("%s:%s:%s;:;:;%s:%d;\n".printf(type, symbol.name, get_access(symbol), symbol.file, symbol.line));
+ 				sb.append ("%s:%s:%s;:;:;%s:%d;%d;\n".printf(type, symbol.name, get_access(symbol), symbol.file, symbol.first_line, symbol.last_line));
  			}
  		}
  		
@@ -333,7 +333,7 @@ namespace Vsc
 			foreach (SymbolCompletionItem item in methods) {
 				method = (Method?)item.symbol;
 				if (null != method) {
-					// TYPE:NAME:MODIFIER;STATIC:RETURN_TYPE;OWNERSHIP:ARGS;FILE:LINE;
+					// TYPE:NAME:MODIFIER;STATIC:RETURN_TYPE;OWNERSHIP:ARGS;FILE:FIRST_LINE;LAST_LINE;
 					sometype = method.return_type;
 					if (null != sometype) {
 						typename = sometype.to_string();
@@ -362,9 +362,9 @@ namespace Vsc
 						sb.append ("%s,%s,%s;".printf( paramname, typename, is_owned));
 					}
 
-					sb.append ("%s:%d;\n".printf(item.file, item.line));
+					sb.append ("%s:%d;%d;\n".printf(item.file, item.first_line, item.last_line));
 				} else {
-					sb.append ("method:%s:;:;:;%s:%d;\n".printf (item.name, item.file, item.line));
+					sb.append ("method:%s:;:;:;%s:%d;%d;\n".printf (item.name, item.file, item.first_line, item.last_line));
 				}
 			}
  		}
