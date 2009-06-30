@@ -34,6 +34,15 @@ GCONF_REQUIRED=2.22.0
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
 AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
 
+AC_ARG_WITH([vapidir], AS_HELP_STRING([--with-valavapi=PATH],[use vala installation at PATH]), [
+	        VALA_VAPIDIR=$withval
+	],[
+		#standard vala installation
+	        VALA_VAPIDIR=/usr/share/vala/vapi
+	])
+
+AC_DEFINE_UNQUOTED([VALA_VAPIDIR], ["$VALA_VAPIDIR"], [Vala vapi directory])
+
 ### gen-project ####
 
 AC_ARG_ENABLE([gen-project],
@@ -245,6 +254,7 @@ echo "
     localstatedir:                 ${localstatedir}
     C Compiler:                    ${CC}
     CFLAGS:                        ${CFLAGS}
+    Vala Vapidir:                  ${VALA_VAPIDIR}
     Enable gen-project:            ${ENABLE_GENPRJ}
     Enable vsc library:            ${ENABLE_VSC}
     Enable vtg:                    ${ENABLE_VTGPLUGIN}
