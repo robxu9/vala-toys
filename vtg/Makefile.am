@@ -61,7 +61,7 @@ libvtg_la_SOURCES = \
 	$(NULL)
 
 libvtg.vala.stamp: $(libvtg_la_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --vapidir ../vapi --vapidir ../vsc --vapidir ../vbf --pkg config --pkg vbf-1.0 --pkg vsc-1.0 --pkg vala-1.0 --pkg gtksourcecompletion-2.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms --pkg gnome-build-1.0 --pkg gconf-2.0 $^
+	$(VALAC) $(DEBUG) -C --vapidir ../vapi --vapidir ../vsc --vapidir ../vbf --basedir $(top_srcdir)/vtg --pkg config --pkg vbf-1.0 --pkg vsc-1.0 --pkg vala-1.0 --pkg gtksourcecompletion-2.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms --pkg gconf-2.0 $^
 	touch $@
 
 libvtg_la_LDFLAGS = \

@@ -1,3 +1,11 @@
+2009-07-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbfproject.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgprojectexecuterdialog.vala:
+
+	fixed some vala 0.7.4 incompatibilities. Patch by Shuerhaaken.
+
 2009-06-30  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure.ac:

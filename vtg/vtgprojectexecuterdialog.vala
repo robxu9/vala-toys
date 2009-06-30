@@ -123,10 +123,11 @@ namespace Vtg
 		
 		private void on_tree_selection_changed (TreeSelection treeselection)
 		{
-			ListStore model;
 			TreeIter iter;
+			TreeModel m;
 			
-			if (treeselection.get_selected (out model, out iter)) {
+			if (treeselection.get_selected (out m, out iter)) {
+				ListStore model = (ListStore)m;
 				string program;
 				model.get (iter, 1, out program);
 				var entry = (Entry) _completion.get_entry ();

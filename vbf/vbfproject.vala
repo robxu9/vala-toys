@@ -109,13 +109,13 @@ namespace Vbf
 				foreach (Group group in groups) {
 					fname = Path.build_filename (group.id, "Makefile.am");
 					file = GLib.File.new_for_path (fname);
-					var file_mon = FileMonitor.file (file, FileMonitorFlags.NONE, null);
+					var file_mon = file.monitor (FileMonitorFlags.NONE, null);
 					file_mons.add (file_mon);
 					file_mon.changed += this.on_project_file_changed;
 				}
 				fname = Path.build_filename (id, "configure.ac");
 				file = GLib.File.new_for_path (fname);
-				var file_mon = FileMonitor.file (file, FileMonitorFlags.NONE, null);
+				var file_mon = file.monitor (FileMonitorFlags.NONE, null);
 				file_mons.add (file_mon);
 				file_mon.changed += this.on_project_file_changed;
 			} catch (Error err) {
