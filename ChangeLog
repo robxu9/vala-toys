@@ -1,5 +1,11 @@
 2009-07-02  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed some critical messages due to use of 'null instances'
+
+2009-07-02  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vapi/config.vapi:
 	* vtg/vtgutils.vala:
 
