@@ -35,11 +35,12 @@ namespace Vtg
 		private Gtk.TreeModelSort _sorted;
 		private Gtk.TreeModel _child_model;
 		private PatternSpec _current_pattern = null;
+		private string _current_filter = null;
 		private Gtk.Button _button_ok;
 		
 		public TreeIter selected_iter;
 		
-		public FilteredListDialog (TreeModel model)
+		public FilteredListDialog (ListStore model)
 		{
 			this._child_model = model;
 			initialize_ui ();
@@ -65,12 +66,12 @@ namespace Vtg
 			_entry.key_press_event += this.on_entry_key_press;
 			_entry.notify["text"] += this.on_entry_text_changed;
 			_model = new Gtk.TreeModelFilter (_child_model, null);
-			_model.set_visible_func (this.filter_model);
+			_model.set_visible_column (2);
 			_child_model.row_changed += this.on_row_changed;
 			var column = new TreeViewColumn ();
  			CellRenderer renderer = new CellRendererText ();
 			column.pack_start (renderer, true);
-			column.add_attribute (renderer, "text", 0);
+			column.add_attribute (renderer, "markup", 1);
 			_treeview.append_column (column);
 			_sorted = new Gtk.TreeModelSort.with_model (_model);
 			_sorted.set_sort_column_id (0, SortType.ASCENDING);
@@ -157,20 +158,23 @@ namespace Vtg
 		
 		private void on_entry_text_changed (GLib.Object pspec, ParamSpec gobject)
 		{
-			string filter = _entry.get_text ();
-			if (StringUtils.is_null_or_empty (filter)) {
+			_current_filter = _entry.get_text ();
+			if (StringUtils.is_null_or_empty (_current_filter)) {
 				_current_pattern = null;
 			} else {
-				filter = StringUtils.replace (filter, " ", "*");
-				if (!filter.has_suffix ("*"))
-					filter += "*";
-				if (!filter.has_prefix ("*"))
-					filter = "*" + filter;
+				_current_filter = StringUtils.replace (_current_filter, " ", "*");
+				if (!_current_filter.has_suffix ("*"))
+					_current_filter += "*";
+				if (!_current_filter.has_prefix ("*"))
+					_current_filter = "*" + _current_filter;
 					
-				_current_pattern = new PatternSpec (filter);
+				_current_pattern = new PatternSpec (_current_filter);
 			}
+			
+			filter_and_highlight_rows ();
 			_model.refilter ();
 			_sorted.set_sort_column_id (0, SortType.ASCENDING);
+			
 			select_result ();
 		}
 
@@ -184,14 +188,41 @@ namespace Vtg
 			_button_ok.set_sensitive (_treeview.get_selection ().get_selected (null, null));
 		}
 		
-		private bool filter_model (TreeModel model, TreeIter iter)
+		private void filter_and_highlight_rows ()
 		{
-			if (_current_pattern == null)
-				return true;
-				
-			string val;
-			model.get (iter, 0, out val);		
-			return _current_pattern.match_string(val);
+			TreeIter iter;
+			bool not_eof =  _child_model.get_iter_first (out iter);
+			while (not_eof) {
+				string val;
+				 _child_model.get (iter, 0, out val);
+				bool res = true;
+				string markup;
+
+				if (_current_pattern != null)
+					res = _current_pattern.match_string (val);
+
+				if (res && _current_pattern != null) {
+					string[] words = _current_filter.split ("*");
+
+					foreach (string word in words) {
+						if (!StringUtils.is_null_or_empty (word)) {
+							val = val.replace (word, "<b>%s</b>".printf(word));	
+						}
+					}
+					//the above foreach can lead to <b><b><b>some text</b></b></b>
+					markup = null;
+					while (markup != val) {
+						markup = val;
+						val = val.replace ("b><b", "b").replace("/b></b", "/b");
+					}
+
+				} else {
+					markup = val;
+				}
+				((ListStore)  _child_model).set (iter, 1, markup);
+				((ListStore)  _child_model).set (iter, 2, res);
+				not_eof =  _child_model.iter_next (ref iter);
+			}
 		}
 		
 		private int sort_model (TreeModel model, TreeIter a, TreeIter b)

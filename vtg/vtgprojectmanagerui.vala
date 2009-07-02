@@ -362,17 +362,17 @@ namespace Vtg
 			return_if_fail (project != null);
 			
 			TreeIter iter;
-			Gtk.ListStore model = new Gtk.ListStore (2, typeof(string), typeof (GLib.Object));
+			Gtk.ListStore model = new Gtk.ListStore (4, typeof(string), typeof(string), typeof(bool), typeof (GLib.Object));
 			foreach (Vbf.Source src in project.all_vala_sources) {
 				model.append (out iter);
-				model.set (iter, 0, src.name, 1, src);
+				model.set (iter, 0, src.name, 1, src.name, 2, true, 3, src);
 			}
 						
 			var dialog = new FilteredListDialog (model);
 			dialog.set_transient_for (_plugin_instance.window);
 			if (dialog.run ()) {
 				Vbf.Source src;
-				model.get (dialog.selected_iter , 1, out src);
+				model.get (dialog.selected_iter , 3, out src);
 				_plugin_instance.activate_uri (src.uri);
 			}
 		}
@@ -402,17 +402,17 @@ namespace Vtg
 				return;
 				
 			TreeIter iter;
-			Gtk.ListStore model = new Gtk.ListStore (2, typeof(string), typeof (Vsc.SymbolCompletionItem));
+			Gtk.ListStore model = new Gtk.ListStore (4, typeof(string), typeof(string), typeof(bool), typeof(Vsc.SymbolCompletionItem));
 			foreach (Vsc.SymbolCompletionItem method in methods) {
 				model.append (out iter);
-				model.set (iter, 0, method.name, 1, method);
+				model.set (iter, 0, method.name, 1, method.name, 2, true, 3, method);
 			}
 			
 			var dialog = new FilteredListDialog (model);
 			dialog.set_transient_for (_plugin_instance.window);
 			if (dialog.run ()) {
 				Vsc.SymbolCompletionItem method;
-				model.get (dialog.selected_iter , 1, out method);
+				model.get (dialog.selected_iter , 3, out method);
 				doc.goto_line (method.first_line - 1);
 				view.scroll_to_cursor ();
 			}
