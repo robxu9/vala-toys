@@ -56,7 +56,7 @@ namespace Vsc
 			mutex_pri_context = new Mutex ();
 			mutex_sec_context = new Mutex ();
 			
-			add_path_to_vapi_search_dir ("/usr/share/vala/vapi");
+			add_path_to_vapi_search_dir (Config.VALA_VAPIDIR);
 			add_path_to_vapi_search_dir ("/usr/local/share/vala/vapi");
 			try {
 				var pkg = find_vala_package_filenames ("glib-2.0");
@@ -287,7 +287,6 @@ namespace Vsc
 				return false;
 			}
 
-			
 			Gee.List<string> files = find_vala_package_filenames (vapi_file);
 			if (files.size > 0) {
 				bool need_parse = false;
@@ -589,6 +588,9 @@ namespace Vsc
 			context.non_null_experimental = false;
 			context.compile_only = true;
 
+			context.profile = Profile.GOBJECT;
+			context.add_define ("GOBJECT");
+			
 			int glib_major = 2;
 			int glib_minor = 12;
 			context.target_glib_major = glib_major;
@@ -694,6 +696,6 @@ namespace Vsc
 			}
 
 			return false;
-		}		
+		}
 	}
 }

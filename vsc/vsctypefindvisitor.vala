@@ -30,7 +30,7 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 	private string _current_typename = null;
 	private CodeContext _context;
 	private SourceFile _current_file = null;
-		
+	private Gee.List<string> _unresolved_types = new Gee.ArrayList<string>();
 	private Symbol? _result = null;
 	private string _searched_typename = null;
 	
@@ -51,6 +51,8 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			_searched_typename = value;
 			_result = null;
 			qualified_typename = null;
+			_current_typename = null;
+			_unresolved_types.clear ();
 		}
 	}
 	
@@ -58,6 +60,16 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 	{
 		_context = context;
         	_current_file = source;
+	}
+
+	
+	private bool list_contains_string (Gee.List<string> list, string @value)
+	{
+		foreach (string current in list) {
+			if (current == @value)
+				return true;
+		}
+		return false;
 	}
 	
 	public override void visit_namespace (Namespace ns) 
@@ -93,7 +105,8 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 		} else {
 			_current_typename = "%s.%s".printf (_current_typename, cl.name);
 		}
-
+		//debug ("_current_type vs search: %s vs %s", _searched_typename, _current_typename);
+		
 		if (_current_typename == _searched_typename) {
 			_result = cl;
                 	qualified_typename = _current_typename;
@@ -434,15 +447,29 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 		if (!(data_type is UnresolvedType)) {
 			return;
 		}
-
+		
+		var previous_typename = _current_typename;
+		
 		var unresolved_type = (UnresolvedType) data_type;
+		string name = unresolved_type.to_qualified_string ();
+		if (name == null) {
+			name = unresolved_type.unresolved_symbol.name;
+		}
+		//avoid recoursion
+		if (list_contains_string (_unresolved_types, name))
+		   return;
+		
+		_unresolved_types.add (name);
 		var sym = resolve_type (unresolved_type);
+		debug ("resolving: %s = %s ", name, (sym == null ? "no" : "yes"));
+		_unresolved_types.remove (name);
 		if (sym != null) {
 			if (sym is DataType) {
 				unresolved_type.parent_node.replace_type (unresolved_type, (DataType) sym);
 			}
 			sym.accept (this);
 		}
+		_current_typename = previous_typename;
 	}
 	
 	private Symbol? resolve_type (UnresolvedType unresolved_type)

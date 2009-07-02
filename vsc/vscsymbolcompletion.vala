@@ -941,8 +941,11 @@ namespace Vsc
 				var codenode = find_codenode (source, line, column, out cl, out md);
 				if (codenode != null) {
 					var current = codenode;
+					debug ("local varialbles");
+					
 					while (current != null) {
 						var body = get_codenode_body (current);
+
 						if (body != null) {
 							//method local vars
 							foreach (LocalVariable lvar in body.get_local_variables ()) {
@@ -960,6 +963,7 @@ namespace Vsc
 								result.others.add (new SymbolCompletionItem (fe.variable_name));
 							}
 						}
+
 						if (current is Method) {
 							//method arguments
 							foreach (FormalParameter par in ((Method) current).get_parameters ()) {
@@ -1014,6 +1018,7 @@ namespace Vsc
 			}
 
 			//import symbols from the imported namespaces
+			debug ("import symbols from the imported namespaces");
 			if (source != null && options.imported_namespaces) {
 				string prev_symbol = finder.searched_typename;
 				foreach (UsingDirective item in source.get_using_directives ()) {
@@ -1026,6 +1031,8 @@ namespace Vsc
 			}
 			
 			//search it in referenced namespaces
+			debug ("search it in referenced namespaces");
+			
 			if (source != null && finder.result == null && !SymbolCompletion.symbol_has_known_namespace (symbolname)) {
 				bool force_exit = false;
 				foreach (UsingDirective item in source.get_using_directives ()) {

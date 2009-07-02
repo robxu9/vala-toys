@@ -281,7 +281,7 @@ namespace Vtg
 		private static void initialize_packages_cache ()
 		{
 			List<string> vapidirs = new List<string> ();
-		        vapidirs.append ("/usr/share/vala/vapi");
+		        vapidirs.append (Config.VALA_VAPIDIR);
 			vapidirs.append ("/usr/local/share/vala/vapi");
 
 			_available_packages = new Gee.ArrayList<Package> ();
