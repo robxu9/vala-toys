@@ -119,9 +119,11 @@ namespace Vsc
 		public SymbolCompletionItem.with_method (Method item)
 		{
 			this.name = item.name;
-			this.file = item.source_reference.file.filename;
-			this.first_line = item.source_reference.first_line;
-			this.last_line = (0 == item.body.source_reference.last_line)? first_line: item.body.source_reference.last_line;
+			update_source_reference_info (item);
+			if (item.body != null && item.body.source_reference != null) {
+				this.last_line = (item.body.source_reference.last_line == 0 ? first_line : item.body.source_reference.last_line);
+			}
+
 			this.symbol = item;
 			
 			if (name.has_prefix ("new")) {
@@ -150,9 +152,11 @@ namespace Vsc
 			this.name = ("new" == item.name)? 
 			            item.parent_symbol.name: 
 			            "%s.%s".printf (item.parent_symbol.name, item.name);
-			this.file = item.source_reference.file.filename;
-			this.first_line = item.source_reference.first_line;
-			this.last_line = (0 == item.body.source_reference.last_line)? first_line: item.body.source_reference.last_line;
+			update_source_reference_info (item);
+			if (item.body != null && item.body.source_reference != null) {
+				this.last_line = (item.body.source_reference.last_line == 0 ? first_line : item.body.source_reference.last_line);
+			}
+
 			this.symbol = item;
 			
 			int param_count = item.get_parameters ().size;
@@ -170,9 +174,7 @@ namespace Vsc
 		public SymbolCompletionItem.with_field (Field item)
 		{
 			this.name = item.name;
-			this.file = item.source_reference.file.filename;
-			this.first_line = item.source_reference.first_line;
-			this.last_line = item.source_reference.last_line;
+			update_source_reference_info (item);
 			this.symbol = item;
 			
 			string default_expr = "";
@@ -189,9 +191,7 @@ namespace Vsc
 		public SymbolCompletionItem.with_property (Property item)
 		{
 			this.name = item.name;
-			this.file = item.source_reference.file.filename;
-			this.first_line = item.source_reference.first_line;
-			this.last_line = item.source_reference.first_line;
+			update_source_reference_info (item);
 			this.symbol = item;
 			
 			// Choose later of accessors' last lines
@@ -217,9 +217,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Struct: %s".printf (item.name);
-			this.file = item.source_reference.file.filename;
-			this.first_line = item.source_reference.first_line;
-			this.last_line = item.source_reference.last_line;
+			update_source_reference_info (item);
 			this.symbol = item;
 		}
 
@@ -227,9 +225,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Class: %s".printf (item.name);
-			this.file = item.source_reference.file.filename;
-			this.first_line = item.source_reference.first_line;
-			this.last_line = item.source_reference.last_line;
+			update_source_reference_info (item);
 			this.symbol = item;
 		}
 
@@ -237,9 +233,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Interface: %s".printf (item.name);
-			this.file = item.source_reference.file.filename;
-			this.first_line = item.source_reference.first_line;
-			this.last_line = item.source_reference.last_line;
+			update_source_reference_info (item);
 			this.symbol = item;
 		}
 
@@ -247,9 +241,7 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Signal: %s".printf (item.name);
-			this.file = item.source_reference.file.filename;
-			this.first_line = item.source_reference.first_line;
-			this.last_line = item.source_reference.last_line;
+			update_source_reference_info (item);
 			this.symbol = item;
 			int param_count = item.get_parameters ().size;
 			var params = formal_parameters_to_string (item.get_parameters ());
@@ -267,10 +259,24 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Namespace: %s".printf (item.name);
-			this.file = item.source_reference.file.filename;
-			this.first_line = item.source_reference.first_line;
-			this.last_line = item.source_reference.last_line;
+			update_source_reference_info (item);
 			this.symbol = item;
+		}
+
+		private void update_source_reference_info (Symbol item)
+		{
+			this.file = "";
+			this.first_line = 0;
+			this.last_line = 0;
+
+			if (item.source_reference != null) {
+				if (item.source_reference.file != null) {
+					this.file = item.source_reference.file.filename;
+				}
+				this.first_line = item.source_reference.first_line;
+				this.last_line = item.source_reference.last_line;
+
+			}
 		}
 	}
 }
