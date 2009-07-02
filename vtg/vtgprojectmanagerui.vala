@@ -216,10 +216,6 @@ namespace Vtg
 				GLib.warning ("Error %s", err.message);
 			}
 		}
-
-		public void deactivate ()
-		{
-		}
 		
 		private void on_current_bookmark_changed (SourceBookmarks sender)
 		{

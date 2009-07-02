@@ -87,7 +87,7 @@ namespace Vtg
 					log.log_message ("error spawning process\n");
 				}
 				return true;
-			} catch (SpawnError err) {
+			} catch (Error err) {
 				GLib.warning ("Error spawning build process: %s", err.message);
 				return false;
 			}

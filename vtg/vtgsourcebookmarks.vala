@@ -117,6 +117,7 @@ namespace Vtg
 			//debug_dump_list ();
 		}
 
+/*
 		public void remove_current_bookmark ()
 		{
 			var item = get_current_bookmark ();
@@ -125,7 +126,8 @@ namespace Vtg
 				_current_bookmark_index = _bookmarks.size - 1;
 			}
 		}
-		
+*/
+
 		public bool is_empty
 		{
 			get {

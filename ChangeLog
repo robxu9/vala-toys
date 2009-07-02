@@ -1,5 +1,14 @@
 2009-07-03  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourcebookmarks.vala:
+
+	fixed some vala compiler warnings
+
+2009-07-03  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgfilteredlistdialog.vala:
 	* vtg/vtgprojectmanagerui.vala:
 

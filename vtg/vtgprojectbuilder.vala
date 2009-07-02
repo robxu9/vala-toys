@@ -102,13 +102,12 @@ namespace Vtg
 					log.log_message ("error compiling file\n");
 				}
 				return true;
-			} catch (SpawnError err) {
+			} catch (Error err) {
 				var msg = "error spawning compiler process: %s".printf (err.message);
 				GLib.warning (msg);
 				log.log_message (msg);
 				return false;
 			}
-		
 		}
 		
 		public bool build (ProjectManager project_manager, string? params = null)
@@ -149,7 +148,7 @@ namespace Vtg
 					log.log_message ("error spawning 'make' process\n");
 				}
 				return true;
-			} catch (SpawnError err) {
+			} catch (Error err) {
 				GLib.warning ("Error spawning build process: %s", err.message);
 				return false;
 			}
@@ -203,7 +202,7 @@ namespace Vtg
 					log.log_message (_("error spawning '%s' process\n").printf (configure_command));
 				}
 				return true;
-			} catch (SpawnError err) {
+			} catch (Error err) {
 				GLib.warning ("Error spawning build process: %s", err.message);
 				return false;
 			}
