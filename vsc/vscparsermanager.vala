@@ -122,10 +122,10 @@ namespace Vsc
 
 		internal void unlock_all_contexts ()
 		{
-			if (mutex_pri_context != null)
-				mutex_pri_context.unlock ();
 			if (mutex_sec_context != null)
 				mutex_sec_context.unlock ();
+			if (mutex_pri_context != null)
+				mutex_pri_context.unlock ();				
 		}
 
 		internal void lock_pri_context ()
