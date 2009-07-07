@@ -77,6 +77,7 @@ namespace Vbf {
 		public string url;
 		public string version;
 		public string working_dir;
+		public string get_all_source_files ();
 		public Vbf.Group? get_group (string id);
 		public Gee.List<Vbf.Group> get_groups ();
 		public Gee.List<Vbf.Module> get_modules ();

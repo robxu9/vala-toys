@@ -94,10 +94,15 @@ namespace Vtg
 
                                              <menubar name="MenuBar">
                                                 <menu name="SearchMenu" action="Search">
+                                                    <placeholder name="SearchOps_1">
+                                                    	<separator />                                                    
+                                                        <menuitem name="ProjectSearch" action="ProjectSearch"/>
+							<menuitem name="ProjectSearchPrevReult" action="ProjectSearchPrevResult"/>
+							<menuitem name="ProjectSearchNextResult" action="ProjectSearchNextResult"/>
+                                                    </placeholder>
                                                     <placeholder name="SearchOps_8">
                                                     	<separator />
                                                         <menuitem name="GotoMethod" action="ProjectGotoMethod"/>
-
                                                     </placeholder>
                                                 </menu>
                                             </menubar>
@@ -129,6 +134,9 @@ namespace Vtg
 			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
 			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute target program"), on_project_execute_process},
 			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process},
+			{"ProjectSearch", Gtk.STOCK_FIND, N_("Find In _Project..."), "<control><shift>F", N_("Search for text in all the project files"), on_project_search},
+			{"ProjectSearchNextResult", null, N_("Find N_ext In Project"), null, N_("Search forward for the same text in all the project files"), on_project_search_result_next},
+			{"ProjectSearchPrevResult", null, N_("Find Previ_ous In Project"), null, N_("Search backward for the same text in all the project files"), on_project_search_result_previous},
 			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
 			{"ProjectGotoNextPosition", Gtk.STOCK_GO_FORWARD, N_("_Go To Next Source Position"), null, N_("Go to the next source position"), on_project_goto_next_position},
 			{"ProjectGotoPrevPosition", Gtk.STOCK_GO_BACK, N_("_Go To Previous Source Position"), "<alt>Left", N_("Go to the previous or last saved source position"), on_project_goto_prev_position},
@@ -146,6 +154,7 @@ namespace Vtg
 		private ProjectView _prj_view = null;
 		private ProjectBuilder _prj_builder = null;
 		private ProjectExecuter _prj_executer = null;
+		private ProjectSearch _prj_search = null;		
 		private ChangeLog _changelog = null;
 		private SourceBookmarks _bookmarks = null;
 		
@@ -175,7 +184,8 @@ namespace Vtg
 			_prj_view.notify["current-project"] += this.on_current_project_changed;
 			_prj_builder = new ProjectBuilder (_plugin_instance);
 			_prj_executer = new ProjectExecuter (_plugin_instance);
-			
+			_prj_search = new ProjectSearch (_plugin_instance);
+						
 			_prj_executer.process_start += (sender) => {
 				update_ui (_prj_view.current_project == null);
 			};
@@ -186,6 +196,12 @@ namespace Vtg
 				update_ui (_prj_view.current_project == null);
 			};
 			_prj_builder.build_exit += (sender, exit_status) => {
+				update_ui (_prj_view.current_project == null);
+			};
+			_prj_search.search_start += (sender) => {
+				update_ui (_prj_view.current_project == null);
+			};
+			_prj_search.search_exit += (sender, exit_status) => {
 				update_ui (_prj_view.current_project == null);
 			};
 						
@@ -339,6 +355,27 @@ namespace Vtg
 			if (foldername != null) {
 				create_project (foldername);
 				open_project (foldername);
+			}
+		}
+
+		private void on_project_search_result_next (Gtk.Action action)
+		{
+			_prj_search.next_match ();
+		}
+		
+		private void on_project_search_result_previous (Gtk.Action action)
+		{
+			_prj_search.previous_match ();
+		}
+
+		private void on_project_search (Gtk.Action action)
+		{
+			if (_prj_view.current_project != null) {
+				var project = _prj_view.current_project;
+				var exec_dialog = new ProjectSearchDialog (_plugin_instance.window);
+				if (exec_dialog.run () == ResponseType.OK) {
+					_prj_search.search (project, exec_dialog.search_text, exec_dialog.match_case);
+				}
 			}
 		}
 		
@@ -600,6 +637,9 @@ namespace Vtg
 			action.set_sensitive (!_prj_executer.is_executing && !default_project);
 			action = _actions.get_action ("ProjectBuildKill");
 			action.set_sensitive (_prj_executer.is_executing && !default_project);
+
+			action = _actions.get_action ("ProjectSearch");
+			action.set_sensitive (!_prj_search.is_searching);
 			
 			bool can_complete = false;
 			var view = _plugin_instance.window.get_active_view ();
@@ -657,7 +697,7 @@ namespace Vtg
 			try {
 				var log = _plugin_instance.output_view;
 				if (!is_dir_empty (project_path)) {
-					log.log_message ("project directory %s not empty\n".printf (project_path));
+					log.log_message (OutputTypes.MESSAGE, "project directory %s not empty\n".printf (project_path));
 					return;
 				}
 				string process_file = "vala-gen-project";
@@ -672,21 +712,21 @@ namespace Vtg
 					if (Process.exit_status (status) == 0) {
 						//autogen
 						var start_message = _("Autogenerating project: %s\n").printf (project_path);
-						log.log_message (start_message);
-						log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+						log.log_message (OutputTypes.MESSAGE, start_message);
+						log.log_message (OutputTypes.MESSAGE, "%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
 						Process.spawn_async_with_pipes (project_path, new string[] { "./autogen.sh" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
 						if (child_pid != (Pid) null) {
 							ChildWatch.add (child_pid, this.on_child_watch);
-							log.start_watch ((uint) child_pid, stdo, stde);
+							log.start_watch (OutputTypes.CHILD_PROCESS, (uint) child_pid, stdo, stde);
 							log.activate ();
 						} else {
-							log.log_message ("error spawning ./autogen.sh process\n");
+							log.log_message (OutputTypes.ERROR, "error spawning ./autogen.sh process\n");
 						}
 					} else {
-						log.log_message ("error executing vala-gen-project process\n");
+						log.log_message (OutputTypes.ERROR, "error executing vala-gen-project process\n");
 					}
 				} else {
-					log.log_message ("error spawning vala-gen-project process\n");
+					log.log_message (OutputTypes.ERROR, "error spawning vala-gen-project process\n");
 				}
 			} catch (Error err) {
 				GLib.warning ("error creating project: %s", err.message);
@@ -711,7 +751,7 @@ namespace Vtg
 			Process.close_pid (pid);
 
 			log.stop_watch ((uint) pid);
-			log.log_message (_("\nautogeneration end with exit status %d\n").printf(status));
+			log.log_message (OutputTypes.MESSAGE, _("\nautogeneration end with exit status %d\n").printf(status));
 		}
 	}
 }

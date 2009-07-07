@@ -172,8 +172,11 @@ namespace Vtg
 				_model.refilter ();
 		}
 		
-		public bool on_message_added (OutputView sender, string message)
+		public void on_message_added (OutputView sender, OutputTypes output_type, string message)
 		{
+			if (output_type != OutputTypes.BUILD)
+				return;
+				
 			string[] lines = message.split ("\n");
 			int idx = 0;
 			while (lines[idx] != null) {
@@ -183,8 +186,6 @@ namespace Vtg
 				}
 				idx++;
 			}
-
-			return true;
 		}
 
 		public void on_build_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)

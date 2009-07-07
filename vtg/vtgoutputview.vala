@@ -26,6 +26,15 @@ using Gtk;
 
 namespace Vtg
 {
+	public enum OutputTypes
+	{
+		MESSAGE,
+		ERROR,
+		CHILD_PROCESS,
+		BUILD,
+		SEARCH
+	}
+	
 	internal class OutputView : GLib.Object
 	{
 		protected Vtg.PluginInstance _plugin_instance;
@@ -119,6 +128,19 @@ namespace Vtg
 			return null;
 		}
 
+
+		private ProcessWatchInfo? find_process_by_io_channel (IOChannel chan)
+		{
+			foreach (ProcessWatchInfo target in _processes) {
+				if (target.stdout == chan
+				    || target.stderr == chan) {
+					return target;
+				}
+			}
+
+			return null;
+		}
+
 		private ProcessWatchInfo add_process_view (uint id)
 		{
 			var result = new ProcessWatchInfo (id);
@@ -126,7 +148,7 @@ namespace Vtg
 			return result;
 		}
 
-		public virtual void start_watch (uint id, int stdo, int stde, int stdi = -1)
+		public virtual void start_watch (OutputTypes output_type, uint id, int stdo, int stde, int stdi = -1)
 		{
 			try {
 				ProcessWatchInfo? target = find_process_by_id (id);
@@ -135,7 +157,8 @@ namespace Vtg
 					stop_watch (id);
 				}
 				target = add_process_view (id);
-
+				target.output_type = output_type;
+				
 				if (stdi != -1) {
 					target.stdin = new IOChannel.unix_new (stdi);
 				}
@@ -175,26 +198,38 @@ namespace Vtg
 			_messages.set_text ("", 0);
 		}
 
+		private void log_channel (IOChannel source) throws GLib.Error
+		{
+			string message = null;
+			size_t len = 0;
+			char[] buff = new char[1024];
+			source.read_chars (buff, out len);
+			while (len > 0) {
+				if (message == null) {
+					message = (string) buff;
+				} else {
+					message = message.concat ((string) buff);
+				}
+				source.read_chars (buff, out len);
+			}
+
+			if (!StringUtils.is_null_or_empty(message)) {
+				var process = find_process_by_io_channel (source);
+				OutputTypes output_type;
+				if (process != null) {
+					output_type = process.output_type;
+				} else {
+					output_type = OutputTypes.CHILD_PROCESS;
+				}
+				log_message (output_type, message);
+			}
+		}
+		
 		private bool on_messages (IOChannel source, IOCondition condition)
 		{
 			try {
 				if (condition == IOCondition.IN) {
-					string message = null;
-					size_t len = 0;
-					char[] buff = new char[1024];
-					source.read_chars (buff, out len);
-					while (len > 0) {
-						if (message == null) {
-							message = (string) buff;
-						} else {
-							message = message.concat ((string) buff);
-						}
-						source.read_chars (buff, out len);
-					}
-
-					if (!StringUtils.is_null_or_empty(message)) {
-						log_message (message);
-					}
+					log_channel (source);
 				}
 				return true;
 			} catch (Error err) {
@@ -203,41 +238,41 @@ namespace Vtg
 			}
 		}
 
-		public void log_message (string message)
+		public void log_message (OutputTypes output_type, string message)
 		{
-			if (message != null && message_added (message)) {
-				string[] lines = message.split ("\n");
-				TextIter iter;
-				_messages.get_iter_at_mark (out iter, _messages.get_insert ());
+			string[] lines = message.split ("\n");
+			TextIter iter;
+			_messages.get_iter_at_mark (out iter, _messages.get_insert ());
 
-				for (int count = 0; count < lines.length; count++) {
-					string line = lines[count];
+			for (int count = 0; count < lines.length; count++) {
+				string line = lines[count];
 
-					if (!StringUtils.is_null_or_empty(line)) {
-						foreach (string keyword in keywords) {
-							if (line.has_prefix (keyword)) {
-								_messages.insert_with_tags_by_name (iter, keyword, (int) keyword.length, "keyword");
-								line = line.substring (keyword.length);
-							}
+				if (!StringUtils.is_null_or_empty(line)) {
+					foreach (string keyword in keywords) {
+						if (line.has_prefix (keyword)) {
+							_messages.insert_with_tags_by_name (iter, keyword, (int) keyword.length, "keyword");
+							line = line.substring (keyword.length);
 						}
-
-						line = StringUtils.replace (line, "[1m", "");
-						line = StringUtils.replace (line, "[m", "");
-						line = StringUtils.replace (line, "(B", "");
 					}
 
-					if (count < (lines.length -1)) {
-						if (line == null)
-							line = "\n";
-						else
-							line += "\n";
-					}
-
-					if (!StringUtils.is_null_or_empty(line))
-						_messages.insert (iter, line, (int) line.length);
+					line = StringUtils.replace (line, "[1m", "");
+					line = StringUtils.replace (line, "[m", "");
+					line = StringUtils.replace (line, "(B", "");
 				}
-				_textview.scroll_mark_onscreen (_messages.get_insert ());
-			}					
+
+				if (count < (lines.length -1)) {
+					if (line == null)
+						line = "\n";
+					else
+						line += "\n";
+				}
+
+				if (!StringUtils.is_null_or_empty(line))
+					_messages.insert (iter, line, (int) line.length);
+			}
+			_textview.scroll_mark_onscreen (_messages.get_insert ());
+
+			message_added (output_type, message);			
 		}
 
 		public void activate ()
@@ -246,6 +281,6 @@ namespace Vtg
 			panel.activate_item (_ui);
 		}
 
-		public virtual signal bool message_added (string message);
+		public virtual signal void message_added (OutputTypes output_type, string message);
 	}
 }

@@ -86,26 +86,26 @@ namespace Vtg
 				Shell.parse_argv (cmd, out pars);
 				log.clean_output ();
 				var start_message = _("Start compiling file: %s\n").printf (filename);
-				log.log_message (start_message);
-				log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
-				log.log_message ("%s %s\n".printf (cmd, filename));
+				log.log_message (OutputTypes.MESSAGE, start_message);
+				log.log_message (OutputTypes.MESSAGE, "%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+				log.log_message (OutputTypes.MESSAGE, "%s %s\n".printf (cmd, filename));
 				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize ();
 					if (last_exit_code == 0)
 						is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
-					log.start_watch (_child_watch_id, stdo, stde);
+					log.start_watch (OutputTypes.BUILD, _child_watch_id, stdo, stde);
 					log.activate ();
 					this.build_start ();
 				} else {
-					log.log_message ("error compiling file\n");
+					log.log_message (OutputTypes.MESSAGE, "error compiling file\n");
 				}
 				return true;
 			} catch (Error err) {
 				var msg = "error spawning compiler process: %s".printf (err.message);
 				GLib.warning (msg);
-				log.log_message (msg);
+				log.log_message (OutputTypes.ERROR, msg);
 				return false;
 			}
 		}
@@ -124,8 +124,8 @@ namespace Vtg
 
 				log.clean_output ();
 				var start_message = _("Start building project: %s\n").printf (project.name);
-				log.log_message (start_message);
-				log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+				log.log_message (OutputTypes.MESSAGE, start_message);
+				log.log_message (OutputTypes.MESSAGE, "%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
 				string cmd;
 				if (params != null) {
 					cmd = "%s %s".printf (MAKE, params);
@@ -134,18 +134,18 @@ namespace Vtg
 				}
 				string[] pars;
 				Shell.parse_argv (cmd, out pars);
-				log.log_message ("%s\n".printf (cmd));
+				log.log_message (OutputTypes.MESSAGE, "%s\n".printf (cmd));
 				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
 						is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
-					log.start_watch (_child_watch_id, stdo, stde);
+					log.start_watch (OutputTypes.BUILD, _child_watch_id, stdo, stde);
 					log.activate ();
 					this.build_start ();
 				} else {
-					log.log_message ("error spawning 'make' process\n");
+					log.log_message (OutputTypes.ERROR, "error spawning 'make' process\n");
 				}
 				return true;
 			} catch (Error err) {
@@ -178,8 +178,8 @@ namespace Vtg
 
 				log.clean_output ();
 				var start_message = _("Start configure project: %s\n").printf (project.name);
-				log.log_message (start_message);
-				log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+				log.log_message (OutputTypes.MESSAGE, start_message);
+				log.log_message (OutputTypes.MESSAGE, "%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
 				string cmd;
 				if (params != null) {
 					cmd = "%s %s".printf (configure_command, params);
@@ -188,18 +188,18 @@ namespace Vtg
 				}
 				string[] pars;
 				Shell.parse_argv (cmd, out pars);
-				log.log_message ("%s\n".printf (cmd));
+				log.log_message (OutputTypes.MESSAGE, "%s\n".printf (cmd));
 				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
 						is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
-					log.start_watch (_child_watch_id, stdo, stde);
+					log.start_watch (OutputTypes.BUILD, _child_watch_id, stdo, stde);
 					log.activate ();
 					this.build_start ();
 				} else {
-					log.log_message (_("error spawning '%s' process\n").printf (configure_command));
+					log.log_message (OutputTypes.ERROR, _("error spawning '%s' process\n").printf (configure_command));
 				}
 				return true;
 			} catch (Error err) {
@@ -221,30 +221,30 @@ namespace Vtg
 
 				log.clean_output ();
 				var start_message = _("Start cleaning project: %s\n").printf (project.name);
-				log.log_message (start_message);
-				log.log_message ("%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
+				log.log_message (OutputTypes.MESSAGE, start_message);
+				log.log_message (OutputTypes.MESSAGE, "%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
 
 				if (vala_stamp) {
-					log.log_message (_("cleaning 'stamp' files for project: %s\n").printf (project.name));
+					log.log_message (OutputTypes.MESSAGE, _("cleaning 'stamp' files for project: %s\n").printf (project.name));
 					string command = "find %s -name *.stamp -delete".printf(working_dir);
-					log.log_message ("%s\n\n".printf (command));
+					log.log_message (OutputTypes.MESSAGE, "%s\n\n".printf (command));
 					if (!Process.spawn_command_line_sync (command)) {
-						log.log_message (_("error cleaning 'stamp' files for project: %s\n").printf (project.name));
+						log.log_message (OutputTypes.ERROR, _("error cleaning 'stamp' files for project: %s\n").printf (project.name));
 						return false;
 					}
 				}
-				log.log_message ("%s %s\n".printf (MAKE, "clean"));
+				log.log_message (OutputTypes.MESSAGE, "%s %s\n".printf (MAKE, "clean"));
 				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE, "clean" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
 						is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
-					log.start_watch (_child_watch_id, stdo, stde);
+					log.start_watch (OutputTypes.BUILD, _child_watch_id, stdo, stde);
 					log.activate ();
 					this.build_start ();
 				} else {
-					log.log_message ("error spawning 'make clean' process\n");
+					log.log_message (OutputTypes.ERROR, "error spawning 'make clean' process\n");
 				}
 				return true;
 			} catch (SpawnError err) {
@@ -269,7 +269,7 @@ namespace Vtg
 
 			log.stop_watch (_child_watch_id);
 			last_exit_code = Process.exit_status (status);
-			log.log_message (_("\ncompilation end with exit status %d\n").printf (last_exit_code));
+			log.log_message (OutputTypes.MESSAGE, _("\ncompilation end with exit status %d\n").printf (last_exit_code));
 			_build_view.activate ();
 			_child_watch_id = 0;
 			this.build_exit (last_exit_code);

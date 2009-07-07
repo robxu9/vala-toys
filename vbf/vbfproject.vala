@@ -93,6 +93,20 @@ namespace Vbf
 			return "%s %s: %s".printf (name, version, id);
 		}
 		
+		public string get_all_source_files ()
+		{
+			string res = "";
+			
+			foreach (Group group in groups) {
+				foreach (Target target in group.get_targets ()) {
+					foreach (Source source in target.get_sources ())
+						res = res.concat ("\"", source.filename, "\"");
+				}
+			}
+			
+			return res;
+		}
+		
 		internal void clear ()		
 		{
 			groups.clear ();

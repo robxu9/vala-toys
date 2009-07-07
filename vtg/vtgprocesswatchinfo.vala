@@ -36,6 +36,8 @@ namespace Vtg
 		public uint stdout_watch_id = 0;
 		public uint stderr_watch_id = 0;
 
+		public OutputTypes output_type = OutputTypes.CHILD_PROCESS;
+		
 		public ProcessWatchInfo (uint id)
 		{
 			this.id = id;

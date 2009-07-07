@@ -37,8 +37,11 @@ libvtg_la_VALASOURCES = \
 	vtgprojectbuilder.vala \
 	vtgprojectexecuter.vala \
 	vtgprojectexecuterdialog.vala \
-	vtgoutputview.vala \
+	vtgprojectsearch.vala \
+	vtgprojectsearchresultsview.vala \
+	vtgprojectsearchdialog.vala \
 	vtgprocesswatchinfo.vala \
+	vtgoutputview.vala \
 	vtgbuildlogview.vala \
 	vtgprojectmanager.vala \
 	vtgfilteredlistdialog.vala \

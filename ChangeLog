@@ -1,5 +1,21 @@
 2009-07-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfproject.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgprocesswatchinfo.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	first implementation of 'grep in project files' function. Fixes issue #54
+
+2009-07-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 
 	fixed another deadlock	
