@@ -1,5 +1,13 @@
 2009-07-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	first implementation of 'go to definition'. Fixes issue #79
+
+2009-07-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectsearch.vala:
 
 	fixed inverted logic for the match case option in the project search 

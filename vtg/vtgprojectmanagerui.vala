@@ -103,6 +103,8 @@ namespace Vtg
                                                     <placeholder name="SearchOps_8">
                                                     	<separator />
                                                         <menuitem name="GotoMethod" action="ProjectGotoMethod"/>
+                                                    	<separator />
+                                                        <menuitem name="GotoDefinition" action="ProjectGotoDefinition"/>
                                                     </placeholder>
                                                 </menu>
                                             </menubar>
@@ -141,6 +143,7 @@ namespace Vtg
 			{"ProjectGotoNextPosition", Gtk.STOCK_GO_FORWARD, N_("_Go To Next Source Position"), null, N_("Go to the next source position"), on_project_goto_next_position},
 			{"ProjectGotoPrevPosition", Gtk.STOCK_GO_BACK, N_("_Go To Previous Source Position"), "<alt>Left", N_("Go to the previous or last saved source position"), on_project_goto_prev_position},
 			{"ProjectGotoMethod", null, N_("_Go To Method..."), "<control>M", N_("Goto to a specific method in the current source document"), on_project_goto_method},
+			{"ProjectGotoDefinition", null, N_("_Go To Definition"), "F12", N_("Goto to a current symbol definition"), on_project_goto_definition},
 			{"ProjectCompleteWord", null, N_("Complete _Word"), "<control>space", N_("Try to complete the word in the current source document"), on_complete_word},
 			{"ProjectPrepareChangeLog", null, N_("_Prepare ChangeLog"), null, N_("Add an entry to the ChangeLog with all added/modified files"), on_prepare_changelog},
 			{"ProjectPrepareSingleFileChangeLog", null, N_("_Add Current File To ChangeLog"), null, N_("Add the current file to the ChangeLog"), on_prepare_single_file_changelog}
@@ -285,6 +288,22 @@ namespace Vtg
 				return;
 				
 			sch.trigger.complete_word ();			
+		}
+
+		private void on_project_goto_definition (Gtk.Action action)
+		{
+			var project = _prj_view.current_project;
+			return_if_fail (project != null);
+			
+			var view = _plugin_instance.window.get_active_view ();
+			if (view == null)
+				return;
+						
+			var sch = _plugin_instance.scs_find_from_view (view);
+			if (sch == null)
+				return;
+				
+			sch.goto_definition ();		
 		}
 		
 		private void on_project_open (Gtk.Action action)

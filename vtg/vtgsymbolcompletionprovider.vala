@@ -243,7 +243,7 @@ namespace Vtg
 		
 		private void show_calltip ()
 		{
-			SymbolCompletionItem? completion_result = get_method_signature ();
+			SymbolCompletionItem? completion_result = get_current_symbol_completion_item ();
 			if (completion_result != null) {
 				if (_calltip_window == null) {
 					initialize_calltip_window ();
@@ -409,10 +409,24 @@ namespace Vtg
 			weak TextMark mark = (TextMark) doc.get_insert ();
 			TextIter end;
 			TextIter start;
-
+			unichar ch;
+			
 			doc.get_iter_at_mark (out start, mark);
-
 			lineno = start.get_line ();
+			
+			//go to the right word boundary
+			ch = start.get_char ();
+			while (ch.isalnum ()) {
+				start.forward_char ();
+				int cline = start.get_line ();
+				if (lineno != cline) //changed line?
+				{
+					start.backward_char ();
+					break;
+				}
+				ch = start.get_char ();
+			}
+
 			colno = start.get_line_offset ();
 			symbolname = "";
 			last_symbolname = "";
@@ -439,7 +453,7 @@ namespace Vtg
 					if (end.get_line_offset () == 0 || end.get_line () < lineno)
 						break;
 
-					unichar ch = end.get_char ();
+					ch = end.get_char ();
 					
 					if (status == 1 && (ch != ' ' && ch != '\t')) {
 						status = 0; //back to normal
@@ -520,7 +534,7 @@ namespace Vtg
 			
 		}
 
-		private SymbolCompletionItem? get_method_signature ()
+		public SymbolCompletionItem? get_current_symbol_completion_item ()
 		{
 			string line, word, last_part;
 			int lineno, colno;
@@ -541,23 +555,79 @@ namespace Vtg
 			} else {
 				first_part = "this"; //HACK: this won't work for static methods
 			}
-			string method = last_part;
+			string symbol_name = last_part;
 			
 			//don't try to find method signature if is a: for, foreach, if, while etc...
-			if (is_vala_keyword (method)) {
+			if (is_vala_keyword (symbol_name)) {
 				return null;
 			}
+			GLib.debug ("symbol looking for %s in %s", symbol_name, first_part);
 			
 			SymbolCompletionResult completion_result = null;
 			completion_result = complete (null, line, first_part, lineno, colno);
-			if (completion_result != null && completion_result.methods.size > 0) {
-				foreach (SymbolCompletionItem item in completion_result.methods) {
-					if (item.name == method) {
-						return item;
-					}
-				}
+			if (completion_result != null && completion_result.count > 0) {
+				SymbolCompletionItem? item = null;
+				
+				item = search_completion_item_by_name (symbol_name, completion_result.methods);
+				if (item != null)
+					return item;
+				
+				item = search_completion_item_by_name (symbol_name, completion_result.properties);
+				if (item != null)
+					return item;
+
+				item = search_completion_item_by_name (symbol_name, completion_result.classes);
+				if (item != null)
+					return item;
+
+				item = search_completion_item_by_name (symbol_name, completion_result.interfaces);
+				if (item != null)
+					return item;
+
+				item = search_completion_item_by_name (symbol_name, completion_result.structs);
+				if (item != null)
+					return item;
+
+				item = search_completion_item_by_name (symbol_name, completion_result.fields);
+				if (item != null)
+					return item;
+
+				item = search_completion_item_by_name (symbol_name, completion_result.signals);
+				if (item != null)
+					return item;
+
+				item = search_completion_item_by_name (symbol_name, completion_result.others);
+				if (item != null)
+					return item;
+
+				item = search_completion_item_by_name (symbol_name, completion_result.namespaces);
+				if (item != null)
+					return item;
+
+				item = search_completion_item_by_name (symbol_name, completion_result.enums);
+				if (item != null)
+					return item;
+
+				item = search_completion_item_by_name (symbol_name, completion_result.constants);
+				if (item != null)
+					return item;
+
+				item = search_completion_item_by_name (symbol_name, completion_result.error_domains);
+				if (item != null)
+					return item;
+
 			}
 			return null;
+		}
+		
+		private SymbolCompletionItem? search_completion_item_by_name (string name, Gee.List<SymbolCompletionItem> items)
+		{
+			foreach (SymbolCompletionItem item in items) {
+				if (item.name == name) {
+					return item;
+				}
+			}
+			return null;			
 		}
 
 		private SymbolCompletionResult? get_completions (SymbolCompletionTrigger trigger)

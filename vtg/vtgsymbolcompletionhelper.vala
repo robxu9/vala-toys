@@ -41,7 +41,7 @@ namespace Vtg
 		public Gedit.View view { get { return _view; } construct { _view = value; } default = null; }
 		public SymbolCompletion completion { get { return _completion; } construct { _completion = value; } default = null; }
 		public SymbolCompletionTrigger trigger { get { return _trigger; } }
-
+		
 		public SymbolCompletionHelper (Vtg.PluginInstance plugin_instance, Gedit.View view, SymbolCompletion completion)
 		{
 			this.plugin_instance = plugin_instance;
@@ -75,6 +75,15 @@ namespace Vtg
 			_manager.register_trigger (_trigger);
 			_manager.register_provider (_provider, _trigger);
 			_manager.set_active (true);
+		}
+		
+		public void goto_definition ()
+		{
+			SymbolCompletionItem? item = _provider.get_current_symbol_completion_item ();
+			if (item != null && !StringUtils.is_null_or_empty (item.file)) {
+				string uri = Filename.to_uri (item.file);				
+				_plugin_instance.activate_uri (uri, item.first_line);
+			}
 		}
 	}
 }
