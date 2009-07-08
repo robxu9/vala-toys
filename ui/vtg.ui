@@ -565,6 +565,7 @@
       </object>
     </child>
     <action-widgets>
+      <action-widget response="-4">button-db-cancel</action-widget>
       <action-widget response="2">button-db-ok</action-widget>
     </action-widgets>
   </object>

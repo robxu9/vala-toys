@@ -1,5 +1,12 @@
 2009-07-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+
+	assigned the correct response id to the filtered list dialog. Fixes issue #78
+
+2009-07-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 	* vtg/vtgsymbolcompletionhelper.vala:
 	* vtg/vtgsymbolcompletionprovider.vala:
