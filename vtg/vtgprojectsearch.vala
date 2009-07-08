@@ -88,7 +88,7 @@ namespace Vtg
 					log.log_message (OutputTypes.MESSAGE, "No command text to search specified for project %s".printf(project.name));
 					return false;
 				} else {
-					cmd = "sh -c '%s -Hn%s %s".printf (GREP, (match_case ? "i" : ""), text.replace (" ", "\\ "));
+					cmd = "sh -c '%s -Hn%s %s".printf (GREP, (match_case ? "" : "i"), text.replace (" ", "\\ "));
 					string dirs = "";
 					foreach (Group group in project.get_groups ()) {
 						foreach (Target target in group.get_targets ()) {

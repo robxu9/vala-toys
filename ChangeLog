@@ -1,3 +1,9 @@
+2009-07-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectsearch.vala:
+
+	fixed inverted logic for the match case option in the project search 
+
 2009-07-07  Andrea Del Signore  <sejerpz@tin.it>
 
 	* ui/vtg.glade:
