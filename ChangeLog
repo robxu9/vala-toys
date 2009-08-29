@@ -1,5 +1,11 @@
 2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* INSTALL:
+
+	update install instructions. Fixes issue #69
+
+2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vapi/gdkkeysyms-update.sh:
 	* vapi/gdkkeysyms.vapi:
 	* vbf/vbf-1.0.vapi:
