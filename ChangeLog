@@ -1,5 +1,16 @@
 2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* po/POTFILES.skip:
+
+	make dist check pass
+
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	fixed bug an empty info windows is shown even if there isn't
+	any proposal in the completion list.
+
+2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* INSTALL:
 
 	update install instructions. Fixes issue #69

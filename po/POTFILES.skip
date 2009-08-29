@@ -12,4 +12,6 @@ vtg/vtgprojectbuilder.c
 vtg/vtgprojectexecuter.c
 vtg/vtgprojectmanagerui.c
 vtg/vtgprojectview.c
+vtg/vtgprojectsearch.c
+vtg/vtgprojectsearchresultsview.c
 gen-project/valaprojectgenerator.c

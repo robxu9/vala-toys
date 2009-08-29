@@ -147,12 +147,11 @@ namespace Vtg
 
 		public void trigger_event (bool trigger_reason)
 		{
-			this.shortcut_triggered = trigger_reason;			
+			this.shortcut_triggered = trigger_reason;
 			_completion.trigger_event (this);
 			Gsc.Info info = _completion.get_info_widget ();
 			
-			if (_plugin.plugin.config.info_window_visible) {
-				
+			if (_plugin.plugin.config.info_window_visible && _completion.visible) {
 				info.show ();
 			}
 			
