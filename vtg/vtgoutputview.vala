@@ -281,6 +281,6 @@ namespace Vtg
 			panel.activate_item (_ui);
 		}
 
-		public virtual signal void message_added (OutputTypes output_type, string message);
+		public signal void message_added (OutputTypes output_type, string message);
 	}
 }

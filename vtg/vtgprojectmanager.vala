@@ -33,7 +33,7 @@ namespace Vtg
 		private Gtk.TreeStore _model;
 		private bool in_update = false;
 
-		public virtual signal void updated ();
+		public signal void updated ();
 		public string filename = null;
 
 		public Gee.List<Vbf.Target> exec_targets = new Gee.ArrayList<Vbf.Target> ();

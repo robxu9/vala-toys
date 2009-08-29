@@ -12,6 +12,7 @@ namespace Vbf {
 	[CCode (cheader_filename = "vbf.h")]
 	public abstract class ConfigNode : GLib.Object {
 		public weak Vbf.ConfigNode parent;
+		public ConfigNode ();
 		public abstract string to_string ();
 	}
 	[CCode (cheader_filename = "vbf.h")]
