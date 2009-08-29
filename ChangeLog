@@ -1,5 +1,11 @@
 2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	enabled silent rules by defualt if support is present
+
+2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* po/POTFILES.skip:
 
 	make dist check pass
