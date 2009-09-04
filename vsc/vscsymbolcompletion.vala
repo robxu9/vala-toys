@@ -825,7 +825,7 @@ namespace Vsc
 					if (initializer is MemberAccess) {
 						var ma = (MemberAccess) initializer;
 						
-						if (ma.inner != null) {
+						if (ma.inner != null && ma.inner.symbol_reference != null) {
 							class_name = ma.inner.to_string ();
 						}
 						

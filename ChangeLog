@@ -1,8 +1,20 @@
+2009-09-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed a segfault when completing a 'var' local variable
+
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+
+	new 'Open Recent Project' menu'
+
 2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure.ac:
 
-	enabled silent rules by defualt if support is present
+	enabled silent rules by default if support is present
 
 2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
 

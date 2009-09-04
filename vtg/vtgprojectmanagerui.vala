@@ -37,6 +37,7 @@ namespace Vtg
                                                         <separator />
                                                         <menuitem name="ProjectNew" action="ProjectNew"/>
                                                         <menuitem name="ProjectOpen" action="ProjectOpen"/>
+                                                        <menuitem name="ProjectRecent" action="ProjectRecent"/>
                                                         <separator />
                                                         <menuitem name="ProjectClose" action="ProjectClose"/>
                                                         <separator />
@@ -125,6 +126,7 @@ namespace Vtg
 		const ActionEntry[] _action_entries = {
 			{"ProjectNew", null, N_("_New Project..."), null, N_("Create a new project"), on_project_new},
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
+			//{"ProjectRecent", null, N_("Recent Projects"), null, N_("Last recently opened projects"), on_project_recent},			
 			{"ProjectClose", null, N_("_Close Current Project"), null, N_("Close current selected project"), on_project_close},
 			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
 			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
@@ -227,6 +229,14 @@ namespace Vtg
 			_actions = new ActionGroup ("ProjectManagerActionGroup");
 			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
+			var recent_action = new Gtk.RecentAction ("ProjectRecent", "Open Recent Project", null, null);
+			recent_action.set_show_private (true);
+			var recent_filter = new Gtk.RecentFilter ();
+			recent_filter.add_application ("vtg");
+			recent_action.add_filter (recent_filter);
+			recent_action.item_activated.connect (on_project_open_recent);
+			
+			_actions.add_action (recent_action);
 			var manager = _plugin_instance.window.get_ui_manager ();
 			manager.insert_action_group (_actions, -1);
 			try {
@@ -234,6 +244,13 @@ namespace Vtg
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
 			}
+		}
+
+		private void on_project_open_recent (RecentChooser sender)
+		{
+			string project_name = Filename.from_uri (sender.get_current_uri ()).replace ("/configure.ac", ""); //HACK
+
+			open_project (project_name);
 		}
 		
 		private void on_current_bookmark_changed (SourceBookmarks sender)
@@ -690,13 +707,21 @@ namespace Vtg
 		private void open_project (string name)
 		{
 			try {
-				var project = new ProjectManager ();
-				if (project.open (name)) {
-					_projects.add (project);
-					//HACK: why the signal isn't working?!?!
-					//this.project_loaded (project);
-					_plugin_instance.plugin.on_project_loaded (this, project);
-					_prj_view.add_project (project.project);
+				var project = find_project_for_id (name);
+				
+				if (project != null) {
+					// activate project
+					_prj_view.current_project = project;
+				} else {
+					// open project
+					project = new ProjectManager ();
+					if (project.open (name)) {
+						_projects.add (project);
+						//HACK: why the signal isn't working?!?!
+						//this.project_loaded (project);
+						_plugin_instance.plugin.on_project_loaded (this, project);
+						_prj_view.add_project (project.project);
+					}
 				}
 			} catch (Error err) {
 				Vtg.Interaction.error_message (_("Error opening project %s").printf (name), err);
@@ -771,6 +796,17 @@ namespace Vtg
 
 			log.stop_watch ((uint) pid);
 			log.log_message (OutputTypes.MESSAGE, _("\nautogeneration end with exit status %d\n").printf(status));
+		}
+		
+		public ProjectManager? find_project_for_id (string id)
+		{
+			foreach (ProjectManager project_manager in _projects) {
+				if (project_manager.project.id == id) {
+					return project_manager;
+				}
+			}
+			
+			return null;
 		}
 	}
 }

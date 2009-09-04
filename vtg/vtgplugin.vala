@@ -289,6 +289,20 @@ namespace Vtg
 			prj.project = project_manager;
 			_projects.add (prj);
 			completion.parser.resume_parsing ();
+			
+			weak Gtk.RecentManager recent = Gtk.RecentManager.get_default ();
+			Gtk.RecentData recent_data = Gtk.RecentData ();
+			string name = project.name;
+			string[] groups = new string[] { "vtg" };
+			recent_data.display_name = name;
+			recent_data.groups = groups;
+			recent_data.is_private = true;
+			recent_data.mime_type = "text/plain";
+			recent_data.app_name = "vtg";
+			recent_data.app_exec = "gedit %u";
+			if (!recent.add_full (Filename.to_uri (project.id + "/configure.ac"), recent_data)) {
+				GLib.warning ("cannot add project %s to recently used list", project.id);
+			}
 		}
 
 		~Plugin ()

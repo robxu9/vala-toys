@@ -80,6 +80,21 @@ namespace Vtg
 					_current_project.updated += this.on_current_project_updated;
 					_prj_view.set_model (_current_project.model);
 					_prj_view.expand_all ();
+
+					//sync the project combo view
+					TreeModel model = _prjs_combo.get_model ();
+					Gtk.TreeIter iter;
+					bool valid = model.get_iter_first (out iter);
+					while (valid) {
+						string name;
+						model.@get (iter, 0, out name);
+					
+						if (name == _current_project.project.name) {
+							_prjs_combo.set_active_iter (iter);
+							break;
+						}
+						valid = model.iter_next (ref iter);
+					}
 				} else {
 					_prj_view.set_model (null);
 				}
@@ -217,7 +232,11 @@ namespace Vtg
 		private void update_view (string? project_name)
 		{
 			ProjectManager? prj = null;
-
+			
+			if (current_project != null && current_project.project.name == project_name) {
+				return;
+			}
+			
 			if (project_name != null) {
 				//find project
 				foreach (ProjectDescriptor item in _plugin_instance.plugin.projects) {
