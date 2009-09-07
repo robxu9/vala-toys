@@ -1,5 +1,12 @@
 2009-09-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbftest.vala:
+
+	first support for automake 1.11 style vala-projects. Fixes issue #82
+
+2009-09-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/valaprojectgenerator.vala:
 
 	fixed an automake 1.11 support bug when a gtk+ project is generated 

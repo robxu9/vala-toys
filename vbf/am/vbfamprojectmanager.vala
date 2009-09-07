@@ -205,14 +205,16 @@ namespace Vbf.Am
 					}
 				}
 			} else {
-				warning ("add_vala_source: unsupported source type");
+				warning ("add_vala_source: unsupported source type %s", Type.from_instance (source).name ());
 			}
 		}
 		
 		private void add_vala_sources (Group group, Target target)
 		{
+			string source_primary_name = "%s_SOURCES".printf (target.id);
+			
 			foreach (Variable variable in group.get_variables ()) {
-				if (variable.name == target.id) {
+				if (variable.name == target.id || variable.name == source_primary_name) {
 					var val = variable.get_value ();
 					add_vala_source (group, target, val);
 					break;
@@ -220,23 +222,24 @@ namespace Vbf.Am
 			}
 		}
 		
-		private void add_targets (Group group, ConfigNode node, TargetTypes type)
+		private void add_target (Group group, TargetTypes type, string target_name)
 		{
 			Target target;
-			
+			target = new Target (group, type, target_name);
+			group.add_target (target);
+			add_vala_sources (group, target);
+		}
+		
+		private void add_targets (Group group, ConfigNode node, TargetTypes type)
+		{
 			if (node is StringLiteral) {
-				target = new Target (group, type, ((StringLiteral) node).data);
-				group.add_target (target);
-				add_vala_sources (group, target);
+				add_target (group, type, ((StringLiteral) node).data);
 			} else {
 				foreach (ConfigNode item in ((ConfigNodeList) node).values) {
 					if (item is StringLiteral) {
-						string data =  ((StringLiteral) item).data;
-						if (data.has_suffix ("stamp")) {
-							target = new Target (group, type, data);
-							group.add_target (target);
-							add_vala_sources (group, target);
-						}
+						add_target (group, type, ((StringLiteral) item).data);
+					} else if (item is ConfigNodeList) {
+						add_targets (group, item, type);
 					}
 				}
 			}

@@ -97,7 +97,7 @@ namespace Vbf.Tests
 					}
 
 				}
-				print ("      REFERENCED PACKAGES\n");
+				print ("      GROUP REFERENCED PACKAGES\n");
 				foreach (Package package in group.get_packages ()) {
 					print ("        PACAKGE: %s", package.name);
 					print ("\n");
