@@ -460,7 +460,12 @@ class Vala.ProjectGenerator {
 		}
 		s.append ("\t$(NULL)\n\n");
 
-		if (!am_has_vala_support) {
+		if (am_has_vala_support) {
+			if (use_gtk) {
+				s.append_printf ("%s_VALAFLAGS = --pkg gtk+-2.0\n", make_name);
+				s.append ("\n");
+			}
+		} else {
 			s.append_printf ("%s_SOURCES = \\\n", make_name);
 			s.append_printf ("\t$(%s_VALASOURCES:.vala=.c) \\\n", make_name);
 			s.append ("\t$(NULL)\n\n");
