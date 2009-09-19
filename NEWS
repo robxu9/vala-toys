@@ -1,3 +1,15 @@
+Vala toys for gEdit version 0.5.0
+=================================
+
+* Search (grep) in project files
+* Support for automake 1.11
+* Completion popup info windows now remember its state
+* Go To Definition function
+* Support for recently opened projects
+* Better support for 'non standard' vala installation directory
+* Some experimental support for Mac Os X builds
+* Updated to use the 0.7.0 Gtk Source Completion library
+
 Vala toys for gEdit version 0.4.1
 =================================
 

@@ -1,5 +1,11 @@
 2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+
+	news file updated
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectsearchresultsview.vala:
 	
 	fixed result view navigation
