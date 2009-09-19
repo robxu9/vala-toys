@@ -98,7 +98,7 @@ namespace Vsc
 					} else if (parameter.direction == ParameterDirection.REF) {
 						direction = "ref ";
 					}
-					if (parameter.default_expression != null) {
+					if (parameter.default_expression != null && parameter.default_expression.symbol_reference != null) {
 						default_expr = " = " + parameter.default_expression.to_string ();
 					}
 					if (parameter.parameter_type != null) {
