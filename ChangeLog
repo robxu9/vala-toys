@@ -1,5 +1,11 @@
 2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vapi/readline.vapi:
+
+	fix build issue on some system
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 
 	post release version bump	
