@@ -1,5 +1,14 @@
 2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	silenced some warnings, minor cleanups
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletionitem.vala:
 
 	workaround a frequent segfault: check if symbol reference is not null

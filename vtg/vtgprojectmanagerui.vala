@@ -229,7 +229,7 @@ namespace Vtg
 			_actions = new ActionGroup ("ProjectManagerActionGroup");
 			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
-			var recent_action = new Gtk.RecentAction ("ProjectRecent", "Open Recent Project", null, null);
+			var recent_action = new Gtk.RecentAction ("ProjectRecent", "Open Recent Project", "", "");
 			recent_action.set_show_private (true);
 			var recent_filter = new Gtk.RecentFilter ();
 			recent_filter.add_application ("vtg");
@@ -517,7 +517,7 @@ namespace Vtg
 					if (!Vtg.Caches.cache_contains (cache, params)) {
 						Vtg.Caches.cache_add (cache, params);
 					}
-					file = file.replace ("file://", ""); //HACK
+					file = Filename.from_uri (file);
 					if (!doc.is_untouched () && _plugin_instance.plugin.config.save_before_build)
 						doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
 						

@@ -52,7 +52,11 @@ namespace Vtg
 			set {
 				if (_info_window_visible != value) {
 					_info_window_visible = value;
-					_gconf.set_bool (VTG_INFO_WINDOW_VISIBLE, _info_window_visible);
+					try {
+						_gconf.set_bool (VTG_INFO_WINDOW_VISIBLE, _info_window_visible);	
+					} catch (Error e) {
+						GLib.warning ("Error settings info_window_visible: %s", e.message);
+					}
 				}
 			}
 			default = false;

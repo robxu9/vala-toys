@@ -561,7 +561,6 @@ namespace Vtg
 			if (is_vala_keyword (symbol_name)) {
 				return null;
 			}
-			GLib.debug ("symbol looking for %s in %s", symbol_name, first_part);
 			
 			SymbolCompletionResult completion_result = null;
 			completion_result = complete (null, line, first_part, lineno, colno);
