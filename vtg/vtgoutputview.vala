@@ -202,7 +202,7 @@ namespace Vtg
 		{
 			string message = null;
 			size_t len = 0;
-			char[] buff = new char[1024];
+			char[] buff = new char[4096];
 			source.read_chars (buff, out len);
 			while (len > 0) {
 				if (message == null) {
@@ -271,7 +271,6 @@ namespace Vtg
 					_messages.insert (iter, line, (int) line.length);
 			}
 			_textview.scroll_mark_onscreen (_messages.get_insert ());
-
 			message_added (output_type, message);			
 		}
 
