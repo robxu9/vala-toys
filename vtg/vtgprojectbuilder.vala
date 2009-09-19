@@ -82,13 +82,17 @@ namespace Vtg
 				} else {
 					cmd = "valac %s".printf (filename);
 				}
+				
 				string[] pars;
 				Shell.parse_argv (cmd, out pars);
+				foreach (var par in pars) {
+					GLib.debug ("Pars is %s", par);
+				}
 				log.clean_output ();
 				var start_message = _("Start compiling file: %s\n").printf (filename);
 				log.log_message (OutputTypes.MESSAGE, start_message);
 				log.log_message (OutputTypes.MESSAGE, "%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
-				log.log_message (OutputTypes.MESSAGE, "%s %s\n".printf (cmd, filename));
+				log.log_message (OutputTypes.MESSAGE, "%s\n".printf (cmd));
 				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
