@@ -1,5 +1,11 @@
 2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectsearchresultsview.vala:
+	
+	fixed result view navigation
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectbuilder.vala:
 
 	duplicated filename when compiling a single source. Fixes issue #59

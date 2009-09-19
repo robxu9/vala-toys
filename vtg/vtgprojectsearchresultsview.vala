@@ -33,7 +33,7 @@ namespace Vtg
 		private ListStore _model = null;
 		private TreeView _results_view = null;
 
-		private int current_match_row = 0;
+		private TreePath? _current = null;
 		private int _match_count = 0;
 		private Vtg.PluginInstance _plugin_instance;
 		private unowned ProjectManager _project;
@@ -91,7 +91,7 @@ namespace Vtg
 		public void initialize (ProjectManager? project = null)
 		{
 			this._project = project;
-			current_match_row = 0;
+			_current = null;
 			_match_count = 0;
 			_model.clear ();
 		}
@@ -125,7 +125,8 @@ namespace Vtg
 
 		public void on_results_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
 		{
-			activate_path (path);
+			_current = path.copy ();
+			activate_path (_current);
 		}
 
 		private void activate_path (TreePath path)
@@ -137,9 +138,6 @@ namespace Vtg
 				ProjectManager? proj;
 
 				_model.get (iter, 0, out name, 1, out line, 3, out proj);
-				
-				current_match_row = path.to_string ().to_int ();
-				current_match_row++;
 				if (proj != null) {
 					string uri = proj.source_uri_for_name (Path.build_filename(_project.project.id, name));
 					if (uri != null)
@@ -154,30 +152,30 @@ namespace Vtg
 
 		public void next_match ()
 		{
-			TreePath path = new TreePath.from_string (current_match_row.to_string());
-			if (path != null) {
-				activate_path (path);
-				_results_view.scroll_to_cell (path, null, false, 0, 0);
-				_results_view.get_selection ().select_path (path);
-				if (current_match_row < (_match_count - 1))
-					current_match_row++;
-				else
-					current_match_row = 0;
+			if (_match_count == 0)
+				return;
+				
+			if (_current == null || _current.to_string ().to_int () == _match_count - 1) {
+				_current = new TreePath.first ();
+			} else {
+				_current.next ();
 			}
+			activate_path (_current);
+			_results_view.scroll_to_cell (_current, null, false, 0, 0);
+			_results_view.get_selection ().select_path (_current);
 		}
 
 		public void previous_match ()
 		{
-			TreePath path = new TreePath.from_string (current_match_row.to_string());
-			if (path != null) {
-				activate_path (path);
-				_results_view.scroll_to_cell (path, null, false, 0, 0);
-				_results_view.get_selection ().select_path (path);
-				if (current_match_row > 0)
-					current_match_row--;
-				else
-					current_match_row = (_match_count) - 1;
+			if (_match_count == 0)
+				return;
+			
+			if (_current == null || !_current.prev ()) {
+				_current = new TreePath.from_indices (_match_count - 1);
 			}
+			activate_path (_current);
+			_results_view.scroll_to_cell (_current, null, false, 0, 0);
+			_results_view.get_selection ().select_path (_current);
 		}
 
 		/* 
