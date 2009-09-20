@@ -1,3 +1,9 @@
+2009-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	bump vala requirement to 0.7.6
+
 2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vapi/readline.vapi:
