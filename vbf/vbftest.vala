@@ -82,7 +82,7 @@ namespace Vbf.Tests
 				print ("      TARGETS\n");
 				foreach (Target target in group.get_targets ()) {
 					print ("        TARGET\n");
-					print ("          name %s\n", target.name);
+					print ("          name %s %s\n", get_target_type_description (target.type), target.name);
 					print ("          SOURCES\n");
 					foreach (Source source in target.get_sources ()) {
 						print ("            SOURCE %sfilename %s\n", 
@@ -135,6 +135,22 @@ namespace Vbf.Tests
 					return "(VALA)    ";
 				default:
 					return "(N/A: %d)".printf ((int) type);		
+			}
+		}
+		
+		private string get_target_type_description (TargetTypes type)
+		{
+			switch (type) {
+				case TargetTypes.PROGRAM:
+					return "(PROGRAM)       ";
+				case TargetTypes.LIBRARY:
+					return "(LIBRARY)       ";
+				case TargetTypes.DATA:
+					return "(DATA)          ";
+				case TargetTypes.BUILT_SOURCES:
+					return "(BUILT_SOURCES) ";
+				default:
+					return "(N/A: %d)       ".printf ((int) type);		
 			}
 		}
 		
