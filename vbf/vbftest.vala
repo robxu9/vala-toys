@@ -85,7 +85,9 @@ namespace Vbf.Tests
 					print ("          name %s\n", target.name);
 					print ("          SOURCES\n");
 					foreach (Source source in target.get_sources ()) {
-						print ("            SOURCE filename %s\n", source.filename);
+						print ("            SOURCE %s filename %s\n", 
+							source.type == Vbf.FileTypes.VALA_SOURCE ? "(VALA)": "",
+							source.filename);
 					}
 					print ("          OTHER FILES\n");
 					foreach (Vbf.File file in target.get_files ()) {

@@ -1,5 +1,11 @@
 2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbftest.vala:
+
+	dump if the source file is a vala source to help the debug
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/am/vbfamprojectmanager.vala:
 
 	transform the project id in a valid automake identifier. Fixes issue #91
