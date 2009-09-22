@@ -34,7 +34,6 @@ namespace Vtg
 		private Gtk.TreeView _prj_view;
 		private int _project_count = 0;
 
-		private Module _last_selected_module;
 		private Group _last_selected_group;
 		
 		private Gtk.Menu _popup_modules;
@@ -213,11 +212,10 @@ namespace Vtg
 					TreeIter iter;
 					GLib.Object obj;
 					weak TreePath path = rows.nth_data (0);
-					string name;
+					string id;
 					model.get_iter (out iter, path);
-					model.get (iter, 1, out name, 3, out obj);
-					if (obj is Module) {
-						_last_selected_module = (Module) obj;
+					model.get (iter, 2, out id, 3, out obj);
+					if (id == "project-reference") {
 						_popup_modules.popup (null, null, null, event.button, event.time);
 					} else if (obj is Group) {
 						_last_selected_group = (Group) obj;
@@ -263,8 +261,8 @@ namespace Vtg
 
 		private void on_packages_open_configure (Gtk.Action action)
 		{
-			return_if_fail (_last_selected_module != null);
-			string file = Path.build_filename (_last_selected_module.project.id, "configure.ac");
+			return_if_fail (current_project != null);
+			string file = Path.build_filename (current_project.project.id, "configure.ac");
 			
 			if (FileUtils.test (file, FileTest.EXISTS)) {
 				_plugin_instance.activate_uri (Filename.to_uri (file));

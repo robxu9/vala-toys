@@ -1,5 +1,12 @@
 2009-09-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectview.vala:
+
+	Open configure.ac contextual menu' is be displayed
+	on the 'reference' item. Fixes issue #94
+
+2009-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanager.vala:
 
 	changed the treeview icons on a per target basis
