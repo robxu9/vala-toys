@@ -221,8 +221,6 @@ namespace Vbf.Am
 		{
 			string source_primary_name = "%s_SOURCES".printf (convert_to_primary_name (target.id));
 			
-			GLib.debug ("finding sources for target: %s", source_primary_name);
-			
 			foreach (Variable variable in group.get_variables ()) {
 				if (variable.name == target.id || variable.name == source_primary_name) {
 					var val = variable.get_value ();
