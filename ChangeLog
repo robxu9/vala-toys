@@ -1,5 +1,13 @@
 2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbffile.vala:
+
+	added support for other source file types
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/vbftest.vala:
 
 	dump if the source file is a vala source to help the debug

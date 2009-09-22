@@ -141,7 +141,8 @@ namespace Vbf {
 	public enum FileTypes {
 		UNKNOWN,
 		DATA,
-		VALA_SOURCE
+		VALA_SOURCE,
+		OTHER_SOURCE
 	}
 	[CCode (cprefix = "VBF_TARGET_TYPES_", cheader_filename = "vbf.h")]
 	public enum TargetTypes {

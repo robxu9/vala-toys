@@ -27,7 +27,8 @@ namespace Vbf
 	{
 		UNKNOWN,
 		DATA,
-		VALA_SOURCE
+		VALA_SOURCE,
+		OTHER_SOURCE
 	}
 	
 	public class File : GLib.Object

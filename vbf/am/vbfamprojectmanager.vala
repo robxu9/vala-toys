@@ -183,25 +183,33 @@ namespace Vbf.Am
 			}
 		}
 		
-		private void add_vala_source (Group group, Target target, ConfigNode source)
+		private FileTypes source_file_type (string name)
+		{
+			if (name.has_suffix (".vala") || name.has_suffix (".vapi"))
+				return FileTypes.VALA_SOURCE;
+			else
+				return FileTypes.OTHER_SOURCE;
+		}
+		
+		private void add_source (Group group, Target target, ConfigNode source)
 		{
 			string src_name;
 			if (source is StringLiteral) {
 				src_name = Path.build_filename (group.id, ((StringLiteral) source).data);
-				var src = new Source.with_type (target, src_name, FileTypes.VALA_SOURCE);
+				var src = new Source.with_type (target, src_name, source_file_type (src_name));
 				target.add_source (src);
 			} else if (source is Variable) {
-				add_vala_source (group, target, ((Variable) source).get_value ());
+				add_source (group, target, ((Variable) source).get_value ());
 			} else if (source is ConfigNodeList) {
 				foreach (ConfigNode item in ((ConfigNodeList) source).get_values ()) {
 					if (item is StringLiteral) {
 						src_name = Path.build_filename (group.id, ((StringLiteral) item).data);
-						var src = new Source.with_type (target, src_name, FileTypes.VALA_SOURCE);
+						var src = new Source.with_type (target, src_name, source_file_type (src_name));
 						target.add_source (src);
 					} else if (item is Variable) {
-						add_vala_source (group, target, ((Variable) item).get_value ());
+						add_source (group, target, ((Variable) item).get_value ());
 					} else if (item is ConfigNodeList){
-						add_vala_source (group, target, item);
+						add_source (group, target, item);
 					}
 				}
 			} else {
@@ -218,7 +226,7 @@ namespace Vbf.Am
 			foreach (Variable variable in group.get_variables ()) {
 				if (variable.name == target.id || variable.name == source_primary_name) {
 					var val = variable.get_value ();
-					add_vala_source (group, target, val);
+					add_source (group, target, val);
 					break;
 				}
 			}
