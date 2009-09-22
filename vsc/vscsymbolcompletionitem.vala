@@ -178,7 +178,7 @@ namespace Vsc
 			this.symbol = item;
 			
 			string default_expr = "";
-			if (item.initializer != null) {
+			if (item.initializer != null && item.initializer.symbol_reference != null) {
 				default_expr = " = " + item.initializer.to_string ();
 			}
 			this.info = "Field: %s\n\n%s <b>%s</b>%s".printf (

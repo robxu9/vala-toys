@@ -1,5 +1,11 @@
 2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletionitem.vala:
+
+	workaround for another SIGSEGV
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanager.vala:
 	* vtg/vtgprojectview.vala:
 
