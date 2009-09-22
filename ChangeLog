@@ -1,5 +1,12 @@
 2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectview.vala:
+
+	project view displays the real group - target relation. Fixes issue #93
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/am/vbfamprojectmanager.vala:
 
 	deleted some debug print	

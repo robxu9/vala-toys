@@ -35,7 +35,7 @@ namespace Vtg
 		private int _project_count = 0;
 
 		private Module _last_selected_module;
-		private Target _last_selected_target;
+		private Group _last_selected_group;
 		
 		private Gtk.Menu _popup_modules;
 		private uint _popup_modules_ui_id;
@@ -191,10 +191,15 @@ namespace Vtg
 			if (model.get_iter (out iter, path)) {
 				string name, id;
 				model.get (iter, 1, out name, 2, out id);
-				string file = StringUtils.replace (id, "file://", ""); //HACK
-				if (name != null && FileUtils.test (file, FileTest.EXISTS)) {
-					_plugin_instance.activate_uri (id);
+				try {
+					string file = Filename.from_uri (id);
+					if (name != null && FileUtils.test (file, FileTest.EXISTS)) {
+						_plugin_instance.activate_uri (id);
+					}
+				} catch (Error e) {
+					GLib.warning ("on_project_view_row_activated error: %s", e.message);
 				}
+
 			}
 		}
 
@@ -214,8 +219,8 @@ namespace Vtg
 					if (obj is Module) {
 						_last_selected_module = (Module) obj;
 						_popup_modules.popup (null, null, null, event.button, event.time);
-					} else if (obj is Target) {
-						_last_selected_target = (Target) obj;
+					} else if (obj is Group) {
+						_last_selected_group = (Group) obj;
 						_popup_targets.popup (null, null, null, event.button, event.time);
 					}
 				}
@@ -262,17 +267,17 @@ namespace Vtg
 			string file = Path.build_filename (_last_selected_module.project.id, "configure.ac");
 			
 			if (FileUtils.test (file, FileTest.EXISTS)) {
-				_plugin_instance.activate_uri ("file://%s".printf (file));
+				_plugin_instance.activate_uri (Filename.to_uri (file));
 			}
 		}
 
 		private void on_target_open_makefile (Gtk.Action action)
 		{
-			return_if_fail (_last_selected_target != null);
-			string file = Path.build_filename (_last_selected_target.group.id, "Makefile.am");
+			return_if_fail (_last_selected_group != null);
+			string file = Path.build_filename (_last_selected_group.id, "Makefile.am");
 
 			if (FileUtils.test (file, FileTest.EXISTS)) {
-				_plugin_instance.activate_uri ("file://%s".printf (file));
+				_plugin_instance.activate_uri (Filename.to_uri (file));
 			}
 		}
 	}

@@ -193,6 +193,7 @@ namespace Vtg
 			TreeIter project_iter;
 			TreeIter modules_iter;
 			TreeIter groups_iter;
+			TreeIter? group_iter = null;
 
 			_model = new Gtk.TreeStore (5, typeof(string), typeof(string), typeof(string), typeof(GLib.Object), typeof(string));
 			_model.append (out project_iter, null);
@@ -212,6 +213,8 @@ namespace Vtg
 			_model.append (out groups_iter, project_iter);
 			_model.set (groups_iter, 0, Gtk.STOCK_DIRECTORY, 1, _("Files"), 2, "project-files", 4, "2");
 			foreach (Group group in _project.get_groups ()) {
+				bool group_added = false;
+				
 				foreach (Target target in group.get_targets ()) {
 					if (target.has_sources_of_type (FileTypes.VALA_SOURCE) || target.get_files ().size > 0) {
 						TreeIter target_iter = groups_iter;
@@ -224,9 +227,16 @@ namespace Vtg
 							    source.name.has_suffix (".stamp"))
 								continue;
 
+							if (!group_added) {
+								_model.append (out group_iter, groups_iter);
+								_model.set (group_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, "group-targets", 3, group, 4, "2");
+								group_added = true;
+							}
 							if (!target_added) {
-								_model.append (out target_iter, groups_iter);
-								_model.set (target_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, target.id, 3, target, 4, group.name);
+								//_model.append (out target_iter, groups_iter);
+								//_model.set (target_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, target.id, 3, target, 4, group.name);
+								_model.append (out target_iter, group_iter);
+								_model.set (target_iter, 0, Gtk.STOCK_DIRECTORY, 1, target.name, 2, target.id, 3, target, 4, group.name);
 								target_added = true;
 							}
 							TreeIter source_iter;
@@ -234,9 +244,16 @@ namespace Vtg
 							_model.set (source_iter, 0, Gtk.STOCK_FILE, 1, source.name, 2, source.uri, 3, source, 4, source.name);
 						}
 						foreach (Vbf.File file in target.get_files ()) {
+							if (!group_added) {
+								_model.append (out group_iter, groups_iter);
+								_model.set (group_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, "group-targets", 3, group, 4, "2");
+								group_added = true;
+							}
 							if (!target_added) {
-								_model.append (out target_iter, groups_iter);
-								_model.set (target_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, target.id, 3, target, 4, group.name);
+								//_model.append (out target_iter, groups_iter);
+								//_model.set (target_iter, 0, Gtk.STOCK_DIRECTORY, 1, group.name, 2, target.id, 3, target, 4, group.name);
+								_model.append (out target_iter, group_iter);
+								_model.set (target_iter, 0, Gtk.STOCK_DIRECTORY, 1, target.name, 2, target.id, 3, target, 4, group.name);
 								target_added = true;
 							}
 
@@ -275,9 +292,9 @@ namespace Vtg
 			}
 			
 			if (FileUtils.test (Path.build_filename ( _project.working_dir, "changelog"), FileTest.EXISTS)) {
-				changelog_uri = "file://%s".printf (Path.build_filename ( _project.working_dir, "changelog"));
+				changelog_uri = Filename.to_uri (Path.build_filename ( _project.working_dir, "changelog"));
 			} else if (FileUtils.test (Path.build_filename ( _project.working_dir, "ChangeLog"), FileTest.EXISTS)) {
-				changelog_uri = "file://%s".printf (Path.build_filename ( _project.working_dir, "ChangeLog"));
+				changelog_uri = Filename.to_uri (Path.build_filename ( _project.working_dir, "ChangeLog"));
 			}
 		}
 		
