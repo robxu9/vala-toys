@@ -85,8 +85,8 @@ namespace Vbf.Tests
 					print ("          name %s\n", target.name);
 					print ("          SOURCES\n");
 					foreach (Source source in target.get_sources ()) {
-						print ("            SOURCE %s filename %s\n", 
-							source.type == Vbf.FileTypes.VALA_SOURCE ? "(VALA)": "",
+						print ("            SOURCE %sfilename %s\n", 
+							get_source_type_description (source.type),
 							source.filename);
 					}
 					print ("          OTHER FILES\n");
@@ -121,7 +121,23 @@ namespace Vbf.Tests
 				}
 			}
 		}
-	
+		
+		private string get_source_type_description (FileTypes type)
+		{
+			switch (type) {
+				case FileTypes.DATA:
+					return "(DATA)    ";
+				case FileTypes.OTHER_SOURCE:
+					return "(OTHER)   ";
+				case FileTypes.UNKNOWN:
+					return "(UNKNOWN) ";
+				case FileTypes.VALA_SOURCE:
+					return "(VALA)    ";
+				default:
+					return "(N/A: %d)".printf ((int) type);		
+			}
+		}
+		
 		public static int main (string[] args)
 		{
 			try {
