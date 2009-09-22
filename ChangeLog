@@ -1,3 +1,9 @@
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+
+	transform the project id in a valid automake identifier. Fixes issue #91
+
 2009-09-20  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure.ac:

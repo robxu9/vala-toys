@@ -211,7 +211,9 @@ namespace Vbf.Am
 		
 		private void add_vala_sources (Group group, Target target)
 		{
-			string source_primary_name = "%s_SOURCES".printf (target.id);
+			string source_primary_name = "%s_SOURCES".printf (convert_to_primary_name (target.id));
+			
+			GLib.debug ("finding sources for target: %s", source_primary_name);
 			
 			foreach (Variable variable in group.get_variables ()) {
 				if (variable.name == target.id || variable.name == source_primary_name) {
@@ -674,6 +676,11 @@ namespace Vbf.Am
 				res = res.substring (0, res.length - 1);
 			}
 			return res;
+		}
+		
+		private string convert_to_primary_name (string data)
+		{
+			return data.replace (".", "_").replace ("-", "_");
 		}
 	}
 }
