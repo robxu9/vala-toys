@@ -217,32 +217,32 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Struct: %s".printf (item.name);
-			update_source_reference_info (item);
 			this.symbol = item;
+			update_source_reference_info (item);
 		}
 
  		public SymbolCompletionItem.with_class (Class item)
 		{
 			this.name = item.name;
 			this.info = "Class: %s".printf (item.name);
-			update_source_reference_info (item);
 			this.symbol = item;
+			update_source_reference_info (item);
 		}
 
  		public SymbolCompletionItem.with_interface (Interface item)
 		{
 			this.name = item.name;
 			this.info = "Interface: %s".printf (item.name);
-			update_source_reference_info (item);
 			this.symbol = item;
+			update_source_reference_info (item);
 		}
 
  		public SymbolCompletionItem.with_signal (Vala.Signal item)
 		{
 			this.name = item.name;
 			this.info = "Signal: %s".printf (item.name);
-			update_source_reference_info (item);
 			this.symbol = item;
+			update_source_reference_info (item);
 			int param_count = item.get_parameters ().size;
 			var params = formal_parameters_to_string (item.get_parameters ());
 
@@ -259,8 +259,8 @@ namespace Vsc
 		{
 			this.name = item.name;
 			this.info = "Namespace: %s".printf (item.name);
-			update_source_reference_info (item);
 			this.symbol = item;
+			update_source_reference_info (item);
 		}
 
 		private void update_source_reference_info (Symbol item)

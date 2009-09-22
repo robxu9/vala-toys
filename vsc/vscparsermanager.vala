@@ -612,39 +612,35 @@ namespace Vsc
 
 		private string? find_vala_package_name (string @namespace) throws GLib.Error
 		{
-			try {
-				//find for: foo.vapi
-				//or for: foo-1.0.vapi
-				//or for: foo+1.0.vapi
-				string[] to_finds = new string[] { "%s.".printf (@namespace.down ()),
-								   "%s-".printf (@namespace.down ()),
-								   "%s+".printf (@namespace.down ()) };
+			//find for: foo.vapi
+			//or for: foo-1.0.vapi
+			//or for: foo+1.0.vapi
+			string[] to_finds = new string[] { "%s.".printf (@namespace.down ()),
+							   "%s-".printf (@namespace.down ()),
+							   "%s+".printf (@namespace.down ()) };
 
-				foreach (string vapidir in _vapidirs) {
-					Dir dir;
-					try {					      
-						dir = Dir.open (vapidir);
-					} catch (FileError err) {
-						//do nothing
-						continue;
-					}
-					string? filename = dir.read_name ();
-					while (filename != null) {
-						if (filename.has_suffix ("vapi")) {
-							filename = filename.down ();
-							foreach (string to_find in to_finds) {
-								if (filename.has_prefix (to_find)) {
-									return filename;
-								}
+			foreach (string vapidir in _vapidirs) {
+				Dir dir;
+				try {					      
+					dir = Dir.open (vapidir);
+				} catch (FileError err) {
+					//do nothing
+					continue;
+				}
+				string? filename = dir.read_name ();
+				while (filename != null) {
+					if (filename.has_suffix ("vapi")) {
+						filename = filename.down ();
+						foreach (string to_find in to_finds) {
+							if (filename.has_prefix (to_find)) {
+								return filename;
 							}
 						}
-						filename = dir.read_name ();
 					}
+					filename = dir.read_name ();
 				}
-				return null;
-			} catch (Error err) {
-				throw err;
 			}
+			return null;
 		}
 
 		private Gee.List<string> find_vala_package_filenames (string package_name) throws FileError

@@ -1,5 +1,16 @@
 2009-09-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+
+	minor warning cleanup
+
+	* vsc/vscsymbolcompletionitem.vala:
+
+	ensure that the symbol is properly referenced before using it.	
+
+2009-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectview.vala:
 
 	Open configure.ac contextual menu' is be displayed

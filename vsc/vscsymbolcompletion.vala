@@ -529,7 +529,7 @@ namespace Vsc
 				}
 				
 			} catch(Error err) {
-				throw err;
+				GLib.warning ("get_visible_symbols: %s", err.message);
 			} finally {
 				_parser.unlock_all_contexts ();
 			}
@@ -560,7 +560,7 @@ namespace Vsc
 			try {
 				res = get_datatype_for_name_with_context (_parser.sec_context, symbolname, sourcefile,  line,  column);
 			} catch (Error err) {
-				throw err;
+				GLib.warning ("get_datatype_for_name: %s", err.message);
 			} finally {
 				_parser.unlock_sec_context ();
 			}
@@ -570,7 +570,7 @@ namespace Vsc
 				try {
 					res = get_datatype_for_name_with_context (_parser.pri_context, symbolname, sourcefile,  line,  column);
 				} catch (Error err) {
-					throw err;
+					GLib.warning ("get_datatype_for_name: %s", err.message);
 				} finally {
 					_parser.unlock_pri_context ();
 				}
@@ -597,7 +597,7 @@ namespace Vsc
 					warning ("(get_datatype_for_name_with_context) no sourcefile found %s", sourcefile);
 				}
 			} catch (Error err) {
-				throw err;
+				GLib.warning ("get_datatype_for_name_with_context: %s", err.message);
 			}
 			return res;
 		}
