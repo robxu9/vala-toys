@@ -1,5 +1,17 @@
 2009-09-24  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscparsermanager.vala:
+	
+	prevent the use of the "lock context" function.
+	Now the code context should be acquired first from the propeties
+	and then use. This minimize lock contection with the parser thread.
+
+	* vsc/vscsymbolcompletion.vala:
+
+	use the context only from local variables to make the lock times smaller.	
+
+2009-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsourceoutlinervisitor.vala:
 	* vsc/vscsymbolitem.vala:
 	* vtg/vtgsourceoutliner.vala:

@@ -380,10 +380,12 @@ namespace Vsc
 			var results = new Gee.ArrayList<SymbolCompletionItem> ();
 			
 			if (sourcefile != null) {
-				_parser.lock_all_contexts ();
-				source = find_sourcefile (_parser.sec_context, sourcefile);
+				var pri_context = _parser.pri_context;
+				var sec_context = _parser.sec_context;
+				
+				source = find_sourcefile (sec_context, sourcefile);
 				if (source == null)
-					source = find_sourcefile (_parser.pri_context, sourcefile);
+					source = find_sourcefile (pri_context, sourcefile);
 				
 				if (source != null) {
 					var ml = new MethodList (results);
@@ -391,7 +393,6 @@ namespace Vsc
 				} else {
 					warning ("get_methods_for_source: source '%s' not found", sourcefile);
 				}
-				_parser.unlock_all_contexts ();
 			}
 			return results;
 		}
@@ -404,10 +405,12 @@ namespace Vsc
 			var result = new SymbolCompletionResult ();
 			
 			if (sourcefile != null) {
-				_parser.lock_all_contexts ();
-				source = find_sourcefile (_parser.sec_context, sourcefile);
+				var pri_context = _parser.pri_context;
+				var sec_context = _parser.sec_context;
+				
+				source = find_sourcefile (sec_context, sourcefile);
 				if (source == null)
-					source = find_sourcefile (_parser.pri_context, sourcefile);
+					source = find_sourcefile (pri_context, sourcefile);
 				
 				if (source != null) {
 					var ml = new ClassList (results);
@@ -415,7 +418,6 @@ namespace Vsc
 				} else {
 					warning ("get_classes_for_source: source '%s' not found", sourcefile);
 				}
-				_parser.unlock_all_contexts ();
 			}
 			result.classes = results;
 			return result;
@@ -426,19 +428,15 @@ namespace Vsc
 			warn_if_fail (_parser != null);
 			var results = new Gee.ArrayList<SymbolCompletionItem> ();
 			var result = new SymbolCompletionResult ();
+			var pri_context = _parser.pri_context;
+			var sec_context = _parser.sec_context;
+			var context = sec_context != null ? sec_context: pri_context;
 			
-			_parser.lock_all_contexts ();
-
-			CodeContext? context = (null != _parser.sec_context)? _parser.sec_context: _parser.pri_context;
-			
-			if (null != context) {
+			if (context != null) {
 				foreach(Namespace ns in context.root.get_namespaces()) {
 					results.add(new SymbolCompletionItem.with_namespace(ns));
 				}
 			}
-			
-			_parser.unlock_all_contexts ();
-
 			result.namespaces = results;
 			return result;
 		}
@@ -446,16 +444,17 @@ namespace Vsc
 		public SymbolItem? get_symbols_for_source (string sourcefile)
 		{
 			SymbolItem res = null;
+			var sec_context = _parser.sec_context;
 			
-			_parser.lock_sec_context ();
-			var source = find_sourcefile (_parser.sec_context, sourcefile);
-			if (source != null) {
-				var visitor = new SourceOutlinerVisitor ();
-				source.accept (visitor);
-				res = visitor.results;
+			if (sec_context != null) {
+				var source = find_sourcefile (sec_context, sourcefile);
+			
+				if (source != null) {
+					var visitor = new SourceOutlinerVisitor ();
+					source.accept (visitor);
+					res = visitor.results;
+				}
 			}
-			_parser.unlock_sec_context ();
-			
 			return res;
 		}
 		
@@ -468,10 +467,12 @@ namespace Vsc
 			
 			 
 			try {
-				SourceFile? source = find_sourcefile (_parser.sec_context, sourcefile);
-				if (null == source){ source = find_sourcefile (_parser.pri_context, sourcefile); }
+				var pri_context = _parser.pri_context;
+				var sec_context = _parser.sec_context;
+				
+				SourceFile? source = find_sourcefile (sec_context, sourcefile);
+				if (null == source) { source = find_sourcefile (pri_context, sourcefile); }
 				if (null == source) { 
-					_parser.unlock_all_contexts ();
 					return result;
 				}
 				
@@ -546,8 +547,6 @@ namespace Vsc
 				
 			} catch(Error err) {
 				GLib.warning ("get_visible_symbols: %s", err.message);
-			} finally {
-				_parser.unlock_all_contexts ();
 			}
 			
 			return result;
@@ -572,23 +571,21 @@ namespace Vsc
 			DataType? res = null;
 
 			//secondary context
-			_parser.lock_sec_context ();
+			var sec_context = _parser.sec_context;
+						
 			try {
-				res = get_datatype_for_name_with_context (_parser.sec_context, symbolname, sourcefile,  line,  column);
+				res = get_datatype_for_name_with_context (sec_context, symbolname, sourcefile,  line,  column);
 			} catch (Error err) {
 				GLib.warning ("get_datatype_for_name: %s", err.message);
-			} finally {
-				_parser.unlock_sec_context ();
 			}
+				
 			//primary context
 			if (res == null) {
-				_parser.lock_pri_context ();
+				var pri_context = _parser.pri_context;
 				try {
-					res = get_datatype_for_name_with_context (_parser.pri_context, symbolname, sourcefile,  line,  column);
+					res = get_datatype_for_name_with_context (pri_context, symbolname, sourcefile,  line,  column);
 				} catch (Error err) {
 					GLib.warning ("get_datatype_for_name: %s", err.message);
-				} finally {
-					_parser.unlock_pri_context ();
 				}
 			}
 			return res;
@@ -622,7 +619,9 @@ namespace Vsc
 		private DataType? get_inner_symbolname_datatype (DataType datatype, string fields_path, SourceFile source) throws SymbolCompletionError
 		{
 			DataType result = null;
-			var finder = new TypeFinderVisitor (source, _parser.pri_context);
+			var pri_context = _parser.pri_context;
+			
+			var finder = new TypeFinderVisitor (source, pri_context);
 			string[] toks = fields_path.split (".", 2);
 			string typename = "%s.%s".printf (get_name_for_datatype (datatype), toks[0]); // 
 			finder.searched_typename = typename;
@@ -863,24 +862,27 @@ namespace Vsc
 							name = member_name;
 						}
 						
+						var pri_context = _parser.pri_context;
+						var sec_context = _parser.sec_context;
 						var finder = new TypeFinderVisitor ();
 						finder.searched_typename = name;
-						finder.visit_namespace (_parser.pri_context.root);
+						
+						finder.visit_namespace (pri_context.root);
 						vt = symbol_to_datatype(finder.result);
 						if (vt == null) {
 							foreach (UsingDirective item in source.get_using_directives ()) {
 								var using_name = "%s.%s".printf (item.namespace_symbol.name, name);
 								finder.searched_typename = using_name;
-								finder.visit_namespace (_parser.pri_context.root);
+								finder.visit_namespace (pri_context.root);
 								if (finder.result != null) {
 									vt = symbol_to_datatype(finder.result);
 									break;
 								} 
 							}
 							if (vt == null) {
-								finder = new TypeFinderVisitor (source, _parser.pri_context);
+								finder = new TypeFinderVisitor (source, pri_context);
 								finder.searched_typename = name;
-								finder.visit_namespace (_parser.sec_context.root);
+								finder.visit_namespace (sec_context.root);
 								vt = symbol_to_datatype(finder.result);
 							}
 						}
@@ -948,14 +950,15 @@ namespace Vsc
 			warn_if_fail (_parser != null);
 			SymbolCompletionResult result = new SymbolCompletionResult ();
 			SourceFile? source = null;
+			var pri_context = _parser.pri_context;
+			var sec_context = _parser.sec_context;
 			
 			if (sourcefile != null) {
-				source = find_sourcefile (_parser.sec_context, sourcefile);
-				if (null == source){ source = find_sourcefile (_parser.pri_context, sourcefile); }
+				source = find_sourcefile (sec_context, sourcefile);
+				if (null == source){ source = find_sourcefile (pri_context, sourcefile); }
 			}
 			
 			//first look in the namespaces defined in the source file
-			_parser.lock_all_contexts ();
 			try {
 			if (options.local_variables && source != null) {
 				Class cl = null;
@@ -998,8 +1001,8 @@ namespace Vsc
 				}
 			}
 			
-			var finder = new TypeFinderVisitor (source,  _parser.pri_context);
-			var completion = new CompletionVisitor (options, result, source,  _parser.pri_context);
+			var finder = new TypeFinderVisitor (source,  pri_context);
+			var completion = new CompletionVisitor (options, result, source,  pri_context);
 			if (source != null) {
 				foreach (CodeNode node in source.get_nodes ()) {
 					if (node is Namespace) {
@@ -1012,13 +1015,13 @@ namespace Vsc
 							finder.result.accept (completion);
 							if (finder.result is Namespace) {
 								get_completion_for_name_in_namespace_with_context (ns_name, symbolname, 
-									finder, completion, _parser.pri_context);
+									finder, completion, pri_context);
 							}
 							break;
 						} else {
 							int tmp = result.count;
 							get_completion_for_name_in_namespace_with_context (ns_name, symbolname, 
-								finder, completion, _parser.pri_context);
+								finder, completion, pri_context);
 							if (tmp != result.count) {
 								break; //found something in primary context
 							}
@@ -1032,7 +1035,7 @@ namespace Vsc
 			if (finder.result == null) {
 				//search it in the root namespace, string and other base types are there
 				finder.searched_typename = symbolname;
-				finder.visit_namespace (_parser.pri_context.root);
+				finder.visit_namespace (pri_context.root);
 				if (finder.result != null) {
 					finder.result.accept (completion);
 				}
@@ -1046,7 +1049,7 @@ namespace Vsc
 					string ns_name = get_qualified_namespace_name (item.namespace_symbol);
 					finder.searched_typename = ns_name;
 					get_completion_for_name_in_namespace_with_context (ns_name, 
-						ns_name, finder, completion, _parser.pri_context);
+						ns_name, finder, completion, pri_context);
 				}
 				finder.searched_typename = prev_symbol;
 			}
@@ -1063,7 +1066,7 @@ namespace Vsc
 						force_exit = true; //exit after this visit since symbolname is surely fully qualified
 						
 					get_completion_for_name_in_namespace_with_context (ns_name, 
-						symbolname, finder, completion, _parser.pri_context);
+						symbolname, finder, completion, pri_context);
 					if (tmp != result.count || force_exit) {
 						break;
 					}
@@ -1071,8 +1074,6 @@ namespace Vsc
 			}
 			} catch (Error err) {
 				throw err;
-			} finally {
-				_parser.unlock_all_contexts ();
 			}
 			
 			return result;

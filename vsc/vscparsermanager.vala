@@ -101,21 +101,31 @@ namespace Vsc
 			unlock_all_contexts ();
 		}
 
-		internal CodeContext pri_context
+		internal CodeContext? pri_context
 		{
-			get {
-				return _pri_context;
-			}
-		}
-		
-		internal CodeContext sec_context
-		{
+			// this property is owned since the context can be
+			// replaced at any time by the parsing threads
 			owned get {
-				return _sec_context;
+				lock_pri_context ();
+				var res = _pri_context;
+				unlock_pri_context ();
+				return res;
 			}
 		}
 		
-		internal void lock_all_contexts ()
+		internal CodeContext? sec_context
+		{
+			// this property is owned since the context can be
+			// replaced at any time by the parsing threads
+			owned get {
+				lock_sec_context ();
+				var res = _sec_context;
+				unlock_sec_context ();
+				return res;
+			}
+		}
+		
+		private void lock_all_contexts ()
 		{
 			return_if_fail (mutex_pri_context != null);
 			mutex_pri_context.@lock ();
@@ -123,7 +133,7 @@ namespace Vsc
 			mutex_sec_context.@lock ();
 		}
 
-		internal void unlock_all_contexts ()
+		private void unlock_all_contexts ()
 		{
 			if (mutex_sec_context != null)
 				mutex_sec_context.unlock ();
@@ -131,25 +141,25 @@ namespace Vsc
 				mutex_pri_context.unlock ();				
 		}
 
-		internal void lock_pri_context ()
+		private void lock_pri_context ()
 		{
 			return_if_fail (mutex_pri_context != null);
 			mutex_pri_context.@lock ();
 		}
 
-		internal void unlock_pri_context ()
+		private void unlock_pri_context ()
 		{
 			return_if_fail (mutex_pri_context != null);
 			mutex_pri_context.unlock ();
 		}
 	
-		internal void lock_sec_context ()
+		private void lock_sec_context ()
 		{
 			return_if_fail (mutex_sec_context != null);
 			mutex_sec_context.@lock ();
 		}
 
-		internal void unlock_sec_context ()
+		private void unlock_sec_context ()
 		{
 			return_if_fail (mutex_sec_context != null);
 			mutex_sec_context.unlock ();
