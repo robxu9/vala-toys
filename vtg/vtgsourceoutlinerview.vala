@@ -25,13 +25,14 @@ using Gdk;
 using Gtk;
 using Vbf;
 using Vsc;
+using Vala;
 
 namespace Vtg
 {
 	private enum Columns
 	{
 		NAME = 0,
-		ICON_ID,
+		ICON,
 		SYMBOL,
 		COLUMNS_COUNT
 	}
@@ -41,6 +42,18 @@ namespace Vtg
 		private Vtg.PluginInstance _plugin_instance = null;
 		private Gtk.TreeView _src_view;
 		private TreeStore _model = null;
+
+		private Gdk.Pixbuf _icon_generic;
+		private Gdk.Pixbuf _icon_field;
+		private Gdk.Pixbuf _icon_method;
+		private Gdk.Pixbuf _icon_class;
+		private Gdk.Pixbuf _icon_struct;
+		private Gdk.Pixbuf _icon_property;
+		private Gdk.Pixbuf _icon_signal;
+		private Gdk.Pixbuf _icon_iface;
+		private Gdk.Pixbuf _icon_const;
+		private Gdk.Pixbuf _icon_enum;
+		private Gdk.Pixbuf _icon_namespace;
 		
 		private Gtk.Menu _popup_symbols;
 		private uint _popup_symbols_ui_id;
@@ -64,6 +77,17 @@ namespace Vtg
 		public SourceOutlinerView (Vtg.PluginInstance plugin_instance)
 		{
 			this.plugin_instance = plugin_instance;
+			this._icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
+			this._icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
+			this._icon_method = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-method-16.png"));
+			this._icon_class = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-class-16.png"));
+			this._icon_struct = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-structure-16.png"));
+			this._icon_property = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-property-16.png"));
+			this._icon_signal = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-event-16.png"));
+			this._icon_iface = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-interface-16.png"));
+			this._icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
+			this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
+			this._icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));			
 		}
 		
 		~SourceOutlinerView ()
@@ -79,17 +103,21 @@ namespace Vtg
 			var panel = _plugin_instance.window.get_side_panel ();
 			_side_panel = new Gtk.VBox (false, 8);
 			_src_view = new Gtk.TreeView ();
-			CellRenderer renderer = new CellRendererPixbuf ();
+			
 			var column = new TreeViewColumn ();
+			
+			CellRenderer renderer = new CellRendererPixbuf ();
  			column.pack_start (renderer, false);
-			column.add_attribute (renderer, "stock-id", Columns.ICON_ID);
+			column.add_attribute (renderer, "pixbuf", Columns.ICON);
+			
 			renderer = new CellRendererText ();
 			column.pack_start (renderer, true);
 			column.add_attribute (renderer, "text", Columns.NAME);
+			
 			_src_view.append_column (column);
 			_src_view.set_headers_visible (false);
-			_src_view.row_activated += this.on_project_view_row_activated;
-			_src_view.button_press_event += this.on_project_view_button_press;
+			_src_view.row_activated += this.on_source_outliner_view_row_activated;
+			_src_view.button_press_event += this.on_source_outliner_view_button_press;
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_src_view);
 			_side_panel.pack_start (scroll, true, true, 4);
@@ -111,7 +139,7 @@ namespace Vtg
 			}
 			
 			/* initializing the model */
-			_model = new Gtk.TreeStore (Columns.COLUMNS_COUNT, typeof(string), typeof(string), typeof(GLib.Object));
+			_model = new Gtk.TreeStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object));
 			_src_view.set_model (_model);
 		}
 		
@@ -127,23 +155,19 @@ namespace Vtg
 			_src_view.expand_all ();
 		}
 
-		private void on_project_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
+		private void on_source_outliner_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
 		{
 			var tw = (TreeView) sender;
 			var model = tw.get_model ();
 			TreeIter iter;
 			if (model.get_iter (out iter, path)) {
-				string name, id;
-				model.get (iter, 1, out name, 2, out id);
-				try {
-					string file = Filename.from_uri (id);
-					if (name != null && FileUtils.test (file, FileTest.EXISTS)) {
-						_plugin_instance.activate_uri (id);
-					}
-				} catch (Error e) {
-					GLib.warning ("on_project_view_row_activated error: %s", e.message);
+				SymbolItem symbol;
+				model.get (iter, Columns.SYMBOL, out symbol);
+				if (symbol.symbol != null && symbol.symbol.source_reference != null) {
+					int line, col;
+					line = symbol.symbol.source_reference.first_line;
+					col = symbol.symbol.source_reference.first_column;
 				}
-
 			}
 		}
 		
@@ -152,7 +176,7 @@ namespace Vtg
 			GLib.debug ("sourceoutliner: goto called");
 		}
 		
-		private bool on_project_view_button_press (Gtk.Widget sender, Gdk.EventButton event)
+		private bool on_source_outliner_view_button_press (Gtk.Widget sender, Gdk.EventButton event)
 		{
 			if (event.button == 3) {
 				weak TreeModel model;
@@ -181,7 +205,7 @@ namespace Vtg
 			TreeIter iter;
 			_model.append (out iter, parentIter);
 			_model.set (iter, 
-				Columns.ICON_ID, get_icon_from_symbol_type (parent.symbol), 
+				Columns.ICON, get_icon_from_symbol_type (parent.symbol), 
 				Columns.NAME, parent.name, 
 				Columns.SYMBOL, parent);
 
@@ -193,9 +217,30 @@ namespace Vtg
 			}
 		}
 		
-		private string get_icon_from_symbol_type (Vala.Symbol symbol)
+		private Pixbuf get_icon_from_symbol_type (Vala.Symbol symbol)
 		{
-			return Gtk.STOCK_FILE;
+			if (_icon_namespace != null && symbol is Namespace)
+				return _icon_namespace;
+			else if (_icon_class != null && symbol is Class)
+				return _icon_class;
+			else if (_icon_struct != null && symbol is Struct)
+				return _icon_struct;
+			else if (_icon_iface != null && symbol is Interface)
+				return _icon_iface;			
+			else if (_icon_field != null && symbol is Field)
+				return _icon_field;
+			else if (_icon_property != null && symbol is Property)
+				return _icon_property;
+			else if (_icon_method != null && symbol is Method)
+				return _icon_method;
+			else if (_icon_enum != null && symbol is Enum)
+				return _icon_enum;
+			else if (_icon_const != null && symbol is Constant)
+				return _icon_const;
+			else if (_icon_signal != null && symbol is Vala.Signal)
+				return _icon_signal;
+				
+			return _icon_generic;
 		}
 	}
 }

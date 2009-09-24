@@ -1,10 +1,17 @@
 2009-09-24  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourceoutlinerview.vala:
+
+	enanched the code outliner with the proper icons and
+	prepared for the goto source position feature.
+
+2009-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscparsermanager.vala:
 	
 	prevent the use of the "lock context" function.
 	Now the code context should be acquired first from the propeties
-	and then use. This minimize lock contection with the parser thread.
+	and then used. This minimize lock contection with the parser thread.
 
 	* vsc/vscsymbolcompletion.vala:
 
