@@ -590,6 +590,7 @@ namespace Vsc
 
 			context.profile = Profile.GOBJECT;
 			context.add_define ("GOBJECT");
+			context.add_define ("VALA_0_7_6_NEW_METHODS");
 			
 			int glib_major = 2;
 			int glib_minor = 12;
@@ -604,10 +605,11 @@ namespace Vsc
 		{
 			var symbol_resolver = new SymbolResolver ();
 			symbol_resolver.resolve (context);
-/*
-			var semantic = new SemanticAnalyzer ();
-			semantic.analyze (context);
-*/
+
+			if (context.report.get_errors () == 0) {
+				var semantic = new SemanticAnalyzer ();
+				semantic.analyze (context);
+			}
 		}
 
 		private string? find_vala_package_name (string @namespace) throws GLib.Error
