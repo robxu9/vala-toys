@@ -85,9 +85,6 @@ namespace Vtg
 				
 				string[] pars;
 				Shell.parse_argv (cmd, out pars);
-				foreach (var par in pars) {
-					GLib.debug ("Pars is %s", par);
-				}
 				log.clean_output ();
 				var start_message = _("Start compiling file: %s\n").printf (filename);
 				log.log_message (OutputTypes.MESSAGE, start_message);

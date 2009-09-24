@@ -15,3 +15,5 @@ vtg/vtgprojectview.c
 vtg/vtgprojectsearch.c
 vtg/vtgprojectsearchresultsview.c
 gen-project/valaprojectgenerator.c
+vtg/vtgsourceoutlinerview.c
+

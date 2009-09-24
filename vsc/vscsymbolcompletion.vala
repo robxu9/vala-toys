@@ -443,6 +443,22 @@ namespace Vsc
 			return result;
 		}
 		
+		public SymbolItem? get_symbols_for_source (string sourcefile)
+		{
+			SymbolItem res = null;
+			
+			_parser.lock_sec_context ();
+			var source = find_sourcefile (_parser.sec_context, sourcefile);
+			if (source != null) {
+				var visitor = new SourceOutlinerVisitor ();
+				source.accept (visitor);
+				res = visitor.results;
+			}
+			_parser.unlock_sec_context ();
+			
+			return res;
+		}
+		
 		public SymbolCompletionResult get_visible_symbols (SymbolCompletionFilterOptions options, string? sourcefile, int line, int column, bool types_only)
 		{
 			SymbolCompletionResult result = new SymbolCompletionResult ();
@@ -450,7 +466,7 @@ namespace Vsc
 			
 			warn_if_fail (_parser != null);
 			
-			_parser.lock_all_contexts ();
+			 
 			try {
 				SourceFile? source = find_sourcefile (_parser.sec_context, sourcefile);
 				if (null == source){ source = find_sourcefile (_parser.pri_context, sourcefile); }
@@ -947,7 +963,6 @@ namespace Vsc
 				var codenode = find_codenode (source, line, column, out cl, out md);
 				if (codenode != null) {
 					var current = codenode;
-					debug ("local varialbles");
 					
 					while (current != null) {
 						var body = get_codenode_body (current);

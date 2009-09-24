@@ -34,6 +34,7 @@ namespace Vtg
 		
 		private unowned Gedit.Window _window = null;
 		private ProjectManagerUi _project_manager_ui = null;
+		private SourceOutliner _source_outliner = null;
 		private OutputView _output_view = null;
 		private Gee.List<Vtg.SymbolCompletionHelper> _scs = new Gee.ArrayList<Vtg.SymbolCompletionHelper> ();
 		private Gee.List<Vtg.BracketCompletion> _bcs = new Gee.ArrayList<Vtg.BracketCompletion> ();
@@ -48,6 +49,11 @@ namespace Vtg
 			get { return _project_manager_ui; }
 		}
 
+		public SourceOutliner source_outliner
+		{
+			get { return _source_outliner; }
+		}
+	
 		public Gedit.Window window
 		{
 			get { return _window; }
@@ -67,11 +73,13 @@ namespace Vtg
 
 			_output_view = new OutputView (this);
 			_project_manager_ui = new ProjectManagerUi (this);
+			_source_outliner = new SourceOutliner (this);
 			//_prj_man.project_loaded += this.on_project_loaded;
 		}
 
 		~PluginInstance ()
 		{
+			_source_outliner = null;
 			_project_manager_ui = null;
 			_output_view = null;
 			_window = null;

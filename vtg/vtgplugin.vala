@@ -97,14 +97,16 @@ namespace Vtg
 
 		public override void update_ui (Gedit.Window window)
 		{
-			var doc = window.get_active_document ();
+			var view = window.get_active_view ();
+			var doc =  (Gedit.Document) view.get_buffer ();
 			var instance = get_plugin_instance_for_window (window);
 			
 			if (doc != null) {
 				var prj = project_descriptor_find_from_document (doc);
-				if (!(prj.project == null && (doc.language == null || doc.language.id != "vala"))) {
+				if (prj.project != null && Utils.is_vala_doc (doc)) {
 					instance.project_manager_ui.project_view.current_project = prj.project;
 				}
+				instance.source_outliner.active_view = view;
 			}
 		}
 

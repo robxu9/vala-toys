@@ -81,8 +81,8 @@ namespace Vtg
 		~SymbolCompletionProvider ()
 		{
 			_view.key_press_event -= this.on_view_key_press;
-			this._completion.parser.cache_building -= this.on_cache_building;
-			this._completion.parser.cache_builded -= this.on_cache_builded;
+			this._completion.parser.caches_building -= this.on_cache_building;
+			this._completion.parser.caches_builded -= this.on_cache_builded;
 			
 			if (sb_msg_id != 0) {
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
@@ -101,12 +101,8 @@ namespace Vtg
 		construct { 
 			try {
 				var doc = (Gedit.Document) _view.get_buffer ();
-				string name = doc.get_uri ();
-				if (name == null) {
-					name = doc.get_short_name_for_display ();
-				} else {
-					name = Filename.from_uri (name);
-				}
+				string name = Utils.get_document_name (doc);
+
 				_sb = new Vsc.SourceBuffer (name, null);
 
 				_view.key_press_event += this.on_view_key_press;
@@ -124,8 +120,8 @@ namespace Vtg
 				this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
 				this._icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));
 				
-				this._completion.parser.cache_building += this.on_cache_building;
-				this._completion.parser.cache_builded += this.on_cache_builded;
+				this._completion.parser.caches_building += this.on_cache_building;
+				this._completion.parser.caches_builded += this.on_cache_builded;
 
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				sb_context_id = status_bar.get_context_id ("symbol status");

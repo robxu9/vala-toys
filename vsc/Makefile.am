@@ -26,6 +26,7 @@ libvscdir = $(libdir)/gedit-2/plugins
 noinst_LTLIBRARIES = libvsc.la
 
 vsc_VALASOURCES = \
+	vscsymbolitem.vala \
 	vscsymbolcompletion.vala \
 	vscsymbolcompletionfilteroptions.vala \
 	vscsymbolcompletionitem.vala \
@@ -36,6 +37,7 @@ vsc_VALASOURCES = \
 	vsccompletionvisitor.vala \
 	vsctypefindvisitor.vala \
 	vscparsermanager.vala \
+	vscsourceoutlinervisitor.vala \
 	$(NULL)
 
 noinst_HEADERS = \

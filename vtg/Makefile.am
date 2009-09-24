@@ -55,6 +55,8 @@ libvtg_la_VALASOURCES = \
 	vtgsourcebookmark.vala \
 	vtgsourcebookmarks.vala \
 	vtgplugininstance.vala \
+	vtgsourceoutlinerview.vala \
+	vtgsourceoutliner.vala \
 	vtgplugin.vala \
 	vtgutils.vala \
 	$(NULL)

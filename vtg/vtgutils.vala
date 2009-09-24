@@ -222,6 +222,21 @@ namespace Vtg
 		
 		public const int prealloc_count = 500;
 
+		public static bool is_vala_doc (Gedit.Document doc)
+		{
+			return doc.language != null && doc.language.id == "vala";
+		}
+
+		public static string get_document_name (Gedit.Document doc)
+		{
+			string name = doc.get_uri ();
+			if (name == null) {
+				name = doc.get_short_name_for_display ();
+			} else {
+				name = Filename.from_uri (name);
+			}
+			return name;
+		}
 
 		public static Gtk.Builder get_builder ()
 		{

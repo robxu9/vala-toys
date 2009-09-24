@@ -1,3 +1,24 @@
+2009-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsourceoutlinervisitor.vala:
+	* vsc/vscsymbolitem.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* ChangeLog:
+	* po/POTFILES.skip:
+	* vsc/Makefile.am:
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	initial support for the source outliner.
+	misc cleanups.
+
 2009-09-23  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vscparsermanager.vala:

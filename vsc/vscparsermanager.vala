@@ -48,9 +48,12 @@ namespace Vsc
 
 		private bool parsing_suspended = true;
 		
-		public signal void cache_building ();
-		public signal void cache_builded ();
+		public signal void caches_building ();
+		public signal void caches_builded ();
 
+
+		public signal void sec_cache_builded ();
+		
 		construct
 		{
 			mutex_pri_context = new Mutex ();
@@ -107,7 +110,7 @@ namespace Vsc
 		
 		internal CodeContext sec_context
 		{
-			get {
+			owned get {
 				return _sec_context;
 			}
 		}
@@ -452,7 +455,7 @@ namespace Vsc
 
 		private void* parse_pri_contexts ()
 		{
-			this.cache_building ();
+			this.caches_building ();
 
 			while (true) {
 				int stamp = AtomicInt.get (ref need_parse_pri_context);
@@ -463,13 +466,13 @@ namespace Vsc
 				}
 			}
 
-			this.cache_builded ();
+			this.caches_builded ();
 			return ((void *) 0);
 		}
 
 		private void* parse_sec_contexts ()
 		{
-			this.cache_building ();
+			this.caches_building ();
 
 			while (true) {
 				int stamp = AtomicInt.get (ref need_parse_sec_context);
@@ -479,8 +482,9 @@ namespace Vsc
 					break;
 				}
 			}
-
-			this.cache_builded ();
+			
+			this.sec_cache_builded ();
+			this.caches_builded ();
 			return ((void *) 0);
 		}
 
