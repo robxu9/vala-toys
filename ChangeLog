@@ -1,3 +1,10 @@
+2009-09-25  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	double click the source outliner to go to the corresponding source line
+
 2009-09-24  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsourceoutlinerview.vala:

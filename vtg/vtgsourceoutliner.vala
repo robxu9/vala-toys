@@ -63,10 +63,12 @@ namespace Vtg
 		{
 			this.plugin_instance = plugin_instance;
 			_outliner_view = new SourceOutlinerView (plugin_instance);
+			_outliner_view.goto_source += this.on_goto_source;
 		}
 
 		~SourceOutliner ()
 		{
+			_outliner_view.goto_source += this.on_goto_source;
 			if (idle_id != 0) {
 				GLib.Source.remove (idle_id);
 			}
@@ -75,7 +77,19 @@ namespace Vtg
 				cleanup_completion (_active_view);
 			}
 		}
-		
+
+		private void on_goto_source (SourceOutlinerView sender, int line, int start_column, int end_column)		
+		{
+			Gedit.Document doc = (Gedit.Document) _active_view.get_buffer ();
+			TextIter? iter;
+			doc.get_iter_at_line_offset (out iter, line - 1, start_column - 1);
+			if (iter != null) {
+				doc.place_cursor (iter);
+				_active_view.scroll_to_iter (iter, 0, true, 0, 0.5);
+				_active_view.grab_focus ();
+			}
+		}
+
 		private void setup_document (Gedit.Document doc)
 		{
 			//Signal.connect (doc, "notify::language", (GLib.Callback) on_notify_language, this);

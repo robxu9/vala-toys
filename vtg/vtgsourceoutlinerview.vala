@@ -68,9 +68,10 @@ namespace Vtg
 			{"source-outliner-goto", Gtk.STOCK_OPEN, N_("Goto definition..."), null, N_("Goto symbol definition"), on_source_outliner_goto}
 		};
 
-		private Vsc.SymbolItem _last_selected_symbol = null;
 		private ActionGroup _actions;
 		private VBox _side_panel;
+		
+		public signal void goto_source (int line, int start_column, int end_column);
 		
 		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } }
 
@@ -155,6 +156,16 @@ namespace Vtg
 			_src_view.expand_all ();
 		}
 
+		private void goto_line (SymbolItem symbol)
+		{
+			if (symbol.symbol != null && symbol.symbol.source_reference != null) {
+				int line = symbol.symbol.source_reference.first_line;
+				int start_col = symbol.symbol.source_reference.first_column;
+				int end_col = symbol.symbol.source_reference.last_column;
+				this.goto_source (line, start_col, end_col);
+			}
+		}
+		
 		private void on_source_outliner_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
 		{
 			var tw = (TreeView) sender;
@@ -163,17 +174,20 @@ namespace Vtg
 			if (model.get_iter (out iter, path)) {
 				SymbolItem symbol;
 				model.get (iter, Columns.SYMBOL, out symbol);
-				if (symbol.symbol != null && symbol.symbol.source_reference != null) {
-					int line, col;
-					line = symbol.symbol.source_reference.first_line;
-					col = symbol.symbol.source_reference.first_column;
-				}
+				goto_line (symbol);
 			}
 		}
 		
 		private void on_source_outliner_goto (Gtk.Action action)
 		{
-			GLib.debug ("sourceoutliner: goto called");
+			TreeIter iter;
+			TreeModel model;
+			if (_src_view.get_selection ().get_selected (out model, out iter))
+			{
+				SymbolItem symbol;
+				model.get (iter, Columns.SYMBOL, out symbol);
+				goto_line (symbol);
+			}
 		}
 		
 		private bool on_source_outliner_view_button_press (Gtk.Widget sender, Gdk.EventButton event)
@@ -189,7 +203,6 @@ namespace Vtg
 					model.get_iter (out iter, path);
 					model.get (iter, Columns.SYMBOL, out obj);
 					if (obj is SymbolItem) {
-						_last_selected_symbol = (SymbolItem) obj;
 						_popup_symbols.popup (null, null, null, event.button, event.time);
 					}
 				}
