@@ -1,5 +1,13 @@
 2009-09-25  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsourceoutlinervisitor.vala:
+
+	make sure that only symbol defined in the current source are
+	included in the source outliner view.
+	The first source outliner version now is complete! Fixes issue #89
+
+2009-09-25  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutliner.vala:
 	* vtg/vtgsourceoutlinerview.vala:
 

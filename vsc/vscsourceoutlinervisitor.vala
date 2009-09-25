@@ -28,6 +28,7 @@ using Vala;
 public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 	private SymbolItem _results = null;
 	private SymbolItem _current = null;
+	private SourceFile _file = null;
 	
 	public SymbolItem? results
 	{
@@ -44,18 +45,22 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 	{
 		SymbolItem res;
 		
-		res = new SymbolItem (symbol, _current);
-		if (_current != null) {
-			_current.add_child (res);
+		if (symbol.source_reference.file.filename == _file.filename) {
+			res = new SymbolItem (symbol, _current);
+			if (_current != null) {
+				_current.add_child (res);
+			}
+			if (_results == null) {
+				_results = res;
+			}
+		} else {
+			res = _current; // ignore the symbol if defined in onother source file
 		}
-		if (_results == null) {
-			_results = res;
-		}
-		
 		return res;
 	}
 	
 	public override void visit_source_file (SourceFile file) {
+		this._file = file;
 		// just visit namespaces for now since the nodes aren't ordered
 		foreach (CodeNode node in file.get_nodes ()) {
 			if (node is Namespace)
@@ -81,6 +86,9 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 	{
 		var old_current = _current;
 		_current = add_symbol (cl);
+		if (_current.symbol != cl)
+			return; // not interesting
+			
 		foreach (DataType type in cl.get_base_types ()) {
 			if (type is Vala.ObjectType) {
 				var obj = (ObjectType) type;
@@ -139,6 +147,9 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 		var old_current = _current;
 		
 		_current = add_symbol (iface);
+		if (_current.symbol != iface)
+			return; // not interesting
+					
 		foreach (DataType type in iface.get_prerequisites ()) {
 			if (type.data_type != null) {
 				type.data_type.accept (this);	
@@ -192,6 +203,9 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 		var old_current = _current;
 		
 		_current = add_symbol (st);
+		if (_current.symbol != st)
+			return; // not interesting
+					
 		if (st.base_type != null) {
 			st.base_type.accept (this);
 		}
