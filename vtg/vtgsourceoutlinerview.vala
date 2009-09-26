@@ -219,20 +219,20 @@ namespace Vtg
 			return false;
 		}
 		
-		private void rebuild_model (SymbolItem? parent, TreeIter? parentIter = null)
+		private void rebuild_model (SymbolItem? symbol, TreeIter? parentIter = null)
 		{
-			if (parent == null)
+			if (symbol == null)
 				return;
 			
 			TreeIter iter;
 			_model.append (out iter, parentIter);
 			_model.set (iter, 
-				Columns.ICON, get_icon_from_symbol_type (parent.symbol), 
-				Columns.NAME, parent.name, 
-				Columns.SYMBOL, parent);
+				Columns.ICON, get_icon_from_symbol_type (symbol.symbol), 
+				Columns.NAME, symbol.description, 
+				Columns.SYMBOL, symbol);
 
-			if (parent.children != null) {
-				foreach (SymbolItem item in parent.children) {
+			if (symbol.children != null) {
+				foreach (SymbolItem item in symbol.children) {
 					rebuild_model (item, iter);
 				}
 			}

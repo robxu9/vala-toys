@@ -77,15 +77,56 @@ public class Vsc.CompletionVisitor : CodeVisitor {
         
        	public override void visit_class (Class cl) 
 	{
+		if (_results.classes_contain (cl.name)) {
+			return; //already visited
+		}
+		foreach (TypeParameter p in cl.get_type_parameters ()) {
+			p.accept (this);
+		}
+
+		/* process enums first to avoid order problems in C code */
+		foreach (Enum en in cl.get_enums ()) {
+			en.accept (this);
+		}
+
+		foreach (Field f in cl.get_fields ()) {
+			f.accept (this);
+		}
+	
+		foreach (Constant c in cl.get_constants()) {
+			c.accept (this);
+		}
+	
+		foreach (Method m in cl.get_methods()) {
+			m.accept (this);
+		}
+	
+		foreach (Property prop in cl.get_properties()) {
+			prop.accept (this);
+		}
+	
+		foreach (Vala.Signal sig in cl.get_signals()) {
+			sig.accept (this);
+		}
+	
+		foreach (Class subcl in cl.get_classes()) {
+			subcl.accept (this);
+		}
+	
+		foreach (Struct st in cl.get_structs()) {
+			st.accept (this);
+		}
+
+		foreach (Delegate d in cl.get_delegates()) {
+			d.accept (this);
+		}
+		
 		if (_parent_type_already_visited) {
-			if (!_results.classes_contain (cl.name) && test_symbol (_options, cl)) {
+			if (test_symbol (_options, cl)) {
 				var item = new SymbolCompletionItem.with_class (cl);
 				_results.classes.add (item);
 			}
 		} else {
-			if (_results.classes_contain (cl.name)) {
-				return; //already visited
-			}
 			bool tmp = _parent_type_already_visited;
 			foreach (DataType type in cl.get_base_types ()) {
 				if (type is Vala.ObjectType) {
@@ -98,46 +139,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			}
 			
 			_parent_type_already_visited = true;
-			foreach (TypeParameter p in cl.get_type_parameters ()) {
-				p.accept (this);
-			}
-
-			/* process enums first to avoid order problems in C code */
-			foreach (Enum en in cl.get_enums ()) {
-				en.accept (this);
-			}
-
-			foreach (Field f in cl.get_fields ()) {
-				f.accept (this);
-			}
-		
-			foreach (Constant c in cl.get_constants()) {
-				c.accept (this);
-			}
-		
-			foreach (Method m in cl.get_methods()) {
-				m.accept (this);
-			}
-		
-			foreach (Property prop in cl.get_properties()) {
-				prop.accept (this);
-			}
-		
-			foreach (Vala.Signal sig in cl.get_signals()) {
-				sig.accept (this);
-			}
-		
-			foreach (Class subcl in cl.get_classes()) {
-				subcl.accept (this);
-			}
-		
-			foreach (Struct st in cl.get_structs()) {
-				st.accept (this);
-			}
-
-			foreach (Delegate d in cl.get_delegates()) {
-				d.accept (this);
-			}
 		}
 	}
 
@@ -195,8 +196,27 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	
        	public override void visit_struct (Struct st) 
 	{
+		if (_results.structs_contain (st.name)) {
+			return; // already visited
+		}
+		foreach (TypeParameter p in st.get_type_parameters()) {
+			p.accept (this);
+		}
+	
+		foreach (Field f in st.get_fields()) {
+			f.accept (this);
+		}
+	
+		foreach (Constant c in st.get_constants()) {
+			c.accept (this);
+		}
+	
+		foreach (Method m in st.get_methods()) {
+			m.accept (this);
+		}			
+		
 		if (_parent_type_already_visited) {
-			if (!_results.structs_contain (st.name) && test_symbol (_options, st)) {
+			if (test_symbol (_options, st)) {
 				_results.structs.add (new SymbolCompletionItem.with_struct (st));
 			}
 			if (st.base_type != null) {
@@ -207,21 +227,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			if (st.base_type != null) {
 				st.base_type.accept (this);
 			}
-			foreach (TypeParameter p in st.get_type_parameters()) {
-				p.accept (this);
-			}
-		
-			foreach (Field f in st.get_fields()) {
-				f.accept (this);
-			}
-		
-			foreach (Constant c in st.get_constants()) {
-				c.accept (this);
-			}
-		
-			foreach (Method m in st.get_methods()) {
-				m.accept (this);
-			}			
 		}
 	}
 
@@ -261,7 +266,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		
        	public override void visit_method (Method m) 
 	{
-		if (!m.overrides && !_results.methods_contain (m.name) && test_symbol (_options, m)) {
+		if (!_results.methods_contain (m.name) && test_symbol (_options, m)) {
 			_results.methods.add (new SymbolCompletionItem.with_method (m));
 		}
 	}

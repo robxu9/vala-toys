@@ -1,5 +1,13 @@
 2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolitem.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	better description for elements in the source outliner pane
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutlinerview.vala:
 
 	added missing types in the sort callback function.
