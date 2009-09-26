@@ -120,9 +120,11 @@ namespace Vtg
 			TextIter start;
 			weak string text = "";
 			int col;
-
+			int line;
+			
 			src.get_iter_at_mark (out end, mark);
 			col = end.get_line_offset ();
+			line = end.get_line ();
 			end.set_line_offset (0);
 
 			start = end;
@@ -130,7 +132,10 @@ namespace Vtg
 
 			if (ch.isspace ()) {
 				while (end.forward_char ()) {
-					if (end.starts_word ()) {
+					if (line != end.get_line ()) {
+						end.backward_char ();
+						break;
+					} else if (end.starts_word ()) {
 						break;
 					} else if (end.get_line_offset () >= col) {
 						break;
@@ -288,6 +293,8 @@ namespace Vtg
 						} 
 						result = true;
 					} else if (indent != null && indent != "") {
+						GLib.debug ("qui con indent '%s'", indent);
+						
 						instance.insert_chars (src, "\n%s".printf(indent));
 						result = true;
 						sender.scroll_to_mark (mark, 0, false, 0, 0);
