@@ -1,5 +1,11 @@
 2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+
+	fix double enter on empty lines.
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletionitem.vala:
 	
 	fix creation methods name in the completion popup.
