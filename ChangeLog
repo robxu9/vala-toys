@@ -1,5 +1,12 @@
 2009-09-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ui/Makefile.am:
+	* ui/vtg.ui:
+	
+	removed the support for the glade file. Fixes issue #99
+
+2009-09-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutlinerview.vala:
 
 	the items in the source code outliner are now sorted. Fixes issue #100
