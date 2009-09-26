@@ -41,6 +41,7 @@ namespace Vtg
 	{
 		private Vtg.PluginInstance _plugin_instance = null;
 		private Gtk.TreeView _src_view;
+		private Gtk.TreeModelSort _sorted;
 		private TreeStore _model = null;
 
 		private Gdk.Pixbuf _icon_generic;
@@ -77,18 +78,7 @@ namespace Vtg
 
 		public SourceOutlinerView (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
-			this._icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
-			this._icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
-			this._icon_method = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-method-16.png"));
-			this._icon_class = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-class-16.png"));
-			this._icon_struct = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-structure-16.png"));
-			this._icon_property = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-property-16.png"));
-			this._icon_signal = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-event-16.png"));
-			this._icon_iface = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-interface-16.png"));
-			this._icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
-			this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
-			this._icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));			
+			this.plugin_instance = plugin_instance;	
 		}
 		
 		~SourceOutlinerView ()
@@ -141,7 +131,23 @@ namespace Vtg
 			
 			/* initializing the model */
 			_model = new Gtk.TreeStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object));
-			_src_view.set_model (_model);
+			
+			_sorted = new Gtk.TreeModelSort.with_model (_model);
+			_sorted.set_sort_column_id (0, SortType.ASCENDING);
+			_sorted.set_sort_func (0, this.sort_model);			
+			_src_view.set_model (_sorted);
+			
+			this._icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
+			this._icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
+			this._icon_method = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-method-16.png"));
+			this._icon_class = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-class-16.png"));
+			this._icon_struct = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-structure-16.png"));
+			this._icon_property = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-property-16.png"));
+			this._icon_signal = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-event-16.png"));
+			this._icon_iface = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-interface-16.png"));
+			this._icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
+			this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
+			this._icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));		
 		}
 		
 		public void clear_view ()
@@ -152,7 +158,9 @@ namespace Vtg
 		public void update_view (Vsc.SymbolItem symbol)
 		{
 			clear_view ();
+			_src_view.set_model (null);
 			rebuild_model (symbol);
+			_src_view.set_model (_sorted);
 			_src_view.expand_all ();
 		}
 
@@ -169,8 +177,9 @@ namespace Vtg
 		private void on_source_outliner_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
 		{
 			var tw = (TreeView) sender;
-			var model = tw.get_model ();
+			TreeModelSort model = (TreeModelSort) tw.get_model ();
 			TreeIter iter;
+			
 			if (model.get_iter (out iter, path)) {
 				SymbolItem symbol;
 				model.get (iter, Columns.SYMBOL, out symbol);
@@ -254,6 +263,55 @@ namespace Vtg
 				return _icon_signal;
 				
 			return _icon_generic;
+		}
+
+		private int sort_model (TreeModel model, TreeIter a, TreeIter b)
+		{
+			SymbolItem vala;
+			SymbolItem valb;
+			
+			model.get (a, Columns.SYMBOL, out vala);
+			model.get (b, Columns.SYMBOL, out valb);
+			
+			if (vala.symbol.type_name != valb.symbol.type_name) {
+				if (vala.symbol is Vala.Namespace) {
+					return -1;
+				} else if (valb.symbol is Vala.Namespace) {
+					return 1;
+				} else if (vala.symbol is Vala.Class) {
+					return -1;
+				} else if (valb.symbol is Vala.Class) {
+					return 1;
+				} else if (vala.symbol is Vala.Constant) {
+					return -1;
+				} else if (valb.symbol is Vala.Constant) {
+					return 1;
+				} else if (vala.symbol is Vala.Enum) {
+					return -1;
+				} else if (valb.symbol is Vala.Enum) {
+					return 1;										
+				} else if (vala.symbol is Vala.Field) {
+					return -1;
+				} else if (valb.symbol is Vala.Field) {
+					return 1;
+				} else if (vala.symbol is Vala.Property) {
+					return -1;
+				} else if (valb.symbol is Vala.Property) {
+					return 1;
+				} else if (vala.symbol is Vala.CreationMethod 
+					|| vala.symbol is Vala.Constructor) {
+					return -1;
+				} else if (valb.symbol is Vala.CreationMethod  
+					|| vala.symbol is Vala.Constructor) {
+					return 1;
+				} else if (vala.symbol is Vala.Method) {
+					return -1;
+				} else if (valb.symbol is Vala.Method) {
+					return 1;
+				}
+			}
+			
+			return GLib.strcmp (vala.name, valb.name);
 		}
 	}
 }
