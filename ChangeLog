@@ -1,3 +1,9 @@
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	added missing types in the sort callback function.
+
 2009-09-26  Andrea Del Signore  <sejerpz@tin.it>
 
 	* ui/Makefile.am:

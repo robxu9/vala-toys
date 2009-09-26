@@ -157,8 +157,8 @@ namespace Vtg
 
 		public void update_view (Vsc.SymbolItem symbol)
 		{
-			clear_view ();
 			_src_view.set_model (null);
+			clear_view ();
 			rebuild_model (symbol);
 			_src_view.set_model (_sorted);
 			_src_view.expand_all ();
@@ -231,7 +231,6 @@ namespace Vtg
 				Columns.NAME, parent.name, 
 				Columns.SYMBOL, parent);
 
-
 			if (parent.children != null) {
 				foreach (SymbolItem item in parent.children) {
 					rebuild_model (item, iter);
@@ -274,15 +273,7 @@ namespace Vtg
 			model.get (b, Columns.SYMBOL, out valb);
 			
 			if (vala.symbol.type_name != valb.symbol.type_name) {
-				if (vala.symbol is Vala.Namespace) {
-					return -1;
-				} else if (valb.symbol is Vala.Namespace) {
-					return 1;
-				} else if (vala.symbol is Vala.Class) {
-					return -1;
-				} else if (valb.symbol is Vala.Class) {
-					return 1;
-				} else if (vala.symbol is Vala.Constant) {
+				if (vala.symbol is Vala.Constant) {
 					return -1;
 				} else if (valb.symbol is Vala.Constant) {
 					return 1;
@@ -298,6 +289,10 @@ namespace Vtg
 					return -1;
 				} else if (valb.symbol is Vala.Property) {
 					return 1;
+				} else if (vala.symbol is Vala.Signal) {
+					return -1;
+				} else if (valb.symbol is Vala.Signal) {
+					return 1;
 				} else if (vala.symbol is Vala.CreationMethod 
 					|| vala.symbol is Vala.Constructor) {
 					return -1;
@@ -307,6 +302,22 @@ namespace Vtg
 				} else if (vala.symbol is Vala.Method) {
 					return -1;
 				} else if (valb.symbol is Vala.Method) {
+					return 1;
+				} else if (vala.symbol is Vala.Namespace) {
+					return -1;
+				} else if (valb.symbol is Vala.Namespace) {
+					return 1;
+				} else if (vala.symbol is Vala.Struct) {
+					return -1;
+				} else if (valb.symbol is Vala.Struct) {
+					return 1;					
+				} else if (vala.symbol is Vala.Class) {
+					return -1;
+				} else if (valb.symbol is Vala.Class) {
+					return 1;
+				} else if (vala.symbol is Vala.Interface) {
+					return -1;
+				} else if (valb.symbol is Vala.Interface) {
 					return 1;
 				}
 			}
