@@ -149,7 +149,7 @@ namespace Vsc
 
 		public SymbolCompletionItem.with_creation_method (CreationMethod item)
 		{
-			this.name = ("new" == item.name)? 
+			this.name = (item.name == "new" || item.name == ".new") ? 
 			            item.parent_symbol.name: 
 			            "%s.%s".printf (item.parent_symbol.name, item.name);
 			update_source_reference_info (item);

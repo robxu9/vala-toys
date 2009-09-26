@@ -1,6 +1,15 @@
 2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletionitem.vala:
+	
+	fix creation methods name in the completion popup.
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vsccompletionvisitor.vala:
+	
+	Prefer method overrides when available. Patch by Levi Bard. Fixes issue #71
+
 	* vsc/vscsymbolitem.vala:
 	* vtg/vtgsourceoutlinerview.vala:
 
