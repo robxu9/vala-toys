@@ -407,8 +407,16 @@ namespace Vtg
 		private void on_project_search (Gtk.Action action)
 		{
 			if (_prj_view.current_project != null) {
+				string proposed_text = "";
+				var view = _plugin_instance.window.get_active_view ();
+				if (view != null) {
+					var doc = (Gtk.TextBuffer) view.get_buffer ();
+					TextIter start, end;
+					doc.get_selection_bounds (out start, out end);
+					proposed_text = start.get_text (end);
+				}
 				var project = _prj_view.current_project;
-				var exec_dialog = new ProjectSearchDialog (_plugin_instance.window);
+				var exec_dialog = new ProjectSearchDialog (_plugin_instance.window, proposed_text);
 				if (exec_dialog.run () == ResponseType.OK) {
 					_prj_search.search (project, exec_dialog.search_text, exec_dialog.match_case);
 				}

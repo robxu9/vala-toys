@@ -1,5 +1,12 @@
 2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearchdialog.vala:
+
+	propose the current selection in the 'Search in Project' dialog. Fixed issue #95
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbracketcompletion.vala:
 
 	fix double enter on empty lines.

@@ -36,9 +36,10 @@ namespace Vtg
 		public string search_text = null;
 		public bool match_case = false;
 		
-		public ProjectSearchDialog (Gtk.Window parent)
+		public ProjectSearchDialog (Gtk.Window parent, string proposed_text = "")
 		{
 			initialize_ui (parent);
+			_entry.set_text (proposed_text);
 		}
 
 		private void initialize_ui (Gtk.Window parent)
