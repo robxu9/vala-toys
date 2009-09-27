@@ -1,5 +1,13 @@
 2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsourceoutlinervisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	add support for multiple class / namespace in the source outliner view.
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 	* vtg/vtgprojectsearchdialog.vala:
 

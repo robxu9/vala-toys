@@ -441,9 +441,9 @@ namespace Vsc
 			return result;
 		}
 		
-		public SymbolItem? get_symbols_for_source (string sourcefile)
+		public Gee.List<SymbolItem?> get_symbols_for_source (string sourcefile)
 		{
-			SymbolItem res = null;
+			Gee.List<SymbolItem?> res = null;
 			var sec_context = _parser.sec_context;
 			
 			if (sec_context != null) {

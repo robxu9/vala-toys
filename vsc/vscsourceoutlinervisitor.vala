@@ -26,11 +26,11 @@ using Vala;
  * Code visitor a tree structure of SimbolCompletionItem
  */
 public class Vsc.SourceOutlinerVisitor : CodeVisitor {
-	private SymbolItem _results = null;
+	private Gee.List<SymbolItem> _results = null;
 	private SymbolItem _current = null;
 	private SourceFile _file = null;
 	
-	public SymbolItem? results
+	public Gee.List<SymbolItem?> results
 	{
 		get {
 			return _results;
@@ -47,24 +47,39 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 		
 		if (symbol.source_reference.file.filename == _file.filename) {
 			res = new SymbolItem (symbol, _current);
-			if (_current != null) {
+			if (_results == null) {
+				_results = new Gee.ArrayList<SymbolItem?> ();
+			}
+			
+			if (_current == null) {
+				_results.add (res);
+			} else {
 				_current.add_child (res);
 			}
-			if (_results == null) {
-				_results = res;
-			}
 		} else {
-			res = _current; // ignore the symbol if defined in onother source file
+			res = _current; // ignore the symbol if defined in another source file
 		}
 		return res;
 	}
 	
 	public override void visit_source_file (SourceFile file) {
 		this._file = file;
-		// just visit namespaces for now since the nodes aren't ordered
+		Gee.List<CodeNode> visited_nodes = new Gee.ArrayList<CodeNode> ();
+		
+		// just visit the top namespaces
 		foreach (CodeNode node in file.get_nodes ()) {
-			if (node is Namespace)
-				node.accept (this);
+			if (node is Namespace) {
+				var ns = (Namespace) node;
+				
+				while (ns.parent_symbol is Namespace
+				    && ns.parent_symbol.source_reference.file.filename == _file.filename) {
+				    	ns = (Namespace) ns.parent_symbol;
+				}
+				if (!visited_nodes.contains (ns)) {
+					visited_nodes.add (ns);
+					ns.accept (this);
+				}
+			}
 		}
 	}
 
@@ -86,6 +101,7 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 	{
 		var old_current = _current;
 		_current = add_symbol (cl);
+		
 		if (_current.symbol != cl)
 			return; // not interesting
 			
@@ -118,7 +134,6 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 		foreach (Method m in cl.get_methods()) {
 			m.accept (this);
 		}
-	
 		foreach (Property prop in cl.get_properties()) {
 			prop.accept (this);
 		}

@@ -155,11 +155,11 @@ namespace Vtg
 			_model.clear ();
 		}
 
-		public void update_view (Vsc.SymbolItem symbol)
+		public void update_view (Gee.List<Vsc.SymbolItem> symbols)
 		{
 			_src_view.set_model (null);
 			clear_view ();
-			rebuild_model (symbol);
+			rebuild_model (symbols);
 			_src_view.set_model (_sorted);
 			_src_view.expand_all ();
 		}
@@ -219,21 +219,21 @@ namespace Vtg
 			return false;
 		}
 		
-		private void rebuild_model (SymbolItem? symbol, TreeIter? parentIter = null)
+		private void rebuild_model (Gee.List<SymbolItem?> symbols, TreeIter? parentIter = null)
 		{
-			if (symbol == null)
+			if (symbols == null)
 				return;
 			
-			TreeIter iter;
-			_model.append (out iter, parentIter);
-			_model.set (iter, 
-				Columns.ICON, get_icon_from_symbol_type (symbol.symbol), 
-				Columns.NAME, symbol.description, 
-				Columns.SYMBOL, symbol);
+			foreach (SymbolItem symbol in symbols) {
+				TreeIter iter;
+				_model.append (out iter, parentIter);
+				_model.set (iter, 
+					Columns.ICON, get_icon_from_symbol_type (symbol.symbol), 
+					Columns.NAME, symbol.description, 
+					Columns.SYMBOL, symbol);
 
-			if (symbol.children != null) {
-				foreach (SymbolItem item in symbol.children) {
-					rebuild_model (item, iter);
+				if (symbol.children != null) {
+					rebuild_model (symbol.children, iter);
 				}
 			}
 		}
@@ -271,6 +271,8 @@ namespace Vtg
 			
 			model.get (a, Columns.SYMBOL, out vala);
 			model.get (b, Columns.SYMBOL, out valb);
+			
+			assert (vala != null && valb != null);
 			
 			if (vala.symbol.type_name != valb.symbol.type_name) {
 				if (vala.symbol is Vala.Constant) {
