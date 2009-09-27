@@ -481,7 +481,7 @@ namespace Vsc
 				namespaces.add (source.context.root);
 				
 				// Check included namespaces
-				foreach (UsingDirective item in source.get_using_directives ()) {
+				foreach (UsingDirective item in source.current_using_directives) {
 					namespaces.add ((Namespace)item.namespace_symbol);
 				}
 				
@@ -870,7 +870,7 @@ namespace Vsc
 						finder.visit_namespace (pri_context.root);
 						vt = symbol_to_datatype(finder.result);
 						if (vt == null) {
-							foreach (UsingDirective item in source.get_using_directives ()) {
+							foreach (UsingDirective item in source.current_using_directives) {
 								var using_name = "%s.%s".printf (item.namespace_symbol.name, name);
 								finder.searched_typename = using_name;
 								finder.visit_namespace (pri_context.root);
@@ -1045,7 +1045,7 @@ namespace Vsc
 			debug ("import symbols from the imported namespaces");
 			if (source != null && options.imported_namespaces) {
 				string prev_symbol = finder.searched_typename;
-				foreach (UsingDirective item in source.get_using_directives ()) {
+				foreach (UsingDirective item in source.current_using_directives) {
 					string ns_name = get_qualified_namespace_name (item.namespace_symbol);
 					finder.searched_typename = ns_name;
 					get_completion_for_name_in_namespace_with_context (ns_name, 
@@ -1059,7 +1059,7 @@ namespace Vsc
 			
 			if (source != null && finder.result == null && !SymbolCompletion.symbol_has_known_namespace (symbolname)) {
 				bool force_exit = false;
-				foreach (UsingDirective item in source.get_using_directives ()) {
+				foreach (UsingDirective item in source.current_using_directives) {
 					int tmp = result.count;
 					string ns_name = get_qualified_namespace_name (item.namespace_symbol);
 					if (symbolname.has_prefix ("%s.".printf (ns_name)))

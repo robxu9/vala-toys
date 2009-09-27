@@ -1,3 +1,13 @@
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+
+	updated for vala 0.7.7
+
 2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vsccompletionvisitor.vala:

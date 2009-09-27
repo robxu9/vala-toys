@@ -492,7 +492,7 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 			
 			
 			if (sym == null && !SymbolCompletion.symbol_has_known_namespace (name)) {
-				foreach (UsingDirective item in _current_file.get_using_directives ()) {
+				foreach (UsingDirective item in _current_file.current_using_directives) {
 					string ns_name = get_qualified_namespace_name (item.namespace_symbol);
 					if (name.has_prefix ("%s.".printf (ns_name)))
 						break; //exit since symbol is fully qualified

@@ -98,6 +98,8 @@ namespace Vsc
 			_built_packages.clear ();
 			_sources.clear ();
 			_source_buffers.clear ();
+			_pri_context = null;
+			_sec_context = null;
 			unlock_all_contexts ();
 		}
 
@@ -533,7 +535,7 @@ namespace Vsc
 				bool need_reparse = false;
 				//add new namespaces to standard context)
 				foreach (SourceFile src in current_context.get_source_files ()) {
-					foreach (UsingDirective nr in src.get_using_directives ()) {
+					foreach (UsingDirective nr in src.current_using_directives) {
 						try {
 							if (nr.namespace_symbol.name != null && nr.namespace_symbol.name != "") {
 								need_reparse = add_package_from_namespace (nr.namespace_symbol.name, false);
