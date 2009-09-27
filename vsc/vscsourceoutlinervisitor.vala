@@ -45,7 +45,7 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 	{
 		SymbolItem res;
 		
-		if (symbol.source_reference.file.filename == _file.filename) {
+		if (symbol != null && symbol.source_reference.file.filename == _file.filename) {
 			res = new SymbolItem (symbol, _current);
 			if (_results == null) {
 				_results = new Gee.ArrayList<SymbolItem?> ();
@@ -66,18 +66,14 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 		this._file = file;
 		Gee.List<CodeNode> visited_nodes = new Gee.ArrayList<CodeNode> ();
 		
-		// just visit the top namespaces
+		// just visit only the top nodes
 		foreach (CodeNode node in file.get_nodes ()) {
-			if (node is Namespace) {
-				var ns = (Namespace) node;
+			if (node is Symbol) {
+				var s = (Symbol) node;
 				
-				while (ns.parent_symbol is Namespace
-				    && ns.parent_symbol.source_reference.file.filename == _file.filename) {
-				    	ns = (Namespace) ns.parent_symbol;
-				}
-				if (!visited_nodes.contains (ns)) {
-					visited_nodes.add (ns);
-					ns.accept (this);
+				if ((s.parent_symbol == null || s.parent_symbol.get_full_name () == null)) {
+					visited_nodes.add (s);
+					node.accept (this);
 				}
 			}
 		}

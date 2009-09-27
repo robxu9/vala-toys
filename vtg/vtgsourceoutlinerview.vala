@@ -272,7 +272,13 @@ namespace Vtg
 			model.get (a, Columns.SYMBOL, out vala);
 			model.get (b, Columns.SYMBOL, out valb);
 			
-			assert (vala != null && valb != null);
+			// why I get vala or valb with null???
+			if (vala == null && valb == null)
+				return 0;
+			else if (vala == null && valb != null)
+				return 1;
+			else if (vala != null && valb == null)
+				return -1;
 			
 			if (vala.symbol.type_name != valb.symbol.type_name) {
 				if (vala.symbol is Vala.Constant) {
@@ -305,6 +311,10 @@ namespace Vtg
 					return -1;
 				} else if (valb.symbol is Vala.Method) {
 					return 1;
+				} else if (vala.symbol is Vala.ErrorDomain) {
+					return -1;
+				} else if (valb.symbol is Vala.ErrorDomain) {
+					return 1;					
 				} else if (vala.symbol is Vala.Namespace) {
 					return -1;
 				} else if (valb.symbol is Vala.Namespace) {

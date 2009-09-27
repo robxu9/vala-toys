@@ -1,5 +1,13 @@
 2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsourceoutlinervisitor.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	better accuracy of the source code outliner
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsourceoutlinervisitor.vala:
 	* vsc/vscsymbolcompletion.vala:
 	* vtg/vtgsourceoutlinerview.vala:

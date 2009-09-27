@@ -394,7 +394,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	private bool symbol_is_static (Symbol symbol, bool instanziable_types = false)
 	{
 		bool res = false;
-		if (symbol is Method) {
+		if (symbol is Method && !(symbol is CreationMethod)) {
 			res = ((Method) symbol).binding == MemberBinding.STATIC;
 		} else if (symbol is Field) {
 			res = ((Field) symbol).binding == MemberBinding.STATIC;			
