@@ -205,19 +205,26 @@ namespace Vtg
 
 				if (res && _current_pattern != null) {
 					string[] words = _current_filter.split ("*");
-
+					markup = "";
 					foreach (string word in words) {
 						if (!StringUtils.is_null_or_empty (word)) {
-							val = val.replace (word, "<b>%s</b>".printf(word));	
+							string[] pieces = val.split (word, 2);
+							markup = markup.concat (pieces[0]);
+							if (pieces.length == 2 || val.has_suffix (word)) {
+								markup = markup.concat ("<b>", word, "</b>");
+								if (pieces.length == 2)
+									val = pieces[1];
+								else {
+									val = null;
+									break;
+								}
+							}
 						}
 					}
-					//the above foreach can lead to <b><b><b>some text</b></b></b>
-					markup = null;
-					while (markup != val) {
-						markup = val;
-						val = val.replace ("b><b", "b").replace("/b></b", "/b");
+					
+					if (val != null) {
+						markup = markup.concat (val);
 					}
-
 				} else {
 					markup = val;
 				}

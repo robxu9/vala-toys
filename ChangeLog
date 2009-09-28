@@ -2,6 +2,12 @@
 
 	* vtg/vtgfilteredlistdialog.vala:
 
+	fixed some bad markup generation in the filtered list dialog
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
 	fixed some criticals while refiltering the file list
 
 2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
