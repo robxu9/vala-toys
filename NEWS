@@ -1,3 +1,12 @@
+Vala toys for gEdit version 0.6.0
+=================================
+
+* new source code outliner pane
+* less parser deadlocks and improved completion speed
+* no more glade file
+* a better project view
+* a lot of small details fixed
+
 Vala toys for gEdit version 0.5.0
 =================================
 

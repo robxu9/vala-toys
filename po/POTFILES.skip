@@ -16,4 +16,4 @@ vtg/vtgprojectsearch.c
 vtg/vtgprojectsearchresultsview.c
 gen-project/valaprojectgenerator.c
 vtg/vtgsourceoutlinerview.c
-
+vtg/vtgsymbolcompletionprovider.c

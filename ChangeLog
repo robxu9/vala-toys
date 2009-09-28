@@ -1,5 +1,15 @@
 2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+
+	prerelease news update
+
+	* po/POTFILES.skip:
+
+	fixed some for make distcheck
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc/vscsymbolcompletion.vala:
 	* vsc/vsctypefindvisitor.vala:
 	* vtg/vtgbracketcompletion.vala:
