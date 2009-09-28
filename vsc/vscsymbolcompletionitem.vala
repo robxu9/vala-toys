@@ -195,15 +195,17 @@ namespace Vsc
 			this.symbol = item;
 			
 			// Choose later of accessors' last lines
-			if (null != item.get_accessor) {
+			if (item.get_accessor != null && item.get_accessor.body != null && item.get_accessor.body.source_reference != null) {
 				this.last_line = item.get_accessor.body.source_reference.last_line;
-				if (null != item.set_accessor && item.set_accessor.body.source_reference.last_line > this.last_line) {
+				if (item.set_accessor != null && item.set_accessor.body != null 
+				    && item.set_accessor.body.source_reference != null
+				    && item.set_accessor.body.source_reference.last_line > this.last_line) {
 					this.last_line = item.set_accessor.body.source_reference.last_line;
 				}
 			}
 			
 			string default_expr = "";
-			if (item.default_expression != null) {
+			if (item.default_expression != null && item.default_expression.symbol_reference != null) {
 				default_expr = " = " + item.default_expression.to_string ();
 			}
 			this.info = "Property: %s\n\n%s <b>%s</b>%s".printf (

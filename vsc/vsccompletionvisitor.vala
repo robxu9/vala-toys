@@ -77,8 +77,8 @@ public class Vsc.CompletionVisitor : CodeVisitor {
         
        	public override void visit_class (Class cl) 
 	{
-		if (_results.classes_contain (cl.name)) {
-			return; //already visited
+		if (_results.classes_contain (cl.name) || !this.test_symbol (this._options, cl)) {
+			return; //already visited or not interesting
 		}
 		foreach (TypeParameter p in cl.get_type_parameters ()) {
 			p.accept (this);
@@ -339,32 +339,38 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	private bool test_symbol (SymbolCompletionFilterOptions options, Symbol symbol)
 	{
 		bool res = false;
+		bool is_static = false;
+		
 		if (options.error_domains) {
 			if (options.error_base && symbol is Class) {
 				var cl = (Class) symbol;
 				res = cl.is_error_base;
 			}
 		} else {
-			bool is_static = symbol_is_static (symbol);
+			// if I want constructor or I don't want constructor and symbol is not a constructor
+			if (options.constructors || (!options.constructors
+			    && !(symbol is CreationMethod || symbol is Constructor))) {
+				is_static = symbol_is_static (symbol);
 
-			//test for static or instance symbols
-			if (options.static_symbols && is_static)
-				res = true;
-			else if (!options.static_symbols && !is_static)
-				res = true;
-			else if (!is_static && options.instance_symbols)
-				res = true;
+				//test for static or instance symbols
+				if (options.static_symbols && is_static)
+					res = true;
+				else if (!options.static_symbols && !is_static)
+					res = true;
+				else if (!is_static && options.instance_symbols)
+					res = true;
 		
-			if (options.constructors) {
-				if (symbol is Enum) {
-					res = false | options.local_variables; //HACK: local_vars mean all scoped symbols in this context
-				} else if (symbol is Constant) {
-					res = false | options.local_variables;
-				} else if (symbol is Method && !(symbol is CreationMethod)) {
-					res = false | options.local_variables;
-				} else {
-					bool has_constructors = symbol_has_constructors (symbol);
-					res = res | has_constructors;
+				if (options.constructors) {
+					if (symbol is Enum) {
+						res = false | options.local_variables; //HACK: local_vars mean all scoped symbols in this context
+					} else if (symbol is Constant) {
+						res = false | options.local_variables;
+					} else if (symbol is Method && !(symbol is CreationMethod || symbol is Constructor)) {
+						res = false | options.local_variables;
+					} else {
+						bool has_constructors = symbol_has_constructors (symbol);
+						res = res | has_constructors;
+					}
 				}
 			}
 			//test symbol accessibility
@@ -379,7 +385,6 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 				}
 			}
 		}
-		
 		return res;
 	}
 	
@@ -388,13 +393,15 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	 */
 	private bool symbol_has_constructors (Symbol symbol)
 	{
-		return (symbol is Constructor) || (symbol is Class) || (symbol is Namespace) || (symbol is CreationMethod);
+		return (symbol is Class) || (symbol is Namespace) || (symbol is CreationMethod);
 	}
 	
 	private bool symbol_is_static (Symbol symbol, bool instanziable_types = false)
 	{
-		bool res = false;
-		if (symbol is Method && !(symbol is CreationMethod)) {
+		bool res;
+		if (symbol is CreationMethod || symbol is Constructor || symbol is Interface) {
+			res = false;
+		} else if (symbol is Method && !(symbol is CreationMethod)) {
 			res = ((Method) symbol).binding == MemberBinding.STATIC;
 		} else if (symbol is Field) {
 			res = ((Field) symbol).binding == MemberBinding.STATIC;			
@@ -410,18 +417,18 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			res = true;
 		} else if (symbol is Namespace) {
 			res = true;
-		} else if (symbol is Class) {
+		} else if (symbol is Class && _options.static_symbols) {
 			//class is fully visited only if looking for
 			//static symbols
-			if (_options.static_symbols) {
-				var cl = (Class) symbol;
-				res = class_is_static (cl);
-			}
+			var cl = (Class) symbol;
+			res = class_has_static_symbols (cl);
+		} else {
+			res = false;
 		}
 		return res;
 	}
 	
-	private bool class_is_static (Class cl)		
+	private bool class_has_static_symbols (Class cl)		
 	{
 		if (cl.get_enums ().size > 0 || cl.get_constants ().size > 0)
 			return true;

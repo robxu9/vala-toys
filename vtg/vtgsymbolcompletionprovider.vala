@@ -659,7 +659,6 @@ namespace Vtg
 			SymbolCompletionResult result = null;
 			try {
 				string typename = null;
-				var timer = new Timer ();
 				typename = _completion.get_datatype_name_for_name (word, _sb.name, lineno + 1, colno);
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
 				options.public_only ();
@@ -688,20 +687,15 @@ namespace Vtg
 						options.protected_symbols = true;
 					}
 					options.exclude_type = typename;						
-					timer.start ();
 					result = _completion.get_completions_for_name (options, typename, _sb.name, lineno + 1, colno);
-					timer.stop ();
 				} else {
-					if (word.has_prefix ("this.") == false && word.has_prefix ("base.") == false) {
+					if (!word.has_prefix ("this.") && !word.has_prefix ("base.")) {
 						options.static_symbols = true;
 						options.interface_symbols = false;
 						options.error_domains = search_error_domains;
 						options.error_base = search_error_base;
-						timer.start ();
 						result = _completion.get_completions_for_name (options, word, _sb.name, lineno + 1, colno);
-						timer.stop ();
 						if (result.is_empty && (trigger == null || trigger.shortcut_triggered)) {
-							timer.start ();
 							typename = _completion.get_datatype_name_for_name ("this", _sb.name, lineno + 1, colno);
 							if (typename != null) {
 								options.defaults ();
@@ -716,7 +710,6 @@ namespace Vtg
 								options.imported_namespaces = true;
 								result = _completion.get_completions_for_name (options, typename, _sb.name, lineno + 1, colno);
 							}
-							timer.stop ();
 						}
 					}
 				}

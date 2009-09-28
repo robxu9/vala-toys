@@ -1,5 +1,14 @@
 2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed some warnings, and fixed constructor and static method completion
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgfilteredlistdialog.vala:
 
 	fixed some bad markup generation in the filtered list dialog

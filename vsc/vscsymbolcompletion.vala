@@ -320,7 +320,7 @@ namespace Vsc
 					}
 
 					foreach (Method md in cl.get_methods ()) {
-						method = (Method) node;
+						method = md;
 						result = find_sub_codenode (md, line, column, cl);
 						if (result != null)
 							return result;
@@ -572,20 +572,23 @@ namespace Vsc
 
 			//secondary context
 			var sec_context = _parser.sec_context;
-						
-			try {
-				res = get_datatype_for_name_with_context (sec_context, symbolname, sourcefile,  line,  column);
-			} catch (Error err) {
-				GLib.warning ("get_datatype_for_name: %s", err.message);
+			if (sec_context != null) {
+				try {
+					res = get_datatype_for_name_with_context (sec_context, symbolname, sourcefile,  line,  column);
+				} catch (Error err) {
+					GLib.warning ("get_datatype_for_name: %s", err.message);
+				}
 			}
-				
+			
 			//primary context
 			if (res == null) {
 				var pri_context = _parser.pri_context;
-				try {
-					res = get_datatype_for_name_with_context (pri_context, symbolname, sourcefile,  line,  column);
-				} catch (Error err) {
-					GLib.warning ("get_datatype_for_name: %s", err.message);
+				if (pri_context != null) {
+					try {
+						res = get_datatype_for_name_with_context (pri_context, symbolname, sourcefile,  line,  column);
+					} catch (Error err) {
+						GLib.warning ("get_datatype_for_name: %s", err.message);
+					}
 				}
 			}
 			return res;
@@ -680,30 +683,32 @@ namespace Vsc
 		{
 			Block body = null;
 			
-			if (codenode is Method) {
-				body = ((Method) codenode).body;
-			} else if (codenode is CreationMethod) {
-				body = ((Constructor) codenode).body;
-			} else if (codenode is Constructor) {
-				body = ((Constructor) codenode).body;
-			} else if (codenode is Destructor) {
-				body = ((Destructor) codenode).body;
-			} else if (codenode is LambdaExpression) {
-				body = ((LambdaExpression) codenode).statement_body;
-			} else if (codenode is ForeachStatement) {
-				body = ((ForeachStatement) codenode).body;
-			} else if (codenode is ForStatement) {
-				body = ((ForStatement) codenode).body;
-			} else if (codenode is WhileStatement) {
-				body = ((WhileStatement) codenode).body;
-			} else if (codenode is Block) {
-				body = (Block) codenode;
-			} else if (codenode is CatchClause) {
-				body = ((CatchClause) codenode).body;
-			} else if (codenode is PropertyAccessor) {
-				body = ((PropertyAccessor) codenode).body;
-			} else {
-				warning ("(get_codenode_body) unsupported type %s", Reflection.get_type_from_instance (codenode).name ());
+			if (!(codenode is Class)) {
+				if (codenode is Method) {
+					body = ((Method) codenode).body;
+				} else if (codenode is CreationMethod) {
+					body = ((Constructor) codenode).body;
+				} else if (codenode is Constructor) {
+					body = ((Constructor) codenode).body;
+				} else if (codenode is Destructor) {
+					body = ((Destructor) codenode).body;
+				} else if (codenode is LambdaExpression) {
+					body = ((LambdaExpression) codenode).statement_body;
+				} else if (codenode is ForeachStatement) {
+					body = ((ForeachStatement) codenode).body;
+				} else if (codenode is ForStatement) {
+					body = ((ForStatement) codenode).body;
+				} else if (codenode is WhileStatement) {
+					body = ((WhileStatement) codenode).body;
+				} else if (codenode is Block) {
+					body = (Block) codenode;
+				} else if (codenode is CatchClause) {
+					body = ((CatchClause) codenode).body;
+				} else if (codenode is PropertyAccessor) {
+					body = ((PropertyAccessor) codenode).body;
+				} else {
+					warning ("(get_codenode_body) unsupported type %s", Reflection.get_type_from_instance (codenode).name ());
+				}
 			}
 			return body;					
 		}
