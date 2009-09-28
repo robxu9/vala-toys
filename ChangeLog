@@ -2,6 +2,14 @@
 
 	* vtg/vtgplugininstance.vala:
 	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	better logic for source reparsing
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourceoutliner.vala:
 
 	silenced some warnings
 

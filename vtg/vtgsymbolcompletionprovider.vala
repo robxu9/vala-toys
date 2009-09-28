@@ -33,7 +33,7 @@ namespace Vtg
 		private Vsc.SourceBuffer _sb = null;
 		private SymbolCompletion _completion = null;
 		private Gedit.View _view = null;
-		private GLib.List<Gsc.Proposal> list;
+		private GLib.List<Gsc.Proposal> _list;
 		private Gdk.Pixbuf _icon_generic;
 		private Gdk.Pixbuf _icon_field;
 		private Gdk.Pixbuf _icon_method;
@@ -45,26 +45,26 @@ namespace Vtg
 		private Gdk.Pixbuf _icon_const;
 		private Gdk.Pixbuf _icon_enum;
 		private Gdk.Pixbuf _icon_namespace;
-		private uint timeout_id = 0;
-		private uint idle_id = 0;
-		private bool all_doc = false; //this is a hack!!!
+		
+		private uint _timeout_id = 0;
+		private uint _idle_id = 0;
+		private bool _all_doc = false; //this is a hack!!!
 
-		private int prealloc_index = 0;
-		private int counter = 0;
+		private int _prealloc_index = 0;
 
-		private bool cache_building = false;
-		private bool prev_cache_building = false;
-		private bool tooltip_is_visible = false;
+		private bool _cache_building = false;
+		private bool _prev_cache_building = false;
+		private bool _tooltip_is_visible = false;
 
 		private SymbolCompletionTrigger _last_trigger = null;
-		private uint sb_msg_id = 0;
-		private uint sb_context_id = 0;
+		private uint _sb_msg_id = 0;
+		private uint _sb_context_id = 0;
 
 		private Vtg.PluginInstance _plugin_instance;
 		private Gsc.Info _calltip_window = null;
 
-		private bool need_parse = true;
-		private int current_edited_line = -1;
+		private int _last_line = -1;
+		private bool _doc_changed = false;
 		
 		public SymbolCompletion completion { construct { _completion = value;} }
 		public Gedit.View view { construct { _view = value; } }
@@ -80,21 +80,24 @@ namespace Vtg
 
 		~SymbolCompletionProvider ()
 		{
+			if (_timeout_id != 0) {
+				Source.remove (_timeout_id);
+			}
+			if (_idle_id != 0) {
+				Source.remove (_idle_id);
+			}
+			
 			_view.key_press_event -= this.on_view_key_press;
+			var doc = (Gedit.Document) _view.get_buffer ();
+			doc.notify["text"] -= this.on_text_changed;
+			doc.notify["cursor-position"] -= this.on_cursor_position_changed;
 			this._completion.parser.caches_building -= this.on_cache_building;
 			this._completion.parser.caches_builded -= this.on_cache_builded;
 			
-			if (sb_msg_id != 0) {
+			if (_sb_msg_id != 0) {
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
-				status_bar.remove (sb_context_id, sb_msg_id);
+				status_bar.remove (_sb_context_id, _sb_msg_id);
 			}
-			if (timeout_id != 0) {
-				Source.remove (timeout_id);
-			}
-			if (idle_id != 0) {
-				Source.remove (idle_id);
-			}
-			
 			_completion.parser.remove_source_buffer (_sb);
 		}
 		
@@ -106,7 +109,9 @@ namespace Vtg
 				_sb = new Vsc.SourceBuffer (name, null);
 
 				_view.key_press_event += this.on_view_key_press;
-
+				doc.notify["text"] += this.on_text_changed;
+				doc.notify["cursor-position"] += this.on_cursor_position_changed;
+				
 				this._completion.parser.add_source_buffer (_sb);
 				this._icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				this._icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
@@ -124,11 +129,10 @@ namespace Vtg
 				this._completion.parser.caches_builded += this.on_cache_builded;
 
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
-				sb_context_id = status_bar.get_context_id ("symbol status");
+				_sb_context_id = status_bar.get_context_id ("symbol status");
 				
-				cache_building = true; 
-				this.all_doc = true;
-				this.parse (doc);
+				_cache_building = true; 
+				_all_doc = true;
 			} catch (Error err) {
 				GLib.warning ("an error occourred: %s", err.message);
 			}
@@ -137,18 +141,60 @@ namespace Vtg
 
 		private void on_cache_building (Vsc.ParserManager sender)
 		{
-			if (cache_building == false) {
-				cache_building = true; 
-				idle_id = Idle.add (this.on_idle);
+			if (_cache_building == false) {
+				_cache_building = true; 
+				_idle_id = Idle.add (this.on_idle);
 			}			
 		}
 		
 		private void on_cache_builded (Vsc.ParserManager sender)
 		{
-			if (cache_building == true) {
-				cache_building = false;
-				if (idle_id == 0)
-					idle_id = Idle.add (this.on_idle);
+			if (_cache_building == true) {
+				_cache_building = false;
+				if (_idle_id == 0)
+					_idle_id = Idle.add (this.on_idle);
+			}
+		}
+		
+		private int get_current_line_index (Gedit.Document? doc = null)
+		{
+			if (doc == null) {
+				doc = (Gedit.Document) _view.get_buffer ();
+			}
+			
+			// get current line
+			unowned TextMark mark = (TextMark) doc.get_insert ();
+			TextIter start;
+			doc.get_iter_at_mark (out start, mark);
+			return start.get_line ();	
+		}
+		
+		private void schedule_reparse ()
+		{
+			GLib.debug ("schedule %d %d!", (int)_timeout_id, (int) _doc_changed);
+			if (_timeout_id == 0 && _doc_changed) {
+				_timeout_id = Timeout.add (250, this.on_timeout_parse);
+			}	
+		}
+		
+		private void on_text_changed (GLib.Object sender, ParamSpec pspec)
+		{
+			GLib.debug ("doc changed!");
+			
+			_doc_changed = true;
+			// parse text only on init or line changes
+			if (_last_line == -1 || _last_line != get_current_line_index ()) {
+				schedule_reparse ();
+			}
+		}
+		
+		private void on_cursor_position_changed (GLib.Object sender, ParamSpec pspec)
+		{
+			GLib.debug ("pos changed!");
+			// parse text only on init or line changes
+			if (_last_line == -1 || _last_line != get_current_line_index ()) {
+				_all_doc = true;
+				schedule_reparse ();
 			}
 		}
 		
@@ -157,47 +203,39 @@ namespace Vtg
 			if (_plugin_instance == null)
 				return false;
 				
-			if (cache_building && !tooltip_is_visible && prev_cache_building == false) {
-				prev_cache_building = cache_building;
+			if (_cache_building && !_tooltip_is_visible && _prev_cache_building == false) {
+				_prev_cache_building = _cache_building;
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
-				if (sb_msg_id != 0) {
-					status_bar.remove (sb_context_id, sb_msg_id);
+				if (_sb_msg_id != 0) {
+					status_bar.remove (_sb_context_id, _sb_msg_id);
 				}
-				sb_msg_id = status_bar.push (sb_context_id, "rebuilding symbol cache...");
-			} else if (cache_building == false && prev_cache_building == true) {
-				prev_cache_building = false;
+				_sb_msg_id = status_bar.push (_sb_context_id, _("rebuilding symbol cache..."));
+			} else if (_cache_building == false && _prev_cache_building == true) {
+				_prev_cache_building = false;
 				//hide tip, show proposal list
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
-				status_bar.remove (sb_context_id, sb_msg_id);
-				sb_msg_id = 0;
+				status_bar.remove (_sb_context_id, _sb_msg_id);
+				_sb_msg_id = 0;
 				if (_last_trigger != null) {
 					var trigger = (SymbolCompletionTrigger) _last_trigger;
 					trigger.trigger_event (trigger.shortcut_triggered);
 				}
 			}
-			idle_id = 0;
+			_idle_id = 0;
 			return false;
 		}
 
 		private bool on_timeout_parse ()
 		{
-			if (counter == 0) {
-				this.parse ((Gedit.Document) _view.get_buffer ());
-				this.timeout_id = 0;
-				return false;
-			} else {
-				counter--;
-				return true;
-			}
+			var doc = (Gedit.Document) _view.get_buffer ();
+			parse (doc);
+			_timeout_id = 0;
+			_last_line = get_current_line_index (doc);
+			return false;
 		}
 
 		private bool on_view_key_press (Gtk.TextView view, Gdk.EventKey evt)
 		{
-			weak Gedit.Document doc = (Gedit.Document) _view.get_buffer ();
-			weak TextMark mark = (TextMark) doc.get_insert ();
-			TextIter start;
-			doc.get_iter_at_mark (out start, mark);
-			int line = start.get_line ();
 			unichar ch = Gdk.keyval_to_unicode (evt.keyval);
 			
 			if (ch == '(') {
@@ -206,33 +244,13 @@ namespace Vtg
 					(evt.keyval == Gdk.Key_Return && (evt.state & ModifierType.SHIFT_MASK) != 0)) {
 				this.hide_calltip ();
 			}
-			if (counter <= 0) {
-				if (evt.keyval == Gdk.Key_Return || ch == ';') {
-					this.all_doc = true;
-					counter = 0; //immediatly (0.1sec)
-					current_edited_line = -1;
-				} else if (ch.isprint () 
-					   || evt.keyval == Gdk.Key_Delete
-					   || evt.keyval == Gdk.Key_BackSpace) {
-					need_parse = true;
-				} else if (evt.keyval == Gdk.Key_Up
-					   || evt.keyval == Gdk.Key_Down) {
-					current_edited_line = -1; //moved so a parse buffer is needed
-				} 
-			} else {
-				if (evt.keyval == Gdk.Key_Return || ch == ';') {
-					this.all_doc = true;
-					counter = 0; //immediatly (0.1sec)
-				} else {
-					this.all_doc = false;
-					counter = 5;
-				}
-			}
-			
-			if (need_parse && current_edited_line != line) {
-				need_parse = false;
-				current_edited_line = line;
-				timeout_id = Timeout.add (25, this.on_timeout_parse);
+			if (evt.keyval == Gdk.Key_Return || ch == ';') {
+				_all_doc = true; // new line or eol, reparse all source buffer
+			} else if (ch.isprint () 
+				   || evt.keyval == Gdk.Key_Delete
+				   || evt.keyval == Gdk.Key_BackSpace) {
+				_all_doc = false; // a change so reparse the buffer minus the current line
+				_doc_changed = true;
 			}
 			return false;
 		}
@@ -290,14 +308,16 @@ namespace Vtg
 
 		private void parse (Gedit.Document doc)
 		{
-			var buffer = this.get_document_text (doc, this.all_doc);
+			var buffer = this.get_document_text (doc, _all_doc);
+			GLib.debug ("parse!");
 			_sb.source = buffer;
 			_completion.parser.reparse_source_buffers ();
+			_doc_changed = false;
 		}
 
 		public void finish ()
 		{
-			list = null;
+			_list = null;
 		}
 
 		public weak string get_name ()
@@ -310,12 +330,12 @@ namespace Vtg
 			var timer = new Timer ();
 			transform_result (get_completions ((SymbolCompletionTrigger) trigger));
 			timer.stop ();
-			if (list.length () == 0 && cache_building) {
+			if (_list.length () == 0 && _cache_building) {
 				_last_trigger = (SymbolCompletionTrigger) trigger;
 			} else {
 				_last_trigger = null;
 			}
-			return (owned) list;
+			return (owned) _list;
 		}
 
 		private void append_symbols (Gee.List<SymbolCompletionItem> symbols, Gdk.Pixbuf icon)
@@ -327,9 +347,9 @@ namespace Vtg
 				var name = (symbol.name != null ? symbol.name : "<null>");
 				var info = (symbol.info != null ? symbol.info : "");
 				
-				if (prealloc_index < Utils.prealloc_count) {
-					proposal = proposals [prealloc_index];
-					prealloc_index++;
+				if (_prealloc_index < Utils.prealloc_count) {
+					proposal = proposals [_prealloc_index];
+					_prealloc_index++;
 
 					proposal.label = name;
 					proposal.info = info;
@@ -337,10 +357,10 @@ namespace Vtg
 				} else {
 					proposal = new Proposal(name, info, icon);
 				}
-				this.list.append (proposal);
+				_list.append (proposal);
 			}
 			//sort list
-			this.list.sort (this.proposal_sort);
+			_list.sort (this.proposal_sort);
 		}
 
 		private static int proposal_sort (void* a, void* b)
@@ -354,8 +374,8 @@ namespace Vtg
 		private void transform_result (SymbolCompletionResult? result)
 		{
 			var timer = new Timer ();
-			prealloc_index = 0;
-			list = new GLib.List<Proposal> ();
+			_prealloc_index = 0;
+			_list = new GLib.List<Proposal> ();
 
 			if (result != null && !result.is_empty) {
 				if (result.fields.size > 0) {

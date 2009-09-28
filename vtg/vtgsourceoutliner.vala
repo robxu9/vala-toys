@@ -68,7 +68,8 @@ namespace Vtg
 
 		~SourceOutliner ()
 		{
-			_outliner_view.goto_source += this.on_goto_source;
+			_outliner_view.clear_view ();
+			_outliner_view.goto_source -= this.on_goto_source;
 			if (idle_id != 0) {
 				GLib.Source.remove (idle_id);
 			}

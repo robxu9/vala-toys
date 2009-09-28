@@ -65,15 +65,15 @@ namespace Vtg
 			this._window = window;
 			Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
 			Signal.connect_after (this._window, "tab-removed", (GLib.Callback) on_tab_removed, this);
-
+			
 			initialize_views ();
 			foreach (Document doc in this._window.get_documents ()) {
 				initialize_document (doc);
 			}
 
 			_output_view = new OutputView (this);
-			_project_manager_ui = new ProjectManagerUi (this);
 			_source_outliner = new SourceOutliner (this);
+			_project_manager_ui = new ProjectManagerUi (this);
 			//_prj_man.project_loaded += this.on_project_loaded;
 		}
 
