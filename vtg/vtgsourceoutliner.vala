@@ -104,24 +104,26 @@ namespace Vtg
 		
 		private void setup_completion (View view)
 		{
-			var scs = _plugin_instance.scs_find_from_view (view);
- 			if (scs == null) {
- 				GLib.warning ("setup_completion: symbol completion helper is null for view");
-				return;
+			if (Utils.is_vala_doc ((Gedit.Document) view.get_buffer ())) {
+				var scs = _plugin_instance.scs_find_from_view (view);
+	 			if (scs == null) {
+	 				GLib.warning ("setup_completion: symbol completion helper is null for view");
+					return;
+				}
+				scs.completion.parser.sec_cache_builded += this.on_sec_cache_builded;
 			}
-			
-			scs.completion.parser.sec_cache_builded += this.on_sec_cache_builded;
 		}
 
 		private void cleanup_completion (View view)
 		{
-			var scs = _plugin_instance.scs_find_from_view (view);
- 			if (scs == null) {
- 				GLib.warning ("setup_completion: symbol completion helper is null for view");
-				return;
+			if (Utils.is_vala_doc ((Gedit.Document) view.get_buffer ())) {
+				var scs = _plugin_instance.scs_find_from_view (view);
+	 			if (scs == null) {
+	 				GLib.warning ("setup_completion: symbol completion helper is null for view");
+					return;
+				}
+				scs.completion.parser.sec_cache_builded -= this.on_sec_cache_builded;
 			}
-			
-			scs.completion.parser.sec_cache_builded -= this.on_sec_cache_builded;
 		}
 
 		private void on_notify_language (Gedit.Document sender, ParamSpec pspec)

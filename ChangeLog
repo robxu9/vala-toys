@@ -1,5 +1,12 @@
 2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	silenced some warnings
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 	* vsc/vsccompletionvisitor.vala:
 	* vsc/vscparsermanager.vala:

@@ -79,6 +79,7 @@ namespace Vtg
 
 		~PluginInstance ()
 		{
+			_source_outliner.active_view = null;
 			_source_outliner = null;
 			_project_manager_ui = null;
 			_output_view = null;
