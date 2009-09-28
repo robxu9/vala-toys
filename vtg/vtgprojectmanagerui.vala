@@ -42,6 +42,9 @@ namespace Vtg
                                                         <menuitem name="ProjectClose" action="ProjectClose"/>
                                                         <separator />
                                                     </placeholder>
+                                                    <placeholder name="FileOps_3">
+                                                    	<menuitem name="ProjectSaveAll" action="ProjectSaveAll"/>
+                                                    </placeholder>
                                                 </menu>
                                             </menubar>
 
@@ -126,7 +129,7 @@ namespace Vtg
 		const ActionEntry[] _action_entries = {
 			{"ProjectNew", null, N_("_New Project..."), null, N_("Create a new project"), on_project_new},
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
-			//{"ProjectRecent", null, N_("Recent Projects"), null, N_("Last recently opened projects"), on_project_recent},			
+			{"ProjectSaveAll", null, N_("Save All"), null, N_("Save all project files"), on_project_save_all},			
 			{"ProjectClose", null, N_("_Close Current Project"), null, N_("Close current selected project"), on_project_close},
 			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
 			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
@@ -340,6 +343,12 @@ namespace Vtg
 			dialog.destroy ();
 		}
 
+		private void on_project_save_all (Gtk.Action action)
+		{
+			var project = _prj_view.current_project;
+			_plugin_instance.plugin.project_save_all (project);
+		}
+		
 		private void on_project_close (Gtk.Action action)
 		{
 			var project = _prj_view.current_project;
@@ -560,7 +569,6 @@ namespace Vtg
 					} else {
 						return;
 					}
-					
 				}
 
 				if (pars == null) {

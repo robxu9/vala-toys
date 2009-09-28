@@ -1,5 +1,11 @@
 2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+
+	new 'Save All' files menu item. Fixes issue #88
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 
 	post release version bump
