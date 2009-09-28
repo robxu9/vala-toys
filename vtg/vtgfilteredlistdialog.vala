@@ -31,8 +31,8 @@ namespace Vtg
 		private Gtk.Dialog _dialog;
 		private Gtk.TreeView _treeview;
 		private Gtk.Entry _entry;
-		private Gtk.TreeModelFilter _model;
-		private Gtk.TreeModelSort _sorted;
+		private Gtk.TreeModelFilter _filtered_model;
+		private Gtk.TreeModelSort _sorted_model;
 		private Gtk.TreeModel _child_model;
 		private PatternSpec _current_pattern = null;
 		private string _current_filter = null;
@@ -65,18 +65,18 @@ namespace Vtg
 			assert (_entry != null);
 			_entry.key_press_event += this.on_entry_key_press;
 			_entry.notify["text"] += this.on_entry_text_changed;
-			_model = new Gtk.TreeModelFilter (_child_model, null);
-			_model.set_visible_column (2);
+			_filtered_model = new Gtk.TreeModelFilter (_child_model, null);
+			_filtered_model.set_visible_column (2);
 			_child_model.row_changed += this.on_row_changed;
 			var column = new TreeViewColumn ();
  			CellRenderer renderer = new CellRendererText ();
 			column.pack_start (renderer, true);
 			column.add_attribute (renderer, "markup", 1);
 			_treeview.append_column (column);
-			_sorted = new Gtk.TreeModelSort.with_model (_model);
-			_sorted.set_sort_column_id (0, SortType.ASCENDING);
-			_sorted.set_sort_func (0, this.sort_model);
-			_treeview.set_model (_sorted);
+			_sorted_model = new Gtk.TreeModelSort.with_model (_filtered_model);
+			_sorted_model.set_sort_column_id (0, SortType.ASCENDING);
+			_sorted_model.set_sort_func (0, this.sort_model);
+			_treeview.set_model (_sorted_model);
 			_treeview.get_selection ().set_mode (SelectionMode.SINGLE);
 			_treeview.key_press_event += on_treeview_key_press;
 			
@@ -97,8 +97,8 @@ namespace Vtg
 				TreeIter iter;
 				if (_treeview.get_selection ().get_selected (null, out iter)) {
 					TreeIter sort;
-					_sorted.convert_iter_to_child_iter (out sort, iter);
-					_model.convert_iter_to_child_iter (out selected_iter, sort);
+					_sorted_model.convert_iter_to_child_iter (out sort, iter);
+					_filtered_model.convert_iter_to_child_iter (out selected_iter, sort);
 				} else
 					dialog_result = 0;
 			}
@@ -172,8 +172,8 @@ namespace Vtg
 			}
 			
 			filter_and_highlight_rows ();
-			_model.refilter ();
-			_sorted.set_sort_column_id (0, SortType.ASCENDING);
+			_filtered_model.refilter ();
+			_sorted_model.set_sort_column_id (0, SortType.ASCENDING);
 			
 			select_result ();
 		}
@@ -190,6 +190,8 @@ namespace Vtg
 		
 		private void filter_and_highlight_rows ()
 		{
+			_child_model.row_changed -= this.on_row_changed;
+			
 			TreeIter iter;
 			bool not_eof =  _child_model.get_iter_first (out iter);
 			while (not_eof) {
@@ -223,6 +225,9 @@ namespace Vtg
 				((ListStore)  _child_model).set (iter, 2, res);
 				not_eof =  _child_model.iter_next (ref iter);
 			}
+			
+			_child_model.row_changed += this.on_row_changed;
+			_filtered_model.refilter ();
 		}
 		
 		private int sort_model (TreeModel model, TreeIter a, TreeIter b)
