@@ -293,8 +293,6 @@ namespace Vtg
 						} 
 						result = true;
 					} else if (indent != null && indent != "") {
-						GLib.debug ("qui con indent '%s'", indent);
-						
 						instance.insert_chars (src, "\n%s".printf(indent));
 						result = true;
 						sender.scroll_to_mark (mark, 0, false, 0, 0);

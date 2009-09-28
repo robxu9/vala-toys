@@ -171,7 +171,6 @@ namespace Vtg
 		
 		private void schedule_reparse ()
 		{
-			GLib.debug ("schedule %d %d!", (int)_timeout_id, (int) _doc_changed);
 			if (_timeout_id == 0 && _doc_changed) {
 				_timeout_id = Timeout.add (250, this.on_timeout_parse);
 			}	
@@ -179,8 +178,6 @@ namespace Vtg
 		
 		private void on_text_changed (GLib.Object sender, ParamSpec pspec)
 		{
-			GLib.debug ("doc changed!");
-			
 			_doc_changed = true;
 			// parse text only on init or line changes
 			if (_last_line == -1 || _last_line != get_current_line_index ()) {
@@ -190,7 +187,6 @@ namespace Vtg
 		
 		private void on_cursor_position_changed (GLib.Object sender, ParamSpec pspec)
 		{
-			GLib.debug ("pos changed!");
 			// parse text only on init or line changes
 			if (_last_line == -1 || _last_line != get_current_line_index ()) {
 				_all_doc = true;
@@ -309,7 +305,6 @@ namespace Vtg
 		private void parse (Gedit.Document doc)
 		{
 			var buffer = this.get_document_text (doc, _all_doc);
-			GLib.debug ("parse!");
 			_sb.source = buffer;
 			_completion.parser.reparse_source_buffers ();
 			_doc_changed = false;

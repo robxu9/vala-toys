@@ -1042,7 +1042,6 @@ namespace Vsc
 			}
 
 			//import symbols from the imported namespaces
-			debug ("import symbols from the imported namespaces");
 			if (source != null && options.imported_namespaces) {
 				string prev_symbol = finder.searched_typename;
 				foreach (UsingDirective item in source.current_using_directives) {
@@ -1055,8 +1054,6 @@ namespace Vsc
 			}
 			
 			//search it in referenced namespaces
-			debug ("search it in referenced namespaces");
-			
 			if (source != null && finder.result == null && !SymbolCompletion.symbol_has_known_namespace (symbolname)) {
 				bool force_exit = false;
 				foreach (UsingDirective item in source.current_using_directives) {

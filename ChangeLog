@@ -1,5 +1,14 @@
 2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	cleaned up some debug messages
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugin.vala:
 
 	fixed a critical on startup

@@ -461,7 +461,7 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 		
 		_unresolved_types.add (name);
 		var sym = resolve_type (unresolved_type);
-		debug ("resolving: %s = %s ", name, (sym == null ? "no" : "yes"));
+		//debug ("resolving: %s = %s ", name, (sym == null ? "no" : "yes"));
 		_unresolved_types.remove (name);
 		if (sym != null) {
 			if (sym is DataType) {
