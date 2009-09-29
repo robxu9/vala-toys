@@ -78,8 +78,8 @@ namespace Vtg
 			_sorted_model.set_sort_func (0, this.sort_model);
 			_treeview.set_model (_sorted_model);
 			_treeview.get_selection ().set_mode (SelectionMode.SINGLE);
-			_treeview.key_press_event += on_treeview_key_press;
-			
+			_treeview.key_press_event.connect (on_treeview_key_press);
+			_treeview.row_activated.connect  (on_row_activated);
 			select_result ();
 		}
 
@@ -107,6 +107,11 @@ namespace Vtg
 			return dialog_result > 0;
 		}
 		
+		private void on_row_activated (Widget sender, TreePath path, TreeViewColumn column)
+		{
+			_dialog.response (2);
+		}
+
 		private void on_row_changed (Gtk.TreeModel tree_model, Gtk.TreePath path, Gtk.TreeIter iter)
 		{
 			if (!_treeview.get_selection ().get_selected (null, null)) {

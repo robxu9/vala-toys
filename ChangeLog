@@ -1,3 +1,9 @@
+2009-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	Double click an item in a "quick pick dialog" to jump to it. Fixes issue #55
+
 2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vsc/vsccompletionvisitor.vala:
