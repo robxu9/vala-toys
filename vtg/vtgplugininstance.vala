@@ -66,20 +66,19 @@ namespace Vtg
 			Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
 			Signal.connect_after (this._window, "tab-removed", (GLib.Callback) on_tab_removed, this);
 			
+			_output_view = new OutputView (this);
+			_project_manager_ui = new ProjectManagerUi (this);
+			//_prj_man.project_loaded += this.on_project_loaded;
 			initialize_views ();
 			foreach (Document doc in this._window.get_documents ()) {
 				initialize_document (doc);
 			}
-
-			_output_view = new OutputView (this);
-			_source_outliner = new SourceOutliner (this);
-			_project_manager_ui = new ProjectManagerUi (this);
-			//_prj_man.project_loaded += this.on_project_loaded;
 		}
 
 		~PluginInstance ()
 		{
-			_source_outliner.active_view = null;
+			if (_source_outliner != null)
+				_source_outliner.active_view = null;
 			_source_outliner = null;
 			_project_manager_ui = null;
 			_output_view = null;
@@ -116,20 +115,21 @@ namespace Vtg
 					initialize_view (project, view);
 				}
 			}
+			
+			if (plugin.config.sourcecode_outliner_enabled && _source_outliner == null) {
+				activate_sourcecode_outliner ();
+			}
+
 		}
 
 		public void initialize_view (ProjectDescriptor project, Gedit.View view)
 		{
 			if (plugin.config.symbol_enabled && !scs_contains (view)) {
 				activate_symbol (project, view);
-			} else {
-				GLib.warning ("sc already initialized for view");
 			}
 
 			if (plugin.config.bracket_enabled && !bcs_contains (view)) {
 				activate_bracket (view);
-			} else {
-				GLib.warning ("bc already initialized vor view");
 			}
 		}
 
@@ -150,12 +150,22 @@ namespace Vtg
 				deactivate_bracket (bc);
 			}
 		}
+		
+		public void activate_sourcecode_outliner ()
+		{
+			_source_outliner = new SourceOutliner (this);
+			
+		}
+		
+		public void deactivate_sourcecode_outliner ()
+		{
+			_source_outliner = null;
+		}
 
 		public void activate_bracket (Gedit.View view)
 		{
 			var bc = new BracketCompletion (this, view);
 			_bcs.add (bc);
-
 		}
 		
 		public void deactivate_bracket (BracketCompletion bc)

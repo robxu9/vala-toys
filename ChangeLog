@@ -1,5 +1,16 @@
 2009-09-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ui/vtg.ui:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	new option to disable the source outliner. Fixes issue #104
+
+2009-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vsc-shell/vsccompletionshell.vala:
 	* vsc/Makefile.am:
 	* vsc/vscclasslistvisitor.vala:

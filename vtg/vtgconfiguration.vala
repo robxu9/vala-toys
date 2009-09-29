@@ -31,6 +31,7 @@ namespace Vtg
 		private const string VTG_BASE_KEY = "/apps/gedit-2/plugins/vtg";
 		private const string VTG_ENABLE_SYMBOL_COMPLETION_KEY = VTG_BASE_KEY + "/bracket_completion_enabled";
 		private const string VTG_ENABLE_BRACKET_COMPLETION_KEY = VTG_BASE_KEY + "/symbol_completion_enabled";
+		private const string VTG_ENABLE_SOURCECODE_OUTLINER_KEY = VTG_BASE_KEY + "/sourcecode_outliner_enabled";
 		private const string VTG_AUTHOR_KEY = VTG_BASE_KEY + "/author";
 		private const string VTG_EMAIL_ADDRESS_KEY = VTG_BASE_KEY + "/email_address";
 		private const string VTG_INFO_WINDOW_VISIBLE = VTG_BASE_KEY + "/info_window_visible";
@@ -41,9 +42,15 @@ namespace Vtg
 		private bool _info_window_visible;
 
 		public bool bracket_enabled { get; set; }
+
 		public bool symbol_enabled { get; set; }
+
+		public bool sourcecode_outliner_enabled { get; set; }
+
 		public string author { get; set; }
+
 		public string email_address { get; set; }
+
 		public bool info_window_visible
 		{ 
 			get {
@@ -98,6 +105,16 @@ namespace Vtg
 					_gconf.set_schema("/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY, schema);
 					_gconf.set_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY, true);					
 				}
+				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY) == null) {
+					var schema = new GConf.Schema ();
+					schema.set_short_desc (_("Enable the source code outliner module"));
+					schema.set_type (GConf.ValueType.BOOL);
+					var def_value = new GConf.Value (GConf.ValueType.BOOL);
+					def_value.set_bool (true);
+					schema.set_default_value (def_value);
+					_gconf.set_schema("/schemas" + VTG_ENABLE_SOURCECODE_OUTLINER_KEY, schema);
+					_gconf.set_bool (VTG_ENABLE_SOURCECODE_OUTLINER_KEY, true);					
+				}
 				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_AUTHOR_KEY) == null) {
 					var schema = new GConf.Schema ();
 					schema.set_short_desc (_("Override the author name used in the ChangeLog entries"));
@@ -130,11 +147,13 @@ namespace Vtg
 				}				
 				_gconf.engine.associate_schema (VTG_ENABLE_SYMBOL_COMPLETION_KEY, "/schemas" + VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_gconf.engine.associate_schema (VTG_ENABLE_BRACKET_COMPLETION_KEY, "/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY);
+				_gconf.engine.associate_schema (VTG_ENABLE_SOURCECODE_OUTLINER_KEY, "/schemas" + VTG_ENABLE_SOURCECODE_OUTLINER_KEY);
 				_gconf.engine.associate_schema (VTG_AUTHOR_KEY, "/schemas" + VTG_AUTHOR_KEY);
 				_gconf.engine.associate_schema (VTG_EMAIL_ADDRESS_KEY, "/schemas" + VTG_EMAIL_ADDRESS_KEY);
 				_gconf.engine.associate_schema (VTG_INFO_WINDOW_VISIBLE, "/schemas" + VTG_INFO_WINDOW_VISIBLE);
 				_symbol_enabled = _gconf.get_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_bracket_enabled = _gconf.get_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY);
+				_sourcecode_outliner_enabled = _gconf.get_bool (VTG_ENABLE_SOURCECODE_OUTLINER_KEY);
 				_author = _gconf.get_string (VTG_AUTHOR_KEY);
 				_email_address = _gconf.get_string (VTG_EMAIL_ADDRESS_KEY);
 				_info_window_visible = _gconf.get_bool (VTG_INFO_WINDOW_VISIBLE);				
@@ -172,6 +191,10 @@ namespace Vtg
 				assert (check != null);
 				check.set_active (_symbol_enabled);
 				check.toggled += this.on_checkbutton_toggled;
+				check = (Gtk.CheckButton) builder.get_object ("checkbutton-settings-sourcecode-outliner");
+				assert (check != null);
+				check.set_active (_sourcecode_outliner_enabled);
+				check.toggled += this.on_checkbutton_toggled;
 				var text = (Gtk.Entry) builder.get_object ("entry-settings-author");
 				assert (text != null);
 				text.set_text (_author);
@@ -206,6 +229,11 @@ namespace Vtg
 					if (_symbol_enabled != new_val) {
 						symbol_enabled = new_val;
 					}
+				} else if (key == VTG_ENABLE_SOURCECODE_OUTLINER_KEY) {
+					var new_val = _gconf.get_bool (VTG_ENABLE_SOURCECODE_OUTLINER_KEY);
+					if (_sourcecode_outliner_enabled != new_val) {
+						sourcecode_outliner_enabled = new_val;
+					}
 				} else if (key == VTG_AUTHOR_KEY) {
 					var new_val = _gconf.get_string (VTG_AUTHOR_KEY);
 					if (_author != new_val) {
@@ -232,6 +260,8 @@ namespace Vtg
 					_gconf.set_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY, new_val);
 				} else if (name == "checkbutton-settings-symbol-completion") {
 					_gconf.set_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY, new_val);
+				} else if (name == "checkbutton-settings-sourcecode-outliner") {
+					_gconf.set_bool (VTG_ENABLE_SOURCECODE_OUTLINER_KEY, new_val);
 				}
 			} catch (Error err) {
 				GLib.warning ("(on_checkbutton_toggled): %s", err.message);

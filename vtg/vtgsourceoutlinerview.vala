@@ -39,7 +39,7 @@ namespace Vtg
 	
 	internal class SourceOutlinerView : GLib.Object
 	{
-		private Vtg.PluginInstance _plugin_instance = null;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private Gtk.TreeView _src_view;
 		private Gtk.TreeModelSort _sorted;
 		private TreeStore _model = null;
@@ -83,12 +83,19 @@ namespace Vtg
 		
 		~SourceOutlinerView ()
 		{
+			// this method is never called? a leak?
+			deactivate ();
+
+		}
+		
+		public void deactivate ()
+		{
 			var manager = _plugin_instance.window.get_ui_manager ();
 			manager.remove_action_group (_actions);
 			var panel = _plugin_instance.window.get_side_panel ();
 			panel.remove_item (_side_panel);
 		}
-		
+
 		construct
 		{
 			var panel = _plugin_instance.window.get_side_panel ();

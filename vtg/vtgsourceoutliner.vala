@@ -28,9 +28,9 @@ namespace Vtg
 {
 	internal class SourceOutliner : GLib.Object
 	{
-		private Gedit.View _active_view = null;
+		private unowned Gedit.View _active_view = null;
+		private unowned PluginInstance _plugin_instance;
 		private SourceOutlinerView _outliner_view = null;
-		private PluginInstance _plugin_instance;
 		private uint idle_id = 0;
 		
 	 	public PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
@@ -68,14 +68,19 @@ namespace Vtg
 
 		~SourceOutliner ()
 		{
-			_outliner_view.clear_view ();
 			_outliner_view.goto_source -= this.on_goto_source;
+			_outliner_view.clear_view ();
+			_outliner_view.deactivate ();
+			_outliner_view = null;
 			if (idle_id != 0) {
 				GLib.Source.remove (idle_id);
 			}
 			if (_active_view != null)
 			{
+				var doc = (Document) _active_view.get_buffer ();
+				cleanup_document (doc);
 				cleanup_completion (_active_view);
+				_active_view = null;
 			}
 		}
 

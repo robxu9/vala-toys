@@ -39,7 +39,8 @@ namespace Vtg
 		{
 			ALL,
 		        BRACKET,
-			SYMBOL
+			SYMBOL,
+			SOURCECODE_OUTLINER
 	        }
 
 		public Gee.List<Vtg.ProjectDescriptor> projects
@@ -107,7 +108,8 @@ namespace Vtg
 					if (prj.project != null && Utils.is_vala_doc (doc)) {
 						instance.project_manager_ui.project_view.current_project = prj.project;
 					}
-					instance.source_outliner.active_view = view;
+					if (instance.source_outliner != null)
+						instance.source_outliner.active_view = view;
 				}
 			}
 		}
@@ -115,6 +117,7 @@ namespace Vtg
 		private void on_configuration_property_changed (GLib.Object sender, ParamSpec param)
 		{
 			var name = param.get_name ();
+			
 			if (name == "bracket-enabled") {
 				if (_config.bracket_enabled) {
 					activate_modules (DeactivateModuleOptions.BRACKET);
@@ -127,6 +130,12 @@ namespace Vtg
 				} else {
 					deactivate_modules (DeactivateModuleOptions.SYMBOL);
 			        }
+			} else if (name == "sourcecode-outliner-enabled") {
+				if (_config.sourcecode_outliner_enabled) {
+					activate_modules (DeactivateModuleOptions.SOURCECODE_OUTLINER);
+				} else {
+					deactivate_modules (DeactivateModuleOptions.SOURCECODE_OUTLINER);
+				}
 			}
 		}
 
@@ -142,13 +151,18 @@ namespace Vtg
 					instance.deactivate_brackets ();
 				}
 			}
+			if (options == DeactivateModuleOptions.ALL || options == DeactivateModuleOptions.SOURCECODE_OUTLINER) {
+				foreach (PluginInstance instance in _instances) {
+					instance.deactivate_sourcecode_outliner ();
+				}
+			}
 		}
 
 		private void activate_modules (DeactivateModuleOptions options = DeactivateModuleOptions.ALL)
 		{
 			foreach (PluginInstance instance in _instances) {
 				instance.initialize_views ();
-			} 
+			}
 		}
 
 		internal ProjectDescriptor project_descriptor_find_from_document (Gedit.Document document)
