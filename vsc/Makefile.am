@@ -29,7 +29,6 @@ vsc_VALASOURCES = \
 	vscsymbolitem.vala \
 	vscsymbolcompletion.vala \
 	vscsymbolcompletionfilteroptions.vala \
-	vscsymbolcompletionitem.vala \
 	vscsymbolcompletionresult.vala \
 	vscsourcebuffer.vala \
 	vscmethodlistvisitor.vala \

@@ -315,14 +315,14 @@ namespace Vsc
 			display_result (_completion.get_visible_symbols (new SymbolCompletionFilterOptions (), filename, line, column, false));
 		}
 		
-		private void append_symbols (string type, StringBuilder sb, Gee.List<SymbolCompletionItem> symbols)
+		private void append_symbols (string type, StringBuilder sb, Gee.List<SymbolItem> symbols)
 		{
-			foreach (SymbolCompletionItem symbol in symbols) {
+			foreach (SymbolItem symbol in symbols) {
  				sb.append ("%s:%s:%s;:;:;%s:%d;%d;\n".printf(type, symbol.name, get_access(symbol), symbol.file, symbol.first_line, symbol.last_line));
  			}
  		}
  		
- 		private static void append_methods (StringBuilder sb, Gee.List<SymbolCompletionItem> methods)
+ 		private static void append_methods (StringBuilder sb, Gee.List<SymbolItem> methods)
  		{
 			Method? method;
 			DataType? sometype;
@@ -330,7 +330,7 @@ namespace Vsc
 			string typename;
 			string paramname;
 			
-			foreach (SymbolCompletionItem item in methods) {
+			foreach (SymbolItem item in methods) {
 				method = (Method?)item.symbol;
 				if (null != method) {
 					// TYPE:NAME:MODIFIER;STATIC:RETURN_TYPE;OWNERSHIP:ARGS;FILE:FIRST_LINE;LAST_LINE;
@@ -369,7 +369,7 @@ namespace Vsc
 			}
  		}
  
- 		private static string get_access(SymbolCompletionItem symbol) 
+ 		private static string get_access(SymbolItem symbol) 
  		{
  			Symbol? sym_real = symbol.symbol;
  			string access = "";

@@ -66,7 +66,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		if (_parent_type_already_visited) {
 			if (test_symbol (_options, ns)) {
 				if (!_results.namespaces_contain (ns.name)) {
-					_results.namespaces.add (new SymbolCompletionItem (ns.name));
+					_results.namespaces.add (new SymbolItem (ns));
 				}
 			}
 		} else {
@@ -123,7 +123,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		
 		if (_parent_type_already_visited) {
 			if (test_symbol (_options, cl)) {
-				var item = new SymbolCompletionItem.with_class (cl);
+				var item = new SymbolItem (cl);
 				_results.classes.add (item);
 			}
 		} else {
@@ -217,7 +217,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 		
 		if (_parent_type_already_visited) {
 			if (test_symbol (_options, st)) {
-				_results.structs.add (new SymbolCompletionItem.with_struct (st));
+				_results.structs.add (new SymbolItem (st));
 			}
 			if (st.base_type != null) {
 				st.base_type.accept (this);
@@ -234,7 +234,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	{
 		if (_parent_type_already_visited) {
 			if (!_results.enums_contain (en.name) && test_symbol (_options, en)) {
-				_results.enums.add (new SymbolCompletionItem (en.name));
+				_results.enums.add (new SymbolItem (en));
 			}
 		} else {
 			_parent_type_already_visited = true;
@@ -267,54 +267,54 @@ public class Vsc.CompletionVisitor : CodeVisitor {
        	public override void visit_method (Method m) 
 	{
 		if (!_results.methods_contain (m.name) && test_symbol (_options, m)) {
-			_results.methods.add (new SymbolCompletionItem.with_method (m));
+			_results.methods.add (new SymbolItem (m));
 		}
 	}
 	
 	public override void visit_enum_value (Vala.EnumValue e) 
 	{
-		_results.constants.add (new SymbolCompletionItem (e.name));
+		_results.constants.add (new SymbolItem (e));
 	}
 	
 	public override void visit_creation_method (Vala.CreationMethod m)
 	{
 		if (!_results.methods_contain (m.name) && test_symbol (_options, m)) {
-			_results.methods.add (new SymbolCompletionItem.with_creation_method (m));
+			_results.methods.add (new SymbolItem (m));
 		}		
 	}
 
        	public override void visit_delegate (Delegate d) 
 	{
 		if (!_results.delegates_contain (d.name) && test_symbol (_options, d)) {
-			_results.others.add (new SymbolCompletionItem (d.name));
+			_results.others.add (new SymbolItem (d));
 		}
 	}
 
        	public override void visit_signal (Vala.Signal s) 
 	{
 		if (!_results.signals_contain (s.name) && test_symbol (_options, s)) {
-			_results.signals.add (new SymbolCompletionItem.with_signal (s));
+			_results.signals.add (new SymbolItem (s));
 		}
 	}
 
        	public override void visit_field (Field f) 
 	{
 		if (!_results.fields_contain (f.name) && test_symbol (_options, f)) {
-			_results.fields.add (new SymbolCompletionItem.with_field (f));
+			_results.fields.add (new SymbolItem (f));
 		}
 	}
 
        	public override void visit_constant (Vala.Constant c) 
 	{
 		if (!_results.constants_contain (c.name) && test_symbol (_options, c)) {
-			_results.constants.add (new SymbolCompletionItem (c.name));
+			_results.constants.add (new SymbolItem (c));
 		}
 	}
 	
        	public override void visit_property (Property p) 
 	{
 		if (!_results.properties_contain (p.name) && test_symbol (_options, p)) {
-			_results.properties.add (new SymbolCompletionItem.with_property (p));
+			_results.properties.add (new SymbolItem (p));
 		}
 	}
 	
@@ -324,7 +324,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 			return;
 			
 		if (_parent_type_already_visited && !_results.error_domains_contain (ed.name)) {
-			_results.error_domains.add (new SymbolCompletionItem (ed.name));
+			_results.error_domains.add (new SymbolItem (ed));
 		} else {
 			_parent_type_already_visited = true;
 			ed.accept_children (this);
@@ -333,7 +333,7 @@ public class Vsc.CompletionVisitor : CodeVisitor {
 	
 	public override void visit_error_code (Vala.ErrorCode ec) 
 	{
-		_results.constants.add (new SymbolCompletionItem (ec.name));
+		_results.constants.add (new SymbolItem (ec));
 	}
 	
 	private bool test_symbol (SymbolCompletionFilterOptions options, Symbol symbol)

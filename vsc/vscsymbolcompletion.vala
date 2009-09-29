@@ -373,11 +373,11 @@ namespace Vsc
 			return typename;
 		}
 		
-		public Gee.List<SymbolCompletionItem> get_methods_for_source (string sourcefile)
+		public Gee.List<SymbolItem> get_methods_for_source (string sourcefile)
 		{
 			warn_if_fail (_parser != null);
 			SourceFile source = null;
-			var results = new Gee.ArrayList<SymbolCompletionItem> ();
+			var results = new Gee.ArrayList<SymbolItem> ();
 			
 			if (sourcefile != null) {
 				var pri_context = _parser.pri_context;
@@ -401,7 +401,7 @@ namespace Vsc
 		{
 			warn_if_fail (_parser != null);
 			SourceFile source = null;
-			var results = new Gee.ArrayList<SymbolCompletionItem> ();
+			var results = new Gee.ArrayList<SymbolItem> ();
 			var result = new SymbolCompletionResult ();
 			
 			if (sourcefile != null) {
@@ -426,7 +426,7 @@ namespace Vsc
 		public SymbolCompletionResult get_namespaces ()
 		{
 			warn_if_fail (_parser != null);
-			var results = new Gee.ArrayList<SymbolCompletionItem> ();
+			var results = new Gee.ArrayList<SymbolItem> ();
 			var result = new SymbolCompletionResult ();
 			var pri_context = _parser.pri_context;
 			var sec_context = _parser.sec_context;
@@ -434,7 +434,7 @@ namespace Vsc
 			
 			if (context != null) {
 				foreach(Namespace ns in context.root.get_namespaces()) {
-					results.add(new SymbolCompletionItem.with_namespace(ns));
+					results.add(new SymbolItem (ns));
 				}
 			}
 			result.namespaces = results;
@@ -489,57 +489,57 @@ namespace Vsc
 				Class? kl;
 				Method? method;
 				find_codenode (source, line, column, out kl, out method);
-				if (null != kl && null != kl.parent_symbol && (kl.parent_symbol is Namespace)) {
+				if (kl != null && kl.parent_symbol != null && (kl.parent_symbol is Namespace)) {
 					namespaces.add ((Namespace)kl.parent_symbol); 
 				}
 				
 				foreach (Namespace ns in namespaces) {
-					foreach (Namespace cl in ns.get_namespaces ()) {
-						result.namespaces.add (new SymbolCompletionItem.with_namespace (cl));
+					foreach (Namespace item in ns.get_namespaces ()) {
+						result.namespaces.add (new SymbolItem (item));
 					}
-					foreach (Class cl in ns.get_classes ()) {
-						result.classes.add (new SymbolCompletionItem.with_class (cl));
+					foreach (Class item in ns.get_classes ()) {
+						result.classes.add (new SymbolItem (item));
 					}
-					foreach (Interface cl in ns.get_interfaces ()) {
-						result.interfaces.add (new SymbolCompletionItem.with_interface (cl));
+					foreach (Interface item in ns.get_interfaces ()) {
+						result.interfaces.add (new SymbolItem (item));
 					}
-					foreach (Struct cl in ns.get_structs ()) {
-						result.structs.add (new SymbolCompletionItem.with_struct (cl));
+					foreach (Struct item in ns.get_structs ()) {
+						result.structs.add (new SymbolItem (item));
 					}
 					if (!types_only) {
-						foreach (Method cl in ns.get_methods ()) {
-							result.methods.add (new SymbolCompletionItem.with_method (cl));
+						foreach (Method item in ns.get_methods ()) {
+							result.methods.add (new SymbolItem (item));
 						}
-						foreach (Field cl in ns.get_fields ()) {
-							result.fields.add (new SymbolCompletionItem.with_field (cl));
+						foreach (Field item in ns.get_fields ()) {
+							result.fields.add (new SymbolItem (item));
 						}
-						foreach (Constant cl in ns.get_constants ()) {
-							result.constants.add (new SymbolCompletionItem (cl.name));
+						foreach (Constant item in ns.get_constants ()) {
+							result.constants.add (new SymbolItem (item));
 						}
-						foreach (Delegate cl in ns.get_delegates ()) {
-							result.others.add (new SymbolCompletionItem (cl.name));
+						foreach (Delegate item in ns.get_delegates ()) {
+							result.others.add (new SymbolItem (item));
 						}
-						foreach (Enum cl in ns.get_enums ()) {
-							result.enums.add (new SymbolCompletionItem (cl.name));
+						foreach (Enum item in ns.get_enums ()) {
+							result.enums.add (new SymbolItem (item));
 						}
-						if (null != kl) {
-							foreach (Method cl in kl.get_methods ()) {
-								result.methods.add (new SymbolCompletionItem.with_method (cl));
+						if (kl != null) {
+							foreach (Method item in kl.get_methods ()) {
+								result.methods.add (new SymbolItem (item));
 							}
-							foreach (Field cl in kl.get_fields ()) {
-								result.fields.add (new SymbolCompletionItem.with_field (cl));
+							foreach (Field item in kl.get_fields ()) {
+								result.fields.add (new SymbolItem (item));
 							}
-							foreach (Constant cl in kl.get_constants ()) {
-								result.constants.add (new SymbolCompletionItem (cl.name));
+							foreach (Constant item in kl.get_constants ()) {
+								result.constants.add (new SymbolItem (item));
 							}
-							foreach (Delegate cl in kl.get_delegates ()) {
-								result.others.add (new SymbolCompletionItem (cl.name));
+							foreach (Delegate item in kl.get_delegates ()) {
+								result.others.add (new SymbolItem (item));
 							}
-							foreach (Enum cl in ns.get_enums ()) {
-								result.enums.add (new SymbolCompletionItem (cl.name));
+							foreach (Enum item in ns.get_enums ()) {
+								result.enums.add (new SymbolItem (item));
 							}
-							foreach (Vala.Signal cl in kl.get_signals ()) {
-								result.signals.add (new SymbolCompletionItem.with_signal (cl));
+							foreach (Vala.Signal item in kl.get_signals ()) {
+								result.signals.add (new SymbolItem (item));
 							}
 						}
 					}// Not just types
@@ -978,25 +978,25 @@ namespace Vsc
 						if (body != null) {
 							//method local vars
 							foreach (LocalVariable lvar in body.get_local_variables ()) {
-								result.others.add (new SymbolCompletionItem (lvar.name));
+								result.others.add (new SymbolItem (lvar));
 							}
 							foreach (Statement st in body.get_statements ()) {
 								if (st is DeclarationStatement) {
 									var decl = (DeclarationStatement) st;
-									result.others.add (new SymbolCompletionItem (decl.declaration.name));
+									result.others.add (new SymbolItem (decl.declaration));
 								}
 							}
 
 							if (current is ForeachStatement) {
 								var fe = (ForeachStatement) current;
-								result.others.add (new SymbolCompletionItem (fe.variable_name));
+								result.others.add (new SymbolItem (fe.iterator_variable));
 							}
 						}
 
 						if (current is Method) {
 							//method arguments
 							foreach (FormalParameter par in ((Method) current).get_parameters ()) {
-								result.others.add (new SymbolCompletionItem (par.name));
+								result.others.add (new SymbolItem (par));
 							}
 							//stop here
 							break;

@@ -25,18 +25,18 @@ namespace Vsc
 {
 	public class SymbolCompletionResult : GLib.Object
 	{
-		public Gee.List<SymbolCompletionItem> properties = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> classes = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> interfaces = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> structs = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> methods = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> fields = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> signals = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> others = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> namespaces = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> enums = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> constants = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> error_domains = new Gee.ArrayList<SymbolCompletionItem> ();
+		public Gee.List<SymbolItem> properties = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> classes = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> interfaces = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> structs = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> methods = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> fields = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> signals = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> others = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> namespaces = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> enums = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> constants = new Gee.ArrayList<SymbolItem> ();
+		public Gee.List<SymbolItem> error_domains = new Gee.ArrayList<SymbolItem> ();
 		
 		public bool is_empty
 		{
@@ -111,12 +111,12 @@ namespace Vsc
 			return symbols_contain (error_domains, name);
 		}
 		
-		private bool symbols_contain (Gee.List<SymbolCompletionItem> data, string name)
+		private bool symbols_contain (Gee.List<SymbolItem> data, string name)
 		{
 			if (data.size == 0)
 				return false;
 				
-			foreach (SymbolCompletionItem item in data) {
+			foreach (SymbolItem item in data) {
 				if (item.name == name) {
 					return true;
 				}

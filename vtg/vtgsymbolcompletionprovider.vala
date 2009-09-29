@@ -253,7 +253,7 @@ namespace Vtg
 		
 		private void show_calltip ()
 		{
-			SymbolCompletionItem? completion_result = get_current_symbol_completion_item ();
+			SymbolItem? completion_result = get_current_symbol_item ();
 			if (completion_result != null) {
 				if (_calltip_window == null) {
 					initialize_calltip_window ();
@@ -333,11 +333,11 @@ namespace Vtg
 			return (owned) _list;
 		}
 
-		private void append_symbols (Gee.List<SymbolCompletionItem> symbols, Gdk.Pixbuf icon)
+		private void append_symbols (Gee.List<SymbolItem> symbols, Gdk.Pixbuf icon)
 		{
 			weak Proposal[] proposals = Utils.get_proposal_cache ();
 
-			foreach (SymbolCompletionItem symbol in symbols) {
+			foreach (SymbolItem symbol in symbols) {
 				Proposal proposal;
 				var name = (symbol.name != null ? symbol.name : "<null>");
 				var info = (symbol.info != null ? symbol.info : "");
@@ -545,7 +545,7 @@ namespace Vtg
 			
 		}
 
-		public SymbolCompletionItem? get_current_symbol_completion_item ()
+		public SymbolItem? get_current_symbol_item ()
 		{
 			string line, word, last_part;
 			int lineno, colno;
@@ -576,7 +576,7 @@ namespace Vtg
 			SymbolCompletionResult completion_result = null;
 			completion_result = complete (null, line, first_part, lineno, colno);
 			if (completion_result != null && completion_result.count > 0) {
-				SymbolCompletionItem? item = null;
+				SymbolItem? item = null;
 				
 				item = search_completion_item_by_name (symbol_name, completion_result.methods);
 				if (item != null)
@@ -630,9 +630,9 @@ namespace Vtg
 			return null;
 		}
 		
-		private SymbolCompletionItem? search_completion_item_by_name (string name, Gee.List<SymbolCompletionItem> items)
+		private SymbolItem? search_completion_item_by_name (string name, Gee.List<SymbolItem> items)
 		{
-			foreach (SymbolCompletionItem item in items) {
+			foreach (SymbolItem item in items) {
 				if (item.name == name) {
 					return item;
 				}

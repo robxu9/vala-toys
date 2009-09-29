@@ -31,6 +31,8 @@ namespace Vsc
 		private Gee.ArrayList<SymbolItem> _children = null;
 		private string _name = null;
 		private string _description = null;
+		private string _info = null;
+		private int _last_line = 0; // this variabile can contain the last line of the symbol body
 		
 		public string name
 		{
@@ -39,12 +41,53 @@ namespace Vsc
 			}
 		}
 		
-		public string description {
+		public string description 
+		{
 			get {
 				return _description;
 			}
 		}
 		
+		public string info
+		{
+			get {
+				if (_info == null) {
+					initialize_info ();
+				}
+				
+				return _info;
+			}
+		}
+		
+		public string? file
+		{
+			get {
+				if (symbol != null && symbol.source_reference != null) {
+					return symbol.source_reference.file.filename;
+				}
+				
+				return null;
+			}
+		}
+		
+		public int first_line
+		{
+			get {
+				if (symbol != null && symbol.source_reference != null) {
+					return symbol.source_reference.first_line;
+				}
+				
+				return 0;
+			}
+		}
+		
+		public int last_line
+		{
+			get {
+				return _last_line;
+			}
+		}
+
 		public Gee.ArrayList<SymbolItem> children 
 		{
 			get {
@@ -73,7 +116,7 @@ namespace Vsc
 				_description = "%s (%s)".printf (name, parameters_to_string (method.get_parameters(), true));
 			} else {
 				_description = name;
-			}			
+			}
 		}
 
 		public void add_child (SymbolItem child)
@@ -86,7 +129,7 @@ namespace Vsc
 			child.parent = this;
 		}
 
-		private string parameters_to_string (Gee.List<FormalParameter> parameters, bool compact = false)
+		private string parameters_to_string (Gee.List<FormalParameter> parameters, bool compact = false, bool escape_text = true)
 		{
 			string params = "";
 			string param_sep = " ";
@@ -125,11 +168,14 @@ namespace Vsc
 			if (params != "") {
 				params = params.substring (2, params.length - 2);
 			}
-			params = Markup.escape_text (params);
+			
+			if (escape_text) {
+				params = Markup.escape_text (params);
+			}
 			return params;
 		}
 		
-		private string data_type_to_string (DataType type)
+		private string data_type_to_string (DataType type, bool escape_text = true)
 		{
 			string result;
 
@@ -162,9 +208,86 @@ namespace Vsc
 			if (type.is_dynamic) {
 				result = "dynamic " + result;
 			}
-
-			result = Markup.escape_text (result);
+			
+			if (escape_text) {
+				result = Markup.escape_text (result);
+			}
 			return result;
+		}
+		
+		private void initialize_info ()
+		{
+			if (symbol is Method) {
+				var item = (Method) symbol;
+				if (item.body != null && item.body.source_reference != null) {
+					_last_line = (item.body.source_reference.last_line == 0 ? first_line : item.body.source_reference.last_line);
+				}
+				_info = create_standard_info (symbol, item.return_type, item.get_parameters ());
+			} else if (symbol is Vala.Signal) {
+				var item = (Vala.Signal) symbol;
+				_info = create_standard_info (symbol, item.return_type, item.get_parameters ());
+			} else if (symbol is Property) {
+				var item = (Property) symbol;
+				
+				// Choose later of accessors' last lines
+				if (item.get_accessor != null && item.get_accessor.body != null && item.get_accessor.body.source_reference != null) {
+					_last_line = item.get_accessor.body.source_reference.last_line;
+					if (item.set_accessor != null && item.set_accessor.body != null 
+					    && item.set_accessor.body.source_reference != null
+					    && item.set_accessor.body.source_reference.last_line > this.last_line) {
+						_last_line = item.set_accessor.body.source_reference.last_line;
+					}
+				}
+			
+				string default_expr = "";
+				if (item.default_expression != null && item.default_expression.symbol_reference != null) {
+					default_expr = " = " + item.default_expression.to_string ();
+				}
+				_info = "Property: %s\n\n%s <b>%s</b>%s".printf (
+				    name,
+				    data_type_to_string (item.property_type, false),
+				    name, 
+				   default_expr);
+			} else if (symbol is Field) {
+				var item = (Field) symbol;
+				
+				string default_expr = "";
+				if (item.initializer != null && item.initializer.symbol_reference != null) {
+					default_expr = " = " + item.initializer.to_string ();
+				}
+				_info = "Field: %s\n\n%s <b>%s</b>%s".printf (
+				    name,
+				    data_type_to_string (item.field_type, false),
+				    name, 
+				    default_expr);
+			} else {
+				_info = "%s: %s".printf (symbol.type_name.replace ("Vala", ""), name);
+				if (symbol.source_reference != null)
+					_last_line = symbol.source_reference.last_line;
+			}
+		}
+		
+		private string create_standard_info (Symbol symbol, DataType return_type, Gee.List<FormalParameter>? parameters = null)
+		{
+			int param_count;
+			string params;
+			
+			if (parameters != null) {
+				params = parameters_to_string (parameters, false, false);
+				param_count = parameters.size;
+			} else {
+				params = "";
+				param_count = 0;
+			}
+			
+			return "%s: %s\n\n%s%s<b>%s</b> (%s%s)".printf (
+				    symbol.type_name.replace ("Vala", ""),
+				    name,
+				    data_type_to_string (return_type, false),
+				    (param_count > 2 ? "\n" : " "),
+				    name, 
+				    (param_count > 2 ? "\n" : ""),
+				    params);
 		}
 	}
 }

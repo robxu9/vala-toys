@@ -1,5 +1,21 @@
 2009-09-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/Makefile.am:
+	* vsc/vscclasslistvisitor.vala:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscmethodlistvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionresult.vala:
+	* vsc/vscsymbolitem.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	removed the use of SymbolCompletionItem and use the new SymbolItem instead.
+
+2009-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgfilteredlistdialog.vala:
 
 	Double click an item in a "quick pick dialog" to jump to it. Fixes issue #55

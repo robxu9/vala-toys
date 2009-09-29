@@ -79,7 +79,7 @@ namespace Vtg
 		
 		public void goto_definition ()
 		{
-			SymbolCompletionItem? item = _provider.get_current_symbol_completion_item ();
+			SymbolItem? item = _provider.get_current_symbol_item ();
 			if (item != null && !StringUtils.is_null_or_empty (item.file)) {
 				string uri = Filename.to_uri (item.file);				
 				_plugin_instance.activate_uri (uri, item.first_line);

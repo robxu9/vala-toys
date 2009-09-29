@@ -26,9 +26,9 @@ using Vala;
  * Code visitor getting a list of classes for a source file
  */
 public class Vsc.ClassList : CodeVisitor {
-	private Gee.List<SymbolCompletionItem> _classes;
+	private Gee.List<SymbolItem> _classes;
 	
-	public ClassList (Gee.List<SymbolCompletionItem> classes)
+	public ClassList (Gee.List<SymbolItem> classes)
 	{
 		_classes = classes;
 	}
@@ -61,17 +61,17 @@ public class Vsc.ClassList : CodeVisitor {
 		foreach (Struct item in cl.get_structs ()) {
 			item.accept_children (this);
 		}    
-		_classes.add (new SymbolCompletionItem.with_class (cl));
+		_classes.add (new SymbolItem (cl));
 	}
         
 	public override void visit_struct (Struct st) 
 	{
-		_classes.add (new SymbolCompletionItem.with_struct (st));
+		_classes.add (new SymbolItem (st));
 	}
         
 	public override void visit_interface (Interface cl) 
 	{
-		_classes.add (new SymbolCompletionItem.with_interface (cl));
+		_classes.add (new SymbolItem (cl));
 	}
 }
 

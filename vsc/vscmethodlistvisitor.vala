@@ -26,9 +26,9 @@ using Vala;
  * Code visitor getting a list of methods for a source file
  */
 public class Vsc.MethodList : CodeVisitor {
-	private Gee.List<SymbolCompletionItem> _methods;
+	private Gee.List<SymbolItem> _methods;
 	
-	public MethodList (Gee.List<SymbolCompletionItem> methods)
+	public MethodList (Gee.List<SymbolItem> methods)
 	{
 		_methods = methods;
 	}
@@ -68,7 +68,7 @@ public class Vsc.MethodList : CodeVisitor {
 	
 	public override void visit_method (Method m) 
 	{
-		_methods.add (new SymbolCompletionItem.with_method(m));
+		_methods.add (new SymbolItem(m));
 	}
 }
 
