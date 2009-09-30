@@ -1,3 +1,10 @@
+2009-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	added a filter to the source outliner treeview to hide the private symbols.
+	Fixes issue #101
+
 2009-09-29  Andrea Del Signore  <sejerpz@tin.it>
 
 	* ui/vtg.ui:

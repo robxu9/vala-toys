@@ -42,7 +42,9 @@ namespace Vtg
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private Gtk.TreeView _src_view;
 		private Gtk.TreeModelSort _sorted;
+		private Gtk.CheckButton _check_show_private_symbols;
 		private TreeStore _model = null;
+		private Gee.List<Vsc.SymbolItem>? _last_symbols = null;
 
 		private Gdk.Pixbuf _icon_generic;
 		private Gdk.Pixbuf _icon_field;
@@ -94,6 +96,7 @@ namespace Vtg
 			manager.remove_action_group (_actions);
 			var panel = _plugin_instance.window.get_side_panel ();
 			panel.remove_item (_side_panel);
+			_last_symbols = null;
 		}
 
 		construct
@@ -118,7 +121,13 @@ namespace Vtg
 			_src_view.button_press_event += this.on_source_outliner_view_button_press;
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_src_view);
-			_side_panel.pack_start (scroll, true, true, 4);
+			_side_panel.pack_start (scroll, true, true, 4); // add scroll + treview
+			
+			_check_show_private_symbols = new Gtk.CheckButton.with_label (_("Show also private symbols"));
+			_check_show_private_symbols.active = true;
+			_check_show_private_symbols.toggled.connect (this.on_show_private_symbol_toggled);
+			_side_panel.pack_start (_check_show_private_symbols, false, true, 8);
+			
 			_side_panel.show_all ();
 			panel.add_item (_side_panel, _("Source"), null);
 			panel.activate_item (_side_panel);
@@ -162,11 +171,15 @@ namespace Vtg
 			_model.clear ();
 		}
 
-		public void update_view (Gee.List<Vsc.SymbolItem> symbols)
+		public void update_view (Gee.List<Vsc.SymbolItem>? symbols = null)
 		{
 			_src_view.set_model (null);
 			clear_view ();
+			if (symbols == null) {
+				symbols = _last_symbols;
+			}
 			rebuild_model (symbols);
+			_last_symbols = symbols;
 			_src_view.set_model (_sorted);
 			_src_view.expand_all ();
 		}
@@ -181,6 +194,11 @@ namespace Vtg
 			}
 		}
 		
+		private void on_show_private_symbol_toggled (Widget sender)
+		{
+			update_view ();
+		}
+
 		private void on_source_outliner_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
 		{
 			var tw = (TreeView) sender;
@@ -226,21 +244,25 @@ namespace Vtg
 			return false;
 		}
 		
-		private void rebuild_model (Gee.List<SymbolItem?> symbols, TreeIter? parentIter = null)
+		private void rebuild_model (Gee.List<SymbolItem>? symbols, TreeIter? parentIter = null)
 		{
 			if (symbols == null)
 				return;
 			
 			foreach (SymbolItem symbol in symbols) {
 				TreeIter iter;
-				_model.append (out iter, parentIter);
-				_model.set (iter, 
-					Columns.ICON, get_icon_from_symbol_type (symbol.symbol), 
-					Columns.NAME, symbol.description, 
-					Columns.SYMBOL, symbol);
+				
+				if (_check_show_private_symbols.active
+				    || (!_check_show_private_symbols.active && symbol.symbol.access != Vala.SymbolAccessibility.PRIVATE)) {
+					_model.append (out iter, parentIter);
+					_model.set (iter, 
+						Columns.ICON, get_icon_from_symbol_type (symbol.symbol), 
+						Columns.NAME, symbol.description, 
+						Columns.SYMBOL, symbol);
 
-				if (symbol.children != null) {
-					rebuild_model (symbol.children, iter);
+					if (symbol.children != null) {
+						rebuild_model (symbol.children, iter);
+					}
 				}
 			}
 		}
