@@ -56,8 +56,6 @@ po/stamp-it
 po/*.gmo
 stamp-h1
 tests/test-2
-vsc/vsc-1.0.gidl
-vsc/vsc-1.0.vapi
 vsc-shell/vsc-shell
 gen-project/vala-gen-project
 tests/
@@ -65,3 +63,5 @@ vtg-*.tar.bz2
 vtg-*.tar.gz
 vbf/vbftest
 vbf/am/.dirstamp
+afrodite/afrodite-1.0.vapi
+afrodite/afrodite-1.0.gidl

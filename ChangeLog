@@ -1,5 +1,12 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+	* .gitignore:
+
+	added a missing source file
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/symbol.vala:
 	* vtg/vtgsourceoutliner.vala:
 
