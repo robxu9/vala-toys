@@ -354,7 +354,11 @@ namespace Afrodite
 			s.is_abstract = m.is_abstract;
 			s.is_virtual = m.is_virtual;
 			s.overrides = m.overrides;
-			s.display_name = m.class_name;
+			if (m.name == ".new") {
+				s.display_name = m.class_name;
+			} else {
+				s.display_name = "%s.%s".printf (m.class_name, m.name);
+			}
 			s.binding =  get_vala_member_binding (m.binding);
 			_current.add_child (s);
 			

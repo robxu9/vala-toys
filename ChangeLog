@@ -1,5 +1,11 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+
+	fixed creation methods display name
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/astmerger.vala:
 	* afrodite/parser.vala:
