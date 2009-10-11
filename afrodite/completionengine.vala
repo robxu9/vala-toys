@@ -62,8 +62,6 @@ namespace Afrodite
 		
 		private unowned Thread parser_thread;
 		private int parser_stamp = 0;
-		private unowned Thread merger_thread;
-		private int merger_stamp = 0; // states: 0 = not running, 1 = running
 		
 		private Ast _ast;
 		
@@ -100,11 +98,6 @@ namespace Afrodite
 				parser_thread.join ();
 
 			parser_thread = null;
-
-			if (AtomicInt.@get (ref merger_stamp) != 0)
-				merger_thread.join ();
-
-			merger_thread = null;
 		}
 
 		public bool is_parsing
@@ -225,18 +218,6 @@ namespace Afrodite
 			}
 		}
 		
-		private void create_merger_thread ()
-		{				
-			try {
-				if (merger_thread != null) {
-					merger_thread.join ();
-				}
-				merger_thread = Thread.create (this.merge_sources, true);
-			} catch (ThreadError err) {
-				error ("%s: can't create parser thread: %s", id, err.message);
-			}
-		}
-		
 		private void* parse_sources ()
 		{
 			debug ("%s: parser thread starting...", id);
@@ -289,24 +270,6 @@ namespace Afrodite
 				resolver.resolve (_ast);
 				ast_mutex.unlock ();
 				
-				
-				/*
-				// queue to the merge stage
-				merge_queue_mutex.@lock ();
-				foreach (SourceItem source in sources) {
-					source.context = p.context;
-					merge_queue.add (source);
-				}
-				// schedule the merger thread
-				if (AtomicInt.compare_and_exchange (ref merger_stamp, 0, 1)) {
-					debug ("%s: parser creating merging thread", id);
-					create_merger_thread ();
-				} else {
-					AtomicInt.inc (ref merger_stamp);
-				}
-				merge_queue_mutex.@unlock ();
-				*/
-				
 				sources.clear ();
 				
 				//check for changes
@@ -319,71 +282,6 @@ namespace Afrodite
 			
 			debug ("%s: parser thread exiting...", id);
 			end_parsing (this);
-			return ((void *) 0);
-		}
-		
-		private void* merge_sources ()
-		{
-			Gee.List<SourceItem> sources = new ArrayList<SourceItem> ();
-			debug ("%s: merging thread starting...", id);
-			
-			while (true) {
-				int stamp = AtomicInt.get (ref merger_stamp);
-				
-				// get the source to parse
-				merge_queue_mutex.@lock ();
-				foreach (SourceItem source in merge_queue) {
-					sources.add (source);
-				}
-				merge_queue.clear ();
-				merge_queue_mutex.@unlock ();
-
-				var merger = new AstMerger (_ast);
-				// do the actual merging
-				var timer = new Timer ();
-				foreach (SourceItem source in sources) {
-					debug ("%s: merging %s", id, source.path);
-					ast_mutex.@lock ();
-					if (_ast.lookup_source_file (source.path) != null) {
-						debug ("%s: removing %s", id, source.path);
-						merger.remove_source_filename (source.path);
-					}
-					
-					if (source.context == null)
-						critical ("source %s context == null, non thread safe access to source item", source.path);
-					else {
-						foreach (Vala.SourceFile s in source.context.get_source_files ()) {
-							if (s.filename == source.path) {
-								timer.start ();
-								merger.merge_vala_context (s, source.context, source.is_glib);
-								timer.stop ();
-								debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
-								break;
-							}
-						}
-					}
-					ast_mutex.unlock ();
-					
-					
-				}
-				sources.clear ();
-				
-				// resolve symbols
-				var resolver = new SymbolResolver ();
-				ast_mutex.@lock ();
-				resolver.resolve (_ast);
-				ast_mutex.unlock ();
-				
-				
-				//check for changes
-				if (AtomicInt.compare_and_exchange (ref merger_stamp, stamp, 0)) {
-					break;
-				}
-			}
-		
-			// clean up and exit
-			sources = null;
-			debug ("%s: merging thread exiting...", id);		
 			return ((void *) 0);
 		}
 	}

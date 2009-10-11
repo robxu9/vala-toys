@@ -546,11 +546,15 @@ namespace Vtg
 				return null;
 			}
 			
+			GLib.debug ("get_current_symbol_item for %s, %s", first_part, symbol_name);
+			
 			Afrodite.Symbol? result = null;
-			result = complete (null, word, lineno, colno);
+			result = complete (null,  first_part, lineno, colno);
 			if (result != null && result.has_children) {
 				foreach (Symbol? symbol in result.children) {
 					if (symbol.name == symbol_name) {
+						GLib.debug ("get_current_symbol_item found %s", symbol_name);
+						
 						return symbol;
 					}
 				}
@@ -588,7 +592,7 @@ namespace Vtg
 			Afrodite.Symbol result = null;
 			Afrodite.Ast ast;
 			if (_completion.try_acquire_ast (out ast)) {
-				var sym = ast.lookup_name_at (word, _sb.path, line, column);
+				var sym = ast.lookup_name_for_type_at (word, _sb.path, line, column);
 				if (sym != null) {
 					result = sym.detach_copy ();
 				}

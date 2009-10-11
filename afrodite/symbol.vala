@@ -116,24 +116,35 @@ namespace Afrodite
 
 		public void add_resolve_target (Symbol resolve_target)
 		{
-			if (resolve_targets == null) {
-				resolve_targets = new ArrayList<Symbol> ();
+			// resolve target collection can be accessed from multiple threads
+			lock (resolve_targets) {
+				if (resolve_targets == null) {
+					resolve_targets = new ArrayList<Symbol> ();
+				}
+				resolve_targets.add (resolve_target);
 			}
-			
-			resolve_targets.add (resolve_target);
 		}
 		
 		public void remove_resolve_target (Symbol resolve_target)
 		{
-			resolve_targets.remove (resolve_target);
-			if (resolve_targets.size == 0)
-				resolve_targets = null;
+			// resolve target collection can be accessed from multiple threads
+			lock (resolve_targets) {
+				resolve_targets.remove (resolve_target);
+				if (resolve_targets.size == 0)
+					resolve_targets = null;
+			}
 		}
 		
 		public bool has_resolve_targets
 		{
 			get {
-				return resolve_targets != null;
+				bool res;
+				
+				lock (resolve_targets) {
+					res = resolve_targets != null;
+				}
+				
+				return res;
 			}
 		}
 

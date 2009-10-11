@@ -132,8 +132,20 @@ namespace Afrodite
 			Symbol sym = lookup_symbol_with_source_at (source, line, column);
 			return sym;
 		}
-		
+
 		public Symbol? lookup_name_at (string qualified_name, string filename, int line, int column,
+			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
+		{
+			return  lookup_name_or_type_at (qualified_name, filename, line, column, false, access, binding);
+		}
+
+		public Symbol? lookup_name_for_type_at (string qualified_name, string filename, int line, int column,
+			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
+		{
+			return  lookup_name_or_type_at (qualified_name, filename, line, column, true, access, binding);
+		}		
+		
+		private Symbol? lookup_name_or_type_at (string qualified_name, string filename, int line, int column, bool lookup_type,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			var source = lookup_source_file (filename);
@@ -169,8 +181,9 @@ namespace Afrodite
 	 					print ("lookup %s in %s", parts[i], sym.name);
 						sym = lookup_symbol (parts[i], sym.children, out dummy);
 						print ("... result: %s\n", sym == null ? "not found" : sym.name);
-						if (sym != null && sym.return_type != null)
-							sym = sym.return_type.symbol;
+						if (sym != null && lookup_type && sym.return_type != null) {
+								sym = sym.return_type.symbol;
+						}
 						
 						if (sym == null) {
 							// lookup on base types also
@@ -184,7 +197,7 @@ namespace Afrodite
 			}
 			
 			// return the symbol or the return type: for properties, field and methods
-			if (sym != null && sym.return_type != null)
+			if (sym != null && sym.return_type != null && lookup_type)
 				return sym.return_type.symbol;
 			else
 				return sym;
@@ -209,15 +222,30 @@ namespace Afrodite
 				return;
 
 			foreach (Symbol symbol in parent.children) {
-				print ("  Looking for %s in %s\n", filename, symbol.fully_qualified_name);
+				print ("  Looking for %s in %s, parent %s\n", filename, symbol.fully_qualified_name, parent.fully_qualified_name);
 				
 				if (symbol_has_filename_reference(filename, symbol)) {
 					var sym = symbol.detach_copy (0);
 					
+					print ("    adding %s", sym.name);
+					
 					results.add_child (sym);
 					if (symbol.has_children) {
+						// try to catch circular references
+						var item = parent;
+						bool circular_ref = false;
+						
+						while (item != null) {
+							if (sym == parent) {
+								warning ("circular reference %s", sym.fully_qualified_name);
+								circular_ref = true;
+								break;
+							}
+							item = item.parent;
+						}
 						// find in children
-						lookup_symbol_in_filename (filename, sym, symbol);
+						if (!circular_ref)
+							lookup_symbol_in_filename (filename, sym, symbol);
 					}
 				}
 			}

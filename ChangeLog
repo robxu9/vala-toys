@@ -1,5 +1,14 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	restored go to definition function
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/completionengine.vala:
 	* vtg/vtgprojectmanager.vala:
 	* vtg/vtgsourceoutliner.vala:
