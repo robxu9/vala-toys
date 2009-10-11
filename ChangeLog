@@ -1,5 +1,11 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+
+	search variables up to the parent chain
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* vtg/vtgsourceoutliner.vala:
 	* vtg/vtgsourceoutlinerview.vala:

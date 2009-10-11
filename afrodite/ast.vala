@@ -307,7 +307,6 @@ namespace Afrodite
 						current = current.parent;
 				}
 			} else if (name == "base") {
-				// TODO: search in the base class if any
 				if (symbol.has_base_types) {
 					foreach (DataType type in symbol.base_types) {
 						if (!type.unresolved && type.symbol.type_name == "Class") {
@@ -317,14 +316,18 @@ namespace Afrodite
 				}
 			} else {
 				// search in local vars going up in the scope chain
-				if (symbol.has_local_variables) {
-					foreach (DataType type in symbol.local_variables) {
-						if (type.name == name
-						    && (type.symbol == null || (type.symbol.access & access) != 0)
-						    && (type.symbol == null || (type.symbol.binding & binding) != 0)) {
-							return type.symbol;
+				var current_sym = symbol;
+				while (current_sym != null) {
+					if (current_sym.has_local_variables) {
+						foreach (DataType type in current_sym.local_variables) {
+							if (type.name == name
+							    && (type.symbol == null || (type.symbol.access & access) != 0)
+							    && (type.symbol == null || (type.symbol.binding & binding) != 0)) {
+								return type.symbol;
+							}
 						}
 					}
+					current_sym = current_sym.parent;
 				}
 				
 				// search in symbol parameters
