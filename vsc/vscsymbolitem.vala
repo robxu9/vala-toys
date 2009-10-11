@@ -25,14 +25,20 @@ namespace Vsc
 {
 	public class SymbolItem : GLib.Object
 	{
-		public weak SymbolItem? parent = null;
-		public Symbol? symbol = null;
+		public unowned SymbolItem? parent = null;
 		
 		private Gee.ArrayList<SymbolItem> _children = null;
 		private string _name = null;
 		private string _description = null;
 		private string _info = null;
+		private string _file = null;
+		private int _first_line = 0;
 		private int _last_line = 0; // this variabile can contain the last line of the symbol body
+		private int _first_column = 0;
+		private int _last_column = 0;
+		private string _type_name = null;
+		private SymbolAccessibility _access;
+		private string _serialize_info = null;
 		
 		public string name
 		{
@@ -51,10 +57,6 @@ namespace Vsc
 		public string info
 		{
 			get {
-				if (_info == null) {
-					initialize_info ();
-				}
-				
 				return _info;
 			}
 		}
@@ -62,22 +64,14 @@ namespace Vsc
 		public string? file
 		{
 			get {
-				if (symbol != null && symbol.source_reference != null) {
-					return symbol.source_reference.file.filename;
-				}
-				
-				return null;
+				return _file;
 			}
 		}
 		
 		public int first_line
 		{
 			get {
-				if (symbol != null && symbol.source_reference != null) {
-					return symbol.source_reference.first_line;
-				}
-				
-				return 0;
+				return _first_line;
 			}
 		}
 		
@@ -88,6 +82,41 @@ namespace Vsc
 			}
 		}
 
+		public int first_column
+		{
+			get {
+				return _first_column;
+			}
+		}
+
+		public int last_column
+		{
+			get {
+				return _last_column;
+			}
+		}
+
+		public string type_name
+		{
+			get {
+				return _type_name;
+			}
+		}
+
+		public string serialize_info
+		{
+			get {
+				return _serialize_info;
+			}
+		}
+
+		public SymbolAccessibility access
+		{
+			get {
+				return _access;
+			}
+		}
+
 		public Gee.ArrayList<SymbolItem> children 
 		{
 			get {
@@ -95,11 +124,10 @@ namespace Vsc
 			}
 		}
 		
-		public SymbolItem (Symbol symbol, SymbolItem? parent = null)
+		public SymbolItem (Symbol symbol, SymbolItem? parent = null, bool create_serialize_info = false)
 		{
-			this.symbol = symbol;
 			this.parent = parent;
-			
+
 			// generate the name
 			_name = symbol.name;
 			if (symbol is CreationMethod) {
@@ -109,7 +137,7 @@ namespace Vsc
 						_name = _name.concat (".", symbol.name);
 				}
 			}
-			
+
 			// generate the description
 			if (symbol is Vala.Method || symbol is Vala.CreationMethod) {
 				var method = (Vala.Method) symbol;
@@ -117,6 +145,18 @@ namespace Vsc
 			} else {
 				_description = name;
 			}
+
+			if (symbol.source_reference != null) {
+				_first_line = symbol.source_reference.first_line;
+				_file = symbol.source_reference.file.filename;
+				_first_column = symbol.source_reference.first_column;
+				_last_column = symbol.source_reference.last_column;
+			}
+
+			_type_name = symbol.type_name;
+			_access = symbol.access;
+
+			initialize_info (symbol, create_serialize_info);
 		}
 
 		public void add_child (SymbolItem child)
@@ -124,7 +164,7 @@ namespace Vsc
 			if (_children == null) {
 				_children = new Gee.ArrayList<SymbolItem> ();
 			}
-			
+
 			_children.add (child);
 			child.parent = this;
 		}
@@ -215,7 +255,7 @@ namespace Vsc
 			return result;
 		}
 		
-		private void initialize_info ()
+		private void initialize_info (Symbol symbol, bool create_serialize_info)
 		{
 			if (symbol is Method) {
 				var item = (Method) symbol;
@@ -223,6 +263,8 @@ namespace Vsc
 					_last_line = (item.body.source_reference.last_line == 0 ? first_line : item.body.source_reference.last_line);
 				}
 				_info = create_standard_info (symbol, item.return_type, item.get_parameters ());
+				if (create_serialize_info)
+					_serialize_info = serialize_method (item);
 			} else if (symbol is Vala.Signal) {
 				var item = (Vala.Signal) symbol;
 				_info = create_standard_info (symbol, item.return_type, item.get_parameters ());
@@ -265,6 +307,9 @@ namespace Vsc
 				if (symbol.source_reference != null)
 					_last_line = symbol.source_reference.last_line;
 			}
+			
+			if (create_serialize_info && !(symbol is Method))
+				_serialize_info = serialize_symbol (symbol);	
 		}
 		
 		private string create_standard_info (Symbol symbol, DataType return_type, Gee.List<FormalParameter>? parameters = null)
@@ -289,6 +334,110 @@ namespace Vsc
 				    (param_count > 2 ? "\n" : ""),
 				    params);
 		}
+
+		/*
+		 Support for vsc shell
+		*/
+		private string get_type_signature (Symbol symbol)
+		{
+				if (symbol is Vala.Enum) {
+					return "enums";
+				} else if (symbol is Vala.Constant) {
+					return "constants";
+				} else if (symbol is Vala.Namespace) {
+					return "namespaces";
+				} else if (symbol is Vala.Field) {
+					return "field";
+				} else if (symbol is Vala.Property) {
+					return "property";
+				} else if (symbol is Vala.Method) {
+					return "method";
+				} else if (symbol is Vala.Signal) {
+					return "signal";
+				} else if (symbol is Vala.Class) {
+					return "class";
+				} else if (symbol is Vala.Interface) {
+					return "interface";
+				} else if (symbol is Vala.Struct) {
+					return "struct";
+				} else {
+					return "other";
+				}
+		}
+
+		private string serialize_symbol (Symbol symbol)
+		{
+			string type = get_type_signature (symbol);
+			return "%s:%s:%s;:;:;%s:%d;%d;\n".printf(type, symbol.name, get_access_string (symbol), _file, _first_line, _last_line);
+		}
+
+		private string serialize_method (Method method)
+		{
+			StringBuilder sb = new StringBuilder ();
+			string typename;
+			string is_owned;
+			string symbol_type_signature = get_type_signature (method);
+
+			if (method != null) {
+				// TYPE:NAME:MODIFIER;STATIC:RETURN_TYPE;OWNERSHIP:ARGS;FILE:FIRST_LINE;LAST_LINE;
+				var sometype = method.return_type;
+				if (null != sometype) {
+					typename = sometype.to_string();
+					is_owned = sometype.value_owned ? "": "unowned";
+				} else {
+					is_owned = "";
+					typename = "";
+				}
+
+				sb.append("%s:%s:%s;%s:%s;%s:".printf (symbol_type_signature, method.name, get_access_string (method), "", typename, is_owned));
+				foreach (FormalParameter param in method.get_parameters ()) {
+					//  name,vala type,OWNERSHIP
+					sometype = param.parameter_type;
+					if (sometype != null) {
+						typename = sometype.to_string();
+						is_owned = sometype.value_owned? "": "unowned";
+					} else {
+						is_owned = "";
+						typename = "";
+					}
+
+					string paramname = ("(null)" == param.name.strip ())? "...": param.name;
+
+					sb.append ("%s,%s,%s;".printf( paramname, typename, is_owned));
+				}
+
+				sb.append ("%s:%d;%d;\n".printf (_file, _first_line, _last_line));
+			} else {
+				sb.append ("%s:%s:;:;:;%s:%d;%d;\n".printf (symbol_type_signature, method.name, _file, _first_line, _last_line));
+			}
+
+			return sb.str;
+		}
+
+		private string get_access_string (Symbol symbol)
+		{
+			string access = "";
+
+			switch (symbol.access) {
+				case SymbolAccessibility.PUBLIC:
+					access = "public";
+					break;
+				case SymbolAccessibility.PRIVATE:
+					access = "private";
+					break;
+				case SymbolAccessibility.PROTECTED:
+					access = "protected";
+					break;
+				case SymbolAccessibility.INTERNAL:
+					access = "internal";
+					break;
+				default:
+					break;
+			}
+
+ 			return access;
+		}
+
 	}
 }
 

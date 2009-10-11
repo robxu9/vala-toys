@@ -29,6 +29,7 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 	private Gee.List<SymbolItem> _results = null;
 	private SymbolItem _current = null;
 	private SourceFile _file = null;
+	private Symbol _current_symbol;
 	
 	public Gee.List<SymbolItem?> results
 	{
@@ -47,6 +48,7 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 		
 		if (symbol != null && symbol.source_reference.file.filename == _file.filename) {
 			res = new SymbolItem (symbol, _current);
+			_current_symbol = symbol;
 			if (_results == null) {
 				_results = new Gee.ArrayList<SymbolItem?> ();
 			}
@@ -98,7 +100,7 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 		var old_current = _current;
 		_current = add_symbol (cl);
 		
-		if (_current.symbol != cl)
+		if (_current_symbol != cl)
 			return; // not interesting
 			
 		foreach (DataType type in cl.get_base_types ()) {
@@ -158,7 +160,7 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 		var old_current = _current;
 		
 		_current = add_symbol (iface);
-		if (_current.symbol != iface)
+		if (_current_symbol != iface)
 			return; // not interesting
 					
 		foreach (DataType type in iface.get_prerequisites ()) {
@@ -214,7 +216,7 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 		var old_current = _current;
 		
 		_current = add_symbol (st);
-		if (_current.symbol != st)
+		if (_current_symbol != st)
 			return; // not interesting
 					
 		if (st.base_type != null) {

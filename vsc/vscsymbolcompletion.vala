@@ -960,7 +960,9 @@ namespace Vsc
 			
 			if (sourcefile != null) {
 				source = find_sourcefile (sec_context, sourcefile);
-				if (null == source){ source = find_sourcefile (pri_context, sourcefile); }
+				if (source == null) { 
+					source = find_sourcefile (pri_context, sourcefile);
+				}
 			}
 			
 			//first look in the namespaces defined in the source file
