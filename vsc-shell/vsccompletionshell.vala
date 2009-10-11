@@ -318,84 +318,19 @@ namespace Vsc
 		private void append_symbols (string type, StringBuilder sb, Gee.List<SymbolItem> symbols)
 		{
 			foreach (SymbolItem symbol in symbols) {
- 				sb.append ("%s:%s:%s;:;:;%s:%d;%d;\n".printf(type, symbol.name, get_access(symbol), symbol.file, symbol.first_line, symbol.last_line));
+ 				//sb.append ("%s:%s:%s;:;:;%s:%d;%d;\n".printf(type, symbol.name, get_access(symbol), symbol.file, symbol.first_line, symbol.last_line));
+ 				sb.append (symbol.serialize_info);
  			}
  		}
  		
  		private static void append_methods (StringBuilder sb, Gee.List<SymbolItem> methods)
  		{
-			Method? method;
-			DataType? sometype;
-			string is_owned;
-			string typename;
-			string paramname;
-			
 			foreach (SymbolItem item in methods) {
-				method = (Method?)item.symbol;
-				if (null != method) {
-					// TYPE:NAME:MODIFIER;STATIC:RETURN_TYPE;OWNERSHIP:ARGS;FILE:FIRST_LINE;LAST_LINE;
-					sometype = method.return_type;
-					if (null != sometype) {
-						typename = sometype.to_string();
-						is_owned = sometype.value_owned? "": "unowned";
-					}
-					else { 
-						is_owned = "";
-						typename = "";
-					}
-					
-					sb.append("method:%s:%s;%s:%s;%s:".printf (item.name, get_access(item), "", typename, is_owned));
-					foreach (FormalParameter param in method.get_parameters ()) {
-						//  name,vala type,OWNERSHIP
-						sometype = param.parameter_type;
-						if (null != sometype) {
-							typename = sometype.to_string();
-							is_owned = sometype.value_owned? "": "unowned";
-						}
-						else { 
-							is_owned = "";
-							typename = "";
-						}
-						
-						paramname = ("(null)" == param.name.strip ())? "...": param.name;
-						
-						sb.append ("%s,%s,%s;".printf( paramname, typename, is_owned));
-					}
-
-					sb.append ("%s:%d;%d;\n".printf(item.file, item.first_line, item.last_line));
-				} else {
-					sb.append ("method:%s:;:;:;%s:%d;%d;\n".printf (item.name, item.file, item.first_line, item.last_line));
-				}
+				sb.append (item.serialize_info);
 			}
  		}
  
- 		private static string get_access(SymbolItem symbol) 
- 		{
- 			Symbol? sym_real = symbol.symbol;
- 			string access = "";
- 			
- 			if (null != sym_real) {
- 				switch (sym_real.access) {
- 							case SymbolAccessibility.PUBLIC:
- 								access = "public";
- 								break;
- 							case SymbolAccessibility.PRIVATE:
- 								access = "private";
- 								break;
- 							case SymbolAccessibility.PROTECTED:
- 								access = "protected";
- 								break;
- 							case SymbolAccessibility.INTERNAL:
- 								access = "internal";
- 								break;
- 							default:
- 								break;
- 				}
- 			}
  
- 			return access;
-		}
-
 		private void display_result (SymbolCompletionResult completions)
 		{
 			if (!completions.is_empty) {
