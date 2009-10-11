@@ -1,5 +1,11 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	fixed some old variables related to vsc
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/completionengine.vala:
 	* vtg/vtgsourceoutliner.vala:
 

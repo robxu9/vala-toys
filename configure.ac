@@ -181,13 +181,8 @@ if test "x$HAVE_GENPRJ" = "x1" ; then
 fi
 
 ENABLE_VSC=no
-if test "x$HAVE_VSC" = "x1" ; then
-   ENABLE_VSC=yes
-fi
-
-ENABLE_VSCSHELL=no
-if test "x$HAVE_VSCSHELL" = "x1" ; then
-   ENABLE_VSCSHELL=yes
+if test "x$HAVE_AFRODITE" = "x1" ; then
+   ENABLE_AFRODITE=yes
 fi
 
 ENABLE_VTGPLUGIN=no
@@ -205,8 +200,7 @@ echo "
     CFLAGS:                        ${CFLAGS}
     Vala Vapidir:                  ${VALA_VAPIDIR}
     Enable gen-project:            ${ENABLE_GENPRJ}
-    Enable vsc library:            ${ENABLE_VSC}
+    Enable afrodite library:       ${ENABLE_AFRODITE}
     Enable vtg:                    ${ENABLE_VTGPLUGIN}
-    Enable vsc-shell:              ${ENABLE_VSCSHELL}
 "
 
