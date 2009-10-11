@@ -24,6 +24,7 @@ using Gedit;
 using Gdk;
 using Gtk;
 using Vbf;
+using Afrodite;
 
 namespace Vtg
 {
@@ -32,7 +33,7 @@ namespace Vtg
 		private Project _project = null;
 		private Gtk.TreeStore _model;
 		private bool in_update = false;
-		private Gee.HashMap<Vbf.Target, Vsc.SymbolCompletion> _completions = null;
+		private Gee.HashMap<Vbf.Target, Afrodite.CompletionEngine> _completions = null;
 
 		public signal void updated ();
 		public string filename = null;
@@ -52,7 +53,7 @@ namespace Vtg
 			cleanup_completions ();
 		}
 
-		public Vsc.SymbolCompletion? get_completion_for_file (string uri)
+		public Afrodite.CompletionEngine? get_completion_for_file (string uri)
 		{
 			foreach (Group group in _project.get_groups ()) {
 				foreach (Target target in group.get_targets ()) {
@@ -73,7 +74,7 @@ namespace Vtg
 			return null;
 		}
 
-		public Vsc.SymbolCompletion? get_completion_for_target (Vbf.Target target)
+		public Afrodite.CompletionEngine? get_completion_for_target (Vbf.Target target)
 		{
 			foreach (Vbf.Target key in _completions.get_keys ())	{
 				if (key.id == target.id) {
@@ -194,31 +195,32 @@ namespace Vtg
 
 		private void setup_completions ()
 		{
-			_completions = new Gee.HashMap<Vbf.Target, Vsc.SymbolCompletion> ();
+			_completions = new Gee.HashMap<Vbf.Target, CompletionEngine> ();
 			foreach (Group group in _project.get_groups ()) {
 				foreach (Vbf.Target target in group.get_targets ()) {
 					if (!target_has_vala_source (target))
 						continue;
 
-					Vsc.SymbolCompletion completion = new Vsc.SymbolCompletion ();
+					var completion = new CompletionEngine (target.name);
 					_completions.@set (target, completion);
 
 					foreach(string path in target.get_include_dirs ()) {
 						GLib.debug ("adding path to vapi dirs %s for target %s", path, target.id);
-						completion.parser.add_path_to_vapi_search_dir (path);
+						completion.add_vapi_dir (path);
 					}
 
 					/* first adding all built packages */
-					foreach(string package in target.get_built_libraries ()) {
-						GLib.debug ("adding built library %s for target %s", package, target.id);
-						completion.parser.add_built_package (package);
-					}
+					//foreach(string package in target.get_built_libraries ()) {
+					//	GLib.debug ("adding built library %s for target %s", package, target.id);
+					//	completion.parser.add_built_package (package);
+					//}
 
 					/* setup referenced packages */
 					foreach (Package package in target.get_packages ()) {
 						GLib.debug ("target %s, referenced package: %s", target.id, package.id);
-						if (!completion.parser.try_add_package (package.id)) {
-							GLib.warning ("failed to add package %s for target %s", package.id, target.id);
+						var paths = Afrodite.Utils.get_package_paths (package.id);
+						if (paths != null) {
+							completion.queue_sourcefiles (paths, null, true);
 						}
 					}
 
@@ -226,23 +228,18 @@ namespace Vtg
 					foreach (Vbf.Source source in target.get_sources ()) {
 						if (source.type == FileTypes.VALA_SOURCE) {
 							try {
-								completion.parser.add_source (source.filename);
+								completion.queue_sourcefile (source.filename);
 							} catch (Error err) {
 								GLib.warning ("Error adding source %s: %s", source.filename, err.message);
 							}
 						}
 					}
-					completion.parser.resume_parsing ();
 				}
 			}
 		}
 
 		private void cleanup_completions ()
 		{
-			foreach (Vsc.SymbolCompletion completion in _completions.get_values ())	{
-				completion.cleanup ();
-			}
-
 			_completions.clear ();
 			_completions = null;
 		}

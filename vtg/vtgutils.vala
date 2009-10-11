@@ -22,7 +22,7 @@
 using GLib;
 using Gsc;
 using Gtk;
-using Vsc;
+using Afrodite;
 using Vbf;
 
 namespace Vtg
@@ -222,6 +222,18 @@ namespace Vtg
 		
 		public const int prealloc_count = 500;
 
+		public static Gdk.Pixbuf icon_generic;
+		public static Gdk.Pixbuf icon_field;
+		public static Gdk.Pixbuf icon_method;
+		public static Gdk.Pixbuf icon_class;
+		public static Gdk.Pixbuf icon_struct;
+		public static Gdk.Pixbuf icon_property;
+		public static Gdk.Pixbuf icon_signal;
+		public static Gdk.Pixbuf icon_iface;
+		public static Gdk.Pixbuf icon_const;
+		public static Gdk.Pixbuf icon_enum;
+		public static Gdk.Pixbuf icon_namespace;
+		
 		public static bool is_vala_doc (Gedit.Document doc)
 		{
 			return doc.language != null && doc.language.id == "vala";
@@ -278,6 +290,18 @@ namespace Vtg
 					var obj = new Proposal ("", "", _icon_generic);
 					_proposals[idx] = obj;
 				}
+			
+				icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
+				icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
+				icon_method = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-method-16.png"));
+				icon_class = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-class-16.png"));
+				icon_struct = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-structure-16.png"));
+				icon_property = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-property-16.png"));
+				icon_signal = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-event-16.png"));
+				icon_iface = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-interface-16.png"));
+				icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
+				icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
+				icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));	
 
 				_initialized = true;
 			} catch (Error err) {
@@ -319,5 +343,32 @@ namespace Vtg
 				}
 			}
 		}
+		
+		public static Gdk.Pixbuf get_icon_for_type_name (string type_name)
+		{
+			if (icon_namespace != null && type_name == "Namespace")
+				return icon_namespace;
+			else if (icon_class != null && type_name == "Class")
+				return icon_class;
+			else if (icon_struct != null && type_name == "Struct")
+				return icon_struct;
+			else if (icon_iface != null && type_name == "Interface")
+				return icon_iface;
+			else if (icon_field != null && type_name == "Field")
+				return icon_field;
+			else if (icon_property != null && type_name == "Property")
+				return icon_property;
+			else if (icon_method != null && type_name == "Method")
+				return icon_method;
+			else if (icon_enum != null && type_name == "Enum")
+				return icon_enum;
+			else if (icon_const != null && type_name == "Constant")
+				return icon_const;
+			else if (icon_signal != null && type_name == "Signal")
+				return icon_signal;
+
+			return icon_generic;
+		}
+
 	}
 }

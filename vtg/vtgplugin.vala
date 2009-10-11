@@ -23,7 +23,7 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
-using Vsc;
+using Afrodite;
 using Vbf;
 
 namespace Vtg
@@ -241,10 +241,7 @@ namespace Vtg
 		internal void on_project_loaded (ProjectManagerUi sender, ProjectManager project_manager)
 		{
 			var prj = new ProjectDescriptor ();
-			var completion = new Vsc.SymbolCompletion ();
 			var project = project_manager.project;
-								
-
 			
 			/* update the other project manager views */
 			foreach (PluginInstance instance in _instances) {
@@ -255,7 +252,6 @@ namespace Vtg
 
 			prj.project = project_manager;
 			_projects.add (prj);
-			completion.parser.resume_parsing ();
 			
 			weak Gtk.RecentManager recent = Gtk.RecentManager.get_default ();
 			Gtk.RecentData recent_data = Gtk.RecentData ();

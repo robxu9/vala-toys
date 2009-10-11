@@ -24,7 +24,7 @@ using Gedit;
 using Gdk;
 using Gtk;
 using Gsc;
-using Vsc;
+using Afrodite;
 
 namespace Vtg
 {
@@ -32,25 +32,26 @@ namespace Vtg
 	{
 		private Vtg.PluginInstance _plugin_instance;
 		private Gedit.View _view;
-		private SymbolCompletion _completion;
+		private unowned CompletionEngine _completion;
 		private SymbolCompletionProvider _provider;
 		private Gsc.Completion _manager;
 		private SymbolCompletionTrigger _trigger;
 		
  		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 		public Gedit.View view { get { return _view; } construct { _view = value; } default = null; }
-		public SymbolCompletion completion { get { return _completion; } construct { _completion = value; } default = null; }
+		public CompletionEngine completion { get { return _completion; } construct { _completion = value; } default = null; }
 		public SymbolCompletionTrigger trigger { get { return _trigger; } }
 		
-		public SymbolCompletionHelper (Vtg.PluginInstance plugin_instance, Gedit.View view, SymbolCompletion completion)
+		public SymbolCompletionHelper (Vtg.PluginInstance plugin_instance, Gedit.View view, CompletionEngine completion)
 		{
 			this.plugin_instance = plugin_instance;
 			this.view = view;
 			this.completion = completion;
-			_view.show.connect (this.lazy_setup);
+			lazy_setup ();
+			
 		}
 
-		private void lazy_setup (Gtk.Widget sender)
+		private void lazy_setup ()
 		{
 			setup_gsc_completion (_view);
 			_view.show.disconnect (this.lazy_setup);
@@ -81,10 +82,11 @@ namespace Vtg
 		
 		public void goto_definition ()
 		{
-			SymbolItem? item = _provider.get_current_symbol_item ();
-			if (item != null && !StringUtils.is_null_or_empty (item.file)) {
-				string uri = Filename.to_uri (item.file);				
-				_plugin_instance.activate_uri (uri, item.first_line);
+			Afrodite.Symbol? item = _provider.get_current_symbol_item ();
+			
+			if (item != null && item.has_source_references) {
+				string uri = Filename.to_uri (item.source_references.get(0).file.filename);
+				_plugin_instance.activate_uri (uri, item.source_references.get(0).first_line);
 			}
 		}
 	}

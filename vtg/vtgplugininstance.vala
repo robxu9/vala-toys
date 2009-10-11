@@ -23,7 +23,7 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
-using Vsc;
+using Afrodite;
 using Vbf;
 
 namespace Vtg

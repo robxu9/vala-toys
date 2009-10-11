@@ -24,7 +24,7 @@ using Gedit;
 using Gdk;
 using Gtk;
 using Vbf;
-using Vsc;
+using Afrodite;
 using Vala;
 
 namespace Vtg
@@ -44,20 +44,9 @@ namespace Vtg
 		private Gtk.TreeModelSort _sorted;
 		private Gtk.CheckButton _check_show_private_symbols;
 		private TreeStore _model = null;
-		private Gee.List<Vsc.SymbolItem>? _last_symbols = null;
+		private Gee.List<Afrodite.Symbol>? _last_symbols = null;
 
-		private Gdk.Pixbuf _icon_generic;
-		private Gdk.Pixbuf _icon_field;
-		private Gdk.Pixbuf _icon_method;
-		private Gdk.Pixbuf _icon_class;
-		private Gdk.Pixbuf _icon_struct;
-		private Gdk.Pixbuf _icon_property;
-		private Gdk.Pixbuf _icon_signal;
-		private Gdk.Pixbuf _icon_iface;
-		private Gdk.Pixbuf _icon_const;
-		private Gdk.Pixbuf _icon_enum;
-		private Gdk.Pixbuf _icon_namespace;
-		
+
 		private Gtk.Menu _popup_symbols;
 		private uint _popup_symbols_ui_id;
 		private string _popup_symbols_ui_def = """
@@ -151,19 +140,7 @@ namespace Vtg
 			_sorted = new Gtk.TreeModelSort.with_model (_model);
 			_sorted.set_sort_column_id (0, SortType.ASCENDING);
 			_sorted.set_sort_func (0, this.sort_model);			
-			_src_view.set_model (_sorted);
-			
-			this._icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
-			this._icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
-			this._icon_method = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-method-16.png"));
-			this._icon_class = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-class-16.png"));
-			this._icon_struct = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-structure-16.png"));
-			this._icon_property = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-property-16.png"));
-			this._icon_signal = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-event-16.png"));
-			this._icon_iface = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-interface-16.png"));
-			this._icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
-			this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
-			this._icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));		
+			_src_view.set_model (_sorted);	
 		}
 		
 		public void clear_view ()
@@ -171,7 +148,7 @@ namespace Vtg
 			_model.clear ();
 		}
 
-		public void update_view (Gee.List<Vsc.SymbolItem>? symbols = null)
+		public void update_view (Gee.List<Afrodite.Symbol>? symbols = null)
 		{
 			_src_view.set_model (null);
 			clear_view ();
@@ -184,12 +161,14 @@ namespace Vtg
 			_src_view.expand_all ();
 		}
 
-		private void goto_line (SymbolItem symbol)
+		private void goto_line (Afrodite.Symbol symbol)
 		{
-			if (symbol.file != null) {
-				int line = symbol.first_line;
-				int start_col = symbol.first_column;
-				int end_col = symbol.last_column;
+			if (symbol.has_source_references) {
+				var sr = symbol.source_references.get(0);
+				
+				int line = sr.first_line;
+				int start_col = sr.first_column;
+				int end_col = sr.last_column;
 				this.goto_source (line, start_col, end_col);
 			}
 		}
@@ -206,7 +185,7 @@ namespace Vtg
 			TreeIter iter;
 			
 			if (model.get_iter (out iter, path)) {
-				SymbolItem symbol;
+				Afrodite.Symbol symbol;
 				model.get (iter, Columns.SYMBOL, out symbol);
 				goto_line (symbol);
 			}
@@ -218,7 +197,7 @@ namespace Vtg
 			TreeModel model;
 			if (_src_view.get_selection ().get_selected (out model, out iter))
 			{
-				SymbolItem symbol;
+				Afrodite.Symbol symbol;
 				model.get (iter, Columns.SYMBOL, out symbol);
 				goto_line (symbol);
 			}
@@ -236,7 +215,7 @@ namespace Vtg
 					weak TreePath path = rows.nth_data (0);
 					model.get_iter (out iter, path);
 					model.get (iter, Columns.SYMBOL, out obj);
-					if (obj is SymbolItem) {
+					if (obj is Afrodite.Symbol) {
 						_popup_symbols.popup (null, null, null, event.button, event.time);
 					}
 				}
@@ -244,59 +223,34 @@ namespace Vtg
 			return false;
 		}
 		
-		private void rebuild_model (Gee.List<SymbolItem>? symbols, TreeIter? parentIter = null)
+		private void rebuild_model (Gee.List<Afrodite.Symbol>? symbols, TreeIter? parentIter = null)
 		{
 			if (symbols == null)
 				return;
 			
-			foreach (SymbolItem symbol in symbols) {
+			foreach (Afrodite.Symbol symbol in symbols) {
 				TreeIter iter;
 				
 				if (_check_show_private_symbols.active
-				    || (!_check_show_private_symbols.active && symbol.access != Vala.SymbolAccessibility.PRIVATE)) {
+				    || (!_check_show_private_symbols.active && symbol.access != Afrodite.SymbolAccessibility.PRIVATE)) {
 					_model.append (out iter, parentIter);
 					_model.set (iter, 
-						Columns.ICON, get_icon_from_symbol_type (symbol.type_name), 
-						Columns.NAME, symbol.description, 
+						Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name), 
+						Columns.NAME, symbol.name, 
 						Columns.SYMBOL, symbol);
 
-					if (symbol.children != null) {
+					if (symbol.has_children) {
 						rebuild_model (symbol.children, iter);
 					}
 				}
 			}
 		}
 		
-		private Pixbuf get_icon_from_symbol_type (string symbol)
-		{
-			if (_icon_namespace != null && symbol == "ValaNamespace")
-				return _icon_namespace;
-			else if (_icon_class != null && symbol == "ValaClass")
-				return _icon_class;
-			else if (_icon_struct != null && symbol == "ValaStruct")
-				return _icon_struct;
-			else if (_icon_iface != null && symbol == "ValaInterface")
-				return _icon_iface;
-			else if (_icon_field != null && symbol == "ValaField")
-				return _icon_field;
-			else if (_icon_property != null && symbol == "ValaProperty")
-				return _icon_property;
-			else if (_icon_method != null && symbol == "ValaMethod")
-				return _icon_method;
-			else if (_icon_enum != null && symbol == "ValaEnum")
-				return _icon_enum;
-			else if (_icon_const != null && symbol == "ValaConstant")
-				return _icon_const;
-			else if (_icon_signal != null && symbol == "ValaSignal")
-				return _icon_signal;
-				
-			return _icon_generic;
-		}
 
 		private int sort_model (TreeModel model, TreeIter a, TreeIter b)
 		{
-			SymbolItem vala;
-			SymbolItem valb;
+			Afrodite.Symbol vala;
+			Afrodite.Symbol valb;
 			
 			model.get (a, Columns.SYMBOL, out vala);
 			model.get (b, Columns.SYMBOL, out valb);
@@ -310,55 +264,55 @@ namespace Vtg
 				return -1;
 			
 			if (vala.type_name != valb.type_name) {
-				if (vala.type_name == "ValaConstant") {
+				if (vala.type_name == "Constant") {
 					return -1;
-				} else if (valb.type_name == "ValaConstant") {
+				} else if (valb.type_name == "Constant") {
 					return 1;
-				} else if (vala.type_name == "ValaEnum") {
+				} else if (vala.type_name == "Enum") {
 					return -1;
-				} else if (valb.type_name == "ValaEnum") {
+				} else if (valb.type_name == "Enum") {
 					return 1;										
-				} else if (vala.type_name == "ValaField") {
+				} else if (vala.type_name == "Field") {
 					return -1;
-				} else if (valb.type_name == "ValaField") {
+				} else if (valb.type_name == "Field") {
 					return 1;
-				} else if (vala.type_name == "ValaProperty") {
+				} else if (vala.type_name == "Property") {
 					return -1;
-				} else if (valb.type_name == "ValaProperty") {
+				} else if (valb.type_name == "Property") {
 					return 1;
-				} else if (vala.type_name == "ValaSignal") {
+				} else if (vala.type_name == "Signal") {
 					return -1;
-				} else if (valb.type_name == "ValaSignal") {
+				} else if (valb.type_name == "Signal") {
 					return 1;
-				} else if (vala.type_name == "ValaCreationMethod" 
-					|| vala.type_name == "ValaConstructor") {
+				} else if (vala.type_name == "CreationMethod" 
+					|| vala.type_name == "Constructor") {
 					return -1;
-				} else if (valb.type_name == "ValaCreationMethod"  
-					|| vala.type_name == "ValaConstructor") {
+				} else if (valb.type_name == "CreationMethod"  
+					|| vala.type_name == "Constructor") {
 					return 1;
-				} else if (vala.type_name == "ValaMethod") {
+				} else if (vala.type_name == "Method") {
 					return -1;
-				} else if (valb.type_name == "ValaMethod") {
+				} else if (valb.type_name == "Method") {
 					return 1;
-				} else if (vala.type_name == "ValaErrorDomain") {
+				} else if (vala.type_name == "ErrorDomain") {
 					return -1;
-				} else if (valb.type_name == "ValaErrorDomain") {
+				} else if (valb.type_name == "ErrorDomain") {
 					return 1;					
-				} else if (vala.type_name == "ValaNamespace") {
+				} else if (vala.type_name == "Namespace") {
 					return -1;
-				} else if (valb.type_name == "ValaNamespace") {
+				} else if (valb.type_name == "Namespace") {
 					return 1;
-				} else if (vala.type_name == "ValaStruct") {
+				} else if (vala.type_name == "Struct") {
 					return -1;
-				} else if (valb.type_name == "ValaStruct") {
+				} else if (valb.type_name == "Struct") {
 					return 1;					
-				} else if (vala.type_name == "ValaClass") {
+				} else if (vala.type_name == "Class") {
 					return -1;
-				} else if (valb.type_name == "ValaClass") {
+				} else if (valb.type_name == "Class") {
 					return 1;
-				} else if (vala.type_name == "ValaInterface") {
+				} else if (vala.type_name == "Interface") {
 					return -1;
-				} else if (valb.type_name == "ValaInterface") {
+				} else if (valb.type_name == "Interface") {
 					return 1;
 				}
 			}

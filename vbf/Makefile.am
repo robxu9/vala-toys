@@ -6,7 +6,7 @@ SUBDIRS = \
 	$(NULL)
 
 AM_CPPFLAGS = \
-	$(VSC_CFLAGS) \
+	$(AFRODITE_CFLAGS) \
 	-DPACKAGE_DATADIR=\""$(pkgdatadir)"\" \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
@@ -73,11 +73,11 @@ libvbf_la_LDFLAGS = \
 	$(NULL)
 
 libvbf_la_LIBADD = \
-	$(VSC_LIBS) \
+	$(AFRODITE_LIBS) \
 	$(NULL)
 
 vbftest_LDADD = \
-	$(VSC_LIBS) \
+	$(AFRODITE_LIBS) \
 	libvbf.la  \
 	$(NULL)
 

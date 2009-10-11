@@ -116,7 +116,7 @@ namespace Vtg
 	 				GLib.warning ("setup_completion: symbol completion helper is null for view");
 					return;
 				}
-				scs.completion.parser.sec_cache_builded += this.on_sec_cache_builded;
+				//scs.completion.parser.sec_cache_builded += this.on_sec_cache_builded;
 			}
 		}
 
@@ -128,7 +128,7 @@ namespace Vtg
 	 				GLib.warning ("setup_completion: symbol completion helper is null for view");
 					return;
 				}
-				scs.completion.parser.sec_cache_builded -= this.on_sec_cache_builded;
+				//scs.completion.parser.sec_cache_builded -= this.on_sec_cache_builded;
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace Vtg
 		
 		// this method is called from another thread context
 		// for this reason the update is done in the idle handler
-		private void on_sec_cache_builded (Vsc.ParserManager sender)
+		private void on_sec_cache_builded (Afrodite.CompletionEngine sender)
 		{
 			setup_idle ();
 		}
@@ -168,12 +168,15 @@ namespace Vtg
 			}
 			
 			var name = Utils.get_document_name ((Gedit.Document) _active_view.get_buffer ());
-			var results = scs.completion.get_symbols_for_source (name);
+			//var results = null;
+			GLib.warning ("NOT IMPLEMENTED");
+			//scs.completion.get_symbols_for_source (name);
+			/*
 			if (results == null) {
 				_outliner_view.clear_view ();
 			} else {
 				_outliner_view.update_view (results);
-			}
+			}*/
 		}
 	}
 }

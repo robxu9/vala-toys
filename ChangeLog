@@ -1,3 +1,42 @@
+2009-10-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/Makefile.am:
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/parser.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/sourcereference.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* afrodite/utils.vala:
+	* afrodite/voidtype.vala:
+	* Makefile.am:
+	* afrodite/Makefile.am:
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/parser.vala:
+	* afrodite/symbol.vala:
+	* afrodite/utils.vala:
+	* configure.ac:
+	* vbf/Makefile.am:
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectdescriptor.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	the new completion library afrodite is landed
+
 2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
 
 	* ChangeLog:

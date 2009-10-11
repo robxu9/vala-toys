@@ -2,16 +2,12 @@
 #Build in these directories:
 SUBDIRS = gen-project doc
 
-if HAVE_VSC
-SUBDIRS += vsc
+if HAVE_AFRODITE
+SUBDIRS += afrodite
 endif
 
 if HAVE_VTGPLUGIN
 SUBDIRS += vbf vtg images ui po
-endif
-
-if HAVE_VSCSHELL
-SUBDIRS += vsc-shell
 endif
 
 vtgdocdir = ${prefix}/doc/vtg

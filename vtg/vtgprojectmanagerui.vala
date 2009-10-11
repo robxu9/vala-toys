@@ -488,13 +488,15 @@ namespace Vtg
 				return;
 			}
 			uri = Filename.from_uri (uri);
-			var methods = completion.get_methods_for_source (uri);
+			var methods = new Gee.ArrayList<Afrodite.Symbol> ();
+			
+			//var methods = completion.get_methods_for_source (uri);
 			if (methods.size <= 0)
 				return;
-				
+			
 			TreeIter iter;
-			Gtk.ListStore model = new Gtk.ListStore (4, typeof(string), typeof(string), typeof(bool), typeof(Vsc.SymbolItem));
-			foreach (Vsc.SymbolItem method in methods) {
+			Gtk.ListStore model = new Gtk.ListStore (4, typeof(string), typeof(string), typeof(bool), typeof(Afrodite.Symbol));
+			foreach (Afrodite.Symbol method in methods) {
 				model.append (out iter);
 				model.set (iter, 0, method.name, 1, method.name, 2, true, 3, method);
 			}
@@ -502,10 +504,15 @@ namespace Vtg
 			var dialog = new FilteredListDialog (model);
 			dialog.set_transient_for (_plugin_instance.window);
 			if (dialog.run ()) {
-				Vsc.SymbolItem method;
+				Afrodite.Symbol method;
 				model.get (dialog.selected_iter , 3, out method);
-				doc.goto_line (method.first_line - 1);
-				view.scroll_to_cursor ();
+				Afrodite.SourceReference sr;
+				if (method.has_source_references) {
+					sr = method.source_references.get (0);
+					
+					doc.goto_line (sr.first_line - 1);
+					view.scroll_to_cursor ();
+				}
 			}
 		}
 

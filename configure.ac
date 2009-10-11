@@ -67,17 +67,6 @@ AC_ARG_ENABLE([vtg-plugin],
         ],
         [vtgplugin=yes])
 
-AC_ARG_ENABLE([vsc-shell],
-    AS_HELP_STRING([--disable-vsc-shell],[Disable vsc-shell program]),
-        [
-            case "${enableval}" in
-                yes) vscshell=yes ;;
-                no) vscshell=no ;;
-                *) AC_MSG_ERROR(bad value ${enableval} for --disable-vsc-shell) ;;
-            esac
-        ],
-        [vscshell=auto])
-
 ### gen-project ###############################################
 if test "x${genprj}" != xno ; then
 	PKG_CHECK_MODULES(GENPROJECT, 
@@ -103,75 +92,34 @@ AC_SUBST(HAVE_GENPRJ)
 AM_CONDITIONAL([HAVE_GENPRJ], [test "x$HAVE_GENPRJ" = x1])
 ###############################################################
 
-if test "x${vtgplugin}" != xno -o "x${vscshell}" != xno; then
-	PKG_CHECK_MODULES(VSC, 
+if test "x${vtgplugin}" != xno; then
+	PKG_CHECK_MODULES(AFRODITE, 
 		[glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED
 		gobject-2.0 >= $GLIB_REQUIRED 
 		gthread-2.0 >= $GTHREAD_REQUIRED 
 		vala-1.0 >= $VALA_REQUIRED],
-		HAVE_VSC=1,
+		HAVE_AFRODITE=1,
 		[
-			HAVE_VSC=0
-			AC_MSG_RESULT([vsc library dependencies not met:])
+			HAVE_AFRODITE=0
+			AC_MSG_RESULT([afrodite library dependencies not met:])
 			PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gio-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gio-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([vala-1.0 >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-1.0 >= $VALA_REQUIRED: not found]))
 
-			if test "x$vscshell" = xyes -o "x$vtgplugin" = xyes; then
-				AC_MSG_ERROR([vsc library dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED])
+			if "x$vtgplugin" = xyes; then
+				AC_MSG_ERROR([afrodite library dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED])
 			fi
 		])
 else
-    HAVE_VSC=0
+    HAVE_AFRODITE=0
 fi
 
-AC_SUBST(VSC_CFLAGS)
-AC_SUBST(VSC_LIBS)
-AC_SUBST(HAVE_VSC)
-AM_CONDITIONAL([HAVE_VSC], [test "x$HAVE_VSC" = x1])
-
-### vsc-shell #################################################
-if test "x${vscshell}" != xno ; then
-	PKG_CHECK_MODULES(VSCSHELL, 
-		[glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED
-		gobject-2.0 >= $GLIB_REQUIRED 
-		gthread-2.0 >= $GTHREAD_REQUIRED
-		vala-1.0 >= $VALA_REQUIRED],
-		HAVE_VSCSHELL=1,
-		[
-			HAVE_VSCSHELL=0
-			AC_MSG_RESULT([vsc-shell dependencies not met:])
-			PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gio-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gio-2.0 >= $GLIB_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([vala-1.0 >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-1.0 >= $VALA_REQUIRED: not found]))
-
-			if test "x$vscshell" = xyes ; then
-				AC_MSG_ERROR([vsc-shell dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED])
-			fi
-		])
-	AC_CHECK_LIB(readline,readline,, 
-		[
-			HAVE_VSCSHELL=0
-			AC_MSG_RESULT([cannot find readline library]) 
-		])
-	AC_CHECK_HEADER([readline/readline.h],, 
-		[
-			HAVE_VSCSHELL=0
-			AC_MSG_RESULT([cannot find readline headers is the readline 'dev' package installed?])
-		])
-else
-    HAVE_VSCSHELL=0
-fi
-
-AC_SUBST(VSCSHELL_CFLAGS)
-AC_SUBST(VSCSHELL_LIBS)
-AC_SUBST(HAVE_VSCSHELL)
-AM_CONDITIONAL([HAVE_VSCSHELL], [test "x$HAVE_VSCSHELL" = x1])
-################################################################
+AC_SUBST(AFRODITE_CFLAGS)
+AC_SUBST(AFRODITE_LIBS)
+AC_SUBST(HAVE_AFRODITE)
+AM_CONDITIONAL([HAVE_AFRODITE], [test "x$HAVE_AFRODITE" = x1])
 
 ### vtg-plugin #################################################
 if test "x${vtgplugin}" != xno ; then
@@ -214,8 +162,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_CONFIG_FILES([
 	Makefile
-	vsc/Makefile
-	vsc-shell/Makefile
+	afrodite/Makefile
 	gen-project/Makefile
 	gen-project/licenses/Makefile
 	doc/Makefile

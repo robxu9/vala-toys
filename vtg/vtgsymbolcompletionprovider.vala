@@ -24,14 +24,14 @@ using Gedit;
 using Gdk;
 using Gtk;
 using Gsc;
-using Vsc;
+using Afrodite;
 
 namespace Vtg
 {
 	internal class SymbolCompletionProvider : GLib.Object, Gsc.Provider
 	{
-		private Vsc.SourceBuffer _sb = null;
-		private SymbolCompletion _completion = null;
+		private Afrodite.SourceItem _sb = null;
+		private unowned Afrodite.CompletionEngine _completion = null;
 		private Gedit.View _view = null;
 		private GLib.List<Gsc.Proposal> _list;
 		private Gdk.Pixbuf _icon_generic;
@@ -66,12 +66,12 @@ namespace Vtg
 		private int _last_line = -1;
 		private bool _doc_changed = false;
 		
-		public SymbolCompletion completion { construct { _completion = value;} }
+		public Afrodite.CompletionEngine completion { construct { _completion = value;} }
 		public Gedit.View view { construct { _view = value; } }
  		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } default = null; }
 
 
-		public SymbolCompletionProvider (Vtg.PluginInstance plugin_instance, Gedit.View view, SymbolCompletion completion)
+		public SymbolCompletionProvider (Vtg.PluginInstance plugin_instance, Gedit.View view, Afrodite.CompletionEngine completion)
 		{
 			this.plugin_instance = plugin_instance;
 			this.completion = completion;
@@ -91,14 +91,11 @@ namespace Vtg
 			var doc = (Gedit.Document) _view.get_buffer ();
 			doc.notify["text"] -= this.on_text_changed;
 			doc.notify["cursor-position"] -= this.on_cursor_position_changed;
-			this._completion.parser.caches_building -= this.on_cache_building;
-			this._completion.parser.caches_builded -= this.on_cache_builded;
 			
 			if (_sb_msg_id != 0) {
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				status_bar.remove (_sb_context_id, _sb_msg_id);
 			}
-			_completion.parser.remove_source_buffer (_sb);
 		}
 		
 		construct { 
@@ -106,13 +103,14 @@ namespace Vtg
 				var doc = (Gedit.Document) _view.get_buffer ();
 				string name = Utils.get_document_name (doc);
 
-				_sb = new Vsc.SourceBuffer (name, null);
-
+				_sb = new Afrodite.SourceItem ();
+				_sb.path = name;
+				_sb.content = null;
+				
 				_view.key_press_event += this.on_view_key_press;
 				doc.notify["text"] += this.on_text_changed;
 				doc.notify["cursor-position"] += this.on_cursor_position_changed;
 				
-				this._completion.parser.add_source_buffer (_sb);
 				this._icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				this._icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
 				this._icon_method = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-method-16.png"));
@@ -125,9 +123,6 @@ namespace Vtg
 				this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
 				this._icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));
 				
-				this._completion.parser.caches_building += this.on_cache_building;
-				this._completion.parser.caches_builded += this.on_cache_builded;
-
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				_sb_context_id = status_bar.get_context_id ("symbol status");
 				
@@ -135,24 +130,6 @@ namespace Vtg
 				_all_doc = true;
 			} catch (Error err) {
 				GLib.warning ("an error occourred: %s", err.message);
-			}
-		}
-
-
-		private void on_cache_building (Vsc.ParserManager sender)
-		{
-			if (_cache_building == false) {
-				_cache_building = true; 
-				_idle_id = Idle.add (this.on_idle);
-			}			
-		}
-		
-		private void on_cache_builded (Vsc.ParserManager sender)
-		{
-			if (_cache_building == true) {
-				_cache_building = false;
-				if (_idle_id == 0)
-					_idle_id = Idle.add (this.on_idle);
 			}
 		}
 		
@@ -253,7 +230,7 @@ namespace Vtg
 		
 		private void show_calltip ()
 		{
-			SymbolItem? completion_result = get_current_symbol_item ();
+			Afrodite.Symbol? completion_result = get_current_symbol_item ();
 			if (completion_result != null) {
 				if (_calltip_window == null) {
 					initialize_calltip_window ();
@@ -305,8 +282,8 @@ namespace Vtg
 		private void parse (Gedit.Document doc)
 		{
 			var buffer = this.get_document_text (doc, _all_doc);
-			_sb.source = buffer;
-			_completion.parser.reparse_source_buffers ();
+			_sb.content = buffer;
+			_completion.queue_source (_sb);
 			_doc_changed = false;
 		}
 
@@ -322,9 +299,7 @@ namespace Vtg
 
 		public GLib.List<Gsc.Proposal> get_proposals (Gsc.Trigger trigger)
 		{
-			var timer = new Timer ();
 			transform_result (get_completions ((SymbolCompletionTrigger) trigger));
-			timer.stop ();
 			if (_list.length () == 0 && _cache_building) {
 				_last_trigger = (SymbolCompletionTrigger) trigger;
 			} else {
@@ -333,15 +308,17 @@ namespace Vtg
 			return (owned) _list;
 		}
 
-		private void append_symbols (Gee.List<SymbolItem> symbols, Gdk.Pixbuf icon)
+		private void append_symbols (Gee.List<Afrodite.Symbol> symbols)
 		{
-			weak Proposal[] proposals = Utils.get_proposal_cache ();
+			unowned Proposal[] proposals = Utils.get_proposal_cache ();
 
-			foreach (SymbolItem symbol in symbols) {
+			
+			foreach (Afrodite.Symbol symbol in symbols) {
 				Proposal proposal;
 				var name = (symbol.name != null ? symbol.name : "<null>");
 				var info = (symbol.info != null ? symbol.info : "");
-				
+				Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.type_name);
+	
 				if (_prealloc_index < Utils.prealloc_count) {
 					proposal = proposals [_prealloc_index];
 					_prealloc_index++;
@@ -366,13 +343,18 @@ namespace Vtg
 			return strcmp (pa.get_label (), pb.get_label ());
 		}
 
-		private void transform_result (SymbolCompletionResult? result)
+		private void transform_result (Afrodite.Symbol? result)
 		{
 			var timer = new Timer ();
 			_prealloc_index = 0;
 			_list = new GLib.List<Proposal> ();
 
-			if (result != null && !result.is_empty) {
+			if (result != null) {
+				if (result.has_children) {
+					append_symbols (result.children);
+				}
+				/*
+				foreach (Symbol symbol in resul)
 				if (result.fields.size > 0) {
 					append_symbols (result.fields, _icon_field);
 				}
@@ -408,7 +390,7 @@ namespace Vtg
 				}				
 				if (result.others.size > 0) {
 					append_symbols (result.others, _icon_generic);
-				}
+				}*/
 			}
 
 			timer.stop ();
@@ -554,7 +536,7 @@ namespace Vtg
 			
 		}
 
-		public SymbolItem? get_current_symbol_item ()
+		public Afrodite.Symbol? get_current_symbol_item ()
 		{
 			string line, word, last_part;
 			int lineno, colno;
@@ -582,11 +564,15 @@ namespace Vtg
 				return null;
 			}
 			
-			SymbolCompletionResult completion_result = null;
-			completion_result = complete (null, line, first_part, lineno, colno);
-			if (completion_result != null && completion_result.count > 0) {
-				SymbolItem? item = null;
-				
+			Afrodite.Symbol? result = null;
+			result = complete (null, word, lineno, colno);
+			if (result != null && result.has_children) {
+				foreach (Symbol? symbol in result.children) {
+					if (symbol.name == symbol_name) {
+						return symbol;
+					}
+				}
+				/*
 				item = search_completion_item_by_name (symbol_name, completion_result.methods);
 				if (item != null)
 					return item;
@@ -634,14 +620,14 @@ namespace Vtg
 				item = search_completion_item_by_name (symbol_name, completion_result.error_domains);
 				if (item != null)
 					return item;
-
+*/
 			}
 			return null;
 		}
 		
-		private SymbolItem? search_completion_item_by_name (string name, Gee.List<SymbolItem> items)
+		private Afrodite.Symbol? search_completion_item_by_name (string name, Gee.List<Afrodite.Symbol> items)
 		{
-			foreach (SymbolItem item in items) {
+			foreach (Afrodite.Symbol item in items) {
 				if (item.name == name) {
 					return item;
 				}
@@ -649,7 +635,7 @@ namespace Vtg
 			return null;			
 		}
 
-		private SymbolCompletionResult? get_completions (SymbolCompletionTrigger trigger)
+		private Symbol? get_completions (SymbolCompletionTrigger trigger)
 		{
 			string line, word, last_part;
 			int lineno, colno;
@@ -660,14 +646,25 @@ namespace Vtg
 				return null;
 
 			
-			return complete (trigger, line, word, lineno, colno);
+			return complete (trigger, word, lineno, colno);
 		}
 		
-		private SymbolCompletionResult? complete (SymbolCompletionTrigger? trigger, string line, string word, int lineno, int colno)
+		private Afrodite.Symbol? complete (SymbolCompletionTrigger? trigger, string word, int line, int column)
 		{
-			SymbolCompletionResult result = null;
+			GLib.debug ("complete %s for %s", word, _sb.path);
+			Afrodite.Symbol result = null;
+			Afrodite.Ast ast = _completion.acquire_ast ();
+			var sym = ast.lookup_name_at (word, _sb.path, line, column);
+			if (sym != null) {
+				result = sym.detach_copy ();
+			}
+			_completion.release_ast (ast);
+			return result;
+/*
 			try {
 				string typename = null;
+				
+				
 				typename = _completion.get_datatype_name_for_name (word, _sb.name, lineno + 1, colno);
 				SymbolCompletionFilterOptions options = new SymbolCompletionFilterOptions ();
 				options.public_only ();
@@ -727,6 +724,7 @@ namespace Vtg
 			}
 			
 			return result;
+*/
 		}
 		
 		private bool is_vala_keyword (string keyword)

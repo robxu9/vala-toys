@@ -1,2 +1,0 @@
-add-source tests/test-1.vala
-describe bar tests/test-1.vala 17 6

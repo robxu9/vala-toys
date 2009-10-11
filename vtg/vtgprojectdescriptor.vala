@@ -20,22 +20,12 @@
  */
 
 using GLib;
-using Vsc;
+using Afrodite;
 
 namespace Vtg
 {
 	internal class ProjectDescriptor : GLib.Object
 	{
-		//public Vsc.SymbolCompletion completion;
 		public ProjectManager project;
-
-		~ProjectDescriptor ()
-		{
-			/*
-			if (completion != null) {
-				completion.cleanup ();
-			}
-			*/
-		}
 	}
 }
