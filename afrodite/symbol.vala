@@ -111,7 +111,7 @@ namespace Afrodite
 				name = parts[parts.length-1];
 				this.fully_qualified_name = fully_qualified_name;
 			}
-			if (type_name != null)
+			if (type_name != null && type_name.has_prefix ("Vala"))
 				this.type_name = type_name.substring (4);
 		}
 		

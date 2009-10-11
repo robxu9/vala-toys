@@ -155,20 +155,16 @@ namespace Vtg
 		
 		private bool on_idle_update ()
 		{
-			bool res = !update_source_outliner_view ();
-			
-			if (res)
-				idle_id = 0;
-			
-			return res;
+			update_source_outliner_view ();
+			return false;
 		}
 		
-		private bool update_source_outliner_view ()
+		private void update_source_outliner_view ()
 		{
 			var scs = _plugin_instance.scs_find_from_view (_active_view);
  			if (scs == null) {
  				GLib.warning ("update_source_ouliner_view: symbol completion helper is null for view");
-				return false;
+				return;
 			}
 			
 			var name = Utils.get_document_name ((Gedit.Document) _active_view.get_buffer ());
@@ -181,10 +177,8 @@ namespace Vtg
 			}			
 			if (results == null || !results.has_children) {
 				_outliner_view.clear_view ();
-				return false;
 			} else {
 				_outliner_view.update_view (results.children);
-				return true;
 			}
 		}
 	}

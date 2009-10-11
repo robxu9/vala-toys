@@ -141,7 +141,7 @@ namespace Afrodite
 			foreach (SourceItem source in sources) {
 				var item = source_queue_contains (source);
 				if (item == null) {
-					if (source.content == null)
+					if (source.content == null || source.content == "")
 						debug ("%s: queued source %s. sources to parse %d", id, source.path, source_queue.size);
 					else
 						debug ("%s: queued live buffer %s. sources to parse %d", id, source.path, source_queue.size);
@@ -247,7 +247,7 @@ namespace Afrodite
 					source.context = p.context;
 				
 					if (_ast.lookup_source_file (source.path) != null) {
-						debug ("%s: removing %s", id, source.path);
+						//debug ("%s: removing %s", id, source.path);
 						merger.remove_source_filename (source.path);
 					}
 					
@@ -259,7 +259,7 @@ namespace Afrodite
 								timer.start ();
 								merger.merge_vala_context (s, source.context, source.is_glib);
 								timer.stop ();
-								debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
+								//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
 								break;
 							}
 						}

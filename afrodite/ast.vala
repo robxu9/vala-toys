@@ -232,7 +232,7 @@ namespace Afrodite
 				return;
 
 			foreach (Symbol symbol in parent.children) {
-				print ("  Looking for %s in %s, parent %s\n", filename, symbol.fully_qualified_name, parent.fully_qualified_name);
+				print ("  Looking for %s in %s, parent count %d, %s\n", filename, symbol.fully_qualified_name, parent.children.size, parent.fully_qualified_name);
 				
 				if (symbol_has_filename_reference(filename, symbol)) {
 					var options = DetachCopyOptions.standard ();

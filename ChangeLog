@@ -1,5 +1,14 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	fixed some criticals and a parsing loop in the source code outliner
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* vtg/vtgutils.vala:
 
