@@ -2,7 +2,13 @@
 
 	* afrodite/ast.vala:
 
-	fixe a bug on how current codenode from position is found
+	fixed base keyword completion
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed a bug on how current codenode from position is found
 
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 

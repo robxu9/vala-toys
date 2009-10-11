@@ -291,24 +291,36 @@ namespace Afrodite
 			return null;
 
 		}
+		
+		private Symbol? lookup_this_symbol (Symbol? root)
+		{
+			// search first class in the parent chain, break when a namespace is found
+			Symbol current = root;
+			while (current != null) {
+				if (current.type_name == "Class" || current.type_name == "Struct") {
+					break;
+				} else if (current.type_name == "Namespace") {
+					current = null; // exit
+				} else
+					current = current.parent;
+			}
+			
+			return current;
+		}
+		
 		private Symbol? lookup_name_with_symbol (string name, Symbol? symbol, SourceFile source, 
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			// first try to find the symbol datatype
 			if (name == "this") {
-				// search first class in the parent chain, break when a namespace is found
-				Symbol current = symbol;
-				while (current != null) {
-					if (current.type_name == "Class" || current.type_name == "Struct") {
-						return current;
-					} else if (current.type_name == "Namespace") {
-						current = null; // exit
-					} else
-						current = current.parent;
-				}
+				return lookup_this_symbol (symbol);
 			} else if (name == "base") {
-				if (symbol.has_base_types) {
-					foreach (DataType type in symbol.base_types) {
+				Symbol? this_sym = lookup_this_symbol (symbol);
+				
+				if (this_sym != null && this_sym.has_base_types) {
+					foreach (DataType type in this_sym.base_types) {
+						debug ("search base types: %s", type.type_name);
+						
 						if (!type.unresolved && type.symbol.type_name == "Class") {
 							return type.symbol;
 						}
