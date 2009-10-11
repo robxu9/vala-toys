@@ -453,6 +453,7 @@ namespace Vtg
 				int bracket_lev_1 = 0;
 				int bracket_lev_2 = 0;
 				int bracket_lev_3 = 0;
+				int bracket_lev_4 = 0;
 				int string_lev = 0;
 				int status = (skip_leading_spaces ? 1 : 0);
 				unichar prev_char = end.get_char ();
@@ -468,10 +469,11 @@ namespace Vtg
 					
 					if (status == 1 && (ch != ' ' && ch != '\t')) {
 						status = 0; //back to normal
-					} if (status == 0 && (ch == ' ' || ch == '\t' || 
+					} if (status == 0 && (ch == ' ' || ch == '\t' || ch == '!' ||
 						(ch == '(' && bracket_lev_1 == 0) ||
 						(ch == '[' && bracket_lev_2 == 0) ||
-						(ch == '{' && bracket_lev_3 == 0)))
+						(ch == '{' && bracket_lev_3 == 0) ||
+						(ch == '<' && bracket_lev_4 == 0)))
 						break; //word interruption
 
 					switch (status) {
@@ -485,6 +487,9 @@ namespace Vtg
 							} else if (ch == '}') {
 								status = 2;
 								bracket_lev_3++;
+							} else if (ch != '-' && prev_char == '>') {
+								status = 2;
+								bracket_lev_4++;
 							} else if (ch == '.' || (ch == '-' && prev_char == '>')) {
 								if (last_symbolname == "")
 									last_symbolname = tmp.str.reverse ();
@@ -515,14 +520,18 @@ namespace Vtg
 								bracket_lev_2--;
 							} else if (bracket_lev_3 > 0 && ch == '{') {
 								bracket_lev_3--;
+							} else if (bracket_lev_4 > 0 && ch == '<') {
+								bracket_lev_4--;
 							} else if (ch == ')') {
 								bracket_lev_1++;
 							} else if (ch == ']') {
 								bracket_lev_2++;
 							} else if (ch == '{') {
 								bracket_lev_3++;
+							} else if (ch == '<') {
+								bracket_lev_4++;
 							}
-							if (bracket_lev_1 <= 0 && bracket_lev_2 <= 0 && bracket_lev_3 <= 0) {
+							if (bracket_lev_1 <= 0 && bracket_lev_2 <= 0 && bracket_lev_3 <= 0 && bracket_lev_4 <= 0) {
 								status = 1; //back to skip spaces
 							}
 							break;
