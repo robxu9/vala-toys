@@ -227,7 +227,7 @@ namespace Vtg
 
 				if (vala_stamp) {
 					log.log_message (OutputTypes.MESSAGE, _("cleaning 'stamp' files for project: %s\n").printf (project.name));
-					string command = "find %s -name *.stamp -delete".printf(working_dir);
+					string command = "find %s/ -name *.stamp -delete".printf(working_dir);
 					log.log_message (OutputTypes.MESSAGE, "%s\n\n".printf (command));
 					if (!Process.spawn_command_line_sync (command)) {
 						log.log_message (OutputTypes.ERROR, _("error cleaning 'stamp' files for project: %s\n").printf (project.name));
