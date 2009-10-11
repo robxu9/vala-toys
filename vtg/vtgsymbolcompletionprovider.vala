@@ -66,6 +66,7 @@ namespace Vtg
 		private int _last_line = -1;
 		private bool _doc_changed = false;
 		
+		
 		public Afrodite.CompletionEngine completion { construct { _completion = value;} }
 		public Gedit.View view { construct { _view = value; } }
  		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } default = null; }
@@ -128,9 +129,28 @@ namespace Vtg
 				
 				_cache_building = true; 
 				_all_doc = true;
+				if (_completion.is_parsing) {
+					_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
+				}
+				_completion.begin_parsing += this.on_begin_parsing;
+				_completion.end_parsing += this.on_end_parsing;
+				
 			} catch (Error err) {
 				GLib.warning ("an error occourred: %s", err.message);
 			}
+		}
+		
+		private void on_begin_parsing (CompletionEngine engine)
+		{
+			_cache_building = true;
+			_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
+			
+		}
+		
+		private void on_end_parsing (CompletionEngine engine)
+		{
+			_cache_building = false;
+			_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
 		}
 		
 		private int get_current_line_index (Gedit.Document? doc = null)
@@ -182,7 +202,7 @@ namespace Vtg
 				if (_sb_msg_id != 0) {
 					status_bar.remove (_sb_context_id, _sb_msg_id);
 				}
-				_sb_msg_id = status_bar.push (_sb_context_id, _("rebuilding symbol cache..."));
+				_sb_msg_id = status_bar.push (_sb_context_id, _("rebuilding symbol cache for %s...").printf (_completion.id));
 			} else if (_cache_building == false && _prev_cache_building == true) {
 				_prev_cache_building = false;
 				//hide tip, show proposal list
@@ -353,44 +373,6 @@ namespace Vtg
 				if (result.has_children) {
 					append_symbols (result.children);
 				}
-				/*
-				foreach (Symbol symbol in resul)
-				if (result.fields.size > 0) {
-					append_symbols (result.fields, _icon_field);
-				}
-				if (result.properties.size > 0) {
-					append_symbols (result.properties, _icon_property);
-				}
-				if (result.methods.size > 0) {
-					append_symbols (result.methods, _icon_method);
-				}
-				if (result.signals.size > 0) {
-					append_symbols (result.signals, _icon_signal);
-				}
-				if (result.classes.size > 0) {
-					append_symbols (result.classes, _icon_class);
-				}
-				if (result.interfaces.size > 0) {
-					append_symbols (result.interfaces, _icon_iface);
-				}
-				if (result.structs.size > 0) {
-					append_symbols (result.structs, _icon_struct);
-				}
-				if (result.enums.size > 0) {
-					append_symbols (result.enums, _icon_enum);
-				}
-				if (result.error_domains.size > 0) {
-					append_symbols (result.error_domains, _icon_struct);
-				}
-				if (result.constants.size > 0) {
-					append_symbols (result.constants, _icon_const);
-				}
-				if (result.namespaces.size > 0) {
-					append_symbols (result.namespaces, _icon_namespace);
-				}				
-				if (result.others.size > 0) {
-					append_symbols (result.others, _icon_generic);
-				}*/
 			}
 
 			timer.stop ();
@@ -572,55 +554,6 @@ namespace Vtg
 						return symbol;
 					}
 				}
-				/*
-				item = search_completion_item_by_name (symbol_name, completion_result.methods);
-				if (item != null)
-					return item;
-				
-				item = search_completion_item_by_name (symbol_name, completion_result.properties);
-				if (item != null)
-					return item;
-
-				item = search_completion_item_by_name (symbol_name, completion_result.classes);
-				if (item != null)
-					return item;
-
-				item = search_completion_item_by_name (symbol_name, completion_result.interfaces);
-				if (item != null)
-					return item;
-
-				item = search_completion_item_by_name (symbol_name, completion_result.structs);
-				if (item != null)
-					return item;
-
-				item = search_completion_item_by_name (symbol_name, completion_result.fields);
-				if (item != null)
-					return item;
-
-				item = search_completion_item_by_name (symbol_name, completion_result.signals);
-				if (item != null)
-					return item;
-
-				item = search_completion_item_by_name (symbol_name, completion_result.others);
-				if (item != null)
-					return item;
-
-				item = search_completion_item_by_name (symbol_name, completion_result.namespaces);
-				if (item != null)
-					return item;
-
-				item = search_completion_item_by_name (symbol_name, completion_result.enums);
-				if (item != null)
-					return item;
-
-				item = search_completion_item_by_name (symbol_name, completion_result.constants);
-				if (item != null)
-					return item;
-
-				item = search_completion_item_by_name (symbol_name, completion_result.error_domains);
-				if (item != null)
-					return item;
-*/
 			}
 			return null;
 		}

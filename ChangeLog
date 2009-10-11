@@ -1,6 +1,15 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/completionengine.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added a notification on the gedit status bar when the parsing thread is executed
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
 	* .gitignore:
 
 	added a missing source file

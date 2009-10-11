@@ -227,11 +227,7 @@ namespace Vtg
 					/* setup source files */
 					foreach (Vbf.Source source in target.get_sources ()) {
 						if (source.type == FileTypes.VALA_SOURCE) {
-							try {
-								completion.queue_sourcefile (source.filename);
-							} catch (Error err) {
-								GLib.warning ("Error adding source %s: %s", source.filename, err.message);
-							}
+							completion.queue_sourcefile (source.filename);
 						}
 					}
 				}
