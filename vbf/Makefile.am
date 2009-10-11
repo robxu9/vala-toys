@@ -65,7 +65,7 @@ libvbf.vala.stamp: $(libvbf_la_VALASOURCES)
 	touch $@
 
 vbftest.vala.stamp: $(vbftest_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --vapidir ../vapi --pkg vala-1.0 vbf-1.0.vapi $^
+	$(VALAC) $(DEBUG) -C  --vapidir $(srcdir)/../vapi --vapidir $(srcdir) --pkg vala-1.0 --pkg vbf-1.0 $^
 	touch $@
 
 libvbf_la_LDFLAGS = \

@@ -633,6 +633,10 @@ namespace Vbf.Am
 						var tmp = tmps[idx+1];
 						if (tmp.has_prefix (".")) {
 							tmp = Path.build_filename (group.project.id, group.name, tmp);
+						} else if (tmp.has_prefix("$(srcdir)")) {
+							tmp = tmp.replace ("$(srcdir)", Path.build_filename (group.project.id, group.name));
+						} else if (tmp.has_prefix("$(top_srcdir)")) {
+							tmp = tmp.replace ("$(top_srcdir)", group.project.id);
 						}
 						if (target != null) {
 							target.add_include_dir (tmp);

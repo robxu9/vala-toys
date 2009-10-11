@@ -83,6 +83,10 @@ namespace Vbf.Tests
 				foreach (Target target in group.get_targets ()) {
 					print ("        TARGET\n");
 					print ("          name %s %s\n", get_target_type_description (target.type), target.name);
+					print ("          VAPI DIRS\n");
+					foreach(string path in target.get_include_dirs ()) {
+						print ("            directory %s\n", path);
+					}
 					print ("          SOURCES\n");
 					foreach (Source source in target.get_sources ()) {
 						print ("            SOURCE %sfilename %s\n", 
@@ -96,6 +100,10 @@ namespace Vbf.Tests
 					print ("          REFERENCED PACKAGES\n");
 					foreach (Package package in target.get_packages ()) {
 						print ("            name....... %s\n", package.name);
+					}
+					print ("          BUILT LIBRARIES\n");
+					foreach(string package in target.get_built_libraries ()) {
+						print ("            name....... %s\n", package);
 					}
 
 				}
