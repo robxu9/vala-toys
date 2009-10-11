@@ -56,8 +56,11 @@ namespace Afrodite
 			foreach (SourceItem source in _sources) {
 				if (source.content == null) 
 					source_file = new Vala.SourceFile (context, source.path, source.is_vapi); // normal source
-				else
+				else if (source.content != "")
 					source_file = new Vala.SourceFile (context, source.path, source.is_vapi, source.content); // live buffer
+				else {
+					warning ("sourcefile %s with empty content not queued", source.path);
+				}
 				var ns_ref = new UsingDirective (new UnresolvedSymbol (null, "GLib", null));
 				context.root.add_using_directive (ns_ref);
 				context.add_source_file (source_file);

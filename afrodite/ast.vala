@@ -209,7 +209,7 @@ namespace Afrodite
 				return;
 
 			foreach (Symbol symbol in parent.children) {
-				//print ("  Looking for %s: %s in %s\n", fully_qualified_name, name, symbol.fully_qualified_name);
+				print ("  Looking for %s in %s\n", filename, symbol.fully_qualified_name);
 				
 				if (symbol_has_filename_reference(filename, symbol)) {
 					var sym = symbol.detach_copy (0);

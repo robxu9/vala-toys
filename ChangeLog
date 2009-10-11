@@ -1,5 +1,16 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/parser.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgutils.vala:
+
+	fixed icons in source outliner view
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 	* vtg/vtgsourceoutliner.vala:
 	* vtg/vtgsymbolcompletionprovider.vala:

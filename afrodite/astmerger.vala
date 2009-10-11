@@ -47,7 +47,7 @@ namespace Afrodite
 			_vala_symbol_fqn = null;
 			_current = _ast.root;
 			if (_ast.lookup_source_file (source.filename) != null)
-				error ("two sources %s!", source.filename);
+				critical ("two sources %s!", source.filename);
 				
 			_source_file = _ast.add_source_file (source.filename);
 			foreach (UsingDirective u in source.current_using_directives) {
@@ -422,6 +422,9 @@ namespace Afrodite
 		
 		public override void visit_enum (Enum e) 
 		{
+			if (!is_symbol_defined_current_source (e))
+				return;
+
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			
@@ -436,6 +439,9 @@ namespace Afrodite
 		
 		public override void visit_delegate (Delegate d) 
 		{
+			if (!is_symbol_defined_current_source (d))
+				return;
+
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			
@@ -447,6 +453,9 @@ namespace Afrodite
 
 	       	public override void visit_signal (Vala.Signal s) 
 		{
+			if (!is_symbol_defined_current_source (s))
+				return;
+
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			
@@ -473,6 +482,9 @@ namespace Afrodite
 
 	       	public override void visit_constant (Vala.Constant c) 
 		{
+			if (!is_symbol_defined_current_source (c))
+				return;
+
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			
@@ -487,6 +499,9 @@ namespace Afrodite
 	
 	       	public override void visit_property (Property p) 
 		{
+			if (!is_symbol_defined_current_source (p))
+				return;
+
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			
@@ -506,6 +521,9 @@ namespace Afrodite
 		
 		public override void visit_error_domain (ErrorDomain ed)
 		{
+			if (!is_symbol_defined_current_source (ed))
+				return;
+
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			

@@ -233,10 +233,12 @@ namespace Vtg
 				
 				if (_check_show_private_symbols.active
 				    || (!_check_show_private_symbols.active && symbol.access != Afrodite.SymbolAccessibility.PRIVATE)) {
+				    	GLib.debug ("type_bname: %s", symbol.type_name);
+				    	
 					_model.append (out iter, parentIter);
 					_model.set (iter, 
-						Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name), 
 						Columns.NAME, symbol.description, 
+						Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name), 
 						Columns.SYMBOL, symbol);
 
 					if (symbol.has_children) {

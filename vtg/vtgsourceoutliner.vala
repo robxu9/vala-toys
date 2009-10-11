@@ -172,7 +172,7 @@ namespace Vtg
 			Afrodite.Symbol results = null;
 			Afrodite.Ast ast;
 			if (scs.completion.try_acquire_ast (out ast)) {
-				ast.lookup_symbols_in (name);
+				results = ast.lookup_symbols_in (name);
 				scs.completion.release_ast (ast);
 			}			
 			if (results == null || !results.has_children) {

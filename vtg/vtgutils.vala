@@ -233,7 +233,7 @@ namespace Vtg
 		public static Gdk.Pixbuf icon_const;
 		public static Gdk.Pixbuf icon_enum;
 		public static Gdk.Pixbuf icon_namespace;
-		
+
 		public static bool is_vala_doc (Gedit.Document doc)
 		{
 			return doc.language != null && doc.language.id == "vala";
@@ -346,6 +346,9 @@ namespace Vtg
 		
 		public static Gdk.Pixbuf get_icon_for_type_name (string type_name)
 		{
+			if (!_initialized) {
+				initialize ();
+			}
 			if (icon_namespace != null && type_name == "Namespace")
 				return icon_namespace;
 			else if (icon_class != null && (type_name == "Class" || type_name == "CreationMethod"))
@@ -362,7 +365,7 @@ namespace Vtg
 				return icon_method;
 			else if (icon_enum != null && type_name == "Enum")
 				return icon_enum;
-			else if (icon_const != null && type_name == "Constant")
+			else if (icon_const != null && (type_name == "Constant" || type_name == "EnumValue"))
 				return icon_const;
 			else if (icon_signal != null && type_name == "Signal")
 				return icon_signal;
