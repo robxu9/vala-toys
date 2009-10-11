@@ -231,7 +231,7 @@ namespace Vtg
 			foreach (Afrodite.Symbol symbol in symbols) {
 				TreeIter iter;
 				
-				if (_check_show_private_symbols.active
+				if (!symbol.name.has_prefix ("!") && _check_show_private_symbols.active
 				    || (!_check_show_private_symbols.active && symbol.access != Afrodite.SymbolAccessibility.PRIVATE)) {
 					string des = symbol.description;
 					string[] qualifiers = new string[] {

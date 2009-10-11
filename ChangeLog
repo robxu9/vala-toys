@@ -1,5 +1,11 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourceoutlinerview.vala:
+
+	removed internal nodes from source code outliner view
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/completionengine.vala:
 	* afrodite/symbol.vala:
