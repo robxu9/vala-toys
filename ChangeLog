@@ -1,5 +1,14 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added merger support for the most common statements (if, while, for, etc...)
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/completionengine.vala:
 	* afrodite/symbol.vala:

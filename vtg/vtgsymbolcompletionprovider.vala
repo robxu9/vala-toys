@@ -561,16 +561,6 @@ namespace Vtg
 			}
 			return null;
 		}
-		
-		private Afrodite.Symbol? search_completion_item_by_name (string name, Gee.List<Afrodite.Symbol> items)
-		{
-			foreach (Afrodite.Symbol item in items) {
-				if (item.name == name) {
-					return item;
-				}
-			}
-			return null;			
-		}
 
 		private Symbol? get_completions (SymbolCompletionTrigger trigger)
 		{

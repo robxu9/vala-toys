@@ -88,7 +88,7 @@ namespace Vtg
 		{
 			Gedit.Document doc = (Gedit.Document) _active_view.get_buffer ();
 			TextIter? iter;
-			doc.get_iter_at_line_offset (out iter, line - 1, start_column - 1);
+			doc.get_iter_at_line_offset (out iter, line - 1, 0);
 			if (iter != null) {
 				doc.place_cursor (iter);
 				_active_view.scroll_to_iter (iter, 0, true, 0, 0.5);

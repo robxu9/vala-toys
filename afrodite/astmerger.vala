@@ -27,6 +27,7 @@ namespace Afrodite
 	public class AstMerger : CodeVisitor
 	{
 		Afrodite.Symbol _current = null;
+		Afrodite.SourceReference _current_sr = null;
 		Afrodite.SourceFile _source_file = null;
 		Afrodite.DataType _inferred_type = null;
 		Vala.Literal _last_literal = null;
@@ -184,6 +185,16 @@ namespace Afrodite
 			_source_file.add_symbol (symbol);
 			return symbol;
 		}
+
+		private Afrodite.Symbol add_codenode (string type_name, Vala.CodeNode c, int last_line = 0, int last_column = 0)
+		{
+			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, type_name);
+			var source_ref = create_source_reference (c, last_line, last_column);
+			symbol.add_source_reference (source_ref);
+			symbol.access = Afrodite.SymbolAccessibility.PRIVATE;
+			_source_file.add_symbol (symbol);
+			return symbol;
+		}
 		
 		private Afrodite.SymbolAccessibility get_vala_symbol_access (Vala.SymbolAccessibility access)
 		{
@@ -217,7 +228,7 @@ namespace Afrodite
 			}
 		}
 		
-		private Afrodite.SourceReference create_source_reference (Vala.Symbol s, int last_line = 0, int last_column = 0)
+		private Afrodite.SourceReference create_source_reference (Vala.CodeNode s, int last_line = 0, int last_column = 0)
 		{
 			var source_ref = new Afrodite.SourceReference ();
 			source_ref.file = _source_file;
@@ -275,11 +286,13 @@ namespace Afrodite
 				
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			_current = visit_symbol (c, true); // class are not mergeable like namespaces
 			_current.is_abstract = c.is_abstract;
 			c.accept_children (this);
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
@@ -290,10 +303,12 @@ namespace Afrodite
 
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			_current = visit_symbol (s, true); // class are not mergeable like namespaces
 			s.accept_children (this);
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
@@ -304,10 +319,12 @@ namespace Afrodite
 
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			_current = visit_symbol (iface, true); // class are not mergeable like namespaces
 			iface.accept_children (this);
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
@@ -318,6 +335,7 @@ namespace Afrodite
 
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (m.name);
 			int last_line = 0;
@@ -336,6 +354,7 @@ namespace Afrodite
 			m.accept_children (this);
 			
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 
@@ -343,6 +362,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (m.name);
 			int last_line = 0;
@@ -366,6 +386,7 @@ namespace Afrodite
 			m.accept_children (this);
 			
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
@@ -373,6 +394,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (m.name);
 			int last_line = 0;
@@ -388,6 +410,7 @@ namespace Afrodite
 			m.accept_children (this);
 			
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
@@ -395,6 +418,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (m.name);
 			int last_line = 0;
@@ -409,6 +433,7 @@ namespace Afrodite
 			m.accept_children (this);
 			
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
@@ -416,11 +441,13 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (ev.name);
 			_current.add_child (add_symbol (ev));
 			
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
@@ -431,6 +458,7 @@ namespace Afrodite
 
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (e.name);
 			var s = add_symbol (e);
@@ -438,6 +466,7 @@ namespace Afrodite
 			_current = s;
 			e.accept_children (this);
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
@@ -448,10 +477,12 @@ namespace Afrodite
 
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (d.name);
 			_current.add_child (add_symbol (d));
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 
@@ -462,10 +493,12 @@ namespace Afrodite
 
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (s.name);
 			_current.add_child (add_symbol (s));
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 
@@ -473,6 +506,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (f.name);
 			var s = add_symbol (f);
@@ -481,6 +515,7 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 
@@ -491,6 +526,7 @@ namespace Afrodite
 
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (c.name);
 			var s = add_symbol (c);
@@ -498,6 +534,7 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 	
@@ -508,6 +545,7 @@ namespace Afrodite
 
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (p.name);
 			var s = add_symbol (p);
@@ -515,12 +553,24 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 	
 		public override void visit_property_accessor (PropertyAccessor a)
 		{
+			var prev = _current;
+			var prev_sr = _current_sr;
+			
+			if (a.body != null 
+			    && a.body.source_reference != null
+			    && a.body.source_reference.last_line > _current_sr.last_line) {
+				_current_sr.last_line = a.body.source_reference.last_line;
+			}
+			
 			a.accept_children (this);
+			_current = prev;
+			_current_sr = prev_sr;
 		}
 		
 		public override void visit_error_domain (ErrorDomain ed)
@@ -564,9 +614,14 @@ namespace Afrodite
 		
 		public override void visit_block (Block b) 
 		{
+			if (_current != null && _current_sr != null) {
+				// see if this block extends a parent symbol
+				if (b.source_reference != null && b.source_reference.last_line > _current_sr.last_line) {
+					_current_sr.last_line = b.source_reference.last_line;
+				}
+			}
 			b.accept_children (this);
 		}
-		
 		
 		public override void visit_local_variable (LocalVariable local) 
 		{
@@ -704,27 +759,53 @@ namespace Afrodite
 
 		public override void visit_foreach_statement (ForeachStatement stmt) 
 		{
-			var prev_vala_fqn = _vala_symbol_fqn;
-			var prev = _current;
-			
-			set_fqn ("!foreach");
-			int last_line = 0;
-			if (stmt.body != null && stmt.body.source_reference != null)
-				last_line = stmt.body.source_reference.last_line;
-				
-			var s = add_symbol (stmt, last_line);
-			s.type_name = "Block";
-			// add iterator variable
+			var s = visit_scoped_codenode ("foreach", stmt, stmt.body);
 			var d = new DataType (get_datatype_typename (stmt.type_reference), stmt.variable_name);
 			s.add_local_variable (d);
-			_current.add_child (s);
-			
-			_current = s;
-			stmt.accept_children (this);
-			_current = prev;
-			_vala_symbol_fqn = prev_vala_fqn;
+		}
+
+		public override void visit_while_statement (WhileStatement stmt) 
+		{
+			visit_scoped_codenode ("while", stmt, stmt.body);
 		}
 		
+		public override void visit_do_statement (DoStatement stmt) 
+		{
+			visit_scoped_codenode ("do", stmt, stmt.body);
+		}
+		
+		public override void visit_for_statement (ForStatement stmt) 
+		{
+			visit_scoped_codenode ("for", stmt, stmt.body);
+		}
+
+		public override void visit_try_statement (TryStatement stmt) 
+		{
+			visit_scoped_codenode ("try", stmt, stmt.body);
+		}
+		
+		public override void visit_catch_clause (CatchClause clause)
+		{
+			var s = visit_scoped_codenode ("catch", clause, clause.body);
+			var d = new DataType (get_datatype_typename (clause.error_type), clause.variable_name);
+			s.add_local_variable (d);			
+		}
+		
+		public override void visit_if_statement (IfStatement stmt) 
+		{
+			visit_scoped_codenode ("if", stmt, stmt.true_statement);
+		}
+
+		public override void visit_switch_statement (SwitchStatement stmt) 
+		{
+			visit_scoped_codenode ("switch", stmt, null);
+		}
+
+		public override void visit_switch_section (SwitchSection section) 
+		{
+			visit_scoped_codenode ("switch-section", section, section); // a section is also a block
+		}
+
 		public override void visit_data_type (Vala.DataType type)
 		{
 			if (_current != null && _current.type_name == "Class") {
@@ -735,6 +816,29 @@ namespace Afrodite
 			}
 		}
 		
+		private Afrodite.Symbol visit_scoped_codenode (string name, CodeNode node, Block? body)
+		{
+			var prev_vala_fqn = _vala_symbol_fqn;
+			var prev = _current;
+			
+			set_fqn ("!%s".printf (name));
+			int last_line = 0;
+			if (body != null && body.source_reference != null)
+				last_line = body.source_reference.last_line;
+				
+			var s = add_codenode ("Block", node, last_line);
+			s.display_name = name;
+			
+			_current.add_child (s);
+			
+			_current = s;
+			node.accept_children (this);
+			_current = prev;
+			_vala_symbol_fqn = prev_vala_fqn;
+			
+			return s;
+		}
+
 		private string get_datatype_typename (Vala.DataType? type)
 		{
 			if (type is UnresolvedType) {
