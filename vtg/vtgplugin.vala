@@ -180,8 +180,8 @@ namespace Vtg
 			//return default_project anyway
 			if (_default_project == null) {
 				_default_project = new ProjectDescriptor ();
-				_default_project.completion = new Vsc.SymbolCompletion ();
-				_default_project.completion.parser.resume_parsing ();
+				//_default_project.completion = new Vsc.SymbolCompletion ();
+				//_default_project.completion.parser.resume_parsing ();
 			}
 
 			return _default_project;
@@ -244,57 +244,7 @@ namespace Vtg
 			var completion = new Vsc.SymbolCompletion ();
 			var project = project_manager.project;
 								
-			/* setup referenced packages */
-			foreach (Vbf.Module module in project.get_modules ()) {
-				foreach (Vbf.Package package in module.get_packages ()) {
-					completion.parser.try_add_package (package.name);
-				}
-			}
 
-			/* first adding a built packages*/
-			foreach (Group group in project.get_groups ()) {
-				foreach(string package in group.get_built_libraries ()) {
-					completion.parser.add_built_package (package);
-				}
-				foreach(Target target in group.get_targets ()) {
-					foreach(string package in target.get_built_libraries ()) {
-						completion.parser.add_built_package (package);
-					}
-				}
-			}
-
-			/* setup vapidir and local packages */
-			foreach (Group group in project.get_groups ()) {
-				foreach(string path in group.get_include_dirs ()) {
-					completion.parser.add_path_to_vapi_search_dir (path);
-				}
-				foreach(Package package in group.get_packages ()) {
-					completion.parser.try_add_package (package.id);
-				}
-				foreach(Target target in group.get_targets ()) {
-					foreach(string path in target.get_include_dirs ()) {
-						completion.parser.add_path_to_vapi_search_dir (path);
-					}
-					foreach(Package package in target.get_packages ()) {
-						completion.parser.try_add_package (package.id);
-					}
-				}
-			}
-			
-			/* setup source files */
-			foreach (Group group in project.get_groups ()) {
-				foreach (Target target in group.get_targets ()) {
-					foreach (Vbf.Source source in target.get_sources ()) {
-						if (source.type == FileTypes.VALA_SOURCE) {
-							try {
-								completion.parser.add_source (source.filename);
-							} catch (Error err) {
-								GLib.warning ("Error adding source %s: %s", source.filename, err.message);
-							}
-						}
-					}
-				}
-			}
 			
 			/* update the other project manager views */
 			foreach (PluginInstance instance in _instances) {
@@ -303,7 +253,6 @@ namespace Vtg
 				}
 			}
 
-			prj.completion = completion;
 			prj.project = project_manager;
 			_projects.add (prj);
 			completion.parser.resume_parsing ();

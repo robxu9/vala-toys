@@ -44,7 +44,6 @@ namespace Vbf.Am
 			return res;
 		}
 
-				
 		public Project? open (string project_file)
 		{
 			Project project = new Project(project_file);

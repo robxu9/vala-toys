@@ -186,10 +186,10 @@ namespace Vtg
 
 		private void goto_line (SymbolItem symbol)
 		{
-			if (symbol.symbol != null && symbol.symbol.source_reference != null) {
-				int line = symbol.symbol.source_reference.first_line;
-				int start_col = symbol.symbol.source_reference.first_column;
-				int end_col = symbol.symbol.source_reference.last_column;
+			if (symbol.file != null) {
+				int line = symbol.first_line;
+				int start_col = symbol.first_column;
+				int end_col = symbol.last_column;
 				this.goto_source (line, start_col, end_col);
 			}
 		}
@@ -253,10 +253,10 @@ namespace Vtg
 				TreeIter iter;
 				
 				if (_check_show_private_symbols.active
-				    || (!_check_show_private_symbols.active && symbol.symbol.access != Vala.SymbolAccessibility.PRIVATE)) {
+				    || (!_check_show_private_symbols.active && symbol.access != Vala.SymbolAccessibility.PRIVATE)) {
 					_model.append (out iter, parentIter);
 					_model.set (iter, 
-						Columns.ICON, get_icon_from_symbol_type (symbol.symbol), 
+						Columns.ICON, get_icon_from_symbol_type (symbol.type_name), 
 						Columns.NAME, symbol.description, 
 						Columns.SYMBOL, symbol);
 
@@ -267,27 +267,27 @@ namespace Vtg
 			}
 		}
 		
-		private Pixbuf get_icon_from_symbol_type (Vala.Symbol symbol)
+		private Pixbuf get_icon_from_symbol_type (string symbol)
 		{
-			if (_icon_namespace != null && symbol is Namespace)
+			if (_icon_namespace != null && symbol == "ValaNamespace")
 				return _icon_namespace;
-			else if (_icon_class != null && symbol is Class)
+			else if (_icon_class != null && symbol == "ValaClass")
 				return _icon_class;
-			else if (_icon_struct != null && symbol is Struct)
+			else if (_icon_struct != null && symbol == "ValaStruct")
 				return _icon_struct;
-			else if (_icon_iface != null && symbol is Interface)
-				return _icon_iface;			
-			else if (_icon_field != null && symbol is Field)
+			else if (_icon_iface != null && symbol == "ValaInterface")
+				return _icon_iface;
+			else if (_icon_field != null && symbol == "ValaField")
 				return _icon_field;
-			else if (_icon_property != null && symbol is Property)
+			else if (_icon_property != null && symbol == "ValaProperty")
 				return _icon_property;
-			else if (_icon_method != null && symbol is Method)
+			else if (_icon_method != null && symbol == "ValaMethod")
 				return _icon_method;
-			else if (_icon_enum != null && symbol is Enum)
+			else if (_icon_enum != null && symbol == "ValaEnum")
 				return _icon_enum;
-			else if (_icon_const != null && symbol is Constant)
+			else if (_icon_const != null && symbol == "ValaConstant")
 				return _icon_const;
-			else if (_icon_signal != null && symbol is Vala.Signal)
+			else if (_icon_signal != null && symbol == "ValaSignal")
 				return _icon_signal;
 				
 			return _icon_generic;
@@ -309,56 +309,56 @@ namespace Vtg
 			else if (vala != null && valb == null)
 				return -1;
 			
-			if (vala.symbol.type_name != valb.symbol.type_name) {
-				if (vala.symbol is Vala.Constant) {
+			if (vala.type_name != valb.type_name) {
+				if (vala.type_name == "ValaConstant") {
 					return -1;
-				} else if (valb.symbol is Vala.Constant) {
+				} else if (valb.type_name == "ValaConstant") {
 					return 1;
-				} else if (vala.symbol is Vala.Enum) {
+				} else if (vala.type_name == "ValaEnum") {
 					return -1;
-				} else if (valb.symbol is Vala.Enum) {
+				} else if (valb.type_name == "ValaEnum") {
 					return 1;										
-				} else if (vala.symbol is Vala.Field) {
+				} else if (vala.type_name == "ValaField") {
 					return -1;
-				} else if (valb.symbol is Vala.Field) {
+				} else if (valb.type_name == "ValaField") {
 					return 1;
-				} else if (vala.symbol is Vala.Property) {
+				} else if (vala.type_name == "ValaProperty") {
 					return -1;
-				} else if (valb.symbol is Vala.Property) {
+				} else if (valb.type_name == "ValaProperty") {
 					return 1;
-				} else if (vala.symbol is Vala.Signal) {
+				} else if (vala.type_name == "ValaSignal") {
 					return -1;
-				} else if (valb.symbol is Vala.Signal) {
+				} else if (valb.type_name == "ValaSignal") {
 					return 1;
-				} else if (vala.symbol is Vala.CreationMethod 
-					|| vala.symbol is Vala.Constructor) {
+				} else if (vala.type_name == "ValaCreationMethod" 
+					|| vala.type_name == "ValaConstructor") {
 					return -1;
-				} else if (valb.symbol is Vala.CreationMethod  
-					|| vala.symbol is Vala.Constructor) {
+				} else if (valb.type_name == "ValaCreationMethod"  
+					|| vala.type_name == "ValaConstructor") {
 					return 1;
-				} else if (vala.symbol is Vala.Method) {
+				} else if (vala.type_name == "ValaMethod") {
 					return -1;
-				} else if (valb.symbol is Vala.Method) {
+				} else if (valb.type_name == "ValaMethod") {
 					return 1;
-				} else if (vala.symbol is Vala.ErrorDomain) {
+				} else if (vala.type_name == "ValaErrorDomain") {
 					return -1;
-				} else if (valb.symbol is Vala.ErrorDomain) {
+				} else if (valb.type_name == "ValaErrorDomain") {
 					return 1;					
-				} else if (vala.symbol is Vala.Namespace) {
+				} else if (vala.type_name == "ValaNamespace") {
 					return -1;
-				} else if (valb.symbol is Vala.Namespace) {
+				} else if (valb.type_name == "ValaNamespace") {
 					return 1;
-				} else if (vala.symbol is Vala.Struct) {
+				} else if (vala.type_name == "ValaStruct") {
 					return -1;
-				} else if (valb.symbol is Vala.Struct) {
+				} else if (valb.type_name == "ValaStruct") {
 					return 1;					
-				} else if (vala.symbol is Vala.Class) {
+				} else if (vala.type_name == "ValaClass") {
 					return -1;
-				} else if (valb.symbol is Vala.Class) {
+				} else if (valb.type_name == "ValaClass") {
 					return 1;
-				} else if (vala.symbol is Vala.Interface) {
+				} else if (vala.type_name == "ValaInterface") {
 					return -1;
-				} else if (valb.symbol is Vala.Interface) {
+				} else if (valb.type_name == "ValaInterface") {
 					return 1;
 				}
 			}

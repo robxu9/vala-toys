@@ -176,7 +176,19 @@ namespace Vtg
 		
 		public void activate_symbol (ProjectDescriptor project, Gedit.View view)
 		{
-			var sc = new Vtg.SymbolCompletionHelper (this, view, project.completion);
+			var doc = (Gedit.Document) view.get_buffer ();
+			return_if_fail (doc != null);
+
+			var uri = doc.get_uri ();
+			if (uri == null)
+				return;
+
+			var completion = project.project.get_completion_for_file (uri);
+			if (completion == null) {
+				GLib.warning ("No completion for file %s", uri);
+				return;
+			}
+			var sc = new Vtg.SymbolCompletionHelper (this, view, completion);
 			_scs.add (sc);
 		}
 

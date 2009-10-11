@@ -1,5 +1,34 @@
 2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectdescriptor.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+
+	use 1 completion engine for each project target
+
+2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+
+	updated the vsc-shell to use the new SymbolItem	
+
+2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsourceoutlinervisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolitem.vala:
+
+	removed the Vala.Symbol reference in the SymbolItem element with
+	the hope that it will fix some gedit crash on exit
+
+2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectbuilder.vala:
 
 	fix clean and remove 'stamp' menu' item

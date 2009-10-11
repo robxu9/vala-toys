@@ -482,8 +482,13 @@ namespace Vtg
 			if (uri == null)
 				return;
 
+			var completion = pdes.project.get_completion_for_file (uri);
+			if (completion == null) {
+				GLib.warning ("No completion for file %s", uri);
+				return;
+			}
 			uri = Filename.from_uri (uri);
-			var methods = pdes.completion.get_methods_for_source (uri);
+			var methods = completion.get_methods_for_source (uri);
 			if (methods.size <= 0)
 				return;
 				

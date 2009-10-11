@@ -32,6 +32,7 @@ namespace Vtg
 		private Project _project = null;
 		private Gtk.TreeStore _model;
 		private bool in_update = false;
+		private Gee.HashMap<Vbf.Target, Vsc.SymbolCompletion> _completions = null;
 
 		public signal void updated ();
 		public string filename = null;
@@ -47,6 +48,40 @@ namespace Vtg
 		
 		~ProjectManager ()
 		{
+			GLib.debug ("project manager destructor, cleanup completions");
+			cleanup_completions ();
+		}
+
+		public Vsc.SymbolCompletion? get_completion_for_file (string uri)
+		{
+			foreach (Group group in _project.get_groups ()) {
+				foreach (Target target in group.get_targets ()) {
+					foreach (Vbf.Source source in target.get_sources ()) {
+						if (source.uri == uri) {
+							return get_completion_for_target (target);
+						}
+					}
+					/*
+					foreach (Vbf.File file in target.get_files ()) {
+						if (file.uri == uri) {
+							return true;
+						}
+					}*/
+				}
+			}
+
+			return null;
+		}
+
+		public Vsc.SymbolCompletion? get_completion_for_target (Vbf.Target target)
+		{
+			foreach (Vbf.Target key in _completions.get_keys ())	{
+				if (key.id == target.id) {
+					return _completions.@get (key);
+				}
+			}
+
+			return null;
 		}
 		
 		public bool contains_file (string uri)
@@ -137,6 +172,7 @@ namespace Vtg
 					return false;
 					
 				parse_project ();
+				setup_completions ();
 				build_tree_model ();
 				vcs_test (project_filename);
 				_project.updated += this.on_project_updated;
@@ -146,6 +182,70 @@ namespace Vtg
 			}
 		}
 
+		private bool target_has_vala_source (Vbf.Target target)
+		{
+			foreach (Vbf.Source source in target.get_sources ()) {
+				if (source.type == FileTypes.VALA_SOURCE) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private void setup_completions ()
+		{
+			_completions = new Gee.HashMap<Vbf.Target, Vsc.SymbolCompletion> ();
+			foreach (Group group in _project.get_groups ()) {
+				foreach (Vbf.Target target in group.get_targets ()) {
+					if (!target_has_vala_source (target))
+						continue;
+
+					Vsc.SymbolCompletion completion = new Vsc.SymbolCompletion ();
+					_completions.@set (target, completion);
+
+					foreach(string path in target.get_include_dirs ()) {
+						GLib.debug ("adding path to vapi dirs %s for target %s", path, target.id);
+						completion.parser.add_path_to_vapi_search_dir (path);
+					}
+
+					/* first adding all built packages */
+					foreach(string package in target.get_built_libraries ()) {
+						GLib.debug ("adding built library %s for target %s", package, target.id);
+						completion.parser.add_built_package (package);
+					}
+
+					/* setup referenced packages */
+					foreach (Package package in target.get_packages ()) {
+						GLib.debug ("target %s, referenced package: %s", target.id, package.id);
+						if (!completion.parser.try_add_package (package.id)) {
+							GLib.warning ("failed to add package %s for target %s", package.id, target.id);
+						}
+					}
+
+					/* setup source files */
+					foreach (Vbf.Source source in target.get_sources ()) {
+						if (source.type == FileTypes.VALA_SOURCE) {
+							try {
+								completion.parser.add_source (source.filename);
+							} catch (Error err) {
+								GLib.warning ("Error adding source %s: %s", source.filename, err.message);
+							}
+						}
+					}
+					completion.parser.resume_parsing ();
+				}
+			}
+		}
+
+		private void cleanup_completions ()
+		{
+			foreach (Vsc.SymbolCompletion completion in _completions.get_values ())	{
+				completion.cleanup ();
+			}
+
+			_completions.clear ();
+			_completions = null;
+		}
 
 		private void vcs_test (string filename)
 		{
@@ -182,8 +282,10 @@ namespace Vtg
 				return;
 
 			in_update = true;
+			cleanup_completions ();
 			parse_project ();
 			build_tree_model ();
+			setup_completions ();
 			this.updated ();
 			in_update = false;
 		}
