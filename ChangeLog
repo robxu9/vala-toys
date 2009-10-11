@@ -2,6 +2,12 @@
 
 	* afrodite/ast.vala:
 
+	fixe a bug on how current codenode from position is found
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
 	search variables up to the parent chain
 
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
