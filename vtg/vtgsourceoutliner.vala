@@ -155,23 +155,24 @@ namespace Vtg
 		
 		private bool on_idle_update ()
 		{
-			update_source_outliner_view ();
-			return false;
+			bool res = !update_source_outliner_view ();
+			return res;
 		}
 		
-		private void update_source_outliner_view ()
+		private bool update_source_outliner_view ()
 		{
 			var scs = _plugin_instance.scs_find_from_view (_active_view);
  			if (scs == null) {
  				GLib.warning ("update_source_ouliner_view: symbol completion helper is null for view");
-				return;
+				return true;
 			}
 			
 			var name = Utils.get_document_name ((Gedit.Document) _active_view.get_buffer ());
 			
 			Afrodite.Symbol results = null;
 			Afrodite.Ast ast;
-			if (scs.completion.try_acquire_ast (out ast)) {
+			bool res = scs.completion.try_acquire_ast (out ast);
+			if (res) {
 				results = ast.lookup_symbols_in (name);
 				scs.completion.release_ast (ast);
 			}			
@@ -180,6 +181,8 @@ namespace Vtg
 			} else {
 				_outliner_view.update_view (results.children);
 			}
+			
+			return res;
 		}
 	}
 }

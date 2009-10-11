@@ -140,17 +140,22 @@ namespace Afrodite
 			source_queue_mutex.@lock ();
 			foreach (SourceItem source in sources) {
 				var item = source_queue_contains (source);
-				if (item == null) {
+				if (item == null || item.content != source.content) {
 					if (source.content == null || source.content == "")
 						debug ("%s: queued source %s. sources to parse %d", id, source.path, source_queue.size);
 					else
 						debug ("%s: queued live buffer %s. sources to parse %d", id, source.path, source_queue.size);
-						
+					
+					if (item != null)
+						source_queue.remove (item);
+
 					source_queue.add (source.copy ());
-				} else if (item.content == null && source.content != null) {
+				} 
+				/*
+				else if (item.content == null && source.content != null) {
 					item.content = source.content;
 					debug ("%s: updated live buffer %s. sources to parse %d", id, source.path, source_queue.size);
-				}
+				}*/
 			}
 			source_queue_mutex.@unlock ();
 			

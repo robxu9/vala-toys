@@ -1,5 +1,12 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	try to parse the source buffer at right time from the outliner
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/completionengine.vala:
 	* afrodite/symbol.vala:
