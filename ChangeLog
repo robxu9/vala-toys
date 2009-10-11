@@ -1,5 +1,11 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added base class and interfaces symbols to completion list
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 
 	fixed base keyword completion

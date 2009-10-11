@@ -328,12 +328,15 @@ namespace Vtg
 			return (owned) _list;
 		}
 
-		private void append_symbols (Gee.List<Afrodite.Symbol> symbols)
+		private void append_symbols (Gee.List<Afrodite.Symbol> symbols, bool include_private_symbols = true)
 		{
 			unowned Proposal[] proposals = Utils.get_proposal_cache ();
 
 			
 			foreach (Afrodite.Symbol symbol in symbols) {
+				if (!include_private_symbols && symbol.access == Afrodite.SymbolAccessibility.PRIVATE)
+					continue;
+
 				Proposal proposal;
 				var name = (symbol.display_name != null ? symbol.display_name : "<null>");
 				var info = (symbol.info != null ? symbol.info : "");
@@ -372,6 +375,18 @@ namespace Vtg
 			if (result != null) {
 				if (result.has_children) {
 					append_symbols (result.children);
+					if (result.has_base_types 
+					    && (result.type_name == "Class" || result.type_name == "Interface" || result.type_name == "Struct")) {
+						foreach (DataType type in result.base_types) {
+							if (!type.unresolved 
+							    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface")) {
+								if (type.symbol.has_children) {
+									// symbols of base types (classes or interfaces)
+									append_symbols (type.symbol.children, false);
+								}
+							}
+						}
+					}
 				}
 			}
 
