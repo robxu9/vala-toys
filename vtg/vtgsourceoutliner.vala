@@ -116,7 +116,7 @@ namespace Vtg
 	 				GLib.warning ("setup_completion: symbol completion helper is null for view");
 					return;
 				}
-				//scs.completion.parser.sec_cache_builded += this.on_sec_cache_builded;
+				scs.completion.end_parsing += this.on_end_parsing;
 			}
 		}
 
@@ -128,7 +128,7 @@ namespace Vtg
 	 				GLib.warning ("setup_completion: symbol completion helper is null for view");
 					return;
 				}
-				//scs.completion.parser.sec_cache_builded -= this.on_sec_cache_builded;
+				scs.completion.end_parsing -= this.on_end_parsing;
 			}
 		}
 
@@ -142,14 +142,15 @@ namespace Vtg
 		
 		// this method is called from another thread context
 		// for this reason the update is done in the idle handler
-		private void on_sec_cache_builded (Afrodite.CompletionEngine sender)
+		private void on_end_parsing (Afrodite.CompletionEngine sender)
 		{
 			setup_idle ();
 		}
 		
 		private void setup_idle ()
 		{
-			idle_id =  Idle.add (this.on_idle_update, Priority.DEFAULT_IDLE);
+			if (idle_id == 0)
+				idle_id =  Idle.add (this.on_idle_update, Priority.DEFAULT_IDLE);
 		}
 		
 		private bool on_idle_update ()

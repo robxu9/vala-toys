@@ -1,5 +1,12 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	the source outliner view is updated automatically when opening a new source file
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 
 	fixed creation methods display name

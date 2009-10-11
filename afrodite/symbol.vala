@@ -395,12 +395,15 @@ namespace Afrodite
 		private void build_description ()
 		{
 			var sb = new StringBuilder ();
-			sb.append (this.access_string);
-			sb.append (" ");
-			if (binding_string != "") {
-				sb.append (binding_string);
+			if (type_name != "EnumValue") {
+				sb.append (this.access_string);
 				sb.append (" ");
+				if (binding_string != "") {
+					sb.append (binding_string);
+					sb.append (" ");
+				}
 			}
+			
 			if (return_type != null) {
 				sb.append_printf ("%s ", return_type.description);
 			}
