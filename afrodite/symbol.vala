@@ -66,6 +66,7 @@ namespace Afrodite
 		private Gee.List<Symbol> detached_children = null;
 		private string _info = null;
 		private string _des = null;
+		private string _display_name = null;
 		
 		public Symbol (string? fully_qualified_name, string? type_name)
 		{
@@ -263,7 +264,7 @@ namespace Afrodite
 			
 
 			// unowned copied symbols are references in the detached_children
-			// collection of the root symbol. So no owned circuler references
+			// collection of the root symbol. So no owned circular references
 			// are made.
 			if (root == null)
 				root = res;
@@ -319,7 +320,7 @@ namespace Afrodite
 			res.is_virtual = is_virtual;
 			res.is_abstract = is_abstract;
 			res.overrides = overrides;
-			
+			res._display_name = _display_name;
 			return res;
 		}
 		
@@ -343,9 +344,52 @@ namespace Afrodite
 			}
 		}
 		
+		public string display_name
+		{
+			get {
+				if (_display_name == null) {
+					return name;
+				}
+				
+				return _display_name;
+			}
+			set {
+				_display_name = value;
+			}
+		}
+
 		private void build_info ()
 		{
-			_info = description;
+			int param_count = 0;
+			string params;
+			StringBuilder sb = new StringBuilder ();
+			
+			if (has_parameters) {
+				foreach (DataType type in parameters) {
+					sb.append_printf ("%s, ", type.description);
+				}
+				sb.truncate (sb.len - 2);
+				params = sb.str; 
+				sb.truncate (0);
+			} else {
+				params = "";
+				param_count = 0;
+			}
+			
+			sb.append_printf("%s: %s\n\n%s%s<b>%s</b> (%s%s)",
+				    type_name,
+				    display_name,
+				    return_type != null ? return_type.description : "",
+				    (param_count > 2 ? "\n" : " "),
+				    display_name, 
+				    (param_count > 2 ? "\n" : ""),
+				    params);
+				    
+			if (!type_name.has_suffix ("Method")) {
+				sb.truncate (sb.len - 3);
+			}
+
+			_info = sb.str;
 		}
 		
 		private void build_description ()
@@ -360,7 +404,7 @@ namespace Afrodite
 			if (return_type != null) {
 				sb.append_printf ("%s ", return_type.description);
 			}
-			sb.append (name);
+			sb.append (display_name);
 			if (type_name.has_suffix ("Method")) {
 				sb.append (" (");
 			}

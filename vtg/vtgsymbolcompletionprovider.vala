@@ -315,7 +315,7 @@ namespace Vtg
 			
 			foreach (Afrodite.Symbol symbol in symbols) {
 				Proposal proposal;
-				var name = (symbol.name != null ? symbol.name : "<null>");
+				var name = (symbol.display_name != null ? symbol.display_name : "<null>");
 				var info = (symbol.info != null ? symbol.info : "");
 				Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.type_name);
 	

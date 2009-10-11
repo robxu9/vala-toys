@@ -32,8 +32,6 @@ namespace Afrodite
 		Vala.Literal _last_literal = null;
 		
 		string _vala_symbol_fqn = null;
-		string _pad = null;
-		int _level = 0;
 		bool _merge_glib = true;
 		
 		private Afrodite.Ast _ast = null;
@@ -144,31 +142,6 @@ namespace Afrodite
 				}
 			}
 			return removed;
-		}
-
-		private void inc_pad ()
-		{
-			if (_pad == null) {
-				_pad = "";
-				_level = 0;
-			} else {
-				_level++;
-				_pad = string.nfill (_level, '\t');
-			}
-		}
-		
-		private void dec_pad ()
-		{
-			if (_pad == null) {
-				_pad = "";
-				_level = 0;
-				GLib.error ("dec_pad call!!!");
-			} else if (_level == 0) {
-				_pad = null;
-			} else {
-				_level--;
-				_pad = string.nfill (_level, '\t');
-			}
 		}
 
 		private Afrodite.Symbol visit_symbol (Vala.Symbol s, bool replace = false)
@@ -288,10 +261,7 @@ namespace Afrodite
 				var prev = _current;
 				
 				_current = visit_symbol (ns);
-				inc_pad ();
 				ns.accept_children (this);
-
-				dec_pad ();
 				
 				_current = prev;
 				_vala_symbol_fqn = prev_vala_fqn;
@@ -308,9 +278,7 @@ namespace Afrodite
 			
 			_current = visit_symbol (c, true); // class are not mergeable like namespaces
 			_current.is_abstract = c.is_abstract;
-			inc_pad ();
 			c.accept_children (this);
-			dec_pad ();
 			_current = prev;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
@@ -324,9 +292,7 @@ namespace Afrodite
 			var prev = _current;
 			
 			_current = visit_symbol (s, true); // class are not mergeable like namespaces
-			inc_pad ();
 			s.accept_children (this);
-			dec_pad ();
 			_current = prev;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
@@ -340,9 +306,7 @@ namespace Afrodite
 			var prev = _current;
 			
 			_current = visit_symbol (iface, true); // class are not mergeable like namespaces
-			inc_pad ();
 			iface.accept_children (this);
-			dec_pad ();
 			_current = prev;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
@@ -390,6 +354,7 @@ namespace Afrodite
 			s.is_abstract = m.is_abstract;
 			s.is_virtual = m.is_virtual;
 			s.overrides = m.overrides;
+			s.display_name = m.class_name;
 			s.binding =  get_vala_member_binding (m.binding);
 			_current.add_child (s);
 			
@@ -412,6 +377,7 @@ namespace Afrodite
 				
 			var s = add_symbol (m, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
+			s.return_type = new DataType (get_datatype_typename (m.this_parameter.parameter_type), m.this_parameter.name);
 			_current.add_child (s);
 			
 			_current = s;

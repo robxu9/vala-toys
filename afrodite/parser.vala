@@ -23,26 +23,7 @@ using GLib;
 using Vala;
 
 namespace Afrodite
-{
-	private class Cache : GLib.Object
-	{
-		public string path;
-		public double time;
-		public CodeContext context;
-	}
-
-	internal static Mutex cache_mutex = null;
-	internal static Gee.List<Cache> context_cache ;
-	internal const int CACHE_SIZE = 10;
-	
-	public void initialize_cache ()
-	{
-		if (cache_mutex == null) {
-			Afrodite.cache_mutex = new Mutex ();
-			context_cache = new Gee.ArrayList<Cache> ();
-		}
-	}
-	
+{	
 	public class Parser : GLib.Object
 	{
 		private Gee.List<SourceItem> _sources;
@@ -52,61 +33,6 @@ namespace Afrodite
 		public Parser (Gee.List<SourceItem> sources)
 		{
 			_sources = sources;
-		}
-		
-		private void parse_old ()
-		{
-//			debug ("parser class, start parsing: %s", _source.path);
-			/*
-			foreach (SourceItem source in _sources) {
-				// first try to find it in cache
-				cache_mutex.@lock ();
-	 			foreach (Cache item in context_cache) {
-	 				if (item.path == _source.path) {
-	 					context = item.context;
-	 					debug ("parser: cache hit %s", item.path);
-	 					break;
-	 				}
-	 			}
-	 			cache_mutex.unlock ();
-
- 			}
- 			*/
- 			
- 			/*
- 			cache_mutex.@lock ();
-			if (context_cache.size < CACHE_SIZE) {
-				bool found = false;
-				
- 				foreach (Cache item in context_cache) {
- 					if (item.path == _source.path) {
- 						found = true;
- 						break;
- 					}
- 				}
- 				
- 				if (!found) {
-					var item = new Cache ();
-					item.time = time;
-					item.context = context;
-					item.path = _source.path;
-					context_cache.add (item);
-					debug ("parser: caching %s", item.path);
-				}
-			} else {
-				foreach (Cache item in context_cache) {
-					if (item.time < time && item.path != _source.path) {
-						item.time = time;
-						item.context = context;
-						item.path = _source.path;
-						debug ("parser: caching %s", item.path);
-						break;
-					}
-				}
-			}
-			cache_mutex.unlock ();		
-			*/
-			
 		}
 		
 		public void parse ()
@@ -153,15 +79,7 @@ namespace Afrodite
 			context.target_glib_minor = glib_minor;
 			
 			var parser = new Vala.Parser ();
-			var timer = new Timer ();
-			timer.start ();
 			parser.parse (context);
-			timer.stop ();
-			
-			// update the cache with top most expensive parsing
-			double time = timer.elapsed ();
-			
-
 			
 			CodeContext.pop ();
 		}		

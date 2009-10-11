@@ -1,3 +1,13 @@
+2009-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/parser.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	added description and info properties
+
 2009-10-09  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/Makefile.am:
