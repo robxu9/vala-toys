@@ -351,7 +351,7 @@ namespace Vtg
 			}
 			if (icon_namespace != null && type_name == "Namespace")
 				return icon_namespace;
-			else if (icon_class != null && (type_name == "Class" || type_name == "CreationMethod"))
+			else if (icon_class != null && (type_name == "Class" || type_name == "CreationMethod" || type_name == "Destructor"))
 				return icon_class;
 			else if (icon_struct != null && type_name == "Struct")
 				return icon_struct;
@@ -361,7 +361,7 @@ namespace Vtg
 				return icon_field;
 			else if (icon_property != null && type_name == "Property")
 				return icon_property;
-			else if (icon_method != null && type_name == "Method")
+			else if (icon_method != null && (type_name == "Method" || type_name == "Delegate"))
 				return icon_method;
 			else if (icon_enum != null && type_name == "Enum")
 				return icon_enum;

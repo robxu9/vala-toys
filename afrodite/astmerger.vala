@@ -427,6 +427,7 @@ namespace Afrodite
 				
 			var s = add_symbol (m, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
+			s.display_name = "~%s".printf (s.name);
 			_current.add_child (s);
 			
 			_current = s;

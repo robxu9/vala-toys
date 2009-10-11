@@ -1,5 +1,12 @@
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+	* vtg/vtgutils.vala:
+
+	cleanup destructor and delegate icons
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutlinerview.vala:
 
 	removed internal nodes from source code outliner view
