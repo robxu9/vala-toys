@@ -230,7 +230,6 @@ namespace Afrodite
 				// get the source to parse
 				source_queue_mutex.@lock ();
 				foreach (SourceItem item in source_queue) {
-					debug ("%s: parser adding source %s", id, item.path);
 					sources.add (item.copy ());
 				}
 				source_queue.clear ();

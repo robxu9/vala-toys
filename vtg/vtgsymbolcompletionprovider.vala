@@ -564,7 +564,7 @@ namespace Vtg
 			GLib.debug ("get_current_symbol_item for %s, %s", first_part, symbol_name);
 			
 			Afrodite.Symbol? result = null;
-			result = complete (null,  first_part, lineno, colno);
+			result = complete (null,  null, first_part, lineno, colno);
 			if (result != null && result.has_children) {
 				foreach (Symbol? symbol in result.children) {
 					if (symbol.name == symbol_name) {
@@ -579,27 +579,42 @@ namespace Vtg
 
 		private Symbol? get_completions (SymbolCompletionTrigger trigger)
 		{
-			string line, word, last_part;
-			int lineno, colno;
+			string whole_line, word, last_part;
+			int line, column;
 
-			parse_current_line (false, out word, out last_part, out line, out lineno, out colno);
+			parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
 
 			if (word == null && word == "")
 				return null;
 
 			
-			return complete (trigger, word, lineno, colno);
+			return complete (trigger, whole_line, word, line, column);
 		}
 		
-		private Afrodite.Symbol? complete (SymbolCompletionTrigger? trigger, string word, int line, int column)
+		private Afrodite.Symbol? complete (SymbolCompletionTrigger? trigger, string? whole_line, string word, int line, int column)
 		{
 			GLib.debug ("complete %s for %s", word, _sb.path);
 			Afrodite.Symbol result = null;
 			Afrodite.Ast ast;
 			if (_completion.try_acquire_ast (out ast)) {
-				var sym = ast.lookup_name_for_type_at (word, _sb.path, line, column);
+				var sym = ast.lookup_name_for_type_at (word, _sb.path, line, column, LookupCompareMode.EXACT);
 				if (sym != null) {
-					result = sym.detach_copy ();
+					DetachCopyOptions options = null;
+					
+					if (whole_line != null) {
+						if (whole_line.str ("= new ") != null || whole_line.str ("=new ") != null) {
+							options = DetachCopyOptions.creation_methods ();
+						} else if (whole_line.str ("=") != null) {
+							options = DetachCopyOptions.factory_methods ();
+						} else if (whole_line.str ("throws ") != null || whole_line.str ("throw ") != null) {
+							options = DetachCopyOptions.error_domains ();
+						}
+					}
+					
+					if (options == null)
+						options = DetachCopyOptions.standard ();
+
+					result = sym.detach_copy (1, options);
 				}
 				_completion.release_ast (ast);
 			}

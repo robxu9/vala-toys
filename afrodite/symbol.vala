@@ -41,6 +41,42 @@ namespace Afrodite
 		STATIC = 1 << 2,
 		ANY = MemberBinding.INSTANCE | MemberBinding.CLASS | MemberBinding.STATIC
 	}
+	
+	public class DetachCopyOptions
+	{
+		public bool only_creation_methods = false;
+		public bool only_static_factories = false; // this covers static methods factories and struct initialization
+		public bool only_error_domains = false;
+		public bool exclude_creation_methods = true;
+		
+		public SymbolAccessibility access = SymbolAccessibility.ANY;
+		
+		public static DetachCopyOptions standard ()
+		{
+			return new DetachCopyOptions ();
+		}
+		
+		public static DetachCopyOptions creation_methods ()
+		{
+			var opt = new DetachCopyOptions ();
+			opt.only_creation_methods = true;
+			return opt;
+		}
+		
+		public static DetachCopyOptions factory_methods ()
+		{
+			var opt = new DetachCopyOptions ();
+			opt.only_static_factories = true;
+			return opt;
+		}
+		
+		public static DetachCopyOptions error_domains ()
+		{
+			var opt = new DetachCopyOptions ();
+			opt.only_error_domains = true;
+			return opt;
+		}
+	}
 
 	public class Symbol : Object
 	{
@@ -253,6 +289,7 @@ namespace Afrodite
 			
 			return null;
 		}
+
 		public bool has_source_references
 		{
 			get {
@@ -260,6 +297,12 @@ namespace Afrodite
 			}
 		}
 		
+		public bool is_static
+		{
+			get {
+				return (binding & MemberBinding.STATIC) != 0;
+			}
+		}
 		internal void add_detached_child (Symbol item)
 		{
 			if (!detached_children.contains (item))
@@ -267,7 +310,32 @@ namespace Afrodite
 				
 		}
 
-		public Symbol detach_copy (int depth = 1, Symbol? root = null)
+		private bool check_symbol (Symbol symbol, DetachCopyOptions? options)
+		{
+			if ((symbol.access & options.access) != 0) {
+				if (options.only_static_factories && (!symbol.is_static || symbol.type_name == "Struct")) {
+					return false;
+				}
+				if (options.only_creation_methods && symbol.type_name != "CreationMethod") {
+					return false;
+				}
+				if (options.only_creation_methods && symbol.type_name != "ErrorDomain") {
+					return false;
+				}
+				if (options.exclude_creation_methods && symbol.type_name == "CreationMethod") {
+					return false;
+				}
+				if (symbol.type_name == "Destructor") {
+					return false;
+				}
+
+				return true;
+			}
+			
+			return false;
+		}
+
+		public Symbol detach_copy (int depth = 1, DetachCopyOptions options, Symbol? root = null)
 		{
 			var res = new Symbol (fully_qualified_name, type_name);
 			
@@ -280,15 +348,17 @@ namespace Afrodite
 			if (root == null)
 				root = res;
 
-			debug ("copy %s in %s", fully_qualified_name, root.name);	
+			//debug ("copy %s in %s", fully_qualified_name, root.name);	
 			res.parent = null; // parent reference isn't copied
 			res.return_type = return_type == null ? null : return_type.copy (root);
 			res.type_name = type_name;
-			if (depth == -1 || (depth > 0 && has_children)) {
+			if ((depth == -1 || depth > 0) && has_children) {
 				foreach (Symbol child in children) {
-					var copy = child.detach_copy (depth - 1, root);
-					res.add_child (copy);
-					root.add_detached_child (copy); 
+					if (check_symbol (child, options)) {
+						var copy = child.detach_copy (depth - 1, options, root);
+						res.add_child (copy);
+						root.add_detached_child (copy);
+					}
 				}
 			}
 			
@@ -318,7 +388,7 @@ namespace Afrodite
 			
 			if (has_resolve_targets && (depth > 0 || depth == -1)) {
 				foreach (Symbol t in resolve_targets) {
-					var copy = t.detach_copy (0, root);
+					var copy = t.detach_copy (0, options, root);
 					res.add_resolve_target (copy);
 					root.add_detached_child (copy);
 				}

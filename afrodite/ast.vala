@@ -24,6 +24,12 @@ using Gee;
 
 namespace Afrodite
 {
+	public enum LookupCompareMode
+	{
+		EXACT,
+		START_WITH
+	}
+	
 	public class Ast
 	{
 		public Symbol root = new Symbol (null, null);
@@ -34,7 +40,7 @@ namespace Afrodite
 			Symbol result = null;
 			
 			if (root.has_children) {
-				result = lookup_symbol (fully_qualified_name, root.children, out parent);
+				result = lookup_symbol (fully_qualified_name, root.children, out parent, LookupCompareMode.EXACT);
 			}
 			
 			if (parent == null) {
@@ -44,7 +50,7 @@ namespace Afrodite
 		}
 		
 		public static Symbol? lookup_symbol (string qualified_name, Gee.List<Symbol> symbols, 
-			out Symbol? parent, 
+			out Symbol? parent,  LookupCompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			string[] tmp = qualified_name.split (".", 2);
@@ -54,14 +60,14 @@ namespace Afrodite
 			foreach (Symbol symbol in symbols) {
 				//print ("  Looking for %s: %s in %s\n", fully_qualified_name, name, symbol.fully_qualified_name);
 				
-				if (symbol.name == name
+				if (compare_symbol_names (symbol.name, name, mode)
 				    && (symbol.access & access) != 0
 				    && (symbol.binding & binding) != 0) {
 					if (tmp.length > 1) {
 						Symbol child_sym = null;
 						
 						if (symbol.has_children) {
-							child_sym = lookup_symbol (tmp[1], symbol.children, out parent, access, binding);
+							child_sym = lookup_symbol (tmp[1], symbol.children, out parent, mode, access, binding);
 						}
 						
 						if (child_sym == null) {
@@ -134,18 +140,21 @@ namespace Afrodite
 		}
 
 		public Symbol? lookup_name_at (string qualified_name, string filename, int line, int column,
+			LookupCompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
-			return  lookup_name_or_type_at (qualified_name, filename, line, column, false, access, binding);
+			return  lookup_name_or_type_at (qualified_name, filename, line, column, false, mode, access, binding);
 		}
 
 		public Symbol? lookup_name_for_type_at (string qualified_name, string filename, int line, int column,
+			LookupCompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
-			return  lookup_name_or_type_at (qualified_name, filename, line, column, true, access, binding);
+			return  lookup_name_or_type_at (qualified_name, filename, line, column, true, mode, access, binding);
 		}		
 		
-		private Symbol? lookup_name_or_type_at (string qualified_name, string filename, int line, int column, bool lookup_type,
+		private Symbol? lookup_name_or_type_at (string qualified_name, string filename, int line, int column, 
+			bool lookup_type, LookupCompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			var source = lookup_source_file (filename);
@@ -157,7 +166,7 @@ namespace Afrodite
 			Symbol sym = lookup_symbol_with_source_at (source, line, column);
 			if (sym != null) {
 				string[] parts = qualified_name.split (".");
-				sym = lookup_name_with_symbol (parts[0], sym, source);
+				sym = lookup_name_with_symbol (parts[0], sym, source, mode);
 				if (sym != null && sym.return_type != null)
 					sym = sym.return_type.symbol;
 				
@@ -179,7 +188,7 @@ namespace Afrodite
 	 					Symbol dummy;
 	 					
 	 					print ("lookup %s in %s", parts[i], sym.name);
-						sym = lookup_symbol (parts[i], sym.children, out dummy);
+						sym = lookup_symbol (parts[i], sym.children, out dummy, mode);
 						print ("... result: %s\n", sym == null ? "not found" : sym.name);
 						if (sym != null && lookup_type && sym.return_type != null) {
 								sym = sym.return_type.symbol;
@@ -205,7 +214,8 @@ namespace Afrodite
 		
 		public Symbol? lookup_symbols_in (string filename)
 		{
-			var res = root.detach_copy (0);
+			var options = DetachCopyOptions.standard ();
+			var res = root.detach_copy (0, options);
 			
 			lookup_symbol_in_filename (filename, res, root);
 			
@@ -225,7 +235,8 @@ namespace Afrodite
 				print ("  Looking for %s in %s, parent %s\n", filename, symbol.fully_qualified_name, parent.fully_qualified_name);
 				
 				if (symbol_has_filename_reference(filename, symbol)) {
-					var sym = symbol.detach_copy (0);
+					var options = DetachCopyOptions.standard ();
+					var sym = symbol.detach_copy (0, options);
 					
 					print ("    adding %s", sym.name);
 					
@@ -278,7 +289,7 @@ namespace Afrodite
 							return type.symbol;
 						}
 						if (type.symbol.has_children) {
-							var sym = lookup_symbol (name, type.symbol.children, out parent, access, binding);
+							var sym = lookup_symbol (name, type.symbol.children, out parent, LookupCompareMode.EXACT, access, binding);
 							if (sym != null) {
 								return sym;
 							}
@@ -308,7 +319,16 @@ namespace Afrodite
 			return current;
 		}
 		
-		private Symbol? lookup_name_with_symbol (string name, Symbol? symbol, SourceFile source, 
+		private static bool compare_symbol_names (string name1, string name2, LookupCompareMode mode)
+		{
+			if (mode == LookupCompareMode.START_WITH) {
+				return name1.has_prefix (name2);
+			} else {
+				return name1 == name2;
+			}
+		}
+
+		private Symbol? lookup_name_with_symbol (string name, Symbol? symbol, SourceFile source, LookupCompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			// first try to find the symbol datatype
@@ -332,7 +352,7 @@ namespace Afrodite
 				while (current_sym != null) {
 					if (current_sym.has_local_variables) {
 						foreach (DataType type in current_sym.local_variables) {
-							if (type.name == name
+							if (compare_symbol_names (type.name, name, mode)
 							    && (type.symbol == null || (type.symbol.access & access) != 0)
 							    && (type.symbol == null || (type.symbol.binding & binding) != 0)) {
 								return type.symbol;
@@ -345,7 +365,7 @@ namespace Afrodite
 				// search in symbol parameters
 				if (symbol.has_parameters) {
 					foreach (DataType type in symbol.parameters) {
-						if (type.name == name 
+						if (compare_symbol_names (type.name, name, mode)
 						    && (type.symbol == null || (type.symbol.access & access) != 0)
 						    && (type.symbol == null || (type.symbol.binding & binding) != 0)) {
 							return type.symbol;
@@ -354,16 +374,20 @@ namespace Afrodite
 				}
 				
 				// search in sibling
-				if (symbol.parent != null && symbol.parent.has_children) {
-					foreach (Symbol sibling in symbol.parent.children) {
-						if (sibling != symbol && sibling.name == name
-						    && (sibling.access & access) != 0
-						    && (sibling.binding & binding) != 0) {
-							return sibling;
+				current_sym = symbol.parent;
+				while (current_sym != null) {
+					if (current_sym != null && current_sym.has_children) {
+						foreach (Symbol sibling in current_sym.children) {
+							if (sibling != symbol && compare_symbol_names (sibling.name, name, mode)
+							    && (sibling.access & access) != 0
+							    && (sibling.binding & binding) != 0) {
+								return sibling;
+							}
 						}
 					}
+					current_sym = current_sym.parent;
 				}
-				
+								
 				var sym = lookup_name_in_base_types (name, symbol, access, binding);
 				if (sym != null)
 					return sym;
@@ -375,11 +399,11 @@ namespace Afrodite
 						
 						sym = lookup (u.name, out parent);
 						if (sym != null) {
-							if (sym.name == name) {
+							if (compare_symbol_names (sym.name, name, mode)) {
 								// is a reference to a namespace
 								return sym;
 							} else if (sym.has_children) {
-								sym = lookup_symbol (name, sym.children, out parent, access, binding);
+								sym = lookup_symbol (name, sym.children, out parent, mode, access, binding);
 								if (sym != null) {
 									return sym;
 								}
