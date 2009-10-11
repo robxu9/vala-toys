@@ -168,15 +168,17 @@ namespace Vtg
 			}
 			
 			var name = Utils.get_document_name ((Gedit.Document) _active_view.get_buffer ());
-			//var results = null;
-			GLib.warning ("NOT IMPLEMENTED");
-			//scs.completion.get_symbols_for_source (name);
-			/*
-			if (results == null) {
+			
+			Afrodite.Symbol result = null;
+			Afrodite.Ast ast = scs.completion.acquire_ast ();
+			var results = ast.lookup_symbols_in (name);
+			scs.completion.release_ast (ast);
+			
+			if (results == null || !results.has_children) {
 				_outliner_view.clear_view ();
 			} else {
-				_outliner_view.update_view (results);
-			}*/
+				_outliner_view.update_view (results.children);
+			}
 		}
 	}
 }

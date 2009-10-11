@@ -143,9 +143,16 @@ namespace Afrodite
 			owned get {
 				string res = type_name;
 				
-				if (name == null || name == "") {
-					res += " <?>";
-				} else {
+				if (is_pointer)
+					res += "*";
+				if (is_array)
+					res += "[]";
+				if (is_generic)
+					res += "<T>";
+				if (is_nullable)
+					res += "?";
+				
+				if (name != null && name != "") {
 					res += " %s".printf (name);
 				}
 				

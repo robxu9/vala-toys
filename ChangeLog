@@ -1,5 +1,14 @@
 2009-10-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/datatype.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	restored sourcecode outliner pane
+
+2009-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/symbol.vala:
 	* vtg/vtgprojectmanagerui.vala:

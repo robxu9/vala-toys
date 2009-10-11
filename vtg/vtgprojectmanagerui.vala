@@ -490,7 +490,7 @@ namespace Vtg
 			uri = Filename.from_uri (uri);
 			
 			var methods = get_symbols_for_source (completion, uri);
-			if (methods == null)
+			if (methods.size == 0)
 				return;
 			
 			TreeIter iter;

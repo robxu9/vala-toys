@@ -236,7 +236,7 @@ namespace Vtg
 					_model.append (out iter, parentIter);
 					_model.set (iter, 
 						Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name), 
-						Columns.NAME, symbol.name, 
+						Columns.NAME, symbol.description, 
 						Columns.SYMBOL, symbol);
 
 					if (symbol.has_children) {
