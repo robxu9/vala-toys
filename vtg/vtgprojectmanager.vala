@@ -240,8 +240,10 @@ namespace Vtg
 
 		private void cleanup_completions ()
 		{
-			_completions.clear ();
-			_completions = null;
+			if (_completions != null) {
+				_completions.clear ();
+				_completions = null;
+			}
 		}
 
 		private void vcs_test (string filename)

@@ -169,11 +169,12 @@ namespace Vtg
 			
 			var name = Utils.get_document_name ((Gedit.Document) _active_view.get_buffer ());
 			
-			Afrodite.Symbol result = null;
-			Afrodite.Ast ast = scs.completion.acquire_ast ();
-			var results = ast.lookup_symbols_in (name);
-			scs.completion.release_ast (ast);
-			
+			Afrodite.Symbol results = null;
+			Afrodite.Ast ast;
+			if (scs.completion.try_acquire_ast (out ast)) {
+				ast.lookup_symbols_in (name);
+				scs.completion.release_ast (ast);
+			}			
 			if (results == null || !results.has_children) {
 				_outliner_view.clear_view ();
 			} else {

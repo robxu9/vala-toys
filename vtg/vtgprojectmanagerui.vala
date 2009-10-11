@@ -518,14 +518,15 @@ namespace Vtg
 		private Gee.List<Afrodite.Symbol?> get_symbols_for_source (Afrodite.CompletionEngine completion, string uri)
 		{
 			Afrodite.Symbol result = null;
-			Afrodite.Ast ast = completion.acquire_ast ();
-			var sym = ast.lookup_symbols_in (uri);
-			completion.release_ast (ast);
-			
+			Afrodite.Ast ast;
+			if (completion.try_acquire_ast (out ast)) {
+				result = ast.lookup_symbols_in (uri);
+				completion.release_ast (ast);
+			}			
 			var methods = new Gee.ArrayList<Afrodite.Symbol> ();	
 			
-			if (sym != null)
-				get_methods (methods, sym);
+			if (result != null)
+				get_methods (methods, result);
 				
 			return methods;
 		}

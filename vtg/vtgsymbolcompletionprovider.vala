@@ -653,12 +653,14 @@ namespace Vtg
 		{
 			GLib.debug ("complete %s for %s", word, _sb.path);
 			Afrodite.Symbol result = null;
-			Afrodite.Ast ast = _completion.acquire_ast ();
-			var sym = ast.lookup_name_at (word, _sb.path, line, column);
-			if (sym != null) {
-				result = sym.detach_copy ();
+			Afrodite.Ast ast;
+			if (_completion.try_acquire_ast (out ast)) {
+				var sym = ast.lookup_name_at (word, _sb.path, line, column);
+				if (sym != null) {
+					result = sym.detach_copy ();
+				}
+				_completion.release_ast (ast);
 			}
-			_completion.release_ast (ast);
 			return result;
 /*
 			try {

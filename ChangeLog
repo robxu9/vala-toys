@@ -1,3 +1,12 @@
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	changed the acquire ast to make the function call to it non blocking while the
+	cache is rebuilt
+
 2009-10-10  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/datatype.vala:
