@@ -42,7 +42,7 @@ namespace Afrodite
 		ANY = MemberBinding.INSTANCE | MemberBinding.CLASS | MemberBinding.STATIC
 	}
 
-	public class Symbol
+	public class Symbol : Object
 	{
 		public static VoidType VOID = new VoidType ();
 		

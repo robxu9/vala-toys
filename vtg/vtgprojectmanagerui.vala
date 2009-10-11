@@ -488,17 +488,16 @@ namespace Vtg
 				return;
 			}
 			uri = Filename.from_uri (uri);
-			var methods = new Gee.ArrayList<Afrodite.Symbol> ();
 			
-			//var methods = completion.get_methods_for_source (uri);
-			if (methods.size <= 0)
+			var methods = get_symbols_for_source (completion, uri);
+			if (methods == null)
 				return;
 			
 			TreeIter iter;
 			Gtk.ListStore model = new Gtk.ListStore (4, typeof(string), typeof(string), typeof(bool), typeof(Afrodite.Symbol));
 			foreach (Afrodite.Symbol method in methods) {
 				model.append (out iter);
-				model.set (iter, 0, method.name, 1, method.name, 2, true, 3, method);
+				model.set (iter, 0, method.name, 1, method.display_name, 2, true, 3, method);
 			}
 			
 			var dialog = new FilteredListDialog (model);
@@ -512,6 +511,35 @@ namespace Vtg
 					
 					doc.goto_line (sr.first_line - 1);
 					view.scroll_to_cursor ();
+				}
+			}
+		}
+
+		private Gee.List<Afrodite.Symbol?> get_symbols_for_source (Afrodite.CompletionEngine completion, string uri)
+		{
+			Afrodite.Symbol result = null;
+			Afrodite.Ast ast = completion.acquire_ast ();
+			var sym = ast.lookup_symbols_in (uri);
+			completion.release_ast (ast);
+			
+			var methods = new Gee.ArrayList<Afrodite.Symbol> ();	
+			
+			if (sym != null)
+				get_methods (methods, sym);
+				
+			return methods;
+		}
+
+		private void get_methods (Gee.List<Afrodite.Symbol> results, Afrodite.Symbol sym)
+		{
+			if (sym.has_children) {
+				foreach (Afrodite.Symbol child in sym.children) {
+					if (child.type_name.has_suffix ("Method")) {
+						results.add (child);
+					}
+					if (child.has_children) {
+						get_methods (results, child);
+					}
 				}
 			}
 		}

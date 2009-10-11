@@ -190,6 +190,52 @@ namespace Afrodite
 				return sym;
 		}
 		
+		public Symbol? lookup_symbols_in (string filename)
+		{
+			var res = root.detach_copy (0);
+			
+			lookup_symbol_in_filename (filename, res, root);
+			
+			if (res.has_children) {
+				return res;
+			}
+			
+			return null;
+		}
+
+		private void lookup_symbol_in_filename (string filename, Symbol results, Symbol parent)
+		{
+			if (!parent.has_children)
+				return;
+
+			foreach (Symbol symbol in parent.children) {
+				//print ("  Looking for %s: %s in %s\n", fully_qualified_name, name, symbol.fully_qualified_name);
+				
+				if (symbol_has_filename_reference(filename, symbol)) {
+					var sym = symbol.detach_copy (0);
+					
+					results.add_child (sym);
+					if (symbol.has_children) {
+						// find in children
+						lookup_symbol_in_filename (filename, sym, symbol);
+					}
+				}
+			}
+		}
+		
+		private bool symbol_has_filename_reference (string filename, Symbol symbol)
+		{
+			if (!symbol.has_source_references)
+				return false;
+
+			foreach (SourceReference sr in symbol.source_references) {
+				if (sr.file.filename == filename) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
 		private Symbol? lookup_name_in_base_types (string name, Symbol? symbol,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{

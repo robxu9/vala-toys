@@ -1,5 +1,13 @@
 2009-10-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	restored goto method function
+
+2009-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* afrodite/parser.vala:
 	* afrodite/symbol.vala:
