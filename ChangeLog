@@ -1,3 +1,9 @@
+2009-10-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/Makefile.am:
+
+	updated to build the afrodite shared library
+
 2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure.ac:

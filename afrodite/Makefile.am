@@ -19,7 +19,7 @@ else
         DEBUG = --Xcc "-D G_DISABLE_DEBUG"
 endif
 
-noinst_LTLIBRARIES = libafrodite.la
+lib_LTLIBRARIES = libafrodite.la
 
 libafrodite_la_VALASOURCES = \
 	astmerger.vala \
@@ -37,9 +37,12 @@ libafrodite_la_VALASOURCES = \
 	$(NULL)
 
 
-noinst_HEADERS = \
+libafroditeincludedir = $(includedir)/afrodite-1.0
+
+libafroditeinclude_HEADERS = \
 	afrodite.h \
 	$(NULL)
+
 
 libafrodite_la_SOURCES = \
 	libafrodite.vala.stamp \
@@ -51,7 +54,7 @@ libafrodite.vala.stamp: $(libafrodite_la_VALASOURCES)
 	touch $@
 
 libafrodite_la_LDFLAGS = \
-	-static \
+	-version-info 0:1:0 \
 	$(NULL)
 
 libafrodite_la_LIBADD = \
@@ -65,5 +68,11 @@ EXTRA_DIST = \
 	$(NULL)
 
 DISTCLEANFILES = \
+	$(NULL)
+
+MAINTAINERCLEANFILES = \
+	afrodite-1.0.vapi \
+	afrodite.h \
+	$(libafrodite_la_VALASOURCES:.vala=.c) \
 	$(NULL)
 
