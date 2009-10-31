@@ -47,14 +47,21 @@ namespace Vtg
 			this.plugin_instance = plugin_instance;
 			this.view = view;
 			this.completion = completion;
-			lazy_setup ();
-			
 		}
 
-		private void lazy_setup ()
+		construct
 		{
+			if (this._view.is_realized ()) {
+				setup_gsc_completion (_view);
+			} else {
+				this.view.realize.connect (this.on_realized);
+			}
+		}
+		
+		private void on_realized (Gtk.Widget sender)
+		{
+			_view.realize.disconnect (this.on_realized);
 			setup_gsc_completion (_view);
-			_view.show.disconnect (this.lazy_setup);
 		}
 
 		~SymbolCompletionHelper ()

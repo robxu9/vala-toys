@@ -49,7 +49,7 @@ namespace Afrodite
 			return result;
 		}
 		
-		public static Symbol? lookup_symbol (string qualified_name, Gee.List<Symbol> symbols, 
+		internal static Symbol? lookup_symbol (string qualified_name, Gee.List<Symbol> symbols, 
 			out Symbol? parent,  LookupCompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
@@ -93,7 +93,7 @@ namespace Afrodite
 			}
 		}
 
-		public SourceFile add_source_file (string filename)
+		internal SourceFile add_source_file (string filename)
 		{
 			var file = lookup_source_file (filename);
 			if (file == null) {
@@ -123,13 +123,13 @@ namespace Afrodite
 			return null;
 		}
 		
-		public void remove_source (SourceFile source)
+		internal void remove_source (SourceFile source)
 		{
 			return_if_fail (source_files != null);
 			source_files.remove (source);
 		}
 		
-		public Symbol? lookup_at (string filename, int line, int column)
+		public Symbol? lookup_symbol_at (string filename, int line, int column)
 		{
 			var source = lookup_source_file (filename);
 			if (source == null || !source.has_symbols)
@@ -423,15 +423,15 @@ namespace Afrodite
 			
 			foreach (Symbol symbol in source.symbols) {
 				var sr = symbol.lookup_source_reference_sourcefile (source);
-				//print ("%s: %d-%d %d-%d vs %d, %d\n", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);
+				print ("%s: %d-%d %d-%d vs %d, %d\n", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);
 				if ((sr.first_line < line || ((line == sr.first_line && column >= sr.first_column) || sr.first_column == 0))
 				    && (line < sr.last_line || ((line == sr.last_line && column <= sr.last_column) || sr.last_column == 0))) {
 					// let's find the best symbol
 					if (result == null 
 					   || result_sr.first_line < sr.first_line 
-					   || (result_sr.first_line == sr.first_line && result_sr.first_column != 0 && sr.first_column != 0 && result_sr.first_column < sr.first_column)
+					   || (result_sr.first_line == sr.first_line && result_sr.first_column < sr.first_column && result_sr.first_column != 0 && sr.first_column != 0)
 					   || result_sr.last_line > sr.last_line
-					   || (result_sr.last_line == sr.last_line && result_sr.last_column != 0 && sr.last_column  != 0 && result_sr.last_column  > sr.last_column))
+					   || (result_sr.last_line == sr.last_line && result_sr.last_column  > sr.last_column && result_sr.last_column != 0 && sr.last_column  != 0))
 					{
 						// this symbol is better
 						//print ("lookup_symbol_at: found %s\n", symbol.name);

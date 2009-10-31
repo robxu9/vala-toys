@@ -145,7 +145,7 @@ namespace Afrodite
 			return removed;
 		}
 
-		private Afrodite.Symbol visit_symbol (Vala.Symbol s, bool replace = false)
+		private Afrodite.Symbol visit_symbol (Vala.Symbol s, out Afrodite.SourceReference source_reference, bool replace = false)
 		{
 			Afrodite.Symbol symbol;
 			Afrodite.Symbol parent;
@@ -154,19 +154,19 @@ namespace Afrodite
 			symbol = _ast.lookup (_vala_symbol_fqn, out parent);
 			assert (parent != null);
 			if (symbol == null) {
-				symbol = add_symbol (s);
+				symbol = add_symbol (s, out source_reference);
 				parent.add_child (symbol);
 			} else if (replace) {
 				parent.remove_child (symbol);
-				symbol = add_symbol (s);
+				symbol = add_symbol (s, out source_reference);
 				parent.add_child (symbol);
 			} else if (!replace) {
 				// add one more source reference to the symbol
 				
-				var source_ref = symbol.lookup_source_reference_filename (_source_file.filename);
-				if (source_ref == null)	{
-					source_ref = create_source_reference (s);
-					symbol.add_source_reference (source_ref);
+				source_reference = symbol.lookup_source_reference_filename (_source_file.filename);
+				if (source_reference == null)	{
+					source_reference = create_source_reference (s);
+					symbol.add_source_reference (source_reference);
 					_source_file.add_symbol (symbol);
 				} else {
 					warning ("two sources with the same name were merged: %s", _source_file.filename);
@@ -176,20 +176,20 @@ namespace Afrodite
 			return symbol;
 		}
 		
-		private Afrodite.Symbol add_symbol (Vala.Symbol s, int last_line = 0, int last_column = 0)
+		private Afrodite.Symbol add_symbol (Vala.Symbol s, out Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, s.type_name);
-			var source_ref = create_source_reference (s, last_line, last_column);
+			source_ref = create_source_reference (s, last_line, last_column);
 			symbol.add_source_reference (source_ref);
 			symbol.access = get_vala_symbol_access (s.access);
 			_source_file.add_symbol (symbol);
 			return symbol;
 		}
 
-		private Afrodite.Symbol add_codenode (string type_name, Vala.CodeNode c, int last_line = 0, int last_column = 0)
+		private Afrodite.Symbol add_codenode (string type_name, Vala.CodeNode c, out Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, type_name);
-			var source_ref = create_source_reference (c, last_line, last_column);
+			source_ref = create_source_reference (c, last_line, last_column);
 			symbol.add_source_reference (source_ref);
 			symbol.access = Afrodite.SymbolAccessibility.PRIVATE;
 			_source_file.add_symbol (symbol);
@@ -270,11 +270,13 @@ namespace Afrodite
 			    || (ns.name != "GLib" && is_symbol_defined_current_source (ns))) {
 				var prev_vala_fqn = _vala_symbol_fqn;
 				var prev = _current;
+				var prev_sr = _current_sr;
 				
-				_current = visit_symbol (ns);
+				_current = visit_symbol (ns, out _current_sr);
 				ns.accept_children (this);
 				
 				_current = prev;
+				_current_sr = prev_sr;
 				_vala_symbol_fqn = prev_vala_fqn;
 			}
 		}
@@ -288,7 +290,7 @@ namespace Afrodite
 			var prev = _current;
 			var prev_sr = _current_sr;
 			
-			_current = visit_symbol (c, true); // class are not mergeable like namespaces
+			_current = visit_symbol (c, out _current_sr, true); // class are not mergeable like namespaces
 			_current.is_abstract = c.is_abstract;
 			c.accept_children (this);
 			_current = prev;
@@ -305,7 +307,7 @@ namespace Afrodite
 			var prev = _current;
 			var prev_sr = _current_sr;
 			
-			_current = visit_symbol (s, true); // class are not mergeable like namespaces
+			_current = visit_symbol (s, out _current_sr, true); // class are not mergeable like namespaces
 			s.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
@@ -321,7 +323,7 @@ namespace Afrodite
 			var prev = _current;
 			var prev_sr = _current_sr;
 			
-			_current = visit_symbol (iface, true); // class are not mergeable like namespaces
+			_current = visit_symbol (iface, out _current_sr, true); // class are not mergeable like namespaces
 			iface.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
@@ -342,7 +344,7 @@ namespace Afrodite
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
 				
-			var s = add_symbol (m, last_line);
+			var s = add_symbol (m, out _current_sr, last_line);
 			s.return_type = new DataType (m.return_type.to_string ());
 			s.is_abstract = m.is_abstract;
 			s.is_virtual = m.is_virtual;
@@ -369,7 +371,7 @@ namespace Afrodite
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
 				
-			var s = add_symbol (m, last_line);
+			var s = add_symbol (m, out _current_sr, last_line);
 			s.return_type = new DataType (m.return_type.to_string ());
 			s.is_abstract = m.is_abstract;
 			s.is_virtual = m.is_virtual;
@@ -401,7 +403,7 @@ namespace Afrodite
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
 				
-			var s = add_symbol (m, last_line);
+			var s = add_symbol (m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
 			s.return_type = new DataType (get_datatype_typename (m.this_parameter.parameter_type), m.this_parameter.name);
 			_current.add_child (s);
@@ -425,7 +427,7 @@ namespace Afrodite
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
 				
-			var s = add_symbol (m, last_line);
+			var s = add_symbol (m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
 			s.display_name = "~%s".printf (s.name);
 			_current.add_child (s);
@@ -445,7 +447,7 @@ namespace Afrodite
 			var prev_sr = _current_sr;
 			
 			set_fqn (ev.name);
-			_current.add_child (add_symbol (ev));
+			_current.add_child (add_symbol (ev, out _current_sr));
 			
 			_current = prev;
 			_current_sr = prev_sr;
@@ -462,7 +464,7 @@ namespace Afrodite
 			var prev_sr = _current_sr;
 			
 			set_fqn (e.name);
-			var s = add_symbol (e);
+			var s = add_symbol (e, out _current_sr);
 			_current.add_child (s);
 			_current = s;
 			e.accept_children (this);
@@ -481,7 +483,7 @@ namespace Afrodite
 			var prev_sr = _current_sr;
 			
 			set_fqn (d.name);
-			_current.add_child (add_symbol (d));
+			_current.add_child (add_symbol (d, out _current_sr));
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -497,7 +499,7 @@ namespace Afrodite
 			var prev_sr = _current_sr;
 			
 			set_fqn (s.name);
-			_current.add_child (add_symbol (s));
+			_current.add_child (add_symbol (s, out _current_sr));
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -510,7 +512,7 @@ namespace Afrodite
 			var prev_sr = _current_sr;
 			
 			set_fqn (f.name);
-			var s = add_symbol (f);
+			var s = add_symbol (f, out _current_sr);
 			s.return_type = new DataType (f.field_type.to_string ());
 			s.binding =  get_vala_member_binding (f.binding);
 			_current.add_child (s);
@@ -530,7 +532,7 @@ namespace Afrodite
 			var prev_sr = _current_sr;
 			
 			set_fqn (c.name);
-			var s = add_symbol (c);
+			var s = add_symbol (c, out _current_sr);
 			s.return_type = new DataType (c.type_reference.to_string ());
 			_current.add_child (s);
 			
@@ -549,10 +551,12 @@ namespace Afrodite
 			var prev_sr = _current_sr;
 			
 			set_fqn (p.name);
-			var s = add_symbol (p);
+			var s = add_symbol (p, out _current_sr);
 			s.return_type = new DataType (p.property_type.to_string ());
 			_current.add_child (s);
 			
+			_current = s;
+			p.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -560,6 +564,8 @@ namespace Afrodite
 	
 		public override void visit_property_accessor (PropertyAccessor a)
 		{
+			this.visit_scoped_codenode (a.readable ? "get" : "set", a, a.body);
+			/*
 			var prev = _current;
 			var prev_sr = _current_sr;
 			
@@ -571,7 +577,7 @@ namespace Afrodite
 			
 			a.accept_children (this);
 			_current = prev;
-			_current_sr = prev_sr;
+			_current_sr = prev_sr;*/
 		}
 		
 		public override void visit_error_domain (ErrorDomain ed)
@@ -581,15 +587,17 @@ namespace Afrodite
 
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			
+			var prev_sr = _current_sr;
+						
 			set_fqn (ed.name);
-			var s = add_symbol (ed);
+			var s = add_symbol (ed, out _current_sr);
 			_current.add_child (s);
 			
 			_current = s;
 			ed.accept_children (this);
 			
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
@@ -597,18 +605,28 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn (ecode.name);
-			var s = add_symbol (ecode);
+			var s = add_symbol (ecode, out _current_sr);
 			_current.add_child (s);
 			
 			_current = prev;
+			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
 		public override void visit_formal_parameter (FormalParameter p) 
 		{
 			var d = new DataType (get_datatype_typename (p.parameter_type), p.name);
+			switch (p.direction) {
+				case Vala.ParameterDirection.OUT:
+					d.is_out = true;
+					break;
+				case Vala.ParameterDirection.REF:
+					d.is_ref = true;
+					break;
+			}
 			_current.add_parameter (d);
 		}
 
@@ -795,6 +813,8 @@ namespace Afrodite
 		public override void visit_if_statement (IfStatement stmt) 
 		{
 			visit_scoped_codenode ("if", stmt, stmt.true_statement);
+			if (stmt.false_statement != null)
+				visit_scoped_codenode ("else", stmt, stmt.false_statement);
 		}
 
 		public override void visit_switch_statement (SwitchStatement stmt) 
@@ -821,13 +841,16 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
+			var prev_sr = _current_sr;
 			
 			set_fqn ("!%s".printf (name));
 			int last_line = 0;
-			if (body != null && body.source_reference != null)
+			if (body != null && body.source_reference != null) {
 				last_line = body.source_reference.last_line;
+				print ("body for %s: %d,%d to %d,%d\n", name, body.source_reference.first_line, body.source_reference.first_column, body.source_reference.last_line, body.source_reference.last_column);
+			}
 				
-			var s = add_codenode ("Block", node, last_line);
+			var s = add_codenode ("Block", node, out _current_sr, last_line);
 			s.display_name = name;
 			
 			_current.add_child (s);
@@ -835,6 +858,8 @@ namespace Afrodite
 			_current = s;
 			node.accept_children (this);
 			_current = prev;
+			_current_sr = prev_sr;
+			
 			_vala_symbol_fqn = prev_vala_fqn;
 			
 			return s;

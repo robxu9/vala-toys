@@ -593,7 +593,7 @@ namespace Vtg
 		
 		private Afrodite.Symbol? complete (SymbolCompletionTrigger? trigger, string? whole_line, string word, int line, int column)
 		{
-			GLib.debug ("complete %s for %s", word, _sb.path);
+			GLib.debug ("complete %s for %s in %d,%d", word, _sb.path, line, column);
 			Afrodite.Symbol result = null;
 			Afrodite.Ast ast;
 			if (_completion.try_acquire_ast (out ast)) {

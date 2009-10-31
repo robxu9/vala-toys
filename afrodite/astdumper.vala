@@ -57,25 +57,6 @@ namespace Afrodite
 			}
 		}
 		
-		private string print_datatype (DataType type, bool update_counters = true)
-		{
-			if (update_counters)
-				types++;
-			var sb = new StringBuilder ();
-			sb.append (type.type_name);
-			if (type.symbol == null) {
-				sb.append (" (U)");
-				if (update_counters)
-					unresolved_types++;
-			}
-			if (type.name != null) {
-				if (type.symbol != null)
-					sb.append (" ");
-				sb.append_printf ("%s", type.name);
-			}
-			return sb.str;
-		}
-		
 		private void print_symbol (Afrodite.Symbol? s)
 		{
 			print ("%s\n", create_symbol_dump_info (s));
@@ -180,7 +161,7 @@ namespace Afrodite
 						inc_pad ();
 						print ("%slocal variables\n", pad);
 						foreach (DataType local in symbol.local_variables) {
-							print ("%s   %s\n", pad, print_datatype (local));
+							print ("%s   %s\n", pad, local.description);
 						}
 						dec_pad ();
 					}

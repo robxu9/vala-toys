@@ -102,6 +102,7 @@ namespace Afrodite
 		private Gee.List<Symbol> detached_children = null;
 		private string _info = null;
 		private string _des = null;
+		private string _markup_des = null;
 		private string _display_name = null;
 		
 		public Symbol (string? fully_qualified_name, string? type_name)
@@ -396,6 +397,7 @@ namespace Afrodite
 			
 			res._info = _info;
 			res._des = _des;
+			res._markup_des = _markup_des;
 			res.access = access;
 			res.binding = binding;
 			res.is_virtual = is_virtual;
@@ -409,17 +411,27 @@ namespace Afrodite
 		{
 			get {
 				if (_des == null)
-					build_description ();
+					_des = build_description (false);
 				
 				return _des;
 			}
 		}
-		
+
+		public string markup_description
+		{
+			get {
+				if (_markup_des == null)
+					_markup_des = build_description (true);
+				
+				return _markup_des;
+			}
+		}
+
 		public string info
 		{
 			get {
 				if (_info == null)
-					build_info ();
+					_info = build_info ();
 				
 				return _info;
 			}
@@ -439,22 +451,30 @@ namespace Afrodite
 			}
 		}
 
-		private void build_info ()
+		private string build_info ()
 		{
 			int param_count = 0;
 			string params;
 			StringBuilder sb = new StringBuilder ();
 			
 			if (has_parameters) {
+				param_count = parameters.size;
+				
+				string sep;
+				if (param_count > 2) {
+					sep = "\n";
+				} else {
+					sep = " ";
+				}
+				
 				foreach (DataType type in parameters) {
-					sb.append_printf ("%s, ", type.description);
+					sb.append_printf ("%s,%s", type.description, sep);
 				}
 				sb.truncate (sb.len - 2);
 				params = sb.str; 
 				sb.truncate (0);
 			} else {
 				params = "";
-				param_count = 0;
 			}
 			
 			sb.append_printf("%s: %s\n\n%s%s<b>%s</b> (%s%s)",
@@ -466,14 +486,14 @@ namespace Afrodite
 				    (param_count > 2 ? "\n" : ""),
 				    params);
 				    
-			if (!type_name.has_suffix ("Method")) {
+			if (type_name != null && !type_name.has_suffix ("Method")) {
 				sb.truncate (sb.len - 3);
 			}
 
-			_info = sb.str;
+			return sb.str;
 		}
 		
-		private void build_description ()
+		private string build_description (bool markup)
 		{
 			var sb = new StringBuilder ();
 			if (type_name != "EnumValue") {
@@ -488,8 +508,16 @@ namespace Afrodite
 			if (return_type != null) {
 				sb.append_printf ("%s ", return_type.description);
 			}
-			sb.append (display_name);
-			if (type_name.has_suffix ("Method")) {
+			if (markup 
+			    && type_name != null
+			    && (type_name == "Property" 
+			    || type_name.has_suffix ("Method")
+			    || type_name == "Field"))
+				sb.append_printf ("<b>%s</b>".printf(display_name));
+			else
+				sb.append (display_name);
+
+			if (type_name != null && type_name.has_suffix ("Method")) {
 				sb.append (" (");
 			}
 			if (has_parameters) {
@@ -498,7 +526,7 @@ namespace Afrodite
 				}
 				sb.truncate (sb.len - 2);
 			}
-			if (type_name.has_suffix ("Method")) {
+			if (type_name != null && type_name.has_suffix ("Method")) {
 				sb.append (")");
 			}
 			
@@ -510,7 +538,7 @@ namespace Afrodite
 				sb.truncate (sb.len - 2);
 			}
 			
-			_des = sb.str;
+			return sb.str;
 		}
 		
 		public string access_string

@@ -102,7 +102,7 @@ namespace Vtg
 			
 			renderer = new CellRendererText ();
 			column.pack_start (renderer, true);
-			column.add_attribute (renderer, "text", Columns.NAME);
+			column.add_attribute (renderer, "markup", Columns.NAME);
 			
 			_src_view.append_column (column);
 			_src_view.set_headers_visible (false);
@@ -233,7 +233,7 @@ namespace Vtg
 				
 				if (!symbol.name.has_prefix ("!") && _check_show_private_symbols.active
 				    || (!_check_show_private_symbols.active && symbol.access != Afrodite.SymbolAccessibility.PRIVATE)) {
-					string des = symbol.description;
+					string des = symbol.markup_description;
 					string[] qualifiers = new string[] {
 						"public ", "private ", "internal ", "protected "
 					};

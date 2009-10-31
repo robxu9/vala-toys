@@ -35,6 +35,9 @@ namespace Afrodite
 		public bool is_pointer = false;
 		public bool is_generic = false;
 		public bool is_nullable = false;
+		public bool is_out = false;
+		public bool is_ref = false;
+		public bool is_dynamic = false;
 		public string default_expression = null;
 		
 		public DataType (string type_name, string? name = null)
@@ -92,6 +95,7 @@ namespace Afrodite
 		{
 			var sb = new StringBuilder ();
 			int skip_level = 0; // skip_level == 0 --> add char, skip_level > 0 --> skip until closed par (,[,<,{ causes a skip until ),],>,}
+			print ("process type_name %s %s\n",name, type_name);
 			
 			for (int i = 0; i < type_name.length; i++) {
 				unichar ch = type_name[i];
@@ -133,6 +137,9 @@ namespace Afrodite
 			res.is_pointer = is_pointer;
 			res.is_generic = is_generic;
 			res.is_nullable = is_nullable;
+			res.is_out = is_out;
+			res.is_ref = is_ref;
+			res.is_dynamic = is_dynamic;
 			res.default_expression = default_expression;
 			
 			return res;
@@ -141,7 +148,17 @@ namespace Afrodite
 		public string description		
 		{
 			owned get {
-				string res = type_name;
+				string res = "";
+				
+				if (is_out)
+					res = "out ";
+				else if (is_ref)
+					res = "ref ";
+				
+				if (is_dynamic)
+					res += "dynamic ";
+					
+				res = type_name;
 				
 				if (is_pointer)
 					res += "*";

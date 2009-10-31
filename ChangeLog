@@ -1,3 +1,42 @@
+2009-10-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	marked some apis as internal.
+	fixed a bug when trying to find the current codenode
+
+	* afrodite/astdumper.vala:
+
+	using symbol.description instead of the internal print_dataype function
+
+	* afrodite/astmerger.vala:
+
+	update the current source variable when visiting the tree. A lot of fixes.
+
+	* afrodite/datatype.vala:
+
+	added out, ref parameters support
+
+	* afrodite/parser.vala:
+
+	warning when dynamic source objects don't have any source
+
+	* afrodite/symbol.vala:
+
+	fixes in symbol description and info generation
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	used the new symbol.markup_description property
+
+	* vtg/vtgsymbolcompletionhelper.vala:
+
+	setup the completion library when the widged is realized
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added some debug code
+
 2009-10-12  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/Makefile.am:
