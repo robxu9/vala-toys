@@ -216,10 +216,18 @@ namespace Vtg
 					//}
 
 					/* setup referenced packages */
+					Gee.List<string> vapis = target.get_include_dirs ();
+					string[] vapi_dirs = new string[vapis.size];
+					int index = 0;
+					foreach (string item in vapis)
+						vapi_dirs[index++] = item;
+
 					foreach (Package package in target.get_packages ()) {
 						GLib.debug ("target %s, referenced package: %s", target.id, package.id);
-						var paths = Afrodite.Utils.get_package_paths (package.id);
+						var paths = Afrodite.Utils.get_package_paths (package.id, null, vapi_dirs);
 						if (paths != null) {
+							foreach (string path in paths)
+								GLib.debug ("     target %s, referenced package: %s -> %s", target.id, package.id, path);
 							completion.queue_sourcefiles (paths, null, true);
 						}
 					}

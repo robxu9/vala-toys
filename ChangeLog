@@ -1,6 +1,14 @@
 2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:
+	* afrodite/utils.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	added support for per target private vapis
+
+2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
 	* afrodite/astmerger.vala:
 	* afrodite/datatype.vala:
 

@@ -25,16 +25,14 @@ using Gee;
 
 namespace Afrodite.Utils
 {
-	public static Gee.List<string>? get_package_paths (string pkg, CodeContext? context = null)
+	public static Gee.List<string>? get_package_paths (string pkg, CodeContext? context = null, string[] vapi_dirs = null)
 	{
 		var ctx = context;
 		if (ctx == null) {
 			ctx = new Vala.CodeContext();
 		}
 		
-		string[] vapi_dirs = null;
 		var package_path = ctx.get_package_path (pkg, vapi_dirs);
-		
 		if (package_path == null) {
 			return null;
 		}
