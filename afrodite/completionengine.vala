@@ -62,6 +62,7 @@ namespace Afrodite
 		
 		private unowned Thread parser_thread;
 		private int parser_stamp = 0;
+		private int parser_remaining_files = 0;
 		
 		private Ast _ast;
 		
@@ -192,13 +193,18 @@ namespace Afrodite
 		
 		public bool try_acquire_ast (out Ast ast)
 		{
-			bool res;
+			bool res = false;
 			ast = null;
 			
-			res = ast_mutex.@trylock ();
-			if (res) {
-				ast = _ast;
-			}
+			do {
+				res = ast_mutex.@trylock ();
+				if (res) {
+					ast = _ast;
+				} else {
+					GLib.Thread.usleep (100 * 1000);	
+				}
+			} while (ast == null && AtomicInt.get (ref parser_remaining_files) < 3);
+
 			return res;
 		}
 		
@@ -247,6 +253,8 @@ namespace Afrodite
 				// do the actual merging
 				var timer = new Timer ();
 				
+				// set the number of sources to process
+				AtomicInt.set (ref parser_remaining_files, sources.size);
 				ast_mutex.@lock ();
 				foreach (SourceItem source in sources) {
 					source.context = p.context;
@@ -261,14 +269,16 @@ namespace Afrodite
 					else {
 						foreach (Vala.SourceFile s in source.context.get_source_files ()) {
 							if (s.filename == source.path) {
-								timer.start ();
+								//timer.start ();
 								merger.merge_vala_context (s, source.context, source.is_glib);
-								timer.stop ();
+								//timer.stop ();
 								//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
 								break;
 							}
 						}
 					}
+					
+					AtomicInt.add (ref parser_remaining_files, -1);
 				}
 				var resolver = new SymbolResolver ();
 				resolver.resolve (_ast);

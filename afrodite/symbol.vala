@@ -304,11 +304,24 @@ namespace Afrodite
 				return (binding & MemberBinding.STATIC) != 0;
 			}
 		}
+		
 		internal void add_detached_child (Symbol item)
 		{
 			if (!detached_children.contains (item))
 				detached_children.add (item);
 				
+		}
+
+		internal Symbol? detached_children_find (string fully_qualified_name)
+		{
+			
+			foreach (Symbol symbol in detached_children) {
+				if (symbol.fully_qualified_name == fully_qualified_name) {
+					return symbol;
+				}
+			}
+			
+			return null;
 		}
 
 		private bool check_symbol (Symbol symbol, DetachCopyOptions? options)
@@ -336,18 +349,25 @@ namespace Afrodite
 			return false;
 		}
 
-		public Symbol detach_copy (int depth = 1, DetachCopyOptions options, Symbol? root = null)
+		public Symbol? detach_copy (int depth = 1, DetachCopyOptions options, Symbol? root = null)
 		{
 			var res = new Symbol (fully_qualified_name, type_name);
 			
-			res.detached_children = new ArrayList<Symbol> ();
-			
-
 			// unowned copied symbols are references in the detached_children
 			// collection of the root symbol. So no owned circular references
 			// are made.
 			if (root == null)
 				root = res;
+
+			if (root.detached_children == null)
+				root.detached_children = new ArrayList<Symbol> ();
+			
+			// try to avoid circular symbol copy
+			Symbol detach_copy = root.detached_children_find (fully_qualified_name);
+			if (detach_copy != null) {
+				debug ("Symbol already copied %s", fully_qualified_name);
+				return detach_copy; // the symbol was already copied
+			}
 
 			//debug ("copy %s in %s", fully_qualified_name, root.name);	
 			res.parent = null; // parent reference isn't copied
@@ -358,7 +378,7 @@ namespace Afrodite
 					if (check_symbol (child, options)) {
 						var copy = child.detach_copy (depth - 1, options, root);
 						res.add_child (copy);
-						root.add_detached_child (copy);
+						root.add_detached_child (copy); // a check is performed on the add to avoid duplicate copies
 					}
 				}
 			}

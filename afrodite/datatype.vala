@@ -95,7 +95,7 @@ namespace Afrodite
 		{
 			var sb = new StringBuilder ();
 			int skip_level = 0; // skip_level == 0 --> add char, skip_level > 0 --> skip until closed par (,[,<,{ causes a skip until ),],>,}
-			print ("process type_name %s %s\n",name, type_name);
+			//print ("process type_name %s %s\n",name, type_name);
 			
 			for (int i = 0; i < type_name.length; i++) {
 				unichar ch = type_name[i];

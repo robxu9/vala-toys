@@ -375,18 +375,23 @@ namespace Vtg
 			if (result != null) {
 				if (result.has_children) {
 					append_symbols (result.children);
-					if (result.has_base_types 
-					    && (result.type_name == "Class" || result.type_name == "Interface" || result.type_name == "Struct")) {
-						foreach (DataType type in result.base_types) {
-							if (!type.unresolved 
-							    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface")) {
-								if (type.symbol.has_children) {
-									// symbols of base types (classes or interfaces)
-									append_symbols (type.symbol.children, false);
-								}
+				}
+				if (result.has_base_types 
+				    && (result.type_name == "Class" || result.type_name == "Interface" || result.type_name == "Struct")) {
+				    	GLib.debug ("base type for %s-%s", result.name, result.type_name);
+					
+					foreach (DataType type in result.base_types) {
+						GLib.debug ("----> base type for %s-%s", type.name, type.type_name);
+						if (!type.unresolved 
+						    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface")) {
+							if (type.symbol.has_children) {
+								// symbols of base types (classes or interfaces)
+								append_symbols (type.symbol.children, false);
 							}
 						}
 					}
+				} else {
+					GLib.debug ("NO base type for %s-%s", result.name, result.type_name);
 				}
 			}
 

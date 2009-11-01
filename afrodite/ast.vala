@@ -238,7 +238,7 @@ namespace Afrodite
 					var options = DetachCopyOptions.standard ();
 					var sym = symbol.detach_copy (0, options);
 					
-					print ("    adding %s", sym.name);
+					//print ("    adding %s", sym.name);
 					
 					results.add_child (sym);
 					if (symbol.has_children) {

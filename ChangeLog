@@ -1,3 +1,23 @@
+2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+
+	added some debug print
+
+	* afrodite/completionengine.vala:
+
+	try to wait some time if there are a few more file to parse
+	
+	* afrodite/symbol.vala:
+
+	check if the symbol is already copied to avoid circular copies
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	add base symbols even if the symbol doesn't define any new method or property etc...	
+
 2009-10-31  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:
