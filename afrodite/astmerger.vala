@@ -616,6 +616,22 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
+		/*
+		public virtual void visit_type_parameter (TypeParameter p) 
+		{
+			var d = new DataType (get_datatype_typename (p.parameter_type), p.name);
+			switch (p.direction) {
+				case Vala.ParameterDirection.OUT:
+					d.is_out = true;
+					break;
+				case Vala.ParameterDirection.REF:
+					d.is_ref = true;
+					break;
+			}
+			debug ("type parameter %s", p.name);
+			_current.add_local_variable (d);
+		}*/
+		
 		public override void visit_formal_parameter (FormalParameter p) 
 		{
 			var d = new DataType (get_datatype_typename (p.parameter_type), p.name);

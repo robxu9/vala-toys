@@ -1,6 +1,17 @@
 2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+
+	fix completion of method parameters
+
+	* afrodite/utils.vala:
+
+	suppress a null warning	
+
+2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
 	* afrodite/utils.vala:
 	* vtg/vtgprojectmanager.vala:
 

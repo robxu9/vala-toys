@@ -117,7 +117,7 @@ namespace Afrodite
 					}
 				}
 			} else {
-				debug ("no source files!!!");
+				debug ("no source files for %s!!!", filename);
 				
 			}		
 			return null;
@@ -359,19 +359,20 @@ namespace Afrodite
 							}
 						}
 					}
+					// search in symbol parameters
+					if (current_sym.has_parameters) {
+						foreach (DataType type in current_sym.parameters) {
+							if (compare_symbol_names (type.name, name, mode)
+							    && (type.symbol == null || (type.symbol.access & access) != 0)
+							    && (type.symbol == null || (type.symbol.binding & binding) != 0)) {
+								return type.symbol;
+							}
+						}
+					}
 					current_sym = current_sym.parent;
 				}
 				
-				// search in symbol parameters
-				if (symbol.has_parameters) {
-					foreach (DataType type in symbol.parameters) {
-						if (compare_symbol_names (type.name, name, mode)
-						    && (type.symbol == null || (type.symbol.access & access) != 0)
-						    && (type.symbol == null || (type.symbol.binding & binding) != 0)) {
-							return type.symbol;
-						}
-					}
-				}
+			
 				
 				// search in sibling
 				current_sym = symbol.parent;
