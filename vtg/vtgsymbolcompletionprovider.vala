@@ -34,6 +34,7 @@ namespace Vtg
 		private unowned Afrodite.CompletionEngine _completion = null;
 		private Gedit.View _view = null;
 		private GLib.List<Gsc.Proposal> _list;
+		/*
 		private Gdk.Pixbuf _icon_generic;
 		private Gdk.Pixbuf _icon_field;
 		private Gdk.Pixbuf _icon_method;
@@ -45,7 +46,7 @@ namespace Vtg
 		private Gdk.Pixbuf _icon_const;
 		private Gdk.Pixbuf _icon_enum;
 		private Gdk.Pixbuf _icon_namespace;
-		
+		*/
 		private uint _timeout_id = 0;
 		private uint _idle_id = 0;
 		private bool _all_doc = false; //this is a hack!!!
@@ -112,6 +113,7 @@ namespace Vtg
 				doc.notify["text"] += this.on_text_changed;
 				doc.notify["cursor-position"] += this.on_cursor_position_changed;
 				
+				/*
 				this._icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				this._icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
 				this._icon_method = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-method-16.png"));
@@ -123,6 +125,7 @@ namespace Vtg
 				this._icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
 				this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
 				this._icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));
+				*/
 				
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				_sb_context_id = status_bar.get_context_id ("symbol status");
@@ -198,17 +201,20 @@ namespace Vtg
 				
 			if (_cache_building && !_tooltip_is_visible && _prev_cache_building == false) {
 				_prev_cache_building = _cache_building;
+				/*
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				if (_sb_msg_id != 0) {
 					status_bar.remove (_sb_context_id, _sb_msg_id);
 				}
-				_sb_msg_id = status_bar.push (_sb_context_id, _("rebuilding symbol cache for %s...").printf (_completion.id));
+				_sb_msg_id = status_bar.push (_sb_context_id, _("rebuilding symbol cache for %s...").printf (_completion.id));*/
 			} else if (_cache_building == false && _prev_cache_building == true) {
 				_prev_cache_building = false;
 				//hide tip, show proposal list
+				/*
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				status_bar.remove (_sb_context_id, _sb_msg_id);
 				_sb_msg_id = 0;
+				*/
 				if (_last_trigger != null) {
 					var trigger = (SymbolCompletionTrigger) _last_trigger;
 					trigger.trigger_event (trigger.shortcut_triggered);

@@ -195,15 +195,17 @@ namespace Afrodite
 		{
 			bool res = false;
 			ast = null;
-			
+			int retry = 0;
+				
 			do {
 				res = ast_mutex.@trylock ();
 				if (res) {
 					ast = _ast;
 				} else {
-					GLib.Thread.usleep (100 * 1000);	
+					GLib.Thread.usleep (100 * 1000);
+					retry++;
 				}
-			} while (ast == null && AtomicInt.get (ref parser_remaining_files) < 3);
+			} while (ast == null && retry < 20 & AtomicInt.get (ref parser_remaining_files) < 3);
 
 			return res;
 		}

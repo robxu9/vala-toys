@@ -34,6 +34,8 @@ namespace Vtg
 		private Gtk.TreeStore _model;
 		private bool in_update = false;
 		private Gee.HashMap<Vbf.Target, Afrodite.CompletionEngine> _completions = null;
+		private int parser_thread_count = 0;
+		private bool _sc_building = false;
 
 		public signal void updated ();
 		public string filename = null;
@@ -46,6 +48,9 @@ namespace Vtg
 		
 		public VcsTypes vcs_type = VcsTypes.NONE;
 		public string changelog_uri = null;
+
+		public signal void symbol_cache_building (ProjectManager sender);
+		public signal void symbol_cache_builded (ProjectManager sender);
 		
 		~ProjectManager ()
 		{
@@ -202,6 +207,8 @@ namespace Vtg
 						continue;
 
 					var completion = new CompletionEngine (target.name);
+					completion.begin_parsing.connect (this.on_completion_engine_begin_parse);
+					completion.end_parsing.connect (this.on_completion_engine_end_parse);
 					_completions.@set (target, completion);
 
 					foreach(string path in target.get_include_dirs ()) {
@@ -245,11 +252,43 @@ namespace Vtg
 		private void cleanup_completions ()
 		{
 			if (_completions != null) {
+				foreach (CompletionEngine completion in _completions.get_values ()) {
+					completion.begin_parsing.disconnect (this.on_completion_engine_begin_parse);
+					completion.end_parsing.disconnect (this.on_completion_engine_end_parse);
+				}
 				_completions.clear ();
 				_completions = null;
 			}
 		}
 
+		private void on_completion_engine_begin_parse (CompletionEngine sender)
+		{
+			AtomicInt.inc (ref parser_thread_count);
+			Idle.add (this.on_idle);
+		}
+		
+		private void on_completion_engine_end_parse (CompletionEngine sender)
+		{
+			AtomicInt.dec_and_test (ref parser_thread_count);
+			Idle.add (this.on_idle);
+		}
+
+		private bool on_idle ()
+		{
+			int val = AtomicInt.get (ref parser_thread_count);
+			if (val > 0) {
+				if (!_sc_building) {
+					_sc_building = true;
+					this.symbol_cache_building (this);
+				}
+			} else {
+				if (_sc_building) {
+					_sc_building = false;
+					this.symbol_cache_builded (this);
+				}
+			}
+			return true;
+		}
 		private void vcs_test (string filename)
 		{
 			//test if the project is under some known revision control system

@@ -1,5 +1,27 @@
 2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* afrodite/completionengine.vala:
+
+	add a retry parameter when trying to lock the ast structure
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	added a new status bar message when symbol cache is building and then not available
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	removed obsolete status bar messages and dead code
+
+2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	don't copy all referenced symbols by default
+
+2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/astmerger.vala:
 

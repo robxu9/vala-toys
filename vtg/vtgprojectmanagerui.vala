@@ -166,6 +166,10 @@ namespace Vtg
 		private ChangeLog _changelog = null;
 		private SourceBookmarks _bookmarks = null;
 		
+		private int _cache_building_count = 0;
+		private uint _sb_msg_id = 0;
+		private uint _sb_context_id = 0;
+
  		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 
 		//public signal void project_loaded (Project project);
@@ -173,6 +177,8 @@ namespace Vtg
 		public ProjectManagerUi (Vtg.PluginInstance plugin_instance)
 		{
 			this.plugin_instance = plugin_instance;
+			var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
+			_sb_context_id = status_bar.get_context_id ("symbol status");
 		}
 
 
@@ -761,6 +767,24 @@ namespace Vtg
 			action.set_sensitive (!_bookmarks.is_empty);
 		}
 		
+		private void on_symbol_cache_building (ProjectManager sender)
+		{
+			_cache_building_count++;
+			if (_sb_msg_id == 0) {
+				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
+				_sb_msg_id = status_bar.push (_sb_context_id, _("building symbol cache..."));
+			}
+		}
+		
+		private void on_symbol_cache_builded (ProjectManager sender)
+		{
+			_cache_building_count--;
+			if (_cache_building_count == 0 && _sb_msg_id != 0) {
+				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
+				status_bar.remove (_sb_context_id, _sb_msg_id);
+			}
+		}
+		
 		private void open_project (string name)
 		{
 			try {
@@ -772,6 +796,9 @@ namespace Vtg
 				} else {
 					// open project
 					project = new ProjectManager ();
+					project.symbol_cache_building.connect (this.on_symbol_cache_building);
+					project.symbol_cache_builded.connect (this.on_symbol_cache_builded);
+					
 					if (project.open (name)) {
 						_projects.add (project);
 						//HACK: why the signal isn't working?!?!
@@ -787,6 +814,8 @@ namespace Vtg
 
 		internal void close_project (ProjectManager project)
 		{
+			project.symbol_cache_building.disconnect (this.on_symbol_cache_building);
+			project.symbol_cache_builded.disconnect (this.on_symbol_cache_builded);
 			_prj_view.remove_project (project.project);
 			_plugin_instance.plugin.on_project_closed (this, project);
 			project.close ();
