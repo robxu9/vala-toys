@@ -51,6 +51,8 @@ namespace Afrodite
 		
 		public SymbolAccessibility access = SymbolAccessibility.ANY;
 		
+		public bool copy_resolved_types = false; // if true also recoursively copies all the types resolved by this type
+		
 		public static DetachCopyOptions standard ()
 		{
 			return new DetachCopyOptions ();
@@ -407,7 +409,7 @@ namespace Afrodite
 				}
 			}
 			
-			if (has_resolve_targets && (depth > 0 || depth == -1)) {
+			if (options.copy_resolved_types && has_resolve_targets && (depth > 0 || depth == -1)) {
 				foreach (Symbol t in resolve_targets) {
 					var copy = t.detach_copy (0, options, root);
 					res.add_resolve_target (copy);
