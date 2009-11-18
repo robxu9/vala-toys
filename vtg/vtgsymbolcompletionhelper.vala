@@ -44,9 +44,7 @@ namespace Vtg
 		
 		public SymbolCompletionHelper (Vtg.PluginInstance plugin_instance, Gedit.View view, CompletionEngine completion)
 		{
-			this.plugin_instance = plugin_instance;
-			this.view = view;
-			this.completion = completion;
+			GLib.Object (plugin_instance: plugin_instance, view: view, completion: completion);
 		}
 
 		construct
@@ -92,8 +90,12 @@ namespace Vtg
 			Afrodite.Symbol? item = _provider.get_current_symbol_item ();
 			
 			if (item != null && item.has_source_references) {
-				string uri = Filename.to_uri (item.source_references.get(0).file.filename);
-				_plugin_instance.activate_uri (uri, item.source_references.get(0).first_line);
+				try {
+					string uri = Filename.to_uri (item.source_references.get(0).file.filename);
+					_plugin_instance.activate_uri (uri, item.source_references.get(0).first_line);
+				} catch (Error e) {
+					GLib.warning ("error %s converting file %s to uri", e.message, item.source_references.get(0).file.filename);
+				}
 			}
 		}
 	}

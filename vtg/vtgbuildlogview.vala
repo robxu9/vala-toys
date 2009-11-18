@@ -59,7 +59,7 @@ namespace Vtg
 		
 		public BuildLogView (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			GLib.Object (plugin_instance: plugin_instance);
 		}
 
 		~BuildLogView ()

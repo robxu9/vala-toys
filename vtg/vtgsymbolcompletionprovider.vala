@@ -75,9 +75,7 @@ namespace Vtg
 
 		public SymbolCompletionProvider (Vtg.PluginInstance plugin_instance, Gedit.View view, Afrodite.CompletionEngine completion)
 		{
-			this.plugin_instance = plugin_instance;
-			this.completion = completion;
-			this.view = view;
+			GLib.Object (plugin_instance: plugin_instance, view: view, completion: completion);
 		}
 
 		~SymbolCompletionProvider ()
@@ -334,7 +332,7 @@ namespace Vtg
 			return (owned) _list;
 		}
 
-		private void append_symbols (Gee.List<Afrodite.Symbol> symbols, bool include_private_symbols = true)
+		private void append_symbols (Vala.List<Afrodite.Symbol> symbols, bool include_private_symbols = true)
 		{
 			unowned Proposal[] proposals = Utils.get_proposal_cache ();
 

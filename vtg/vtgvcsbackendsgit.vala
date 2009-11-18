@@ -21,20 +21,19 @@
 
 
 using GLib;
-using Gee;
 
 namespace Vtg.Vcs.Backends
 {
-	public class Git : IVcs, GLib.Object
+	public class Git : VcsBase
 	{
 		public Git ()
 		{
 			
 		}
 		
-		public Gee.List<Item> get_items (string path) throws GLib.SpawnError
+		public override Vala.List<Item> get_items (string path) throws GLib.SpawnError, VcsError
 		{
-			Gee.List<Item> results = new Gee.ArrayList<Item> ();
+			Vala.List<Item> results = new Vala.ArrayList<Item> ();
 			string stdo, stde;
 			int exit_status;
 						
@@ -48,6 +47,8 @@ namespace Vtg.Vcs.Backends
 				
 					while (lines[idx] != null) {
 						string line = lines[idx];
+						GLib.debug ("git line: %s", line);
+						
 						if (modp.match_string (line)) {
 							Item item = new Item ();
 							item.state = States.MODIFIED;
@@ -68,7 +69,7 @@ namespace Vtg.Vcs.Backends
 			return results;
 		}
 		
-		public bool test (string path)
+		public override bool test (string path)
 		{
 			string git_dir = Path.build_filename (path, ".git");
 			

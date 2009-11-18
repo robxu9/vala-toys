@@ -177,8 +177,7 @@ namespace Vtg
 		
 		public SymbolCompletionTrigger (Vtg.PluginInstance plugin, Gsc.Completion completion, string trigger_name)
 		{
-			this.completion = completion;
-			this.trigger_name = trigger_name;
+			GLib.Object (completion: completion, trigger_name: trigger_name);
 			this._plugin = plugin;
 		}
 		

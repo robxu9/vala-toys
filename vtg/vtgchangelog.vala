@@ -20,7 +20,6 @@
  */
 
 using GLib;
-using Gee;
 using Vtg.Vcs.Backends;
 
 namespace Vtg
@@ -33,7 +32,7 @@ namespace Vtg
  		
 		public ChangeLog (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			GLib.Object (plugin_instance: plugin_instance);
 		}
 		
 		public bool prepare (string? file = null) throws GLib.Error
@@ -49,11 +48,11 @@ namespace Vtg
 				file_list += "\t* %s:\n".printf (file);
 				force_add_new = false;
 			} else {
-				IVcs backend = vcs_backend_factory (project_manager.vcs_type);
+				VcsBase backend = vcs_backend_factory (project_manager.vcs_type);
 				if (backend == null)
 					return false;
 
-				Gee.List<Item> items = backend.get_items (project_manager.project.working_dir);
+				Vala.List<Item> items = backend.get_items (project_manager.project.working_dir);
 				foreach (Item item in items) {
 					file_list += "\t* %s:\n".printf (item.name);		
 				}
@@ -118,9 +117,9 @@ namespace Vtg
 			return false;
 		}
 		
-		private IVcs? vcs_backend_factory (Vtg.VcsTypes type)
+		private VcsBase? vcs_backend_factory (Vtg.VcsTypes type)
 		{
-			IVcs backend;
+			VcsBase backend;
 			
 			switch (type) {
 				case Vtg.VcsTypes.GIT:

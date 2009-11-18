@@ -20,7 +20,7 @@
 
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Vbf
 {
@@ -40,11 +40,11 @@ namespace Vbf
 		public bool no_install = false;
 		public unowned Group group;
 		
-		private Gee.List<Source> sources = new Gee.ArrayList<Source> ();
-		private Gee.List<Vbf.File> files = new Gee.ArrayList<Vbf.File> ();
-		private Gee.List<Package> packages = new Gee.ArrayList<Package> ();
-		private Gee.List<string> include_dirs = new Gee.ArrayList<string> ();
-		private Gee.List<string> built_libraries = new Gee.ArrayList<string> ();
+		private Vala.List<Source> sources = new Vala.ArrayList<Source> ();
+		private Vala.List<Vbf.File> files = new Vala.ArrayList<Vbf.File> ();
+		private Vala.List<Package> packages = new Vala.ArrayList<Package> ();
+		private Vala.List<string> include_dirs = new Vala.ArrayList<string> ();
+		private Vala.List<string> built_libraries = new Vala.ArrayList<string> ();
 
 		public Target (Group group, TargetTypes type, string id)
 		{
@@ -55,7 +55,7 @@ namespace Vbf
 			this.type = type;
 		}
 		
-		public Gee.List<Source> get_sources ()
+		public Vala.List<Source> get_sources ()
 		{
 			return new ReadOnlyList<Source> (sources);
 		}
@@ -86,7 +86,7 @@ namespace Vbf
 			
 			return false;
 		}
-		public Gee.List<Vbf.File> get_files ()
+		public Vala.List<Vbf.File> get_files ()
 		{
 			return new ReadOnlyList<Vbf.File> (files);
 		}
@@ -96,7 +96,7 @@ namespace Vbf
 			files.add (file);
 		}
 
-		public Gee.List<Package> get_packages ()
+		public Vala.List<Package> get_packages ()
 		{
 			return new ReadOnlyList<Package> (packages);
 		}
@@ -106,7 +106,7 @@ namespace Vbf
 			packages.add (package);
 		}
 
-		public Gee.List<string> get_include_dirs ()
+		public Vala.List<string> get_include_dirs ()
 		{
 			return new ReadOnlyList<string> (include_dirs);
 		}
@@ -116,7 +116,7 @@ namespace Vbf
 			include_dirs.add (dir);
 		}
 
-		public Gee.List<string> get_built_libraries ()
+		public Vala.List<string> get_built_libraries ()
 		{
 			return new ReadOnlyList<string> (built_libraries);
 		}

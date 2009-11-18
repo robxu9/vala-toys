@@ -156,7 +156,7 @@ namespace Vtg
 
 
 		/* END UI */
-		private Gee.List<ProjectManager> _projects = new Gee.ArrayList<ProjectManager> ();
+		private Vala.List<ProjectManager> _projects = new Vala.ArrayList<ProjectManager> ();
 		private ActionGroup _actions = null;
 		private Vtg.PluginInstance _plugin_instance;
 		private ProjectView _prj_view = null;
@@ -176,7 +176,7 @@ namespace Vtg
 
 		public ProjectManagerUi (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			GLib.Object (plugin_instance: plugin_instance);
 			var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 			_sb_context_id = status_bar.get_context_id ("symbol status");
 		}
@@ -257,9 +257,12 @@ namespace Vtg
 
 		private void on_project_open_recent (RecentChooser sender)
 		{
-			string project_name = Filename.from_uri (sender.get_current_uri ()).replace ("/configure.ac", ""); //HACK
-
-			open_project (project_name);
+			try {
+				string project_name = Filename.from_uri (sender.get_current_uri ()).replace ("/configure.ac", ""); //HACK
+				open_project (project_name);
+			} catch (Error e) {
+				GLib.warning ("error %s converting project name file from uri", e.message);
+			}
 		}
 		
 		private void on_current_bookmark_changed (SourceBookmarks sender)
@@ -493,35 +496,39 @@ namespace Vtg
 				GLib.warning ("No completion for file %s", uri);
 				return;
 			}
-			uri = Filename.from_uri (uri);
+			try {
+				uri = Filename.from_uri (uri);
 			
-			var methods = get_symbols_for_source (completion, uri);
-			if (methods.size == 0)
-				return;
+				var methods = get_symbols_for_source (completion, uri);
+				if (methods.size == 0)
+					return;
 			
-			TreeIter iter;
-			Gtk.ListStore model = new Gtk.ListStore (4, typeof(string), typeof(string), typeof(bool), typeof(Afrodite.Symbol));
-			foreach (Afrodite.Symbol method in methods) {
-				model.append (out iter);
-				model.set (iter, 0, method.name, 1, method.display_name, 2, true, 3, method);
-			}
-			
-			var dialog = new FilteredListDialog (model);
-			dialog.set_transient_for (_plugin_instance.window);
-			if (dialog.run ()) {
-				Afrodite.Symbol method;
-				model.get (dialog.selected_iter , 3, out method);
-				Afrodite.SourceReference sr;
-				if (method.has_source_references) {
-					sr = method.source_references.get (0);
-					
-					doc.goto_line (sr.first_line - 1);
-					view.scroll_to_cursor ();
+				TreeIter iter;
+				Gtk.ListStore model = new Gtk.ListStore (4, typeof(string), typeof(string), typeof(bool), typeof(Afrodite.Symbol));
+				foreach (Afrodite.Symbol method in methods) {
+					model.append (out iter);
+					model.set (iter, 0, method.name, 1, method.display_name, 2, true, 3, method);
 				}
+			
+				var dialog = new FilteredListDialog (model);
+				dialog.set_transient_for (_plugin_instance.window);
+				if (dialog.run ()) {
+					Afrodite.Symbol method;
+					model.get (dialog.selected_iter , 3, out method);
+					Afrodite.SourceReference sr;
+					if (method.has_source_references) {
+						sr = method.source_references.get (0);
+					
+						doc.goto_line (sr.first_line - 1);
+						view.scroll_to_cursor ();
+					}
+				}
+			} catch (Error e) {
+				GLib.warning ("error %s converting file %s to uri", e.message, uri);
 			}
 		}
 
-		private Gee.List<Afrodite.Symbol?> get_symbols_for_source (Afrodite.CompletionEngine completion, string uri)
+		private Vala.List<Afrodite.Symbol?> get_symbols_for_source (Afrodite.CompletionEngine completion, string uri)
 		{
 			Afrodite.Symbol result = null;
 			Afrodite.Ast ast;
@@ -529,7 +536,7 @@ namespace Vtg
 				result = ast.lookup_symbols_in (uri);
 				completion.release_ast (ast);
 			}			
-			var methods = new Gee.ArrayList<Afrodite.Symbol> ();	
+			var methods = new Vala.ArrayList<Afrodite.Symbol> ();	
 			
 			if (result != null)
 				get_methods (methods, result);
@@ -537,7 +544,7 @@ namespace Vtg
 			return methods;
 		}
 
-		private void get_methods (Gee.List<Afrodite.Symbol> results, Afrodite.Symbol sym)
+		private void get_methods (Vala.List<Afrodite.Symbol> results, Afrodite.Symbol sym)
 		{
 			if (sym.has_children) {
 				foreach (Afrodite.Symbol child in sym.children) {
@@ -581,11 +588,15 @@ namespace Vtg
 					if (!Vtg.Caches.cache_contains (cache, params)) {
 						Vtg.Caches.cache_add (cache, params);
 					}
-					file = Filename.from_uri (file);
-					if (!doc.is_untouched () && _plugin_instance.plugin.config.save_before_build)
-						doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
+					try {
+						file = Filename.from_uri (file);
+						if (!doc.is_untouched () && _plugin_instance.plugin.config.save_before_build)
+							doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
 						
-					_prj_builder.compile_file (file, params);
+						_prj_builder.compile_file (file, params);
+					} catch (Error e) {
+						GLib.warning ("error %s converting file %s from uri", e.message, file);
+					}
 				}
 			}
 		}

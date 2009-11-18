@@ -104,7 +104,7 @@ namespace Vtg
 
 		public ProjectView (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			GLib.Object (plugin_instance: plugin_instance);
 		}
 		
 		~ProjectView ()
@@ -265,7 +265,11 @@ namespace Vtg
 			string file = Path.build_filename (current_project.project.id, "configure.ac");
 			
 			if (FileUtils.test (file, FileTest.EXISTS)) {
-				_plugin_instance.activate_uri (Filename.to_uri (file));
+				try {
+					_plugin_instance.activate_uri (Filename.to_uri (file));
+				} catch (Error e) {
+					GLib.warning ("error %s converting file %s to uri", e.message, file);
+				}
 			}
 		}
 
@@ -273,9 +277,12 @@ namespace Vtg
 		{
 			return_if_fail (_last_selected_group != null);
 			string file = Path.build_filename (_last_selected_group.id, "Makefile.am");
-
-			if (FileUtils.test (file, FileTest.EXISTS)) {
-				_plugin_instance.activate_uri (Filename.to_uri (file));
+			try {
+				if (FileUtils.test (file, FileTest.EXISTS)) {
+					_plugin_instance.activate_uri (Filename.to_uri (file));
+				}
+			} catch (Error e) {
+					GLib.warning ("error %s converting file %s to uri", e.message, file);
 			}
 		}
 	}

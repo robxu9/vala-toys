@@ -42,7 +42,7 @@ namespace Vtg
 		
 		public ProjectSearchResultsView (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			GLib.Object (plugin_instance: plugin_instance);
 		}
 
 		~SearchResultsLogView ()

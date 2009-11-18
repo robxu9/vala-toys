@@ -61,7 +61,7 @@ namespace Vtg
 		
 		public SourceOutliner (PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			GLib.Object (plugin_instance: plugin_instance);
 			_outliner_view = new SourceOutlinerView (plugin_instance);
 			_outliner_view.goto_source += this.on_goto_source;
 		}

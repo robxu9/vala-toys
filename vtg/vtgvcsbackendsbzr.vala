@@ -21,20 +21,19 @@
 
 
 using GLib;
-using Gee;
 
 namespace Vtg.Vcs.Backends
 {
-	public class Bzr : IVcs, GLib.Object
+	public class Bzr : VcsBase
 	{
 		public Bzr ()
 		{
 			
 		}
 		
-		public Gee.List<Item> get_items (string path) throws GLib.Error
+		public override Vala.List<Item> get_items (string path) throws GLib.Error
 		{
-			Gee.List<Item> results = new Gee.ArrayList<Item> ();
+			Vala.List<Item> results = new Vala.ArrayList<Item> ();
 			string stdo, stde;
 			int exit_status;
 						
@@ -74,7 +73,7 @@ namespace Vtg.Vcs.Backends
 			return results;		
 		}
 		
-		public bool test (string path)
+		public override bool test (string path)
 		{
 			string bzr_dir = Path.build_filename (path, ".bzr");
 			

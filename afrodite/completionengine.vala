@@ -20,7 +20,6 @@
  */
 
 using GLib;
-using Gee;
 using Vala;
 
 namespace Afrodite
@@ -52,9 +51,9 @@ namespace Afrodite
 		public signal void begin_parsing (CompletionEngine sender);
 		public signal void end_parsing (CompletionEngine sender);
 		
-		private Gee.List<string> vapidirs;
-		private Gee.List<SourceItem> source_queue;
-		private Gee.List<SourceItem> merge_queue;
+		private Vala.List<string> vapidirs;
+		private Vala.List<SourceItem> source_queue;
+		private Vala.List<SourceItem> merge_queue;
 		
 		private Mutex source_queue_mutex;
 		private Mutex merge_queue_mutex;
@@ -136,7 +135,7 @@ namespace Afrodite
 			return null;
 		}
 
-		public void queue_sources (Gee.List<SourceItem> sources)
+		public void queue_sources (Vala.List<SourceItem> sources)
 		{
 			source_queue_mutex.@lock ();
 			foreach (SourceItem source in sources) {
@@ -175,7 +174,7 @@ namespace Afrodite
 			queue_sourcefiles (sources, content, is_vapi);
 		}
 
-		public void queue_sourcefiles (Gee.List<string> paths, string? content = null, bool is_vapi = false, bool is_glib = false)
+		public void queue_sourcefiles (Vala.List<string> paths, string? content = null, bool is_vapi = false, bool is_glib = false)
 		{
 			var sources = new ArrayList<SourceItem> ();
 			
@@ -205,7 +204,7 @@ namespace Afrodite
 					GLib.Thread.usleep (100 * 1000);
 					retry++;
 				}
-			} while (ast == null && retry < 20 & AtomicInt.get (ref parser_remaining_files) < 3);
+			} while (ast == null && ast_mutex != null && retry < 20 & AtomicInt.get (ref parser_remaining_files) < 3);
 
 			return res;
 		}
@@ -235,7 +234,7 @@ namespace Afrodite
 		{
 			debug ("%s: parser thread starting...", id);
 			begin_parsing (this);
-			Gee.List<SourceItem> sources = new ArrayList<SourceItem> ();
+			Vala.List<SourceItem> sources = new ArrayList<SourceItem> ();
 			
 			while (true) {
 				int stamp = AtomicInt.get (ref parser_stamp);
@@ -253,8 +252,6 @@ namespace Afrodite
 				
 				var merger = new AstMerger (_ast);
 				// do the actual merging
-				var timer = new Timer ();
-				
 				// set the number of sources to process
 				AtomicInt.set (ref parser_remaining_files, sources.size);
 				ast_mutex.@lock ();

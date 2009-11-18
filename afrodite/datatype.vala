@@ -20,7 +20,6 @@
  */
 
 using GLib;
-using Gee;
 
 namespace Afrodite
 {

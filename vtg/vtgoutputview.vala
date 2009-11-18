@@ -39,7 +39,7 @@ namespace Vtg
 	{
 		protected Vtg.PluginInstance _plugin_instance;
 
-		private Gee.List<ProcessWatchInfo> _processes = new Gee.ArrayList<ProcessWatchInfo> ();
+		private Vala.List<ProcessWatchInfo> _processes = new Vala.ArrayList<ProcessWatchInfo> ();
 		private StringBuilder line = new StringBuilder ();
 		private TextBuffer _messages;
 		private TextView _textview;
@@ -56,7 +56,7 @@ namespace Vtg
 
 		public OutputView (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			GLib.Object (plugin_instance: plugin_instance);
 		}
 		
 		~OutputView ()

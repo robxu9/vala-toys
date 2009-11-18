@@ -1,3 +1,59 @@
+2009-11-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/datatype.vala:
+	* afrodite/parser.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* afrodite/utils.vala:
+	* afrodite/voidtype.vala:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfcodenodepair.vala:
+	* vbf/vbfconfignode.vala:
+	* vbf/vbfconfignodelist.vala:
+	* vbf/vbfconfignodepair.vala:
+	* vbf/vbfconstantliteral.vala:
+	* vbf/vbffile.vala:
+	* vbf/vbfgroup.vala:
+	* vbf/vbfmodule.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbfstringliteral.vala:
+	* vbf/vbftarget.vala:
+	* vbf/vbfunresolvedconfignode.vala:
+	* vbf/vbfvariable.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearch.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+	* vtg/vtgutils.vala:
+	* vtg/vtgvcsbackendsbzr.vala:
+	* vtg/vtgvcsbackendsgit.vala:
+	* vtg/vtgvcsbackendssvn.vala:
+	* vtg/vtgvcsbackendsvcsbase.vala:
+
+	make vtg vompile with vala 0.7.8
+
 2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
 
 	* ChangeLog:

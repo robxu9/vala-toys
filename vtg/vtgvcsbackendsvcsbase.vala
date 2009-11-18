@@ -21,31 +21,12 @@
 
 
 using GLib;
-using Gee;
 
 namespace Vtg.Vcs.Backends
 {
-	public enum States
+	public abstract class VcsBase : GLib.Object
 	{
-		UNTRACKED,
-		ADDED,
-		MODIFIED
-	}
-	
-	public class Item
-	{
-		public string name = "";
-		public States state = States.UNTRACKED;
-	}
-	
-	public errordomain VcsError
-	{
-		CommandFailed
-	}
-	
-	public interface IVcs : GLib.Object
-	{
-		public abstract Gee.List<Item> get_items (string path) throws GLib.Error;
+		public abstract Vala.List<Item> get_items (string path) throws GLib.Error;
 		public abstract bool test (string path);
 	}
 }

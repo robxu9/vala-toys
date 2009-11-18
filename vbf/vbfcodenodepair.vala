@@ -19,7 +19,6 @@
  */
 
 using GLib;
-using Gee;
 
 namespace Vbf
 {

@@ -20,14 +20,14 @@
  */
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Afrodite
 {
 	public class SourceFile
 	{
-		public Gee.List<Symbol> using_directives = null;
-		public Gee.List<Symbol> symbols = null;
+		public Vala.List<Symbol> using_directives = null;
+		public Vala.List<Symbol> symbols = null;
 		
 		public string filename {
 			get; set;

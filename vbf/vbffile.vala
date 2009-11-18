@@ -52,7 +52,11 @@ namespace Vbf
 				file = f.resolve_relative_path (file).get_path ();
 			}
 			this.filename = file;
-			this.uri = Filename.to_uri (file);
+			try {
+				this.uri = Filename.to_uri (file);	
+			} catch (Error e) {
+				GLib.warning ("error %s converting file %s to uri", e.message, file);
+			}
 			this.name = Filename.display_basename (file);
 			this.target = target;
 			this.type = type;

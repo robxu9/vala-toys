@@ -474,7 +474,7 @@ namespace Vbf.Am
 			}		
 		}
 		
-		private Variable? resolve_variable (string variable_name, Gee.List<Variable> variables)
+		private Variable? resolve_variable (string variable_name, Vala.List<Variable> variables)
 		{
 			Variable variable = null;
 			foreach (Variable item in variables) {
@@ -504,7 +504,7 @@ namespace Vbf.Am
 				}
 			}
 		}
-		private void resolve_variables (Project project, Gee.List<Variable> variables)
+		private void resolve_variables (Project project, Vala.List<Variable> variables)
 		{
 			Variable target_variable;
 			string name;
@@ -524,7 +524,7 @@ namespace Vbf.Am
 					}
 				} else if (variable.data is ConfigNodeList) {
 					ConfigNodeList datas = ((ConfigNodeList)variable.data);
-					Gee.List<ConfigNodePair> resolved_nodes = new Gee.ArrayList<ConfigNodePair> ();
+					Vala.List<ConfigNodePair> resolved_nodes = new Vala.ArrayList<ConfigNodePair> ();
 					
 					foreach (ConfigNode data in datas.get_values ()) {
 						if (data is UnresolvedConfigNode) {

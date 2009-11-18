@@ -37,8 +37,7 @@ namespace Vtg
 
 		public BracketCompletion (Vtg.PluginInstance plugin_instance, Gedit.View view)
 		{
-			this.plugin_instance = plugin_instance;
-			this.view = view;
+			GLib.Object (plugin_instance: plugin_instance, view: view);
 		}
 
 		construct	

@@ -115,7 +115,7 @@ namespace Afrodite
 			return res;
 		}
 
-		private void visit_symbols (Gee.List<Afrodite.Symbol> symbols)
+		private void visit_symbols (Vala.List<Afrodite.Symbol> symbols)
 		{
 			foreach (Symbol symbol in symbols) {
 				//print_symbol (symbol);

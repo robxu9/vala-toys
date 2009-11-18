@@ -20,7 +20,7 @@
 
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Vbf
 {
@@ -34,10 +34,10 @@ namespace Vbf
 			
 		public signal void updated ();
 		
-		private Gee.List<Group> groups = new Gee.ArrayList<Group> ();	
-		private Gee.List<Module> modules = new Gee.ArrayList<Module> ();
-		private Gee.List<Variable> variables = new Gee.ArrayList<Variable> ();
-		private Gee.List<FileMonitor> file_mons = new Gee.ArrayList<FileMonitor> ();
+		private Vala.List<Group> groups = new Vala.ArrayList<Group> ();	
+		private Vala.List<Module> modules = new Vala.ArrayList<Module> ();
+		private Vala.List<Variable> variables = new Vala.ArrayList<Variable> ();
+		private Vala.List<FileMonitor> file_mons = new Vala.ArrayList<FileMonitor> ();
 		private bool in_refresh = false;
 		
 		internal IProjectManager backend = null;
@@ -47,7 +47,7 @@ namespace Vbf
 			this.id = id;
 		}
 		
-		public Gee.List<Group> get_groups ()
+		public Vala.List<Group> get_groups ()
 		{
 			return new ReadOnlyList<Group> (groups);
 		}
@@ -68,7 +68,7 @@ namespace Vbf
 			groups.add (group);
 		}
 		
-		public Gee.List<Module> get_modules ()
+		public Vala.List<Module> get_modules ()
 		{
 			return new ReadOnlyList<Module> (modules);
 		}
@@ -78,7 +78,7 @@ namespace Vbf
 			modules.add (module);
 		}
 		
-		public Gee.List<Variable> get_variables ()
+		public Vala.List<Variable> get_variables ()
 		{
 			return new ReadOnlyList<Variable> (variables);
 		}

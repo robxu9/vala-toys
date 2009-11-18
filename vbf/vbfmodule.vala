@@ -20,7 +20,7 @@
 
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Vbf
 {
@@ -30,7 +30,7 @@ namespace Vbf
 		public string name;
 		public unowned Project project;
 		
-		private Gee.List<Package> packages = new Gee.ArrayList<Package> ();
+		private Vala.List<Package> packages = new Vala.ArrayList<Package> ();
 		
 		public Module (Project project, string id)
 		{
@@ -39,7 +39,7 @@ namespace Vbf
 			this.project = project;
 		}
 		
-		public Gee.List<Package> get_packages ()
+		public Vala.List<Package> get_packages ()
 		{
 			return new ReadOnlyList<Package> (packages);
 		}

@@ -20,7 +20,7 @@
  */
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Afrodite
 {
@@ -89,19 +89,19 @@ namespace Afrodite
 		public unowned Symbol parent = null;
 		public DataType return_type = null;
 		public string type_name = null;
-		public Gee.List<unowned Symbol> children = null;
-		public Gee.List<SourceReference> source_references = null;
-		public Gee.List<DataType> parameters = null;
-		public Gee.List<DataType> local_variables = null;
-		public Gee.List<DataType> base_types = null;
-		public Gee.List<unowned Symbol> resolve_targets = null; // contains a reference to symbols of whose this symbol is a resolved reference for any target data type
+		public Vala.List<unowned Symbol> children = null;
+		public Vala.List<SourceReference> source_references = null;
+		public Vala.List<DataType> parameters = null;
+		public Vala.List<DataType> local_variables = null;
+		public Vala.List<DataType> base_types = null;
+		public Vala.List<unowned Symbol> resolve_targets = null; // contains a reference to symbols of whose this symbol is a resolved reference for any target data type
 		public SymbolAccessibility access = SymbolAccessibility.INTERNAL;
 		public MemberBinding binding = MemberBinding.INSTANCE;
 		public bool is_virtual = false;
 		public bool is_abstract = false;
 		public bool overrides = false;
 		
-		private Gee.List<Symbol> detached_children = null;
+		private Vala.List<Symbol> detached_children = null;
 		private string _info = null;
 		private string _des = null;
 		private string _markup_des = null;

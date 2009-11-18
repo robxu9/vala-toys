@@ -20,7 +20,7 @@
  */
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Afrodite
 {
@@ -33,7 +33,7 @@ namespace Afrodite
 	public class Ast
 	{
 		public Symbol root = new Symbol (null, null);
-		public Gee.List<SourceFile> source_files = null;
+		public Vala.List<SourceFile> source_files = null;
 		
 		public Symbol? lookup (string fully_qualified_name, out Symbol? parent)
 		{
@@ -49,7 +49,7 @@ namespace Afrodite
 			return result;
 		}
 		
-		internal static Symbol? lookup_symbol (string qualified_name, Gee.List<Symbol> symbols, 
+		internal static Symbol? lookup_symbol (string qualified_name, Vala.List<Symbol> symbols, 
 			out Symbol? parent,  LookupCompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{

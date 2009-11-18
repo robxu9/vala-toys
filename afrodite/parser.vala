@@ -26,11 +26,11 @@ namespace Afrodite
 {	
 	public class Parser : GLib.Object
 	{
-		private Gee.List<SourceItem> _sources;
+		private Vala.List<SourceItem> _sources;
 		public Vala.SourceFile source_file;
 		public CodeContext context = null;
 		
-		public Parser (Gee.List<SourceItem> sources)
+		public Parser (Vala.List<SourceItem> sources)
 		{
 			_sources = sources;
 		}
@@ -69,7 +69,8 @@ namespace Afrodite
 						
 			context.assert = false;
 			context.checking = false;
-			context.non_null_experimental = false;
+			context.experimental = false;
+			context.experimental_non_null = false;
 			context.compile_only = true;
 
 			context.profile = Profile.GOBJECT;

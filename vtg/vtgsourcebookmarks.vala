@@ -20,7 +20,6 @@
  */
 
 using GLib;
-using Gee;
 using Gtk;
 
 namespace Vtg
@@ -30,7 +29,7 @@ namespace Vtg
 		private Vtg.PluginInstance _plugin_instance;
 		private ulong signal_id;
 		private const int MAX_BOOKMARKS = 20;
-		private Gee.List<SourceBookmark> _bookmarks = new Gee.ArrayList<SourceBookmark> ();
+		private Vala.List<SourceBookmark> _bookmarks = new Vala.ArrayList<SourceBookmark> ();
 		private int _current_bookmark_index = -1;
 		
 		public signal void current_bookmark_changed ();
@@ -40,7 +39,7 @@ namespace Vtg
 
 		public SourceBookmarks (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			GLib.Object (plugin_instance: plugin_instance);
 			var window = _plugin_instance.window;
 			signal_id = Signal.connect (window, "active_tab_changed", (GLib.Callback) on_tab_changed, this);
 		}

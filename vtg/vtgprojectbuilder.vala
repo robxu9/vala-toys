@@ -63,7 +63,7 @@ namespace Vtg
 
 		public ProjectBuilder (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			GLib.Object (plugin_instance: plugin_instance);
 		}
 
 

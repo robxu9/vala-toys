@@ -44,7 +44,7 @@ namespace Vtg
 		private Gtk.TreeModelSort _sorted;
 		private Gtk.CheckButton _check_show_private_symbols;
 		private TreeStore _model = null;
-		private Gee.List<Afrodite.Symbol>? _last_symbols = null;
+		private Vala.List<Afrodite.Symbol>? _last_symbols = null;
 
 
 		private Gtk.Menu _popup_symbols;
@@ -69,7 +69,7 @@ namespace Vtg
 
 		public SourceOutlinerView (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;	
+			GLib.Object (plugin_instance: plugin_instance);
 		}
 		
 		~SourceOutlinerView ()
@@ -148,7 +148,7 @@ namespace Vtg
 			_model.clear ();
 		}
 
-		public void update_view (Gee.List<Afrodite.Symbol>? symbols = null)
+		public void update_view (Vala.List<Afrodite.Symbol>? symbols = null)
 		{
 			_src_view.set_model (null);
 			clear_view ();
@@ -223,7 +223,7 @@ namespace Vtg
 			return false;
 		}
 		
-		private void rebuild_model (Gee.List<Afrodite.Symbol>? symbols, TreeIter? parentIter = null)
+		private void rebuild_model (Vala.List<Afrodite.Symbol>? symbols, TreeIter? parentIter = null)
 		{
 			if (symbols == null)
 				return;

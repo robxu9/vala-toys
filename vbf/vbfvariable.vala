@@ -20,7 +20,7 @@
 
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Vbf
 {
@@ -29,14 +29,14 @@ namespace Vbf
 		public string name;
 		public ConfigNode? data = null;
 		
-		private Gee.List<unowned Variable> childs = new Gee.ArrayList<unowned Variable> ();
+		private Vala.List<unowned Variable> childs = new Vala.ArrayList<unowned Variable> ();
 		
 		public Variable (string name, ConfigNode parent)
 		{
 			this.name = name;
 		}
 		
-		public Gee.List<Variable> get_childs ()
+		public Vala.List<Variable> get_childs ()
 		{
 			return new ReadOnlyList<Variable> (childs);
 		}

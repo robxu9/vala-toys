@@ -88,7 +88,7 @@ namespace Afrodite
 
 			// leave glib symbols, or symbols with references in other source files
 			if (symbol.has_children) {
-				Gee.List<Symbol> to_del = new Gee.ArrayList<Symbol> ();
+				Vala.List<Symbol> to_del = new Vala.ArrayList<Symbol> ();
 				
 				foreach (Symbol child in symbol.children) {
 					if (remove_symbol (source, child)) {

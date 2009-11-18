@@ -30,8 +30,8 @@ namespace Vtg
 {	
 	public class Plugin : Gedit.Plugin
 	{
-		private Gee.List<PluginInstance> _instances = new Gee.ArrayList<PluginInstance> ();
-		private Gee.List<Vtg.ProjectDescriptor> _projects = new Gee.ArrayList<Vtg.ProjectDescriptor> ();
+		private Vala.List<PluginInstance> _instances = new Vala.ArrayList<PluginInstance> ();
+		private Vala.List<Vtg.ProjectDescriptor> _projects = new Vala.ArrayList<Vtg.ProjectDescriptor> ();
 		private Configuration _config = null;
 		private Vtg.ProjectDescriptor _default_project = null;
 		
@@ -43,7 +43,7 @@ namespace Vtg
 			SOURCECODE_OUTLINER
 	        }
 
-		public Gee.List<Vtg.ProjectDescriptor> projects
+		public Vala.List<Vtg.ProjectDescriptor> projects
 		{
 			get { return _projects; }
 		}
@@ -263,9 +263,14 @@ namespace Vtg
 			recent_data.mime_type = "text/plain";
 			recent_data.app_name = "vtg";
 			recent_data.app_exec = "gedit %u";
-			if (!recent.add_full (Filename.to_uri (project.id + "/configure.ac"), recent_data)) {
-				GLib.warning ("cannot add project %s to recently used list", project.id);
+			try {
+				if (!recent.add_full (Filename.to_uri (project.id + "/configure.ac"), recent_data)) {
+					GLib.warning ("cannot add project %s to recently used list", project.id);
+				}
+			} catch (Error e) {
+					GLib.warning ("error %s converting file configure.ac to uri", e.message);
 			}
+
 		}
 
 		~Plugin ()

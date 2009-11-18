@@ -33,15 +33,15 @@ namespace Vtg
 		private Project _project = null;
 		private Gtk.TreeStore _model;
 		private bool in_update = false;
-		private Gee.HashMap<Vbf.Target, Afrodite.CompletionEngine> _completions = null;
+		private Vala.HashMap<Vbf.Target, Afrodite.CompletionEngine> _completions = null;
 		private int parser_thread_count = 0;
 		private bool _sc_building = false;
 
 		public signal void updated ();
 		public string filename = null;
 
-		public Gee.List<Vbf.Target> exec_targets = new Gee.ArrayList<Vbf.Target> ();
-		public Gee.List<Vbf.Source> all_vala_sources = new Gee.ArrayList<Vbf.Source> ();
+		public Vala.List<Vbf.Target> exec_targets = new Vala.ArrayList<Vbf.Target> ();
+		public Vala.List<Vbf.Source> all_vala_sources = new Vala.ArrayList<Vbf.Source> ();
 		
 		public Gtk.TreeModel model { get { return _model; } }
 		public Vbf.Project project { get { return _project; } }
@@ -200,7 +200,7 @@ namespace Vtg
 
 		private void setup_completions ()
 		{
-			_completions = new Gee.HashMap<Vbf.Target, CompletionEngine> ();
+			_completions = new Vala.HashMap<Vbf.Target, CompletionEngine> ();
 			foreach (Group group in _project.get_groups ()) {
 				foreach (Vbf.Target target in group.get_targets ()) {
 					if (!target_has_vala_source (target))
@@ -223,7 +223,7 @@ namespace Vtg
 					//}
 
 					/* setup referenced packages */
-					Gee.List<string> vapis = target.get_include_dirs ();
+					Vala.List<string> vapis = target.get_include_dirs ();
 					string[] vapi_dirs = new string[vapis.size];
 					int index = 0;
 					foreach (string item in vapis)
@@ -292,7 +292,7 @@ namespace Vtg
 		private void vcs_test (string filename)
 		{
 			//test if the project is under some known revision control system
-			Vtg.Vcs.Backends.IVcs backend = new Vtg.Vcs.Backends.Git ();
+			Vtg.Vcs.Backends.VcsBase backend = new Vtg.Vcs.Backends.Git ();
 			vcs_type = VcsTypes.NONE;
 			if (backend.test (filename)) {
 				vcs_type = VcsTypes.GIT;
@@ -446,10 +446,14 @@ namespace Vtg
 				}
 			}
 			
-			if (FileUtils.test (Path.build_filename ( _project.working_dir, "changelog"), FileTest.EXISTS)) {
-				changelog_uri = Filename.to_uri (Path.build_filename ( _project.working_dir, "changelog"));
-			} else if (FileUtils.test (Path.build_filename ( _project.working_dir, "ChangeLog"), FileTest.EXISTS)) {
-				changelog_uri = Filename.to_uri (Path.build_filename ( _project.working_dir, "ChangeLog"));
+			try {
+				if (FileUtils.test (Path.build_filename ( _project.working_dir, "changelog"), FileTest.EXISTS)) {
+					changelog_uri = Filename.to_uri (Path.build_filename ( _project.working_dir, "changelog"));
+				} else if (FileUtils.test (Path.build_filename ( _project.working_dir, "ChangeLog"), FileTest.EXISTS)) {
+					changelog_uri = Filename.to_uri (Path.build_filename ( _project.working_dir, "ChangeLog"));
+				}
+			} catch (Error e) {
+				GLib.warning ("error %s converting changelog file to uri", e.message);
 			}
 		}
 		

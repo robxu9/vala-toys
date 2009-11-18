@@ -58,7 +58,7 @@ namespace Vtg
 		
 		public ProjectSearch (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			GLib.Object (plugin_instance: plugin_instance);
 		}
 
 		public void next_match ()

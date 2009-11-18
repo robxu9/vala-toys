@@ -21,11 +21,10 @@
 
 using GLib;
 using Vala;
-using Gee;
 
 namespace Afrodite.Utils
 {
-	public static Gee.List<string>? get_package_paths (string pkg, CodeContext? context = null, string[]? vapi_dirs = null)
+	public static Vala.List<string>? get_package_paths (string pkg, CodeContext? context = null, string[]? vapi_dirs = null)
 	{
 		var ctx = context;
 		if (ctx == null) {
@@ -74,7 +73,7 @@ namespace Afrodite.Utils
 			return true;
 		}
 
-		Gee.List<string> packages = get_package_paths (pkg, context);
+		Vala.List<string> packages = get_package_paths (pkg, context);
 		if (packages == null) {
 			return false;
 		}

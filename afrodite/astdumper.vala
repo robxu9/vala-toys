@@ -151,7 +151,7 @@ namespace Afrodite
 			print ("Dump done in %g\n", timer.elapsed ());
 		}
 		
-		private void dump_symbols (Gee.List<Afrodite.Symbol> symbols, string? filter_symbol)
+		private void dump_symbols (Vala.List<Afrodite.Symbol> symbols, string? filter_symbol)
 		{
 			inc_pad ();
 			foreach (Symbol symbol in symbols) {
