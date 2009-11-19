@@ -1,3 +1,9 @@
+2009-11-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgvcsbackendsitem.vala:
+
+	added missing source file. Fixes issue #116
+
 2009-11-18  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:
