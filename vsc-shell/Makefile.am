@@ -30,7 +30,6 @@ vsc_shell_VALASOURCES = \
 
 vsc_shell_SOURCES = \
 	$(vsc_shell_VALASOURCES:.vala=.c) \
-	$(vsc_shell_VALASOURCES:.vala=.h) \
 	$(NULL)
 
 vsc-shell.vala.stamp: $(vsc_shell_VALASOURCES)

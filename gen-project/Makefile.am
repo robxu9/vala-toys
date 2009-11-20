@@ -24,7 +24,6 @@ vala_gen_project_VALASOURCES = \
 vala_gen_project_SOURCES = \
 	vala-gen-project.vala.stamp \
 	$(vala_gen_project_VALASOURCES:.vala=.c) \
-	$(vala_gen_project_VALASOURCES:.vala=.h) \
 	$(NULL)
 
 vala-gen-project.vala.stamp: $(vala_gen_project_VALASOURCES)

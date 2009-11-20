@@ -1,5 +1,12 @@
 2009-11-20  Andrea Del Signore  <sejerpz@tin.it>
 
+	*   vsc-shell/Makefile.am:
+	*   gen-project/Makefile.am:
+
+	make distcheck pass
+
+2009-11-20  Andrea Del Signore  <sejerpz@tin.it>
+
 	 * vtg/vtgchangelog.vala
 	 * vtg/vtgvcsbackendsgit.vala
 	 * vtg/vtgvcsbackendssvn.vala
