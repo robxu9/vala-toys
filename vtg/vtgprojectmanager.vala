@@ -150,7 +150,7 @@ namespace Vtg
 		private void vcs_test (string filename)
 		{
 			//test if the project is under some known revision control system
-			Vtg.Vcs.Backends.IVcs backend = new Vtg.Vcs.Backends.Git ();
+			Vtg.Vcs.Backends.VcsBase backend = new Vtg.Vcs.Backends.Git ();
 			vcs_type = VcsTypes.NONE;
 			if (backend.test (filename)) {
 				vcs_type = VcsTypes.GIT;

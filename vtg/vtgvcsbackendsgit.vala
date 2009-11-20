@@ -25,14 +25,14 @@ using Vala;
 
 namespace Vtg.Vcs.Backends
 {
-	public class Git : IVcs, GLib.Object
+	public class Git : VcsBase
 	{
 		public Git ()
 		{
 			
 		}
 		
-		public Vala.List<Item> get_items (string path) throws GLib.SpawnError
+		public override Vala.List<Item> get_items (string path) throws GLib.SpawnError
 		{
 			Vala.List<Item> results = new Vala.ArrayList<Item> ();
 			string stdo, stde;
@@ -68,7 +68,7 @@ namespace Vtg.Vcs.Backends
 			return results;
 		}
 		
-		public bool test (string path)
+		public override bool test (string path)
 		{
 			string git_dir = Path.build_filename (path, ".git");
 			

@@ -25,14 +25,14 @@ using Vala;
 
 namespace Vtg.Vcs.Backends
 {
-	public class Bzr : IVcs, GLib.Object
+	public class Bzr : VcsBase
 	{
 		public Bzr ()
 		{
 			
 		}
 		
-		public Vala.List<Item> get_items (string path) throws GLib.Error
+		public override Vala.List<Item> get_items (string path) throws GLib.Error
 		{
 			Vala.List<Item> results = new Vala.ArrayList<Item> ();
 			string stdo, stde;
@@ -74,7 +74,7 @@ namespace Vtg.Vcs.Backends
 			return results;		
 		}
 		
-		public bool test (string path)
+		public override bool test (string path)
 		{
 			string bzr_dir = Path.build_filename (path, ".bzr");
 			

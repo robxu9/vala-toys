@@ -25,14 +25,14 @@ using Vala;
 
 namespace Vtg.Vcs.Backends
 {
-	public class Svn : IVcs, GLib.Object
+	public class Svn : VcsBase
 	{
 		public Svn ()
 		{
 			
 		}
 		
-		public Vala.List<Item> get_items (string path) throws GLib.Error
+		public override Vala.List<Item> get_items (string path) throws GLib.Error
 		{
 			Vala.List<Item> results = new Vala.ArrayList<Item> ();
 			string stdo, stde;
@@ -66,7 +66,7 @@ namespace Vtg.Vcs.Backends
 			return results;		
 		}
 		
-		public bool test (string path)
+		public override bool test (string path)
 		{
 			string svn_dir = Path.build_filename (path, ".svn");
 			

@@ -43,7 +43,7 @@ namespace Vtg.Vcs.Backends
 		CommandFailed
 	}
 	
-	public interface IVcs : GLib.Object
+	public abstract class VcsBase : GLib.Object
 	{
 		public abstract Vala.List<Item> get_items (string path) throws GLib.Error;
 		public abstract bool test (string path);

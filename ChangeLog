@@ -1,5 +1,16 @@
 2009-11-20  Andrea Del Signore  <sejerpz@tin.it>
 
+	 * vtg/vtgchangelog.vala
+	 * vtg/vtgvcsbackendsgit.vala
+	 * vtg/vtgvcsbackendssvn.vala
+	 * vtg/vtgprojectmanager.vala
+	 * vtg/vtgvcsbackendsbzr.vala
+	 * vtg/Makefile.am
+
+	workaround to bug http://bugzilla.gnome.org/show_bug.cgi?id=600121
+
+2009-11-20  Andrea Del Signore  <sejerpz@tin.it>
+
 	 * vsc/vscclasslistvisitor.vala
 	 * vsc/vsctypefindvisitor.vala
 	 * vsc/vscsourceoutlinervisitor.vala
