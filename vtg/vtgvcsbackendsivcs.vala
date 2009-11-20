@@ -21,7 +21,7 @@
 
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Vtg.Vcs.Backends
 {
@@ -45,7 +45,7 @@ namespace Vtg.Vcs.Backends
 	
 	public interface IVcs : GLib.Object
 	{
-		public abstract Gee.List<Item> get_items (string path) throws GLib.Error;
+		public abstract Vala.List<Item> get_items (string path) throws GLib.Error;
 		public abstract bool test (string path);
 	}
 }

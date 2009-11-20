@@ -153,7 +153,7 @@ namespace Vtg
 
 
 		/* END UI */
-		private Gee.List<ProjectManager> _projects = new Gee.ArrayList<ProjectManager> ();
+		private Vala.List<ProjectManager> _projects = new Vala.ArrayList<ProjectManager> ();
 		private ActionGroup _actions = null;
 		private Vtg.PluginInstance _plugin_instance;
 		private ProjectView _prj_view = null;

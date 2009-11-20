@@ -217,7 +217,7 @@ namespace Vtg
 	{
 		private static bool _initialized = false;
 		private static Proposal[] _proposals = null;
-		private static Gee.List<Package> _available_packages = null;
+		private static Vala.List<Package> _available_packages = null;
 		private static Gtk.Builder _builder = null;
 		
 		public const int prealloc_count = 500;
@@ -285,7 +285,7 @@ namespace Vtg
 			}
 		}
 
-		public static Gee.List<Package> get_available_packages ()
+		public static Vala.List<Package> get_available_packages ()
 		{
 			if (_available_packages == null) {
 				initialize_packages_cache ();
@@ -299,7 +299,7 @@ namespace Vtg
 		        vapidirs.append (Config.VALA_VAPIDIR);
 			vapidirs.append ("/usr/local/share/vala/vapi");
 
-			_available_packages = new Gee.ArrayList<Package> ();
+			_available_packages = new Vala.ArrayList<Package> ();
 
 			foreach (string vapidir in vapidirs) {
 				Dir dir;

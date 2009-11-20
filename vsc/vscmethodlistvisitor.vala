@@ -19,16 +19,16 @@
  */
 
 using GLib;
-using Gee;
+using Vala;
 using Vala;
 
 /**
  * Code visitor getting a list of methods for a source file
  */
 public class Vsc.MethodList : CodeVisitor {
-	private Gee.List<SymbolCompletionItem> _methods;
+	private Vala.List<SymbolCompletionItem> _methods;
 	
-	public MethodList (Gee.List<SymbolCompletionItem> methods)
+	public MethodList (Vala.List<SymbolCompletionItem> methods)
 	{
 		_methods = methods;
 	}

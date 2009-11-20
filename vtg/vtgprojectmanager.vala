@@ -36,8 +36,8 @@ namespace Vtg
 		public signal void updated ();
 		public string filename = null;
 
-		public Gee.List<Vbf.Target> exec_targets = new Gee.ArrayList<Vbf.Target> ();
-		public Gee.List<Vbf.Source> all_vala_sources = new Gee.ArrayList<Vbf.Source> ();
+		public Vala.List<Vbf.Target> exec_targets = new Vala.ArrayList<Vbf.Target> ();
+		public Vala.List<Vbf.Source> all_vala_sources = new Vala.ArrayList<Vbf.Source> ();
 		
 		public Gtk.TreeModel model { get { return _model; } }
 		public Vbf.Project project { get { return _project; } }

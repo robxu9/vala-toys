@@ -19,7 +19,7 @@
  */
 
 using GLib;
-using Gee;
+using Vala;
 using Vala;
 
 /**

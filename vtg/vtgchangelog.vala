@@ -20,7 +20,7 @@
  */
 
 using GLib;
-using Gee;
+using Vala;
 using Vtg.Vcs.Backends;
 
 namespace Vtg
@@ -53,7 +53,7 @@ namespace Vtg
 				if (backend == null)
 					return false;
 
-				Gee.List<Item> items = backend.get_items (project_manager.project.working_dir);
+				Vala.List<Item> items = backend.get_items (project_manager.project.working_dir);
 				foreach (Item item in items) {
 					file_list += "\t* %s:\n".printf (item.name);		
 				}

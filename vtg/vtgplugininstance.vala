@@ -36,8 +36,8 @@ namespace Vtg
 		private ProjectManagerUi _project_manager_ui = null;
 		private SourceOutliner _source_outliner = null;
 		private OutputView _output_view = null;
-		private Gee.List<Vtg.SymbolCompletionHelper> _scs = new Gee.ArrayList<Vtg.SymbolCompletionHelper> ();
-		private Gee.List<Vtg.BracketCompletion> _bcs = new Gee.ArrayList<Vtg.BracketCompletion> ();
+		private Vala.List<Vtg.SymbolCompletionHelper> _scs = new Vala.ArrayList<Vtg.SymbolCompletionHelper> ();
+		private Vala.List<Vtg.BracketCompletion> _bcs = new Vala.ArrayList<Vtg.BracketCompletion> ();
 		
 		public OutputView output_view 
 		{ 

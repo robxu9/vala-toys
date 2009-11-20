@@ -373,11 +373,11 @@ namespace Vsc
 			return typename;
 		}
 		
-		public Gee.List<SymbolCompletionItem> get_methods_for_source (string sourcefile)
+		public Vala.List<SymbolCompletionItem> get_methods_for_source (string sourcefile)
 		{
 			warn_if_fail (_parser != null);
 			SourceFile source = null;
-			var results = new Gee.ArrayList<SymbolCompletionItem> ();
+			var results = new Vala.ArrayList<SymbolCompletionItem> ();
 			
 			if (sourcefile != null) {
 				var pri_context = _parser.pri_context;
@@ -401,7 +401,7 @@ namespace Vsc
 		{
 			warn_if_fail (_parser != null);
 			SourceFile source = null;
-			var results = new Gee.ArrayList<SymbolCompletionItem> ();
+			var results = new Vala.ArrayList<SymbolCompletionItem> ();
 			var result = new SymbolCompletionResult ();
 			
 			if (sourcefile != null) {
@@ -426,7 +426,7 @@ namespace Vsc
 		public SymbolCompletionResult get_namespaces ()
 		{
 			warn_if_fail (_parser != null);
-			var results = new Gee.ArrayList<SymbolCompletionItem> ();
+			var results = new Vala.ArrayList<SymbolCompletionItem> ();
 			var result = new SymbolCompletionResult ();
 			var pri_context = _parser.pri_context;
 			var sec_context = _parser.sec_context;
@@ -441,9 +441,9 @@ namespace Vsc
 			return result;
 		}
 		
-		public Gee.List<SymbolItem?> get_symbols_for_source (string sourcefile)
+		public Vala.List<SymbolItem?> get_symbols_for_source (string sourcefile)
 		{
-			Gee.List<SymbolItem?> res = null;
+			Vala.List<SymbolItem?> res = null;
 			var sec_context = _parser.sec_context;
 			
 			if (sec_context != null) {
@@ -477,7 +477,7 @@ namespace Vsc
 				}
 				
 				// Check root namespace
-				Gee.ArrayList<Namespace> namespaces = new Gee.ArrayList<Namespace> ();
+				Vala.ArrayList<Namespace> namespaces = new Vala.ArrayList<Namespace> ();
 				namespaces.add (source.context.root);
 				
 				// Check included namespaces

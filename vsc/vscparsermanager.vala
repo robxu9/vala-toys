@@ -28,11 +28,11 @@ namespace Vsc
 		private string glib_file;
 		private string gobject_file;
 
-		private List<string> _vapidirs = new List<string> ();
-		private Gee.List<string> _packages = new Gee.ArrayList<string> ();
-		private Gee.List<string> _built_packages = new Gee.ArrayList<string> ();
-		private Gee.List<string> _sources = new Gee.ArrayList<string> ();
-		private Gee.List<SourceBuffer> _source_buffers = new Gee.ArrayList<SourceBuffer> ();
+		private GLib.List<string> _vapidirs = new GLib.List<string> ();
+		private Vala.List<string> _packages = new Vala.ArrayList<string> ();
+		private Vala.List<string> _built_packages = new Vala.ArrayList<string> ();
+		private Vala.List<string> _sources = new Vala.ArrayList<string> ();
+		private Vala.List<SourceBuffer> _source_buffers = new Vala.ArrayList<SourceBuffer> ();
 
 		private CodeContext _pri_context;
 		private CodeContext _sec_context;
@@ -270,7 +270,7 @@ namespace Vsc
 
 		public void remove_package (string package_name) throws Error
 		{
-			Gee.List<string> files = find_vala_package_filenames (package_name);
+			Vala.List<string> files = find_vala_package_filenames (package_name);
 			if (list_contains_string (_packages, files[0])) {
 				lock_pri_context ();
 				files.remove (files[0]);
@@ -302,7 +302,7 @@ namespace Vsc
 				return false;
 			}
 
-			Gee.List<string> files = find_vala_package_filenames (vapi_file);
+			Vala.List<string> files = find_vala_package_filenames (vapi_file);
 			if (files.size > 0) {
 				bool need_parse = false;
 
@@ -601,7 +601,8 @@ namespace Vsc
 		{
 			context.assert = false;
 			context.checking = false;
-			context.non_null_experimental = false;
+			context.experimental = false;
+			context.experimental_non_null = false;
 			context.compile_only = true;
 
 			context.profile = Profile.GOBJECT;
@@ -661,9 +662,9 @@ namespace Vsc
 			return null;
 		}
 
-		private Gee.List<string> find_vala_package_filenames (string package_name) throws FileError
+		private Vala.List<string> find_vala_package_filenames (string package_name) throws FileError
 		{
-			Gee.List<string> results = new Gee.ArrayList<string> ();
+			Vala.List<string> results = new Vala.ArrayList<string> ();
 			string found_vapidir = null;
 			string filename;
 			string path;
@@ -702,7 +703,7 @@ namespace Vsc
 			return results;
 		}
 	
-		private bool list_contains_string (Gee.List<string> list, string @value)
+		private bool list_contains_string (Vala.List<string> list, string @value)
 		{
 			foreach (string current in list) {
 				if (current == @value)

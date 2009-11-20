@@ -20,7 +20,7 @@
 
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Vbf
 {
@@ -30,13 +30,13 @@ namespace Vbf
 		public string id;
 		public unowned Project project = null;
 
-		private Gee.List<Package> packages = new Gee.ArrayList<Package> ();
-		private Gee.List<string> include_dirs = new Gee.ArrayList<string> ();
-		private Gee.List<string> built_libraries = new Gee.ArrayList<string> ();
+		private Vala.List<Package> packages = new Vala.ArrayList<Package> ();
+		private Vala.List<string> include_dirs = new Vala.ArrayList<string> ();
+		private Vala.List<string> built_libraries = new Vala.ArrayList<string> ();
 		
-		private Gee.List<Target> targets = new Gee.ArrayList<Target> ();
-		private Gee.List<Variable> variables = new Gee.ArrayList<Variable> ();
-		private Gee.List<Group> subgroups = new Gee.ArrayList<Group> ();
+		private Vala.List<Target> targets = new Vala.ArrayList<Target> ();
+		private Vala.List<Variable> variables = new Vala.ArrayList<Variable> ();
+		private Vala.List<Group> subgroups = new Vala.ArrayList<Group> ();
 
 		public Group (Project project, string id)
 		{
@@ -53,7 +53,7 @@ namespace Vbf
 			}
 		}
 		
-		public Gee.List<Target> get_targets ()
+		public Vala.List<Target> get_targets ()
 		{
 			return new ReadOnlyList<Target> (targets);
 		}
@@ -78,7 +78,7 @@ namespace Vbf
 			targets.add (target);
 		}
 		
-		public Gee.List<Package> get_packages ()
+		public Vala.List<Package> get_packages ()
 		{
 			return new ReadOnlyList<Package> (packages);
 		}
@@ -88,7 +88,7 @@ namespace Vbf
 			packages.add (package);
 		}
 				
-		public Gee.List<string> get_include_dirs ()
+		public Vala.List<string> get_include_dirs ()
 		{
 			return new ReadOnlyList<string> (include_dirs);
 		}
@@ -98,7 +98,7 @@ namespace Vbf
 			include_dirs.add (dir);
 		}
 
-		public Gee.List<string> get_built_libraries ()
+		public Vala.List<string> get_built_libraries ()
 		{
 			return new ReadOnlyList<string> (built_libraries);
 		}
@@ -108,12 +108,12 @@ namespace Vbf
 			built_libraries.add (dir);
 		}
 						
-		public Gee.List<Group> get_subgroups ()
+		public Vala.List<Group> get_subgroups ()
 		{
 			return new ReadOnlyList<Group> (subgroups);
 		}
 
-		public Gee.List<Variable> get_variables ()
+		public Vala.List<Variable> get_variables ()
 		{
 			return new ReadOnlyList<Variable> (variables);
 		}

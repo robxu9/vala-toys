@@ -25,18 +25,18 @@ namespace Vsc
 {
 	public class SymbolCompletionResult : GLib.Object
 	{
-		public Gee.List<SymbolCompletionItem> properties = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> classes = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> interfaces = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> structs = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> methods = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> fields = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> signals = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> others = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> namespaces = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> enums = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> constants = new Gee.ArrayList<SymbolCompletionItem> ();
-		public Gee.List<SymbolCompletionItem> error_domains = new Gee.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> properties = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> classes = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> interfaces = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> structs = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> methods = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> fields = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> signals = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> others = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> namespaces = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> enums = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> constants = new Vala.ArrayList<SymbolCompletionItem> ();
+		public Vala.List<SymbolCompletionItem> error_domains = new Vala.ArrayList<SymbolCompletionItem> ();
 		
 		public bool is_empty
 		{
@@ -111,7 +111,7 @@ namespace Vsc
 			return symbols_contain (error_domains, name);
 		}
 		
-		private bool symbols_contain (Gee.List<SymbolCompletionItem> data, string name)
+		private bool symbols_contain (Vala.List<SymbolCompletionItem> data, string name)
 		{
 			if (data.size == 0)
 				return false;

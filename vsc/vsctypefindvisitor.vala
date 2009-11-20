@@ -19,7 +19,7 @@
  */
 
 using GLib;
-using Gee;
+using Vala;
 using Vala;
 
 /**
@@ -30,7 +30,7 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 	private string _current_typename = null;
 	private CodeContext _context;
 	private SourceFile _current_file = null;
-	private Gee.List<string> _unresolved_types = new Gee.ArrayList<string>();
+	private Vala.List<string> _unresolved_types = new Vala.ArrayList<string>();
 	private Symbol? _result = null;
 	private string _searched_typename = null;
 	
@@ -63,7 +63,7 @@ public class Vsc.TypeFinderVisitor : CodeVisitor {
 	}
 
 	
-	private bool list_contains_string (Gee.List<string> list, string @value)
+	private bool list_contains_string (Vala.List<string> list, string @value)
 	{
 		foreach (string current in list) {
 			if (current == @value)

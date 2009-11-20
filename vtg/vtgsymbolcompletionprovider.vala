@@ -333,7 +333,7 @@ namespace Vtg
 			return (owned) _list;
 		}
 
-		private void append_symbols (Gee.List<SymbolCompletionItem> symbols, Gdk.Pixbuf icon)
+		private void append_symbols (Vala.List<SymbolCompletionItem> symbols, Gdk.Pixbuf icon)
 		{
 			weak Proposal[] proposals = Utils.get_proposal_cache ();
 
@@ -630,7 +630,7 @@ namespace Vtg
 			return null;
 		}
 		
-		private SymbolCompletionItem? search_completion_item_by_name (string name, Gee.List<SymbolCompletionItem> items)
+		private SymbolCompletionItem? search_completion_item_by_name (string name, Vala.List<SymbolCompletionItem> items)
 		{
 			foreach (SymbolCompletionItem item in items) {
 				if (item.name == name) {

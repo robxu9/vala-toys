@@ -77,7 +77,7 @@ namespace Vsc
 			return result;
 		}
 
-		private string formal_parameters_to_string (Gee.List<FormalParameter> parameters)
+		private string formal_parameters_to_string (Vala.List<FormalParameter> parameters)
 		{
 			string params = "";
 			string param_sep = " ";

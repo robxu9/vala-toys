@@ -19,18 +19,18 @@
  */
 
 using GLib;
-using Gee;
+using Vala;
 using Vala;
 
 /**
  * Code visitor a tree structure of SimbolCompletionItem
  */
 public class Vsc.SourceOutlinerVisitor : CodeVisitor {
-	private Gee.List<SymbolItem> _results = null;
+	private Vala.List<SymbolItem> _results = null;
 	private SymbolItem _current = null;
 	private SourceFile _file = null;
 	
-	public Gee.List<SymbolItem?> results
+	public Vala.List<SymbolItem?> results
 	{
 		get {
 			return _results;
@@ -48,7 +48,7 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 		if (symbol != null && symbol.source_reference.file.filename == _file.filename) {
 			res = new SymbolItem (symbol, _current);
 			if (_results == null) {
-				_results = new Gee.ArrayList<SymbolItem?> ();
+				_results = new Vala.ArrayList<SymbolItem?> ();
 			}
 			
 			if (_current == null) {
@@ -64,7 +64,7 @@ public class Vsc.SourceOutlinerVisitor : CodeVisitor {
 	
 	public override void visit_source_file (SourceFile file) {
 		this._file = file;
-		Gee.List<CodeNode> visited_nodes = new Gee.ArrayList<CodeNode> ();
+		Vala.List<CodeNode> visited_nodes = new Vala.ArrayList<CodeNode> ();
 		
 		// just visit only the top nodes
 		foreach (CodeNode node in file.get_nodes ()) {

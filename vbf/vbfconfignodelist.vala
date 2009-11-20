@@ -19,15 +19,15 @@
  */
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Vbf
 {
 	public class ConfigNodeList : ConfigNode
 	{
-		protected Gee.List<ConfigNode> values = new ArrayList<ConfigNode> ();
+		protected Vala.List<ConfigNode> values = new ArrayList<ConfigNode> ();
 		
-		public Gee.List<ConfigNode> get_values ()
+		public Vala.List<ConfigNode> get_values ()
 		{
 			return new ReadOnlyList<ConfigNode> (values);
 		}

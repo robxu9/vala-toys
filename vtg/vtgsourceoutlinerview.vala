@@ -155,7 +155,7 @@ namespace Vtg
 			_model.clear ();
 		}
 
-		public void update_view (Gee.List<Vsc.SymbolItem> symbols)
+		public void update_view (Vala.List<Vsc.SymbolItem> symbols)
 		{
 			_src_view.set_model (null);
 			clear_view ();
@@ -219,7 +219,7 @@ namespace Vtg
 			return false;
 		}
 		
-		private void rebuild_model (Gee.List<SymbolItem?> symbols, TreeIter? parentIter = null)
+		private void rebuild_model (Vala.List<SymbolItem?> symbols, TreeIter? parentIter = null)
 		{
 			if (symbols == null)
 				return;

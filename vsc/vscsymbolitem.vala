@@ -28,7 +28,7 @@ namespace Vsc
 		public weak SymbolItem? parent = null;
 		public Symbol? symbol = null;
 		
-		private Gee.ArrayList<SymbolItem> _children = null;
+		private Vala.ArrayList<SymbolItem> _children = null;
 		private string _name = null;
 		private string _description = null;
 		
@@ -45,7 +45,7 @@ namespace Vsc
 			}
 		}
 		
-		public Gee.ArrayList<SymbolItem> children 
+		public Vala.ArrayList<SymbolItem> children 
 		{
 			get {
 				return _children;
@@ -79,14 +79,14 @@ namespace Vsc
 		public void add_child (SymbolItem child)
 		{
 			if (_children == null) {
-				_children = new Gee.ArrayList<SymbolItem> ();
+				_children = new Vala.ArrayList<SymbolItem> ();
 			}
 			
 			_children.add (child);
 			child.parent = this;
 		}
 
-		private string parameters_to_string (Gee.List<FormalParameter> parameters, bool compact = false)
+		private string parameters_to_string (Vala.List<FormalParameter> parameters, bool compact = false)
 		{
 			string params = "";
 			string param_sep = " ";

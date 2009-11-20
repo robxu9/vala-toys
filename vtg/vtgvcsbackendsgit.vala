@@ -21,7 +21,7 @@
 
 
 using GLib;
-using Gee;
+using Vala;
 
 namespace Vtg.Vcs.Backends
 {
@@ -32,9 +32,9 @@ namespace Vtg.Vcs.Backends
 			
 		}
 		
-		public Gee.List<Item> get_items (string path) throws GLib.SpawnError
+		public Vala.List<Item> get_items (string path) throws GLib.SpawnError
 		{
-			Gee.List<Item> results = new Gee.ArrayList<Item> ();
+			Vala.List<Item> results = new Vala.ArrayList<Item> ();
 			string stdo, stde;
 			int exit_status;
 						

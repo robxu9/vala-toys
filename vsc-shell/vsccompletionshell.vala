@@ -315,14 +315,14 @@ namespace Vsc
 			display_result (_completion.get_visible_symbols (new SymbolCompletionFilterOptions (), filename, line, column, false));
 		}
 		
-		private void append_symbols (string type, StringBuilder sb, Gee.List<SymbolCompletionItem> symbols)
+		private void append_symbols (string type, StringBuilder sb, Vala.List<SymbolCompletionItem> symbols)
 		{
 			foreach (SymbolCompletionItem symbol in symbols) {
  				sb.append ("%s:%s:%s;:;:;%s:%d;%d;\n".printf(type, symbol.name, get_access(symbol), symbol.file, symbol.first_line, symbol.last_line));
  			}
  		}
  		
- 		private static void append_methods (StringBuilder sb, Gee.List<SymbolCompletionItem> methods)
+ 		private static void append_methods (StringBuilder sb, Vala.List<SymbolCompletionItem> methods)
  		{
 			Method? method;
 			DataType? sometype;

@@ -17,10 +17,10 @@ namespace Vbf {
 	}
 	[CCode (cheader_filename = "vbf.h")]
 	public class ConfigNodeList : Vbf.ConfigNode {
-		protected Gee.List<Vbf.ConfigNode> values;
+		protected Vala.List<Vbf.ConfigNode> values;
 		public ConfigNodeList ();
 		public void add_value (Vbf.ConfigNode val);
-		public Gee.List<Vbf.ConfigNode> get_values ();
+		public Vala.List<Vbf.ConfigNode> get_values ();
 		public void replace_config_node (Vbf.ConfigNode source, Vbf.ConfigNode target);
 		public override string to_string ();
 	}
@@ -47,13 +47,13 @@ namespace Vbf {
 		public weak Vbf.Project project;
 		public Group (Vbf.Project project, string id);
 		public bool contains_target (string id);
-		public Gee.List<string> get_built_libraries ();
-		public Gee.List<string> get_include_dirs ();
-		public Gee.List<Vbf.Package> get_packages ();
-		public Gee.List<Vbf.Group> get_subgroups ();
+		public Vala.List<string> get_built_libraries ();
+		public Vala.List<string> get_include_dirs ();
+		public Vala.List<Vbf.Package> get_packages ();
+		public Vala.List<Vbf.Group> get_subgroups ();
 		public Vbf.Target? get_target_for_id (string id);
-		public Gee.List<Vbf.Target> get_targets ();
-		public Gee.List<Vbf.Variable> get_variables ();
+		public Vala.List<Vbf.Target> get_targets ();
+		public Vala.List<Vbf.Variable> get_variables ();
 	}
 	[CCode (cheader_filename = "vbf.h")]
 	public class Module : GLib.Object {
@@ -61,7 +61,7 @@ namespace Vbf {
 		public string name;
 		public weak Vbf.Project project;
 		public Module (Vbf.Project project, string id);
-		public Gee.List<Vbf.Package> get_packages ();
+		public Vala.List<Vbf.Package> get_packages ();
 	}
 	[CCode (cheader_filename = "vbf.h")]
 	public class Package : GLib.Object {
@@ -81,9 +81,9 @@ namespace Vbf {
 		public Project (string id);
 		public string get_all_source_files ();
 		public Vbf.Group? get_group (string id);
-		public Gee.List<Vbf.Group> get_groups ();
-		public Gee.List<Vbf.Module> get_modules ();
-		public Gee.List<Vbf.Variable> get_variables ();
+		public Vala.List<Vbf.Group> get_groups ();
+		public Vala.List<Vbf.Module> get_modules ();
+		public Vala.List<Vbf.Variable> get_variables ();
 		public override string to_string ();
 		public void update ();
 		public signal void updated ();
@@ -107,11 +107,11 @@ namespace Vbf {
 		public bool no_install;
 		public Vbf.TargetTypes type;
 		public Target (Vbf.Group group, Vbf.TargetTypes type, string id);
-		public Gee.List<string> get_built_libraries ();
-		public Gee.List<Vbf.File> get_files ();
-		public Gee.List<string> get_include_dirs ();
-		public Gee.List<Vbf.Package> get_packages ();
-		public Gee.List<Vbf.Source> get_sources ();
+		public Vala.List<string> get_built_libraries ();
+		public Vala.List<Vbf.File> get_files ();
+		public Vala.List<string> get_include_dirs ();
+		public Vala.List<Vbf.Package> get_packages ();
+		public Vala.List<Vbf.Source> get_sources ();
 		public bool has_file_of_type (Vbf.FileTypes type);
 		public bool has_sources_of_type (Vbf.FileTypes type);
 	}
@@ -127,7 +127,7 @@ namespace Vbf {
 		public string name;
 		public Variable (string name, Vbf.ConfigNode parent);
 		public void add_child (Vbf.Variable variable);
-		public Gee.List<Vbf.Variable> get_childs ();
+		public Vala.List<Vbf.Variable> get_childs ();
 		public Vbf.ConfigNode get_value ();
 		public override string to_string ();
 	}

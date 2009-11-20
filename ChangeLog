@@ -1,3 +1,48 @@
+2009-11-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	 * vsc/vscclasslistvisitor.vala
+	 * vsc/vsctypefindvisitor.vala
+	 * vsc/vscsourceoutlinervisitor.vala
+	 * vsc/vscsymbolitem.vala
+	 * vsc/vscparsermanager.vala
+	 * vsc/vsccompletionvisitor.vala
+	 * vsc/vscmethodlistvisitor.vala
+	 * vsc/vscsymbolcompletionresult.vala
+	 * vsc/vscsymbolcompletionitem.vala
+	 * vsc/vscsymbolcompletion.vala
+	 * vtg/vtgchangelog.vala
+	 * vtg/vtgvcsbackendsgit.vala
+	 * vtg/vtgoutputview.vala
+	 * vtg/vtgvcsbackendssvn.vala
+	 * vtg/vtgsourceoutlinerview.vala
+	 * vtg/vtgplugininstance.vala
+	 * vtg/vtgplugin.vala
+	 * vtg/vtgprojectmanagerui.vala
+	 * vtg/vtgutils.vala
+	 * vtg/vtgprojectmanager.vala
+	 * vtg/vtgvcsbackendsbzr.vala
+	 * vtg/vtgsourcebookmarks.vala
+	 * vtg/vtgsymbolcompletionprovider.vala
+	 * vtg/vtgvcsbackendsivcs.vala
+	 * vsc-shell/vsccompletionshell.vala
+	 * configure.ac
+	 * vbf/vbfproject.vala
+	 * vbf/vbfconstantliteral.vala
+	 * vbf/vbfconfignodelist.vala
+	 * vbf/vbfconfignode.vala
+	 * vbf/am/vbfamprojectmanager.vala
+	 * vbf/vbfunresolvedconfignode.vala
+	 * vbf/vbfstringliteral.vala
+	 * vbf/vbfmodule.vala
+	 * vbf/vbfvariable.vala
+	 * vbf/vbftarget.vala
+	 * vbf/vbf-1.0.vapi
+	 * vbf/vbfconfignodepair.vala
+	 * vbf/vbfcodenodepair.vala
+	 * vbf/vbfgroup.vala
+
+	updated to compile with valac 0.7.8
+
 2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
 	* NEWS:

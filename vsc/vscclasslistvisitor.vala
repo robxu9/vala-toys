@@ -19,16 +19,16 @@
  */
 
 using GLib;
-using Gee;
+using Vala;
 using Vala;
 
 /**
  * Code visitor getting a list of classes for a source file
  */
 public class Vsc.ClassList : CodeVisitor {
-	private Gee.List<SymbolCompletionItem> _classes;
+	private Vala.List<SymbolCompletionItem> _classes;
 	
-	public ClassList (Gee.List<SymbolCompletionItem> classes)
+	public ClassList (Vala.List<SymbolCompletionItem> classes)
 	{
 		_classes = classes;
 	}
