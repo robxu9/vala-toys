@@ -141,11 +141,12 @@ namespace Afrodite
 			foreach (SourceItem source in sources) {
 				var item = source_queue_contains (source);
 				if (item == null || item.content != source.content) {
+				/*
 					if (source.content == null || source.content == "")
 						debug ("%s: queued source %s. sources to parse %d", id, source.path, source_queue.size);
 					else
 						debug ("%s: queued live buffer %s. sources to parse %d", id, source.path, source_queue.size);
-					
+				*/	
 					if (item != null)
 						source_queue.remove (item);
 
@@ -250,11 +251,12 @@ namespace Afrodite
 				Parser p = new Parser (sources);
 				p.parse ();
 				
-				var merger = new AstMerger (_ast);
+				
 				// do the actual merging
 				// set the number of sources to process
 				AtomicInt.set (ref parser_remaining_files, sources.size);
 				ast_mutex.@lock ();
+				var merger = new AstMerger (_ast);
 				foreach (SourceItem source in sources) {
 					source.context = p.context;
 				
@@ -289,13 +291,13 @@ namespace Afrodite
 				if (AtomicInt.compare_and_exchange (ref parser_stamp, stamp, 0)) {
 					break;
 				}
-			}
+ 			}
 			// clean up and exit
 			sources = null;
 			
 			debug ("%s: parser thread exiting...", id);
 			end_parsing (this);
-			return ((void *) 0);
+			return null;
 		}
 	}
 }

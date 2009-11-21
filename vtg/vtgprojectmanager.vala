@@ -287,7 +287,7 @@ namespace Vtg
 					this.symbol_cache_builded (this);
 				}
 			}
-			return true;
+			return false;
 		}
 		private void vcs_test (string filename)
 		{
