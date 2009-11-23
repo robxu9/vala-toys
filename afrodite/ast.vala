@@ -239,14 +239,15 @@ namespace Afrodite
 					//print ("    adding %s", sym.name);
 					
 					results.add_child (sym);
+				
 					if (symbol.has_children) {
 						// try to catch circular references
 						var item = parent;
 						bool circular_ref = false;
-						
+					
 						while (item != null) {
-							if (sym == parent) {
-								warning ("circular reference %s", sym.fully_qualified_name);
+							if (symbol == parent) {
+								warning ("circular reference %s", symbol.fully_qualified_name);
 								circular_ref = true;
 								break;
 							}
@@ -337,7 +338,7 @@ namespace Afrodite
 				
 				if (this_sym != null && this_sym.has_base_types) {
 					foreach (DataType type in this_sym.base_types) {
-						debug ("search base types: %s", type.type_name);
+						//debug ("search base types: %s", type.type_name);
 						
 						if (!type.unresolved && type.symbol.type_name == "Class") {
 							return type.symbol;

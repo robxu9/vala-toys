@@ -230,11 +230,11 @@ namespace Vtg
 						vapi_dirs[index++] = item;
 
 					foreach (Package package in target.get_packages ()) {
-						GLib.debug ("target %s, referenced package: %s", target.id, package.id);
+						//GLib.debug ("target %s, referenced package: %s", target.id, package.id);
 						var paths = Afrodite.Utils.get_package_paths (package.id, null, vapi_dirs);
 						if (paths != null) {
-							foreach (string path in paths)
-								GLib.debug ("     target %s, referenced package: %s -> %s", target.id, package.id, path);
+							//foreach (string path in paths)
+							//	GLib.debug ("     target %s, referenced package: %s -> %s", target.id, package.id, path);
 							completion.queue_sourcefiles (paths, null, true);
 						}
 					}

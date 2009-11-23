@@ -67,6 +67,10 @@ namespace Afrodite
 		
 		public CompletionEngine (string? id = null)
 		{
+			if (id == null)
+				id = "";
+				
+			this.id = id;
 			vapidirs = new ArrayList<string> (GLib.str_equal);
 			source_queue = new ArrayList<SourceItem> ();
 			merge_queue = new ArrayList<SourceItem> ();
@@ -85,11 +89,6 @@ namespace Afrodite
 				if (paths != null)
 					queue_sourcefiles (paths, null, true, true);
 			}
-			
-			if (id == null)
-				id = "";
-				
-			this.id = id;
 		}
 		
 		~Completion ()
@@ -152,11 +151,10 @@ namespace Afrodite
 
 					source_queue.add (source.copy ());
 				} 
-				/*
 				else if (item.content == null && source.content != null) {
 					item.content = source.content;
-					debug ("%s: updated live buffer %s. sources to parse %d", id, source.path, source_queue.size);
-				}*/
+					//debug ("%s: updated live buffer %s. sources to parse %d", id, source.path, source_queue.size);
+				}
 			}
 			source_queue_mutex.@unlock ();
 			

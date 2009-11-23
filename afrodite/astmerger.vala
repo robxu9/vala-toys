@@ -34,6 +34,7 @@ namespace Afrodite
 		
 		string _vala_symbol_fqn = null;
 		bool _merge_glib = true;
+		int _child_count = 0;
 		
 		private Afrodite.Ast _ast = null;
 		
@@ -46,10 +47,13 @@ namespace Afrodite
 		{
 			_merge_glib = merge_glib;
 			_vala_symbol_fqn = null;
+			_child_count = 0;
 			_current = _ast.root;
 			if (_ast.lookup_source_file (source.filename) != null)
 				critical ("two sources %s!", source.filename);
-				
+			
+			debug ("COMPLETING FILE %s", source.filename);
+			
 			_source_file = _ast.add_source_file (source.filename);
 			foreach (UsingDirective u in source.current_using_directives) {
 				_source_file.add_using_directive (u.namespace_symbol.name);
@@ -162,7 +166,6 @@ namespace Afrodite
 				parent.add_child (symbol);
 			} else if (!replace) {
 				// add one more source reference to the symbol
-				
 				source_reference = symbol.lookup_source_reference_filename (_source_file.filename);
 				if (source_reference == null)	{
 					source_reference = create_source_reference (s);
@@ -264,17 +267,35 @@ namespace Afrodite
 		{
 			return sym.source_reference.file.filename == _source_file.filename;
 		}
+
 		public override void visit_namespace (Namespace ns) 
 		{
 			if ((_merge_glib && ns.name == "GLib")
-			    || (ns.name != "GLib" && is_symbol_defined_current_source (ns))) {
+			    || (ns.name != "GLib")) {// && is_symbol_defined_current_source (ns))) {
 				var prev_vala_fqn = _vala_symbol_fqn;
 				var prev = _current;
 				var prev_sr = _current_sr;
+				var prev_child_count = _child_count;
 				
 				_current = visit_symbol (ns, out _current_sr);
 				ns.accept_children (this);
 				
+				// if the symbol isn't defined in this source file
+				// and I haven't added any child from this source file
+				// remove my source reference.
+				if (!is_symbol_defined_current_source (ns) && _child_count == prev_child_count) {
+					//debug ("sourcereference removing sr: %s to %s", _current_sr.file.filename, _vala_symbol_fqn);
+					_current.remove_source_reference (_current_sr);
+					if (!_current.has_source_references) {
+						Afrodite.Symbol parent;
+						_ast.lookup (_vala_symbol_fqn, out parent);
+						parent.remove_child (_current);
+					}
+				} else {
+					debug ("sourcereference added: %s to %s", _current_sr.file.filename, _vala_symbol_fqn);
+				}
+				
+				_child_count = prev_child_count;
 				_current = prev;
 				_current_sr = prev_sr;
 				_vala_symbol_fqn = prev_vala_fqn;
@@ -285,7 +306,8 @@ namespace Afrodite
 		{
 			if (!is_symbol_defined_current_source (c))
 				return;
-				
+			
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
@@ -303,6 +325,7 @@ namespace Afrodite
 			if (!is_symbol_defined_current_source (s))
 				return;
 
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
@@ -319,6 +342,7 @@ namespace Afrodite
 			if (!is_symbol_defined_current_source (iface))
 				return;
 
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
@@ -335,6 +359,7 @@ namespace Afrodite
 			if (!is_symbol_defined_current_source (m))
 				return;
 
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
@@ -459,6 +484,7 @@ namespace Afrodite
 			if (!is_symbol_defined_current_source (e))
 				return;
 
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
@@ -478,6 +504,7 @@ namespace Afrodite
 			if (!is_symbol_defined_current_source (d))
 				return;
 
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
@@ -494,6 +521,7 @@ namespace Afrodite
 			if (!is_symbol_defined_current_source (s))
 				return;
 
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
@@ -507,6 +535,10 @@ namespace Afrodite
 
 	       	public override void visit_field (Field f) 
 		{
+			if (!is_symbol_defined_current_source (f))
+				return;
+
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
@@ -527,6 +559,7 @@ namespace Afrodite
 			if (!is_symbol_defined_current_source (c))
 				return;
 
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
@@ -546,6 +579,7 @@ namespace Afrodite
 			if (!is_symbol_defined_current_source (p))
 				return;
 
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
@@ -585,6 +619,7 @@ namespace Afrodite
 			if (!is_symbol_defined_current_source (ed))
 				return;
 
+			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;

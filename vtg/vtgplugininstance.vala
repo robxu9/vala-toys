@@ -92,6 +92,8 @@ namespace Vtg
 
 			if (doc.language != null && doc.language.id == "vala") {
 				var view = tab.get_view ();
+				GLib.debug ("init view");
+				
 				instance.initialize_view (project, view);
 			}
 			instance.initialize_document (doc);
@@ -115,11 +117,9 @@ namespace Vtg
 					initialize_view (project, view);
 				}
 			}
-			
 			if (plugin.config.sourcecode_outliner_enabled && _source_outliner == null) {
 				activate_sourcecode_outliner ();
-			}
-
+			}			
 		}
 
 		public void initialize_view (ProjectDescriptor project, Gedit.View view)
@@ -190,6 +190,7 @@ namespace Vtg
 			}
 			var sc = new Vtg.SymbolCompletionHelper (this, view, completion);
 			_scs.add (sc);
+			GLib.debug ("symbol activated for view");
 		}
 
  		public void deactivate_symbol (SymbolCompletionHelper sc)
@@ -262,11 +263,15 @@ namespace Vtg
 				}
 			}
 			
-			if (tab == null)
+			if (tab == null) {
 				tab = _window.create_tab_from_uri (uri, Encoding.get_utf8 (), line, true, true);
-			else {
+				_window.set_active_tab (tab);
+				tab.get_view ().scroll_to_cursor ();
+			} else {
+				
 				_window.set_active_tab (tab);
 				if (existing_doc != null && line > 0) {
+					
 					existing_doc.goto_line (line - 1);
 					tab.get_view ().scroll_to_cursor ();
 				}

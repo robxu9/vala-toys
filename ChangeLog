@@ -1,3 +1,16 @@
+2009-11-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed afrodite source reference handling
+
 2009-11-21  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:

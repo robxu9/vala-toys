@@ -267,6 +267,9 @@ namespace Afrodite
 		public void remove_source_reference (SourceReference reference)
 		{
 			source_references.remove (reference);
+			if (source_references.size == 0) {
+				source_references = null;
+			}
 		}
 		
 		public SourceReference? lookup_source_reference_filename (string filename)
@@ -365,12 +368,13 @@ namespace Afrodite
 				root.detached_children = new ArrayList<Symbol> ();
 			
 			// try to avoid circular symbol copy
-			Symbol detach_copy = root.detached_children_find (fully_qualified_name);
-			if (detach_copy != null) {
-				debug ("Symbol already copied %s", fully_qualified_name);
-				return detach_copy; // the symbol was already copied
+			if (fully_qualified_name != null) {
+				Symbol detach_copy = root.detached_children_find (fully_qualified_name);
+				if (detach_copy != null) {
+					debug ("Symbol already copied %s", fully_qualified_name);
+					return detach_copy; // the symbol was already copied
+				}
 			}
-
 			//debug ("copy %s in %s", fully_qualified_name, root.name);	
 			res.parent = null; // parent reference isn't copied
 			res.return_type = return_type == null ? null : return_type.copy (root);

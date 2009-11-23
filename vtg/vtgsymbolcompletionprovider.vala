@@ -105,7 +105,8 @@ namespace Vtg
 
 				_sb = new Afrodite.SourceItem ();
 				_sb.path = name;
-				_sb.content = null;
+				_sb.content = doc.text;
+				
 				
 				_view.key_press_event += this.on_view_key_press;
 				doc.notify["text"] += this.on_text_changed;

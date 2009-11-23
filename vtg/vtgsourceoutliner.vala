@@ -98,38 +98,32 @@ namespace Vtg
 
 		private void setup_document (Gedit.Document doc)
 		{
-			//Signal.connect (doc, "notify::language", (GLib.Callback) on_notify_language, this);
 			doc.notify["language"] += this.on_notify_language;
 		}
 	
 		public void cleanup_document (Gedit.Document doc)
 		{
-			//SignalHandler.disconnect_by_func (doc, (void*) on_notify_language, this);
 			doc.notify["language"] -= this.on_notify_language;
 		}
 		
 		private void setup_completion (View view)
 		{
-			if (Utils.is_vala_doc ((Gedit.Document) view.get_buffer ())) {
-				var scs = _plugin_instance.scs_find_from_view (view);
-	 			if (scs == null) {
-	 				GLib.warning ("setup_completion: symbol completion helper is null for view");
-					return;
-				}
-				scs.completion.end_parsing += this.on_end_parsing;
+			var scs = _plugin_instance.scs_find_from_view (view);
+ 			if (scs == null) {
+ 				GLib.warning ("setup_completion: symbol completion helper is null for view");
+				return;
 			}
+			scs.completion.end_parsing += this.on_end_parsing;
 		}
 
 		private void cleanup_completion (View view)
 		{
-			if (Utils.is_vala_doc ((Gedit.Document) view.get_buffer ())) {
-				var scs = _plugin_instance.scs_find_from_view (view);
-	 			if (scs == null) {
-	 				GLib.warning ("setup_completion: symbol completion helper is null for view");
-					return;
-				}
-				scs.completion.end_parsing -= this.on_end_parsing;
+			var scs = _plugin_instance.scs_find_from_view (view);
+ 			if (scs == null) {
+ 				GLib.warning ("cleanup_completion: symbol completion helper is null for view");
+				return;
 			}
+			scs.completion.end_parsing -= this.on_end_parsing;
 		}
 
 		private void on_notify_language (Gedit.Document sender, ParamSpec pspec)
@@ -149,8 +143,9 @@ namespace Vtg
 		
 		private void setup_idle ()
 		{
-			if (idle_id == 0)
+			if (idle_id == 0) {
 				idle_id =  Idle.add (this.on_idle_update, Priority.DEFAULT_IDLE);
+			}
 		}
 		
 		private bool on_idle_update ()
@@ -167,8 +162,8 @@ namespace Vtg
 				return true;
 			}
 			
-			var name = Utils.get_document_name ((Gedit.Document) _active_view.get_buffer ());
-			
+			var doc = (Gedit.Document) _active_view.get_buffer ();
+			var name = Utils.get_document_name (doc);
 			Afrodite.Symbol results = null;
 			Afrodite.Ast ast;
 			bool res = scs.completion.try_acquire_ast (out ast);
@@ -176,7 +171,7 @@ namespace Vtg
 				results = ast.lookup_symbols_in (name);
 				scs.completion.release_ast (ast);
 			}			
-			if (results == null || !results.has_children) {
+			if (results == null) {
 				_outliner_view.clear_view ();
 			} else {
 				_outliner_view.update_view (results.children);
