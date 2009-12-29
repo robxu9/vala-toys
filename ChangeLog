@@ -1,3 +1,9 @@
+2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed a segfault when a looking for a symbol withou source references.	
+
 2009-11-23  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:

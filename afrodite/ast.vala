@@ -423,6 +423,10 @@ namespace Afrodite
 			
 			foreach (Symbol symbol in source.symbols) {
 				var sr = symbol.lookup_source_reference_sourcefile (source);
+				if (sr == null) {
+					critical ("symbol %s doesn't belong to source %s", symbol.fully_qualified_name, source.filename);
+					continue;
+				}
 				//print ("%s: %d-%d %d-%d vs %d, %d\n", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);
 				if ((sr.first_line < line || ((line == sr.first_line && column >= sr.first_column) || sr.first_column == 0))
 				    && (line < sr.last_line || ((line == sr.last_line && column <= sr.last_column) || sr.last_column == 0))) {
