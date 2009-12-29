@@ -54,6 +54,10 @@ namespace Afrodite
 					GLib.error ("failed to add GObject 2.0");
 			}			
 			foreach (SourceItem source in _sources) {
+				if (!FileUtils.test (source.path, FileTest.EXISTS)) {
+					warning ("file %s not exists", source.path);
+					continue;
+				}
 				if (source.content == null) 
 					source_file = new Vala.SourceFile (context, source.path, source.is_vapi); // normal source
 				else if (source.content != "") {

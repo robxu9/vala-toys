@@ -105,6 +105,7 @@ namespace Afrodite
 				return AtomicInt.@get (ref parser_stamp) != 0;
 			}
 		}
+
 		public void add_vapi_dir (string path)
 		{
 			vapidirs.add (path);

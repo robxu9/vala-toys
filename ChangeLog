@@ -1,5 +1,15 @@
 2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+
+	cosmetic cleanup
+
+	* afrodite/parser.vala:
+
+	only add real files to the parser	
+
+2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 
 	fixed an infinite recoursion bug and a segfault when reparenting a symbol	
