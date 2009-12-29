@@ -806,7 +806,7 @@ namespace Vtg
 					_prj_view.current_project = project;
 				} else {
 					// open project
-					project = new ProjectManager ();
+					project = new ProjectManager (_plugin_instance.plugin.config.symbol_enabled);
 					project.symbol_cache_building.connect (this.on_symbol_cache_building);
 					project.symbol_cache_builded.connect (this.on_symbol_cache_builded);
 					

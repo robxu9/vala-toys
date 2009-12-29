@@ -151,6 +151,8 @@ namespace Vtg
 		private bool on_idle_update ()
 		{
 			bool res = !update_source_outliner_view ();
+			if (!res)
+				idle_id = 0;
 			return res;
 		}
 		

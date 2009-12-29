@@ -32,6 +32,7 @@ namespace Vtg
 	{
 		private Project _project = null;
 		private Gtk.TreeStore _model;
+		private bool _enable_completion;
 		private bool in_update = false;
 		private Vala.HashMap<Vbf.Target, Afrodite.CompletionEngine> _completions = null;
 		private int parser_thread_count = 0;
@@ -45,12 +46,33 @@ namespace Vtg
 		
 		public Gtk.TreeModel model { get { return _model; } }
 		public Vbf.Project project { get { return _project; } }
-		
+				
 		public VcsTypes vcs_type = VcsTypes.NONE;
 		public string changelog_uri = null;
 
 		public signal void symbol_cache_building (ProjectManager sender);
 		public signal void symbol_cache_builded (ProjectManager sender);
+		
+		public bool enable_completion 
+		{
+			get {
+				return _enable_completion;
+			}
+			set {
+				if (_enable_completion != value) {
+					_enable_completion = value;
+					if (_enable_completion)
+						setup_completions ();
+					else
+						cleanup_completions ();
+				}
+			}
+		}
+
+		public ProjectManager (bool enable_completion)
+		{
+			_enable_completion = enable_completion;			
+		}
 		
 		~ProjectManager ()
 		{
@@ -81,9 +103,11 @@ namespace Vtg
 
 		public Afrodite.CompletionEngine? get_completion_for_target (Vbf.Target target)
 		{
-			foreach (Vbf.Target key in _completions.get_keys ())	{
-				if (key.id == target.id) {
-					return _completions.@get (key);
+			if (_completions != null) {
+				foreach (Vbf.Target key in _completions.get_keys ())	{
+					if (key.id == target.id) {
+						return _completions.@get (key);
+					}
 				}
 			}
 
@@ -200,6 +224,9 @@ namespace Vtg
 
 		private void setup_completions ()
 		{
+			if (!_enable_completion)
+				return;
+
 			_completions = new Vala.HashMap<Vbf.Target, CompletionEngine> ();
 			foreach (Group group in _project.get_groups ()) {
 				foreach (Vbf.Target target in group.get_targets ()) {
@@ -263,14 +290,14 @@ namespace Vtg
 
 		private void on_completion_engine_begin_parse (CompletionEngine sender)
 		{
-			AtomicInt.inc (ref parser_thread_count);
-			Idle.add (this.on_idle);
+			if (AtomicInt.exchange_and_add (ref parser_thread_count, 1) == 0)
+				Idle.add (this.on_idle);
 		}
 		
 		private void on_completion_engine_end_parse (CompletionEngine sender)
 		{
-			AtomicInt.dec_and_test (ref parser_thread_count);
-			Idle.add (this.on_idle);
+			if (AtomicInt.dec_and_test (ref parser_thread_count))
+				Idle.add (this.on_idle);
 		}
 
 		private bool on_idle ()

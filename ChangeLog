@@ -1,5 +1,15 @@
 2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added back the option to disable the completion engine
+	and improved the parsing signal handling
+
+2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/completionengine.vala:
 
 	cosmetic cleanup

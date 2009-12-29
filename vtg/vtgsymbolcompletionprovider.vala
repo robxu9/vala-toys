@@ -145,14 +145,15 @@ namespace Vtg
 		private void on_begin_parsing (CompletionEngine engine)
 		{
 			_cache_building = true;
-			_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
-			
+			if (_idle_id == 0)
+				_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
 		}
 		
 		private void on_end_parsing (CompletionEngine engine)
 		{
 			_cache_building = false;
-			_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
+			if (_idle_id == 0)
+				_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
 		}
 		
 		private int get_current_line_index (Gedit.Document? doc = null)
