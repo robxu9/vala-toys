@@ -920,7 +920,9 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = s;
-			if (body != null) {
+			if (body == null) {
+				node.accept_children (this);
+			} else {
 				body.accept_children (this);
 			}
 			_current = prev;
