@@ -80,7 +80,7 @@ namespace Afrodite
 		}
 	}
 
-	public class Symbol : Object
+	public class Symbol
 	{
 		public static VoidType VOID = new VoidType ();
 		

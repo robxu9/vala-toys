@@ -1,5 +1,11 @@
 2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+
+	using a vala class for symbol to improve performance
+
+2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 
 	fixed switch statement visit
