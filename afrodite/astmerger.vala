@@ -107,12 +107,24 @@ namespace Afrodite
 			
 			if (orphaned) {
 				// the symbol should be deleted since there aren't any source ref
-				if (symbol.has_children) {
-					// there are still children I can't delete it
-					// I reparent the symbol to the same source of the first child node
-					var source_ref = symbol.children.get (0).source_references.get(0).copy ();
-					source_ref.file.add_symbol (symbol);
-					symbol.add_source_reference (source_ref);
+				if (symbol.has_children && symbol.type_name == "Namespace") {
+					// there are still children and the symbol is "mergeable" I can't delete it
+					// I reparent the symbol to the first valid source of the first child node
+					SourceReference source_ref = null;
+
+					foreach (Symbol child in symbol.children) {
+						if (child.has_source_references) {
+							source_ref = child.source_references.get(0).copy ();
+							break;
+						}
+					}
+
+					if (source_ref != null) {
+						source_ref.file.add_symbol (symbol);
+						symbol.add_source_reference (source_ref);
+					} else {
+						critical ("no valid source reference in child for orphaned symbol %s", symbol.name);
+					}
 				} else {
 					// orphaned without child, let's destroy it
 					if (!symbol.has_children && orphaned) {
@@ -156,6 +168,7 @@ namespace Afrodite
 			
 			set_fqn (s.name);
 			symbol = _ast.lookup (_vala_symbol_fqn, out parent);
+
 			assert (parent != null);
 			if (symbol == null) {
 				symbol = add_symbol (s, out source_reference);
@@ -907,7 +920,9 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = s;
-			node.accept_children (this);
+			if (body != null) {
+				body.accept_children (this);
+			}
 			_current = prev;
 			_current_sr = prev_sr;
 			
