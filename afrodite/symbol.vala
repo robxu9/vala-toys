@@ -100,6 +100,7 @@ namespace Afrodite
 		public bool is_virtual = false;
 		public bool is_abstract = false;
 		public bool overrides = false;
+		private int _static_child_count = 0;
 		
 		private Vala.List<Symbol> detached_children = null;
 		private string _info = null;
@@ -126,6 +127,9 @@ namespace Afrodite
 			
 			children.add (child);
 			child.parent = this;
+			if (child.is_static) {
+				_static_child_count++;
+			}
 		}
 		
 		public void remove_child (Symbol child)
@@ -133,6 +137,10 @@ namespace Afrodite
 			children.remove (child);
 			if (children.size == 0)
 				children = null;
+				
+			if (child.is_static && _static_child_count > 0) {
+				_static_child_count--;
+			}
 		}
 		
 		public Symbol? lookup_child (string name)
@@ -152,7 +160,7 @@ namespace Afrodite
 				return children != null;
 			}
 		}
-
+	
 		public void add_resolve_target (Symbol resolve_target)
 		{
 			// resolve target collection can be accessed from multiple threads
@@ -302,7 +310,14 @@ namespace Afrodite
 				return source_references != null;
 			}
 		}
-		
+
+		public bool has_static_child
+		{
+			get {
+				return _static_child_count > 0;
+			}
+		}
+
 		public bool is_static
 		{
 			get {
@@ -332,7 +347,8 @@ namespace Afrodite
 		private bool check_symbol (Symbol symbol, DetachCopyOptions? options)
 		{
 			if ((symbol.access & options.access) != 0) {
-				if (options.only_static_factories && (!symbol.is_static || symbol.type_name == "Struct")) {
+				if (options.only_static_factories 
+					&& ((!symbol.is_static && !symbol.has_static_child) || symbol.type_name == "Struct")) {
 					return false;
 				}
 				if (options.only_creation_methods && symbol.type_name != "CreationMethod") {
@@ -379,6 +395,7 @@ namespace Afrodite
 			res.parent = null; // parent reference isn't copied
 			res.return_type = return_type == null ? null : return_type.copy (root);
 			res.type_name = type_name;
+			res._static_child_count = _static_child_count;
 			if ((depth == -1 || depth > 0) && has_children) {
 				foreach (Symbol child in children) {
 					if (check_symbol (child, options)) {

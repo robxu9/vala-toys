@@ -34,19 +34,7 @@ namespace Vtg
 		private unowned Afrodite.CompletionEngine _completion = null;
 		private Gedit.View _view = null;
 		private GLib.List<Gsc.Proposal> _list;
-		/*
-		private Gdk.Pixbuf _icon_generic;
-		private Gdk.Pixbuf _icon_field;
-		private Gdk.Pixbuf _icon_method;
-		private Gdk.Pixbuf _icon_class;
-		private Gdk.Pixbuf _icon_struct;
-		private Gdk.Pixbuf _icon_property;
-		private Gdk.Pixbuf _icon_signal;
-		private Gdk.Pixbuf _icon_iface;
-		private Gdk.Pixbuf _icon_const;
-		private Gdk.Pixbuf _icon_enum;
-		private Gdk.Pixbuf _icon_namespace;
-		*/
+		
 		private uint _timeout_id = 0;
 		private uint _idle_id = 0;
 		private bool _all_doc = false; //this is a hack!!!
@@ -111,20 +99,6 @@ namespace Vtg
 				_view.key_press_event += this.on_view_key_press;
 				doc.notify["text"] += this.on_text_changed;
 				doc.notify["cursor-position"] += this.on_cursor_position_changed;
-				
-				/*
-				this._icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
-				this._icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
-				this._icon_method = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-method-16.png"));
-				this._icon_class = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-class-16.png"));
-				this._icon_struct = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-structure-16.png"));
-				this._icon_property = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-property-16.png"));
-				this._icon_signal = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-event-16.png"));
-				this._icon_iface = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-interface-16.png"));
-				this._icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
-				this._icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
-				this._icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));
-				*/
 				
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				_sb_context_id = status_bar.get_context_id ("symbol status");
@@ -384,10 +358,10 @@ namespace Vtg
 				}
 				if (result.has_base_types 
 				    && (result.type_name == "Class" || result.type_name == "Interface" || result.type_name == "Struct")) {
-				    	GLib.debug ("base type for %s-%s", result.name, result.type_name);
+				    	//GLib.debug ("base type for %s-%s", result.name, result.type_name);
 					
 					foreach (DataType type in result.base_types) {
-						GLib.debug ("----> base type for %s-%s", type.name, type.type_name);
+						//GLib.debug ("----> base type for %s-%s", type.name, type.type_name);
 						if (!type.unresolved 
 						    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface")) {
 							if (type.symbol.has_children) {

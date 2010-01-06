@@ -1,5 +1,15 @@
 2010-01-05  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+
+	fix static type / factory symbol checking
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	simple cleanup
+
+2010-01-05  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/completionengine.vala:
 
