@@ -307,19 +307,24 @@ namespace Vtg
 			return res;
 		}
 		
-		private int filter_and_highlight_childs (TreeIter parent)
+		private int filter_and_highlight_item (TreeIter iter)
 		{
 			int res = 0;
-			if (_child_model.iter_has_child (parent))
-			{
-				TreeIter child;
-				bool not_eof = _child_model.iter_children (out child, parent);
-				while (not_eof) {
-					if (filter_and_highlight_row (child))
-						res++; // filtered in nodes++
-						
-					not_eof = _child_model.iter_next (ref child);
+			bool eof = false;
+			while (!eof) {
+				if (filter_and_highlight_row (iter))
+					res++;
+					
+				if (_child_model.iter_has_child (iter)) {
+					TreeIter child;
+					_child_model.iter_children (out child, iter);
+					if (filter_and_highlight_item (child) != 0) {
+						res++;
+						((TreeStore)  _child_model).set (iter, FilteredListDialogColumns.VISIBILITY, true); // show the parent node
+					}
 				}
+				
+				eof =  !_child_model.iter_next (ref iter);
 			}
 			
 			return res;
@@ -330,15 +335,8 @@ namespace Vtg
 			_child_model.row_changed -= this.on_row_changed;
 			
 			TreeIter iter;
-			bool not_eof =  _child_model.get_iter_first (out iter);
-			while (not_eof) {
-				filter_and_highlight_row (iter);
-				if (filter_and_highlight_childs (iter) != 0) {
-					((TreeStore)  _child_model).set (iter, FilteredListDialogColumns.VISIBILITY, true); // show the parent node
-				}
-				
-				not_eof =  _child_model.iter_next (ref iter);
-			}
+			if (_child_model.get_iter_first (out iter))
+				filter_and_highlight_item (iter);
 			
 			_child_model.row_changed += this.on_row_changed;
 			_filtered_model.refilter ();
