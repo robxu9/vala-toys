@@ -39,6 +39,10 @@ namespace Vtg
 	
 	internal class SourceOutlinerView : GLib.Object
 	{
+		private string[] qualifiers = new string[] {
+				"public ", "private ", "internal ", "protected "
+			};
+
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private Gtk.TreeView _src_view;
 		private Gtk.TreeModelSort _sorted;
@@ -234,9 +238,6 @@ namespace Vtg
 				if (!symbol.name.has_prefix ("!") && _check_show_private_symbols.active
 				    || (!_check_show_private_symbols.active && symbol.access != Afrodite.SymbolAccessibility.PRIVATE)) {
 					string des = symbol.markup_description;
-					string[] qualifiers = new string[] {
-						"public ", "private ", "internal ", "protected "
-					};
 					//remove the access qualifier
 					foreach(string qualifier in qualifiers) {
 						if (des.has_prefix (qualifier)) {
