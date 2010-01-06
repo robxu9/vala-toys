@@ -1,5 +1,12 @@
 2010-01-05  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+
+	revert svn commit #434 since it breaks symbol browsing
+	in the source code outliner and in the goto method menu
+
+2010-01-05  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/completionengine.vala:
 	
 	create a low priority thread for parsing
