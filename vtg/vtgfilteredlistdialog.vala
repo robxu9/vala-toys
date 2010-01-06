@@ -40,7 +40,7 @@ namespace Vtg
 		
 		public TreeIter selected_iter;
 		
-		public FilteredListDialog (ListStore model)
+		public FilteredListDialog (TreeStore model)
 		{
 			this._child_model = model;
 			initialize_ui ();
@@ -80,6 +80,7 @@ namespace Vtg
 			_treeview.get_selection ().set_mode (SelectionMode.SINGLE);
 			_treeview.key_press_event.connect (on_treeview_key_press);
 			_treeview.row_activated.connect  (on_row_activated);
+			_treeview.expand_all ();
 			select_result ();
 		}
 
@@ -193,6 +194,67 @@ namespace Vtg
 			_button_ok.set_sensitive (_treeview.get_selection ().get_selected (null, null));
 		}
 		
+		private bool filter_and_highlight_row (TreeIter iter)
+		{
+			string val;
+			 _child_model.get (iter, 0, out val);
+			bool res = true;
+			string markup;
+
+			if (_current_pattern != null)
+				res = _current_pattern.match_string (val);
+
+			if (res && _current_pattern != null) {
+				string[] words = _current_filter.split ("*");
+				markup = "";
+				foreach (string word in words) {
+					if (!StringUtils.is_null_or_empty (word)) {
+						string[] pieces = val.split (word, 2);
+						markup = markup.concat (pieces[0]);
+						if (pieces.length == 2 || val.has_suffix (word)) {
+							markup = markup.concat ("<b>", word, "</b>");
+							if (pieces.length == 2)
+								val = pieces[1];
+							else {
+								val = null;
+								break;
+							}
+						}
+					}
+				}
+			
+				if (val != null) {
+					markup = markup.concat (val);
+				}
+			} else {
+				markup = val;
+			}
+			((TreeStore)  _child_model).set (iter, 1, markup);
+			((TreeStore)  _child_model).set (iter, 2, res);
+			
+			GLib.debug ("item %s: %d", val, (int) res);
+			
+			return res;
+		}
+		
+		private int filter_and_highlight_childs (TreeIter parent)
+		{
+			int res = 0;
+			if (_child_model.iter_has_child (parent))
+			{
+				TreeIter child;
+				bool not_eof = _child_model.iter_children (out child, parent);
+				while (not_eof) {
+					if (filter_and_highlight_row (child))
+						res++; // filtered in nodes++
+						
+					not_eof = _child_model.iter_next (ref child);
+				}
+			}
+			
+			return res;
+		}
+		
 		private void filter_and_highlight_rows ()
 		{
 			_child_model.row_changed -= this.on_row_changed;
@@ -200,46 +262,17 @@ namespace Vtg
 			TreeIter iter;
 			bool not_eof =  _child_model.get_iter_first (out iter);
 			while (not_eof) {
-				string val;
-				 _child_model.get (iter, 0, out val);
-				bool res = true;
-				string markup;
-
-				if (_current_pattern != null)
-					res = _current_pattern.match_string (val);
-
-				if (res && _current_pattern != null) {
-					string[] words = _current_filter.split ("*");
-					markup = "";
-					foreach (string word in words) {
-						if (!StringUtils.is_null_or_empty (word)) {
-							string[] pieces = val.split (word, 2);
-							markup = markup.concat (pieces[0]);
-							if (pieces.length == 2 || val.has_suffix (word)) {
-								markup = markup.concat ("<b>", word, "</b>");
-								if (pieces.length == 2)
-									val = pieces[1];
-								else {
-									val = null;
-									break;
-								}
-							}
-						}
-					}
-					
-					if (val != null) {
-						markup = markup.concat (val);
-					}
-				} else {
-					markup = val;
+				filter_and_highlight_row (iter);
+				if (filter_and_highlight_childs (iter) != 0) {
+					((TreeStore)  _child_model).set (iter, 2, true); // show the parent node
 				}
-				((ListStore)  _child_model).set (iter, 1, markup);
-				((ListStore)  _child_model).set (iter, 2, res);
+				
 				not_eof =  _child_model.iter_next (ref iter);
 			}
 			
 			_child_model.row_changed += this.on_row_changed;
 			_filtered_model.refilter ();
+			_treeview.expand_all ();
 		}
 		
 		private int sort_model (TreeModel model, TreeIter a, TreeIter b)

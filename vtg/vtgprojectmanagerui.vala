@@ -453,16 +453,24 @@ namespace Vtg
 		
 		private void on_project_goto_document (Gtk.Action action)
 		{
-			var project = _prj_view.current_project;
+			var project = _prj_view.current_project.project;
 			return_if_fail (project != null);
 			
 			TreeIter iter;
-			Gtk.ListStore model = new Gtk.ListStore (4, typeof(string), typeof(string), typeof(bool), typeof (GLib.Object));
-			foreach (Vbf.Source src in project.all_vala_sources) {
-				model.append (out iter);
-				model.set (iter, 0, src.name, 1, src.name, 2, true, 3, src);
-			}
-						
+			Gtk.TreeStore model = new Gtk.TreeStore (4, typeof(string), typeof(string), typeof(bool), typeof (GLib.Object));
+			foreach (Vbf.Group group in project.get_groups ()) {
+				foreach (Vbf.Target target in group.get_targets ()) {
+					if (target.has_sources_of_type (FileTypes.VALA_SOURCE)) {
+						TreeIter target_iter;
+						model.append (out target_iter, null);
+						model.set (target_iter, 0, target.name, 1, target.name, 2, true, 3, target);
+						foreach (Vbf.Source src in target.get_sources ()) {
+							model.append (out iter, target_iter);
+							model.set (iter, 0, src.name, 1, src.name, 2, 1, 3, src);
+						}
+					}
+				}
+			}						
 			var dialog = new FilteredListDialog (model);
 			dialog.set_transient_for (_plugin_instance.window);
 			if (dialog.run ()) {
@@ -504,9 +512,9 @@ namespace Vtg
 					return;
 			
 				TreeIter iter;
-				Gtk.ListStore model = new Gtk.ListStore (4, typeof(string), typeof(string), typeof(bool), typeof(Afrodite.Symbol));
+				Gtk.TreeStore model = new Gtk.TreeStore (4, typeof(string), typeof(string), typeof(bool), typeof(Afrodite.Symbol));
 				foreach (Afrodite.Symbol method in methods) {
-					model.append (out iter);
+					model.append (out iter, null);
 					model.set (iter, 0, method.name, 1, method.display_name, 2, true, 3, method);
 				}
 			
