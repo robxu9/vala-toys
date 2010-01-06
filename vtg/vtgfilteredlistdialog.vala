@@ -151,26 +151,44 @@ namespace Vtg
 		public bool on_entry_key_press (Gtk.Widget sender, Gdk.EventKey evt)
 		{
 			if (evt.keyval == Gdk.Key_Down || evt.keyval == Gdk.Key_Up) {
-				TreeIter sel;
+				TreeIter curr;
+				TreeIter target;
 				TreeModel model;
 				TreePath path;
-				if (_treeview.get_selection ().get_selected (out model, out sel)) {
+				
+				if (_treeview.get_selection ().get_selected (out model, out curr)) {
 					if (evt.keyval == Gdk.Key_Down) {
-						model.iter_next (ref sel);
-					} else {
-						path = model.get_path (sel);
-						if (path.prev ()) {
-							model.get_iter (out sel, path);
+						if (model.iter_has_child(curr)) {
+							model.iter_children (out target, curr);
 						} else {
-							_treeview.get_selection ().select_iter (sel);
+							target = curr;
+							if (!model.iter_next (ref target)) {
+								model.iter_parent (out target, curr);
+								model.iter_next (ref target);
+							}
+						}
+					} else {
+						path = model.get_path (curr);
+						if (!path.prev ()) {
+							path.up ();
+							model.get_iter (out target, path);
+						} else {
+							model.get_iter (out curr, path);
+							if (model.iter_has_child(curr)) {
+								int nch = model.iter_n_children (curr);
+								model.iter_nth_child (out target, curr, nch - 1);
+							} else {
+								target = curr;
+							}
 						}
 					}
 				} else {
 					model = _treeview.get_model ();
-					model.get_iter_first (out sel);
+					model.get_iter_first (out target);
+					path = model.get_path (target);
 				}
-				path = model.get_path (sel);
-				_treeview.get_selection ().select_iter (sel);
+				path = model.get_path (target);
+				_treeview.get_selection ().select_iter (target);
 				_treeview.scroll_to_cell (path, null, false, 0, 0);
 				return true;
 			} 
