@@ -33,6 +33,7 @@ namespace Vtg
 		VISIBILITY,
 		OBJECT,
 		ICON,
+		SELECTABLE,
 		COLUMNS_COUNT
 	}
 	
@@ -45,7 +46,8 @@ namespace Vtg
 					typeof(string), 
 					typeof(bool), 
 					typeof (GLib.Object), 
-					typeof (Gdk.Pixbuf));
+					typeof (Gdk.Pixbuf),
+					typeof(bool));
 		}
 		
 		private Gtk.Dialog _dialog;
@@ -88,6 +90,7 @@ namespace Vtg
 			_filtered_model = new Gtk.TreeModelFilter (_child_model, null);
 			_filtered_model.set_visible_column (FilteredListDialogColumns.VISIBILITY);
 			_child_model.row_changed += this.on_row_changed;
+			
 			var column = new TreeViewColumn ();
 			
 			CellRenderer renderer = new CellRendererPixbuf ();
@@ -99,15 +102,25 @@ namespace Vtg
 			column.add_attribute (renderer, "markup", FilteredListDialogColumns.MARKUP);
 			
 			_treeview.append_column (column);
+			
 			_sorted_model = new Gtk.TreeModelSort.with_model (_filtered_model);
 			_sorted_model.set_sort_column_id (Columns.NAME, SortType.ASCENDING);
 			_sorted_model.set_sort_func (Columns.NAME, this.sort_model);
+			
 			_treeview.set_model (_sorted_model);
 			_treeview.get_selection ().set_mode (SelectionMode.SINGLE);
+			_treeview.get_selection ().changed.connect (this.on_tree_selection_changed);
 			_treeview.key_press_event.connect (on_treeview_key_press);
 			_treeview.row_activated.connect  (on_row_activated);
 			_treeview.expand_all ();
-			select_result ();
+			
+			/* select first row */
+			if (!_treeview.get_selection ().get_selected (null, null)) {
+				TreePath path = new TreePath.from_indices (0);
+				_treeview.get_selection ().select_path (path);
+			}
+
+			_button_ok.set_sensitive (can_select_current_row());
 		}
 
 		public void set_transient_for (Gtk.Window parent)
@@ -136,9 +149,15 @@ namespace Vtg
 		
 		private void on_row_activated (Widget sender, TreePath path, TreeViewColumn column)
 		{
-			_dialog.response (2);
+			if (can_select_current_row ())
+				_dialog.response (2);
 		}
 
+		private void on_tree_selection_changed (Gtk.TreeSelection sender)
+		{
+			_button_ok.set_sensitive (can_select_current_row ());
+		}
+		
 		private void on_row_changed (Gtk.TreeModel tree_model, Gtk.TreePath path, Gtk.TreeIter iter)
 		{
 			if (!_treeview.get_selection ().get_selected (null, null)) {
@@ -146,6 +165,7 @@ namespace Vtg
 				tree_model.get_iter_first (out sel);
 				_treeview.get_selection ().select_iter (sel);
 			}
+			_button_ok.set_sensitive (can_select_current_row ());
 		}
 		
 		public bool on_entry_key_press (Gtk.Widget sender, Gdk.EventKey evt)
@@ -199,7 +219,7 @@ namespace Vtg
 		{
 			if ((evt.state & ModifierType.MOD1_MASK) == 0 &&
 			     evt.keyval == Gdk.Key_Return) {
-			     	if (_treeview.get_selection ().get_selected (null, null)) {
+			     	if (can_select_current_row ()) {
 			     		_dialog.response (2);
 			     	}
 			}
@@ -225,17 +245,22 @@ namespace Vtg
 			_filtered_model.refilter ();
 			_sorted_model.set_sort_column_id (0, SortType.ASCENDING);
 			
-			select_result ();
+			_button_ok.set_sensitive (can_select_current_row());
 		}
 
-		private void select_result ()		
+		private bool can_select_current_row ()
 		{
-			if (!_treeview.get_selection ().get_selected (null, null)) {
-				TreePath path = new TreePath.from_indices (0);
-				_treeview.get_selection ().select_path (path);
-			}
+			bool res = false;
+			TreeIter iter;
 			
-			_button_ok.set_sensitive (_treeview.get_selection ().get_selected (null, null));
+			if (_treeview.get_selection ().get_selected (null, out iter)) {
+				TreeIter sort;
+				TreeIter curr;
+				_sorted_model.convert_iter_to_child_iter (out sort, iter);
+				_filtered_model.convert_iter_to_child_iter (out curr, sort);
+				_child_model.get (curr, FilteredListDialogColumns.SELECTABLE, out res);
+			}
+			return res;
 		}
 		
 		private bool filter_and_highlight_row (TreeIter iter)

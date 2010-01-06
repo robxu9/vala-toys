@@ -470,7 +470,8 @@ namespace Vtg
 							FilteredListDialogColumns.VISIBILITY, true, 
 							FilteredListDialogColumns.OBJECT, target,
 							FilteredListDialogColumns.ICON, 
-								image.render_icon (Utils.get_stock_id_for_target_type (target.type), IconSize.BUTTON, ""));
+								image.render_icon (Utils.get_stock_id_for_target_type (target.type), IconSize.BUTTON, ""),
+							FilteredListDialogColumns.SELECTABLE, false);
 						foreach (Vbf.Source src in target.get_sources ()) {
 							model.append (out iter, target_iter);
 							model.set (iter, 
@@ -478,7 +479,8 @@ namespace Vtg
 								FilteredListDialogColumns.MARKUP, src.name, 
 								FilteredListDialogColumns.VISIBILITY, true, 
 								FilteredListDialogColumns.OBJECT, src,
-								FilteredListDialogColumns.ICON, image.render_icon (Gtk.STOCK_FILE, IconSize.BUTTON, ""));
+								FilteredListDialogColumns.ICON, image.render_icon (Gtk.STOCK_FILE, IconSize.BUTTON, ""),
+								FilteredListDialogColumns.SELECTABLE, true);
 						}
 					}
 				}
