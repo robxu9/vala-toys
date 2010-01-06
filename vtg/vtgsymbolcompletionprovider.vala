@@ -709,6 +709,7 @@ namespace Vtg
 				//are a lot of probability that this row will
 				//cause a parser error)
 				if (end.forward_line ()) {
+					end.set_line_offset (0);
 					start = end;
 					while (end.forward_line ())
 						;

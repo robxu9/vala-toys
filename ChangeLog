@@ -1,5 +1,11 @@
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	starting from the first column when evicting the current document line
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/astmerger.vala:
 	* afrodite/completionengine.vala:
