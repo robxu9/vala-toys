@@ -391,7 +391,7 @@ namespace Vtg
 			
 			//go to the right word boundary
 			ch = start.get_char ();
-			while (ch.isalnum ()) {
+			while (ch.isalnum () || ch == '_') {
 				start.forward_char ();
 				int cline = start.get_line ();
 				if (lineno != cline) //changed line?

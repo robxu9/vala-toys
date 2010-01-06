@@ -1,5 +1,24 @@
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fix a bug when trying to align to the right word boundary 
+	and the word contains an underscore
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	filtered list dialog now receive a TreeStore
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	use the new TreeStore to present target and relative
+	sources to the user in the goto file dialog
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vapi/utils.vapi:
 	* vtg/vtgsourceoutlinerview.vala:
 
