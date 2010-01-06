@@ -1,3 +1,10 @@
+2010-01-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+
+	more readeable code for try_acquire_ast
+
 2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/symbol.vala:

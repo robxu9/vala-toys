@@ -57,7 +57,7 @@ namespace Afrodite
 		
 		private Mutex source_queue_mutex;
 		private Mutex merge_queue_mutex;
-		private Mutex ast_mutex;
+		private Mutex ast_mutex = null;
 		
 		private unowned Thread parser_thread;
 		private int parser_stamp = 0;
@@ -76,12 +76,11 @@ namespace Afrodite
 			merge_queue = new ArrayList<SourceItem> ();
 			source_queue_mutex = new Mutex ();
 			merge_queue_mutex = new Mutex ();
-			ast_mutex = new Mutex ();
 			
 			_ast = new Ast ();
-			
 			// merge standard base vapi (glib and gobject)
 			var context = new CodeContext ();
+			ast_mutex = new Mutex ();
 			
 			string[] packages = new string[] { "glib-2.0", "gobject-2.0" };
 			foreach (string package in packages) {
@@ -89,6 +88,7 @@ namespace Afrodite
 				if (paths != null)
 					queue_sourcefiles (paths, null, true, true);
 			}
+			
 		}
 		
 		~Completion ()
@@ -195,16 +195,18 @@ namespace Afrodite
 			bool res = false;
 			ast = null;
 			int retry = 0;
-				
-			do {
+			
+			while (ast == null && ast_mutex != null && retry < 20 && AtomicInt.get (ref parser_remaining_files) < 3)
+			{
 				res = ast_mutex.@trylock ();
+
 				if (res) {
 					ast = _ast;
 				} else {
 					GLib.Thread.usleep (100 * 1000);
 					retry++;
 				}
-			} while (ast == null && ast_mutex != null && retry < 20 & AtomicInt.get (ref parser_remaining_files) < 3);
+			}
 
 			return res;
 		}
@@ -215,6 +217,7 @@ namespace Afrodite
 				warning ("%s: release_ast requested for unknown ast instance", id);
 				return;
 			}
+			
 			ast_mutex.unlock ();
 		}
 

@@ -34,7 +34,7 @@ namespace Afrodite
 	{
 		public Symbol root = new Symbol (null, null);
 		public Vala.List<SourceFile> source_files = null;
-		
+	
 		public Symbol? lookup (string fully_qualified_name, out Symbol? parent)
 		{
 			Symbol result = null;
