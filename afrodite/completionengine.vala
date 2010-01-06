@@ -227,7 +227,7 @@ namespace Afrodite
 				if (parser_thread != null) {
 					parser_thread.join ();
 				}
-				parser_thread = Thread.create (this.parse_sources, true);
+				parser_thread = Thread.create_full (this.parse_sources, 0, true, false, ThreadPriority.LOW);
 			} catch (ThreadError err) {
 				error ("%s: can't create parser thread: %s", id, err.message);
 			}
