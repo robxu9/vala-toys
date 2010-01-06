@@ -50,7 +50,7 @@ libafrodite_la_SOURCES = \
 	$(NULL)
 
 libafrodite.vala.stamp: $(libafrodite_la_VALASOURCES)
-	$(VALAC) $(DEBUG) --thread -C -H afrodite.h --library afrodite-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/afrodite $^
+	$(VALAC) $(DEBUG) -C -H afrodite.h --library afrodite-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/afrodite $^
 	touch $@
 
 libafrodite_la_LDFLAGS = \
