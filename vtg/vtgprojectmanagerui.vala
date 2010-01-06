@@ -455,18 +455,30 @@ namespace Vtg
 		{
 			var project = _prj_view.current_project.project;
 			return_if_fail (project != null);
+			var image = new Gtk.Image();
 			
 			TreeIter iter;
-			Gtk.TreeStore model = new Gtk.TreeStore (4, typeof(string), typeof(string), typeof(bool), typeof (GLib.Object));
+			Gtk.TreeStore model = FilteredListDialog.create_model ();
 			foreach (Vbf.Group group in project.get_groups ()) {
 				foreach (Vbf.Target target in group.get_targets ()) {
 					if (target.has_sources_of_type (FileTypes.VALA_SOURCE)) {
 						TreeIter target_iter;
 						model.append (out target_iter, null);
-						model.set (target_iter, 0, target.name, 1, target.name, 2, true, 3, target);
+						model.set (target_iter, 
+							FilteredListDialogColumns.NAME, target.name, 
+							FilteredListDialogColumns.MARKUP, target.name, 
+							FilteredListDialogColumns.VISIBILITY, true, 
+							FilteredListDialogColumns.OBJECT, target,
+							FilteredListDialogColumns.ICON, 
+								image.render_icon (Utils.get_stock_id_for_target_type (target.type), IconSize.BUTTON, ""));
 						foreach (Vbf.Source src in target.get_sources ()) {
 							model.append (out iter, target_iter);
-							model.set (iter, 0, src.name, 1, src.name, 2, 1, 3, src);
+							model.set (iter, 
+								FilteredListDialogColumns.NAME, src.name, 
+								FilteredListDialogColumns.MARKUP, src.name, 
+								FilteredListDialogColumns.VISIBILITY, true, 
+								FilteredListDialogColumns.OBJECT, src,
+								FilteredListDialogColumns.ICON, image.render_icon (Gtk.STOCK_FILE, IconSize.BUTTON, ""));
 						}
 					}
 				}

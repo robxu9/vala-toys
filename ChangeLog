@@ -1,5 +1,14 @@
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgfilteredlistdialog.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgutils.vala:
+
+	added support for icons in the filtered list dialog
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* vtg/vtgsymbolcompletionprovider.vala:
 

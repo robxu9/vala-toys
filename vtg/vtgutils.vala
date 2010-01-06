@@ -377,5 +377,20 @@ namespace Vtg
 			return icon_generic;
 		}
 
+		public static string get_stock_id_for_target_type (Vbf.TargetTypes type)
+		{
+			switch (type) {
+				case TargetTypes.PROGRAM:
+					return Gtk.STOCK_EXECUTE;
+				case TargetTypes.LIBRARY:
+					return Gtk.STOCK_EXECUTE;
+				case TargetTypes.DATA:
+					return Gtk.STOCK_DIRECTORY;
+				case TargetTypes.BUILT_SOURCES:
+					return Gtk.STOCK_EXECUTE;
+				default:
+					return Gtk.STOCK_DIRECTORY;		
+			}
+		}
 	}
 }

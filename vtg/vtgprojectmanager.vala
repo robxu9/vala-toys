@@ -405,7 +405,7 @@ namespace Vtg
 							}
 							if (!target_added) {
 								_model.append (out target_iter, group_iter);
-								_model.set (target_iter, 0, get_stock_id_for_target_type (target.type), 1, target.name, 2, target.id, 3, target, 4, group.name);
+								_model.set (target_iter, 0, Utils.get_stock_id_for_target_type (target.type), 1, target.name, 2, target.id, 3, target, 4, group.name);
 								target_added = true;
 							}
 							TreeIter source_iter;
@@ -420,7 +420,7 @@ namespace Vtg
 							}
 							if (!target_added) {
 								_model.append (out target_iter, group_iter);
-								_model.set (target_iter, 0, get_stock_id_for_target_type (target.type), 1, target.name, 2, target.id, 3, target, 4, group.name);
+								_model.set (target_iter, 0, Utils.get_stock_id_for_target_type (target.type), 1, target.name, 2, target.id, 3, target, 4, group.name);
 								target_added = true;
 							}
 
@@ -436,21 +436,6 @@ namespace Vtg
 			_model.set_sort_func (4, this.sort_model);
 		}
 
-		private string get_stock_id_for_target_type (Vbf.TargetTypes type)
-		{
-			switch (type) {
-				case TargetTypes.PROGRAM:
-					return Gtk.STOCK_EXECUTE;
-				case TargetTypes.LIBRARY:
-					return Gtk.STOCK_EXECUTE;
-				case TargetTypes.DATA:
-					return Gtk.STOCK_DIRECTORY;
-				case TargetTypes.BUILT_SOURCES:
-					return Gtk.STOCK_EXECUTE;
-				default:
-					return Gtk.STOCK_DIRECTORY;		
-			}
-		}
 		private void parse_project ()
 		{
 			//this.modules.clear ();

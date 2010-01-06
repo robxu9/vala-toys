@@ -26,8 +26,28 @@ using Gtk;
 
 namespace Vtg
 {
+	public enum FilteredListDialogColumns
+	{
+		NAME = 0,
+		MARKUP,
+		VISIBILITY,
+		OBJECT,
+		ICON,
+		COLUMNS_COUNT
+	}
+	
 	public class FilteredListDialog : GLib.Object
 	{
+		public static TreeStore create_model ()
+		{
+			return new Gtk.TreeStore (FilteredListDialogColumns.COLUMNS_COUNT, 
+					typeof(string), 
+					typeof(string), 
+					typeof(bool), 
+					typeof (GLib.Object), 
+					typeof (Gdk.Pixbuf));
+		}
+		
 		private Gtk.Dialog _dialog;
 		private Gtk.TreeView _treeview;
 		private Gtk.Entry _entry;
@@ -66,16 +86,22 @@ namespace Vtg
 			_entry.key_press_event += this.on_entry_key_press;
 			_entry.notify["text"] += this.on_entry_text_changed;
 			_filtered_model = new Gtk.TreeModelFilter (_child_model, null);
-			_filtered_model.set_visible_column (2);
+			_filtered_model.set_visible_column (FilteredListDialogColumns.VISIBILITY);
 			_child_model.row_changed += this.on_row_changed;
 			var column = new TreeViewColumn ();
- 			CellRenderer renderer = new CellRendererText ();
+			
+			CellRenderer renderer = new CellRendererPixbuf ();
+ 			column.pack_start (renderer, false);
+			column.add_attribute (renderer, "pixbuf", FilteredListDialogColumns.ICON);
+			
+ 			renderer = new CellRendererText ();
 			column.pack_start (renderer, true);
-			column.add_attribute (renderer, "markup", 1);
+			column.add_attribute (renderer, "markup", FilteredListDialogColumns.MARKUP);
+			
 			_treeview.append_column (column);
 			_sorted_model = new Gtk.TreeModelSort.with_model (_filtered_model);
-			_sorted_model.set_sort_column_id (0, SortType.ASCENDING);
-			_sorted_model.set_sort_func (0, this.sort_model);
+			_sorted_model.set_sort_column_id (Columns.NAME, SortType.ASCENDING);
+			_sorted_model.set_sort_func (Columns.NAME, this.sort_model);
 			_treeview.set_model (_sorted_model);
 			_treeview.get_selection ().set_mode (SelectionMode.SINGLE);
 			_treeview.key_press_event.connect (on_treeview_key_press);
@@ -197,7 +223,7 @@ namespace Vtg
 		private bool filter_and_highlight_row (TreeIter iter)
 		{
 			string val;
-			 _child_model.get (iter, 0, out val);
+			 _child_model.get (iter, FilteredListDialogColumns.NAME, out val);
 			bool res = true;
 			string markup;
 
@@ -229,10 +255,8 @@ namespace Vtg
 			} else {
 				markup = val;
 			}
-			((TreeStore)  _child_model).set (iter, 1, markup);
-			((TreeStore)  _child_model).set (iter, 2, res);
-			
-			GLib.debug ("item %s: %d", val, (int) res);
+			((TreeStore)  _child_model).set (iter, FilteredListDialogColumns.MARKUP, markup);
+			((TreeStore)  _child_model).set (iter, FilteredListDialogColumns.VISIBILITY, res);
 			
 			return res;
 		}
@@ -264,7 +288,7 @@ namespace Vtg
 			while (not_eof) {
 				filter_and_highlight_row (iter);
 				if (filter_and_highlight_childs (iter) != 0) {
-					((TreeStore)  _child_model).set (iter, 2, true); // show the parent node
+					((TreeStore)  _child_model).set (iter, FilteredListDialogColumns.VISIBILITY, true); // show the parent node
 				}
 				
 				not_eof =  _child_model.iter_next (ref iter);
@@ -280,8 +304,8 @@ namespace Vtg
 			string vala;
 			string valb;
 			
-			model.get (a, 0, out vala);
-			model.get (b, 0, out valb);
+			model.get (a, FilteredListDialogColumns.NAME, out vala);
+			model.get (b, FilteredListDialogColumns.NAME, out valb);
 			
 			return PathUtils.compare_vala_filenames (vala,valb);
 		}
