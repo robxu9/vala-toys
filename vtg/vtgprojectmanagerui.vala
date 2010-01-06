@@ -106,7 +106,7 @@ namespace Vtg
                                                     </placeholder>
                                                     <placeholder name="SearchOps_8">
                                                     	<separator />
-                                                        <menuitem name="GotoMethod" action="ProjectGotoMethod"/>
+                                                        <menuitem name="GotoSymbol" action="ProjectGotoSymbol"/>
                                                     	<separator />
                                                         <menuitem name="GotoDefinition" action="ProjectGotoDefinition"/>
                                                     </placeholder>
@@ -147,7 +147,7 @@ namespace Vtg
 			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
 			{"ProjectGotoNextPosition", Gtk.STOCK_GO_FORWARD, N_("_Go To Next Source Position"), null, N_("Go to the next source position"), on_project_goto_next_position},
 			{"ProjectGotoPrevPosition", Gtk.STOCK_GO_BACK, N_("_Go To Previous Source Position"), "<alt>Left", N_("Go to the previous or last saved source position"), on_project_goto_prev_position},
-			{"ProjectGotoMethod", null, N_("_Go To Method..."), "<control>M", N_("Goto to a specific method in the current source document"), on_project_goto_method},
+			{"ProjectGotoSymbol", null, N_("_Go To Symbol..."), "<control>M", N_("Goto to a specific symbol in the current source document"), on_project_goto_symbol},
 			{"ProjectGotoDefinition", null, N_("_Go To Definition"), "F12", N_("Goto to a current symbol definition"), on_project_goto_definition},
 			{"ProjectCompleteWord", null, N_("Complete _Word"), "<control>space", N_("Try to complete the word in the current source document"), on_complete_word},
 			{"ProjectPrepareChangeLog", null, N_("_Prepare ChangeLog"), null, N_("Add an entry to the ChangeLog with all added/modified files"), on_prepare_changelog},
@@ -494,7 +494,7 @@ namespace Vtg
 			}
 		}
 
-		private void build_goto_method_model (TreeStore model, Vala.List<Afrodite.Symbol>? symbols, TreeIter? parent_iter = null)
+		private void build_goto_symbol_model (TreeStore model, Vala.List<Afrodite.Symbol>? symbols, TreeIter? parent_iter = null)
 		{
 			if (symbols == null)
 				return;
@@ -513,7 +513,7 @@ namespace Vtg
 						FilteredListDialogColumns.SELECTABLE, true);
 
 					if (symbol.has_children) {
-						build_goto_method_model (model, symbol.children, iter);
+						build_goto_symbol_model (model, symbol.children, iter);
 					}
 				}
 			}
@@ -531,7 +531,7 @@ namespace Vtg
 
 		}
 		
-		private void on_project_goto_method (Gtk.Action action)
+		private void on_project_goto_symbol (Gtk.Action action)
 		{
 			var project = _prj_view.current_project;
 			return_if_fail (project != null);
@@ -573,7 +573,7 @@ namespace Vtg
 			
 				/* building the model */
 				Gtk.TreeStore model = FilteredListDialog.create_model ();
-				build_goto_method_model (model, results.children);
+				build_goto_symbol_model (model, results.children);
 			
 				var dialog = new FilteredListDialog (model, this.sort_symbol_model);
 				dialog.set_transient_for (_plugin_instance.window);

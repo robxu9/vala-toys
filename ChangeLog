@@ -2,6 +2,12 @@
 
 	* vtg/vtgprojectmanagerui.vala:
 
+	changed *goto_method* to *goto_symbol*
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
 	enanched the goto method to goto symbol
 
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
