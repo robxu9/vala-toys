@@ -185,9 +185,9 @@ namespace Afrodite
 	 					Symbol parent = sym;
 	 					Symbol dummy;
 	 					
-	 					print ("lookup %s in %s", parts[i], sym.name);
+	 					//print ("lookup %s in %s", parts[i], sym.name);
 						sym = lookup_symbol (parts[i], sym.children, out dummy, mode);
-						print ("... result: %s\n", sym == null ? "not found" : sym.name);
+						//print ("... result: %s\n", sym == null ? "not found" : sym.name);
 						if (sym != null && lookup_type && sym.return_type != null) {
 								sym = sym.return_type.symbol;
 						}
@@ -242,20 +242,19 @@ namespace Afrodite
 				
 					if (symbol.has_children) {
 						// try to catch circular references
-						/*
 						var item = parent;
 						bool circular_ref = false;
 					
 						while (item != null) {
 							if (symbol == parent) {
-								warning ("circular reference %s", symbol.fully_qualified_name);
+								error ("circular reference %s", symbol.fully_qualified_name);
 								circular_ref = true;
 								break;
 							}
 							item = item.parent;
 						}
 						// find in children
-						if (!circular_ref)*/
+						if (!circular_ref)
 							lookup_symbol_in_filename (filename, sym, symbol);
 					}
 				}

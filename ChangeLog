@@ -1,5 +1,16 @@
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/symbolresolver.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	renabled the circular reference check (now causes an abort)
+	and removed some print / debug messages
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgfilteredlistdialog.vala:
 
 	fixed items recoursive filtering

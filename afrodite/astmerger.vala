@@ -52,7 +52,7 @@ namespace Afrodite
 			if (_ast.lookup_source_file (source.filename) != null)
 				critical ("two sources %s!", source.filename);
 			
-			debug ("COMPLETING FILE %s", source.filename);
+			//debug ("COMPLETING FILE %s", source.filename);
 			
 			_source_file = _ast.add_source_file (source.filename);
 			foreach (UsingDirective u in source.current_using_directives) {
@@ -304,9 +304,9 @@ namespace Afrodite
 						_ast.lookup (_vala_symbol_fqn, out parent);
 						parent.remove_child (_current);
 					}
-				} else {
-					debug ("sourcereference added: %s to %s", _current_sr.file.filename, _vala_symbol_fqn);
-				}
+				} //else {
+					//debug ("sourcereference added: %s to %s", _current_sr.file.filename, _vala_symbol_fqn);
+				//}
 				
 				_child_count = prev_child_count;
 				_current = prev;

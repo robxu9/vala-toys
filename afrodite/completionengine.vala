@@ -261,17 +261,18 @@ namespace Afrodite
 				var merger = new AstMerger (_ast);
 				foreach (SourceItem source in sources) {
 					source.context = p.context;
-				
-					if (_ast.lookup_source_file (source.path) != null) {
-						//debug ("%s: removing %s", id, source.path);
-						merger.remove_source_filename (source.path);
-					}
 					
 					if (source.context == null)
 						critical ("source %s context == null, non thread safe access to source item", source.path);
 					else {
 						foreach (Vala.SourceFile s in source.context.get_source_files ()) {
 							if (s.filename == source.path) {
+								
+								if (_ast.lookup_source_file (source.path) != null) {
+									//debug ("%s: removing %s", id, source.path);
+									merger.remove_source_filename (source.path);
+								}
+								
 								//timer.start ();
 								merger.merge_vala_context (s, source.context, source.is_glib);
 								//timer.stop ();

@@ -554,7 +554,6 @@ namespace Vtg
 				foreach (Symbol? symbol in result.children) {
 					if (symbol.name == symbol_name) {
 						GLib.debug ("get_current_symbol_item found %s", symbol_name);
-						
 						return symbol;
 					}
 				}
