@@ -62,13 +62,13 @@ namespace Vtg
 		
 		public TreeIter selected_iter;
 		
-		public FilteredListDialog (TreeStore model)
+		public FilteredListDialog (TreeStore model, Gtk.TreeIterCompareFunc? compare_func = null)
 		{
 			this._child_model = model;
-			initialize_ui ();
+			initialize_ui (compare_func);
 		}
 
-		private void initialize_ui ()
+		private void initialize_ui (Gtk.TreeIterCompareFunc compare_func)
 		{
 			var builder = new Gtk.Builder ();
 			try {
@@ -105,7 +105,10 @@ namespace Vtg
 			
 			_sorted_model = new Gtk.TreeModelSort.with_model (_filtered_model);
 			_sorted_model.set_sort_column_id (Columns.NAME, SortType.ASCENDING);
-			_sorted_model.set_sort_func (Columns.NAME, this.sort_model);
+			if (compare_func == null)
+				_sorted_model.set_sort_func (Columns.NAME, this.sort_model);
+			else
+				_sorted_model.set_sort_func (Columns.NAME, compare_func);
 			
 			_treeview.set_model (_sorted_model);
 			_treeview.get_selection ().set_mode (SelectionMode.SINGLE);
