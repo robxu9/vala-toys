@@ -242,6 +242,7 @@ namespace Afrodite
 				
 					if (symbol.has_children) {
 						// try to catch circular references
+						/*
 						var item = parent;
 						bool circular_ref = false;
 					
@@ -254,7 +255,7 @@ namespace Afrodite
 							item = item.parent;
 						}
 						// find in children
-						if (!circular_ref)
+						if (!circular_ref)*/
 							lookup_symbol_in_filename (filename, sym, symbol);
 					}
 				}

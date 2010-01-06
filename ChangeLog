@@ -1,5 +1,11 @@
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	
+	removed a wrong check
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* vtg/vtgfilteredlistdialog.vala:
 
