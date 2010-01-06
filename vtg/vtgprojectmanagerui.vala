@@ -526,10 +526,16 @@ namespace Vtg
 					return;
 			
 				TreeIter iter;
-				Gtk.TreeStore model = new Gtk.TreeStore (4, typeof(string), typeof(string), typeof(bool), typeof(Afrodite.Symbol));
+				Gtk.TreeStore model = FilteredListDialog.create_model ();
 				foreach (Afrodite.Symbol method in methods) {
 					model.append (out iter, null);
-					model.set (iter, 0, method.name, 1, method.display_name, 2, true, 3, method);
+					model.set (iter, 
+						FilteredListDialogColumns.NAME , method.name, 
+						FilteredListDialogColumns.MARKUP, method.display_name,
+						FilteredListDialogColumns.VISIBILITY, true, 
+						FilteredListDialogColumns.OBJECT, method,
+						FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name ("Method"),
+						FilteredListDialogColumns.SELECTABLE, true);
 				}
 			
 				var dialog = new FilteredListDialog (model);

@@ -1,5 +1,11 @@
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+
+	updated the goto method with the last filtered list dialog changes
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgfilteredlistdialog.vala:
 	* vtg/vtgprojectmanagerui.vala:
 
