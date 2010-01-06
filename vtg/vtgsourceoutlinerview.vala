@@ -328,7 +328,8 @@ namespace Vtg
 				}
 			}
 			
-			return GLib.strcmp (vala.name, valb.name);
+			
+			return GLib.strcmp0 (vala.name, valb.name);
 		}
 	}
 }

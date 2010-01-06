@@ -1,5 +1,13 @@
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vapi/utils.vapi:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	added strcmp0 binding and used in the source code outliner since
+	it's more frendly with null values
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* afrodite/Makefile.am:
 	
