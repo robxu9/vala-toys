@@ -494,6 +494,43 @@ namespace Vtg
 			}
 		}
 
+		private void build_goto_method_model (TreeStore model, Vala.List<Afrodite.Symbol>? symbols, TreeIter? parent_iter = null)
+		{
+			if (symbols == null)
+				return;
+			
+			foreach (Afrodite.Symbol symbol in symbols) {
+				TreeIter iter;
+				
+				if (!symbol.name.has_prefix ("!")) {
+					model.append (out iter, parent_iter);
+					model.set (iter, 
+						FilteredListDialogColumns.NAME , symbol.display_name, 
+						FilteredListDialogColumns.MARKUP, symbol.display_name,
+						FilteredListDialogColumns.VISIBILITY, true, 
+						FilteredListDialogColumns.OBJECT, symbol,
+						FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
+						FilteredListDialogColumns.SELECTABLE, true);
+
+					if (symbol.has_children) {
+						build_goto_method_model (model, symbol.children, iter);
+					}
+				}
+			}
+		}
+
+		private int sort_symbol_model (TreeModel model, TreeIter a, TreeIter b)
+		{
+			Afrodite.Symbol vala;
+			Afrodite.Symbol valb;
+			
+			model.get (a, FilteredListDialogColumns.OBJECT, out vala);
+			model.get (b, FilteredListDialogColumns.OBJECT, out valb);
+			
+			return Utils.symbol_type_compare (vala, valb);
+
+		}
+		
 		private void on_project_goto_method (Gtk.Action action)
 		{
 			var project = _prj_view.current_project;
@@ -505,6 +542,12 @@ namespace Vtg
 			var view = _plugin_instance.window.get_active_view ();
 			if (view == null)
 				return;
+
+			var scs = _plugin_instance.scs_find_from_view (view);
+ 			if (scs == null) {
+ 				GLib.warning ("on_project_goto_method: symbol completion helper is null for view");
+				return;
+			}
 				
 			var doc = (Gedit.Document) view.get_buffer ();
 			return_if_fail (doc != null);
@@ -513,39 +556,33 @@ namespace Vtg
 			if (uri == null)
 				return;
 
-			var completion = pdes.project.get_completion_for_file (uri);
-			if (completion == null) {
-				GLib.warning ("No completion for file %s", uri);
-				return;
-			}
 			try {
 				uri = Filename.from_uri (uri);
 			
-				var methods = get_symbols_for_source (completion, uri);
-				if (methods.size == 0)
+				/* getting the symbols */
+				var name = Utils.get_document_name (doc);
+				Afrodite.Symbol results = null;
+				Afrodite.Ast ast;
+				bool res = scs.completion.try_acquire_ast (out ast);
+				if (res) {
+					results = ast.lookup_symbols_in (name);
+					scs.completion.release_ast (ast);
+				}			
+				if (results == null)
 					return;
 			
-				TreeIter iter;
+				/* building the model */
 				Gtk.TreeStore model = FilteredListDialog.create_model ();
-				foreach (Afrodite.Symbol method in methods) {
-					model.append (out iter, null);
-					model.set (iter, 
-						FilteredListDialogColumns.NAME , method.name, 
-						FilteredListDialogColumns.MARKUP, method.display_name,
-						FilteredListDialogColumns.VISIBILITY, true, 
-						FilteredListDialogColumns.OBJECT, method,
-						FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name ("Method"),
-						FilteredListDialogColumns.SELECTABLE, true);
-				}
+				build_goto_method_model (model, results.children);
 			
-				var dialog = new FilteredListDialog (model);
+				var dialog = new FilteredListDialog (model, this.sort_symbol_model);
 				dialog.set_transient_for (_plugin_instance.window);
 				if (dialog.run ()) {
-					Afrodite.Symbol method;
-					model.get (dialog.selected_iter , 3, out method);
+					Afrodite.Symbol symbol;
+					model.get (dialog.selected_iter , FilteredListDialogColumns.OBJECT, out symbol);
 					Afrodite.SourceReference sr;
-					if (method.has_source_references) {
-						sr = method.source_references.get (0);
+					if (symbol.has_source_references) {
+						sr = symbol.source_references.get (0);
 					
 						doc.goto_line (sr.first_line - 1);
 						view.scroll_to_cursor ();
@@ -553,36 +590,6 @@ namespace Vtg
 				}
 			} catch (Error e) {
 				GLib.warning ("error %s converting file %s to uri", e.message, uri);
-			}
-		}
-
-		private Vala.List<Afrodite.Symbol?> get_symbols_for_source (Afrodite.CompletionEngine completion, string uri)
-		{
-			Afrodite.Symbol result = null;
-			Afrodite.Ast ast;
-			if (completion.try_acquire_ast (out ast)) {
-				result = ast.lookup_symbols_in (uri);
-				completion.release_ast (ast);
-			}			
-			var methods = new Vala.ArrayList<Afrodite.Symbol> ();	
-			
-			if (result != null)
-				get_methods (methods, result);
-				
-			return methods;
-		}
-
-		private void get_methods (Vala.List<Afrodite.Symbol> results, Afrodite.Symbol sym)
-		{
-			if (sym.has_children) {
-				foreach (Afrodite.Symbol child in sym.children) {
-					if (child.type_name.has_suffix ("Method")) {
-						results.add (child);
-					}
-					if (child.has_children) {
-						get_methods (results, child);
-					}
-				}
 			}
 		}
 
