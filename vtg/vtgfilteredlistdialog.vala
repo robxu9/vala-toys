@@ -68,7 +68,7 @@ namespace Vtg
 			initialize_ui (compare_func);
 		}
 
-		private void initialize_ui (Gtk.TreeIterCompareFunc compare_func)
+		private void initialize_ui (Gtk.TreeIterCompareFunc? compare_func)
 		{
 			var builder = new Gtk.Builder ();
 			try {

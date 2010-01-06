@@ -1,5 +1,24 @@
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* vtg/vtgfilteredlistdialog.vala:
+
+	simple typo and a nullable parameter fix
+
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgutils.vala:
+
+	refactored the sort function in order to reuse it later
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	added the possibility to specify a user compare function for
+	the filtered list dialog
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 
 	updated the goto method with the last filtered list dialog changes

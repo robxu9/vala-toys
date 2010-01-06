@@ -392,5 +392,71 @@ namespace Vtg
 					return Gtk.STOCK_DIRECTORY;		
 			}
 		}
+		
+		public static int symbol_type_compare (Symbol vala, Symbol valb)
+		{
+			// why I get vala or valb with null???
+			if (vala == null && valb == null)
+				return 0;
+			else if (vala == null && valb != null)
+				return 1;
+			else if (vala != null && valb == null)
+				return -1;
+		
+			if (vala.type_name != valb.type_name) {
+				if (vala.type_name == "Constant") {
+					return -1;
+				} else if (valb.type_name == "Constant") {
+					return 1;
+				} else if (vala.type_name == "Enum") {
+					return -1;
+				} else if (valb.type_name == "Enum") {
+					return 1;										
+				} else if (vala.type_name == "Field") {
+					return -1;
+				} else if (valb.type_name == "Field") {
+					return 1;
+				} else if (vala.type_name == "Property") {
+					return -1;
+				} else if (valb.type_name == "Property") {
+					return 1;
+				} else if (vala.type_name == "Signal") {
+					return -1;
+				} else if (valb.type_name == "Signal") {
+					return 1;
+				} else if (vala.type_name == "CreationMethod" 
+					|| vala.type_name == "Constructor") {
+					return -1;
+				} else if (valb.type_name == "CreationMethod"  
+					|| vala.type_name == "Constructor") {
+					return 1;
+				} else if (vala.type_name == "Method") {
+					return -1;
+				} else if (valb.type_name == "Method") {
+					return 1;
+				} else if (vala.type_name == "ErrorDomain") {
+					return -1;
+				} else if (valb.type_name == "ErrorDomain") {
+					return 1;					
+				} else if (vala.type_name == "Namespace") {
+					return -1;
+				} else if (valb.type_name == "Namespace") {
+					return 1;
+				} else if (vala.type_name == "Struct") {
+					return -1;
+				} else if (valb.type_name == "Struct") {
+					return 1;					
+				} else if (vala.type_name == "Class") {
+					return -1;
+				} else if (valb.type_name == "Class") {
+					return 1;
+				} else if (vala.type_name == "Interface") {
+					return -1;
+				} else if (valb.type_name == "Interface") {
+					return 1;
+				}
+			}
+			return GLib.strcmp0 (vala.name, valb.name);
+		}
 	}
 }
