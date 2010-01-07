@@ -1,5 +1,11 @@
 2010-01-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/datatype.vala:
+
+	fixed out / ref parameter description in calltips
+
+2010-01-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgfilteredlistdialog.vala:
 
 	skip unselectable nodes when using the cursor up / down keys

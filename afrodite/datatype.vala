@@ -147,17 +147,19 @@ namespace Afrodite
 		public string description		
 		{
 			owned get {
-				string res = "";
+				string res;
 				
 				if (is_out)
 					res = "out ";
 				else if (is_ref)
 					res = "ref ";
-				
+				else
+					res = "";
+					
 				if (is_dynamic)
 					res += "dynamic ";
 					
-				res = type_name;
+				res += type_name;
 				
 				if (is_pointer)
 					res += "*";
