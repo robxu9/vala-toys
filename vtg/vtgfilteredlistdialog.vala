@@ -171,7 +171,37 @@ namespace Vtg
 			_button_ok.set_sensitive (can_select_current_row ());
 		}
 		
-		public bool on_entry_key_press (Gtk.Widget sender, Gdk.EventKey evt)
+		private void move_cursor_down (TreeModel model, TreeIter curr, out TreeIter target)
+		{
+			if (model.iter_has_child(curr)) {
+				model.iter_children (out target, curr);
+			} else {
+				target = curr;
+				if (!model.iter_next (ref target)) {
+					model.iter_parent (out target, curr);
+					model.iter_next (ref target);
+				}
+			}			
+		}
+		
+		private void move_cursor_up (TreeModel model, TreeIter curr, out TreeIter target, out TreePath path)
+		{
+			path = model.get_path (curr);
+			if (!path.prev ()) {
+				path.up ();
+				model.get_iter (out target, path);
+			} else {
+				model.get_iter (out curr, path);
+				if (model.iter_has_child(curr)) {
+					int nch = model.iter_n_children (curr);
+					model.iter_nth_child (out target, curr, nch - 1);
+				} else {
+					target = curr;
+				}
+			}
+		}
+				
+		private bool on_entry_key_press (Gtk.Widget sender, Gdk.EventKey evt)
 		{
 			if (evt.keyval == Gdk.Key_Down || evt.keyval == Gdk.Key_Up) {
 				TreeIter curr;
@@ -181,29 +211,9 @@ namespace Vtg
 				
 				if (_treeview.get_selection ().get_selected (out model, out curr)) {
 					if (evt.keyval == Gdk.Key_Down) {
-						if (model.iter_has_child(curr)) {
-							model.iter_children (out target, curr);
-						} else {
-							target = curr;
-							if (!model.iter_next (ref target)) {
-								model.iter_parent (out target, curr);
-								model.iter_next (ref target);
-							}
-						}
+						move_cursor_down (model, curr, out target);
 					} else {
-						path = model.get_path (curr);
-						if (!path.prev ()) {
-							path.up ();
-							model.get_iter (out target, path);
-						} else {
-							model.get_iter (out curr, path);
-							if (model.iter_has_child(curr)) {
-								int nch = model.iter_n_children (curr);
-								model.iter_nth_child (out target, curr, nch - 1);
-							} else {
-								target = curr;
-							}
-						}
+						move_cursor_up (model, curr, out target, out path);	
 					}
 				} else {
 					model = _treeview.get_model ();
