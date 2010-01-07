@@ -528,6 +528,15 @@ namespace Vtg
 			if (word == null || word == "")
 				return null;
 
+			string symbol_name = last_part;
+			
+			//don't try to find method signature if is a: for, foreach, if, while etc...
+			if (is_vala_keyword (symbol_name)) {
+				return null;
+			}
+
+			Afrodite.Symbol? result = null;
+			
 			/* 
 			  strip last type part. 
 			  eg. for demos.demo.demo_method obtains
@@ -539,16 +548,8 @@ namespace Vtg
 			} else {
 				first_part = "this"; //HACK: this won't work for static methods
 			}
-			string symbol_name = last_part;
-			
-			//don't try to find method signature if is a: for, foreach, if, while etc...
-			if (is_vala_keyword (symbol_name)) {
-				return null;
-			}
 			
 			GLib.debug ("get_current_symbol_item for %s, %s", first_part, symbol_name);
-			
-			Afrodite.Symbol? result = null;
 			result = complete (null,  null, first_part, lineno, colno);
 			if (result != null && result.has_children) {
 				foreach (Symbol? symbol in result.children) {
