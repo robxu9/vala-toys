@@ -1,5 +1,18 @@
 2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	dead code removal, and missing changelog from previous commit
+
+2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	minor code reorganization
+
+2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	use standard completion options (for now) when = is present on the line
