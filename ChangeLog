@@ -2,6 +2,12 @@
 
 	* vtg/vtgfilteredlistdialog.vala:
 
+	skip unselectable nodes when using the cursor up / down keys
+
+2010-01-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
 	refactor dialog move up/down methods
 
 2010-01-07  Andrea Del Signore  <sejerpz@tin.it>

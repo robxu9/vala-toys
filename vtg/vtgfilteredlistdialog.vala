@@ -179,22 +179,27 @@ namespace Vtg
 				target = curr;
 				if (!model.iter_next (ref target)) {
 					model.iter_parent (out target, curr);
-					model.iter_next (ref target);
+					if (!model.iter_next (ref target))
+						target = curr;
 				}
 			}			
 		}
 		
-		private void move_cursor_up (TreeModel model, TreeIter curr, out TreeIter target, out TreePath path)
+		private void move_cursor_up (TreeModel model, TreeIter curr, out TreeIter target)
 		{
-			path = model.get_path (curr);
-			if (!path.prev ()) {
-				path.up ();
-				model.get_iter (out target, path);
-			} else {
+			TreePath path = model.get_path (curr);
+			if (path.prev ()) {
 				model.get_iter (out curr, path);
 				if (model.iter_has_child(curr)) {
 					int nch = model.iter_n_children (curr);
 					model.iter_nth_child (out target, curr, nch - 1);
+				} else {
+					target = curr;
+				}
+			} else {
+				path = model.get_path (curr);
+				if (path.get_depth () > 1 && path.up ()) {
+					model.get_iter (out target, path);
 				} else {
 					target = curr;
 				}
@@ -208,17 +213,36 @@ namespace Vtg
 				TreeIter target;
 				TreeModel model;
 				TreePath path;
+				bool selectable = true;
 				
 				if (_treeview.get_selection ().get_selected (out model, out curr)) {
 					if (evt.keyval == Gdk.Key_Down) {
 						move_cursor_down (model, curr, out target);
+
+						model.get (target, FilteredListDialogColumns.SELECTABLE, out selectable);
+						if (!selectable) {
+							curr = target;
+							move_cursor_down (model, curr, out target);
+						}
 					} else {
-						move_cursor_up (model, curr, out target, out path);	
+						move_cursor_up (model, curr, out target);	
+
+						model.get (target, FilteredListDialogColumns.SELECTABLE, out selectable);
+						if (!selectable) {
+							curr = target;
+							move_cursor_up (model, curr, out target);
+						}
 					}
 				} else {
 					model = _treeview.get_model ();
 					model.get_iter_first (out target);
 					path = model.get_path (target);
+
+					model.get (target, FilteredListDialogColumns.SELECTABLE, out selectable);
+					if (!selectable) {
+						curr = target;
+						move_cursor_down (model, curr, out target);
+					}					
 				}
 				path = model.get_path (target);
 				_treeview.get_selection ().select_iter (target);
