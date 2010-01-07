@@ -589,7 +589,7 @@ namespace Vtg
 						if (whole_line.str ("= new ") != null || whole_line.str ("=new ") != null) {
 							options = DetachCopyOptions.creation_methods ();
 						} else if (whole_line.str ("=") != null) {
-							options = DetachCopyOptions.factory_methods ();
+							options = DetachCopyOptions.standard ();
 						} else if (whole_line.str ("throws ") != null || whole_line.str ("throw ") != null) {
 							options = DetachCopyOptions.error_domains ();
 						}

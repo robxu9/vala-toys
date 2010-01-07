@@ -1,3 +1,9 @@
+2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	use standard completion options (for now) when = is present on the line
+
 2010-01-07  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/datatype.vala:
