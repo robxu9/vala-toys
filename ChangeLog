@@ -1,8 +1,15 @@
+2010-01-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vtg/vtgoutputview.vala:
+
+	fixed when sometime the output view looses some chars
+
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsymbolcompletionprovider.vala:
 
-	starting from the first column when evicting the current document line
+	start from the first column when evicting the current document line
 
 2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
 

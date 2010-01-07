@@ -151,7 +151,7 @@ namespace Vtg
 		public virtual void start_watch (OutputTypes output_type, uint id, int stdo, int stde, int stdi = -1)
 		{
 			try {
-				ProcessWatchInfo? target = find_process_by_id (id);
+				ProcessWatchInfo target = find_process_by_id (id);
 
 				if (target != null) {
 					stop_watch (id);
@@ -163,14 +163,15 @@ namespace Vtg
 					target.stdin = new IOChannel.unix_new (stdi);
 				}
 				target.stdout = new IOChannel.unix_new (stdo);
-				target.stdout_watch_id =  target.stdout.add_watch (IOCondition.IN, this.on_messages);
+				target.stdout_watch_id =  target.stdout.add_watch (IOCondition.IN | IOCondition.PRI, this.on_messages);
 				target.stdout.set_flags (target.stdout.get_flags () | IOFlags.NONBLOCK);
-				//target.stdout.set_buffered (false);
+				
 			        target.stderr = new IOChannel.unix_new (stde);
-				target.stderr_watch_id = target.stderr.add_watch (IOCondition.IN, this.on_messages);
+				target.stderr_watch_id = target.stderr.add_watch (IOCondition.IN | IOCondition.PRI, this.on_messages);
 				target.stderr.set_flags (target.stderr.get_flags () | IOFlags.NONBLOCK);
-				//target.stderr.set_buffered (false);
+
 				line.erase (0, -1);
+				
 				//activate bottom pane if not visible
 				var panel = _plugin_instance.window.get_bottom_panel ();
 				if (!panel.visible)
@@ -200,20 +201,19 @@ namespace Vtg
 
 		private void log_channel (IOChannel source) throws GLib.Error
 		{
-			string message = null;
+			GLib.StringBuilder message = new GLib.StringBuilder ();
 			size_t len = 0;
 			char[] buff = new char[4096];
-			source.read_chars (buff, out len);
-			while (len > 0) {
-				if (message == null) {
-					message = (string) buff;
-				} else {
-					message = message.concat ((string) buff);
+			IOStatus res = IOStatus.NORMAL;
+			
+			while (res == IOStatus.NORMAL) {
+				res = source.read_chars (buff, out len);
+				if (len > 0) {
+					message.append_len ((string) buff, (ssize_t) len);
 				}
-				source.read_chars (buff, out len);
 			}
-
-			if (!StringUtils.is_null_or_empty(message)) {
+			
+			if (message.len > 0) {
 				var process = find_process_by_io_channel (source);
 				OutputTypes output_type;
 				if (process != null) {
@@ -221,14 +221,14 @@ namespace Vtg
 				} else {
 					output_type = OutputTypes.CHILD_PROCESS;
 				}
-				log_message (output_type, message);
+				log_message (output_type, message.str);
 			}
 		}
 		
 		private bool on_messages (IOChannel source, IOCondition condition)
 		{
 			try {
-				if (condition == IOCondition.IN) {
+				if ((condition & (IOCondition.IN | IOCondition.PRI)) != 0) {
 					log_channel (source);
 				}
 				return true;
@@ -246,11 +246,11 @@ namespace Vtg
 
 			for (int count = 0; count < lines.length; count++) {
 				string line = lines[count];
-
+				
 				if (!StringUtils.is_null_or_empty(line)) {
 					foreach (string keyword in keywords) {
 						if (line.has_prefix (keyword)) {
-							_messages.insert_with_tags_by_name (iter, keyword, (int) keyword.length, "keyword");
+							_messages.insert_with_tags_by_name (iter, keyword, -1, "keyword");
 							line = line.substring (keyword.length);
 						}
 					}
@@ -263,12 +263,14 @@ namespace Vtg
 				if (count < (lines.length -1)) {
 					if (line == null)
 						line = "\n";
-					else
+					else if (!line.has_suffix ("\n"))
 						line += "\n";
 				}
 
 				if (!StringUtils.is_null_or_empty(line))
-					_messages.insert (iter, line, (int) line.length);
+				{
+					_messages.insert (iter, line, -1);
+				}
 			}
 			_textview.scroll_mark_onscreen (_messages.get_insert ());
 			message_added (output_type, message);			
