@@ -1,5 +1,12 @@
 2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbuildlogview.vala:
+
+	Add the number of errors / warning in the error / warning buttons.
+	Fixes issue #113	
+
+2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* vtg/vtgsymbolcompletionprovider.vala:
 

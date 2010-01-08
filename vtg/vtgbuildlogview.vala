@@ -42,7 +42,10 @@ namespace Vtg
 		
 		private bool show_warnings = true;
 		private bool show_errors = true;
-		
+
+		private ToggleToolButton _vala_warning_button = null;
+		private ToggleToolButton _vala_error_button = null;
+
  		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 		
 		public int error_count {
@@ -70,30 +73,34 @@ namespace Vtg
 
 		construct 
 		{
+			
+			
 			var panel = _plugin_instance.window.get_bottom_panel ();
 			_ui = new Gtk.VBox (false, 8);
-			
+
 			//toobar
 			var toolbar = new Gtk.Toolbar ();
 			toolbar.set_style (ToolbarStyle.BOTH_HORIZ);
 			toolbar.set_icon_size (IconSize.SMALL_TOOLBAR);
-			
-			var toggle = new Gtk.ToggleToolButton ();
-			toggle.set_label (_("Warnings"));
-			toggle.set_is_important (true);
-			toggle.set_icon_name (Gtk.STOCK_DIALOG_WARNING);
-			toggle.set_active (true);
-			toggle.toggled += on_toggle_warnings_toggled;
-			toggle.set_tooltip_text (_("Show or hide the warnings from the build result view"));
-			toolbar.insert (toggle, -1);
-			toggle = new Gtk.ToggleToolButton ();
-			toggle.set_label (_("Errors"));
-			toggle.set_is_important (true);
-			toggle.set_icon_name (Gtk.STOCK_DIALOG_ERROR);
-			toggle.toggled += on_toggle_errors_toggled;
-			toggle.set_tooltip_text (_("Show or hide the errors from the build result view"));
-			toggle.set_active (true);
-			toolbar.insert (toggle, -1);
+
+			_vala_warning_button = new Gtk.ToggleToolButton ();
+			_vala_warning_button.set_label (_("Warnings"));
+			_vala_warning_button.set_is_important (true);
+			_vala_warning_button.set_icon_name (Gtk.STOCK_DIALOG_WARNING);
+			_vala_warning_button.set_active (true);
+			_vala_warning_button.toggled += on_toggle_warnings_toggled;
+			_vala_warning_button.set_tooltip_text (_("Show or hide the warnings from the build result view"));
+			toolbar.insert (_vala_warning_button, -1);
+
+			_vala_error_button = new Gtk.ToggleToolButton ();
+			_vala_error_button.set_label (_("Errors"));
+			_vala_error_button.set_is_important (true);
+			_vala_error_button.set_icon_name (Gtk.STOCK_DIALOG_ERROR);
+			_vala_error_button.toggled += on_toggle_errors_toggled;
+			_vala_error_button.set_tooltip_text (_("Show or hide the errors from the build result view"));
+			_vala_error_button.set_active (true);
+			toolbar.insert (_vala_error_button, -1);
+
 			_ui.pack_start (toolbar, false, true, 0);
 			
 			//error / warning list view
@@ -137,6 +144,8 @@ namespace Vtg
 			panel.add_item_with_stock_icon (_ui, _("Build results"), Gtk.STOCK_EXECUTE);
 			_plugin_instance.output_view.message_added += this.on_message_added;
 			_child_model.set_sort_column_id (5, SortType.ASCENDING);
+			
+			update_toolbar_button_status ();
 		}
 
 		public void initialize (ProjectManager? project = null)
@@ -146,6 +155,7 @@ namespace Vtg
 			_error_count = 0;
 			_warning_count = 0;
 			_child_model.clear ();
+			update_toolbar_button_status ();
 		}
 
 		public void activate ()
@@ -281,12 +291,31 @@ namespace Vtg
 					sort_id = 0; //errors come first
 				}
 
-
 				if (parts[2] != null) {
 					TreeIter iter;
 					_child_model.append (out iter);
 					_child_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, sort_id, 6, _project);
+					update_toolbar_button_status ();
 				}
+			}
+		}
+		
+		private void update_toolbar_button_status ()
+		{
+			if (_warning_count == 0) {
+				_vala_warning_button.set_label (_("Warnings"));
+				_vala_warning_button.set_sensitive (false);
+			} else {
+				_vala_warning_button.set_label ("%s (%d)".printf (_("Warnings"), _warning_count));
+				_vala_warning_button.set_sensitive (true);
+			}
+			
+			if (_error_count == 0) {
+				_vala_error_button.set_label (_("Errors"));
+				_vala_error_button.set_sensitive (false);
+			} else {
+				_vala_error_button.set_label ("%s (%d)".printf (_("Errors"), _error_count));
+				_vala_error_button.set_sensitive (true);
 			}
 		}
 		
