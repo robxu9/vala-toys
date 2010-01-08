@@ -232,11 +232,11 @@ namespace Vtg
 				activate_path (path);
 				_build_view.scroll_to_cell (path, null, false, 0, 0);
 				_build_view.get_selection ().select_path (path);
-				if (current_error_row < (_error_count + _warning_count) - 1)
-					current_error_row++;
-				else
-					current_error_row = 0;
 			}
+			if (current_error_row < (_error_count + _warning_count) - 1)
+				current_error_row++;
+			else
+				current_error_row = 0;
 		}
 
 		public void previous_error ()
@@ -246,11 +246,11 @@ namespace Vtg
 				activate_path (path);
 				_build_view.scroll_to_cell (path, null, false, 0, 0);
 				_build_view.get_selection ().select_path (path);
-				if (current_error_row > 0)
-					current_error_row--;
-				else
-					current_error_row = (_error_count + _warning_count) - 1;
 			}
+			if (current_error_row > 0)
+				current_error_row--;
+			else
+				current_error_row = (_error_count + _warning_count) - 1;
 		}
 
 		/* 

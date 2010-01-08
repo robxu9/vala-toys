@@ -772,7 +772,7 @@ namespace Vtg
 			action = _actions.get_action ("ProjectGotoDocument");
 			action.set_sensitive (!default_project);
 			
-			bool has_errors = _prj_builder.error_pane.error_count > 0;
+			bool has_errors = (_prj_builder.error_pane.error_count + _prj_builder.error_pane.warning_count) > 0;
 			action = _actions.get_action ("ProjectBuildNextError");
 			action.set_sensitive (has_errors);
 			action = _actions.get_action ("ProjectBuildPreviousError");
