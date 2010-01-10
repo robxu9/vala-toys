@@ -60,6 +60,16 @@ namespace Vtg
 			_config = new Configuration ();
 			_config.notify += this.on_configuration_property_changed;
 			GLib.Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
+			initialize_default_project ();
+		}
+
+		private void initialize_default_project ()
+		{
+			//return default_project anyway
+			_default_project = new ProjectDescriptor ();
+			_default_project.project = new ProjectManager (_config.symbol_enabled);
+			_default_project.project.create_default_project ();
+			_projects.add (_default_project);
 		}
 
 		private PluginInstance? get_plugin_instance_for_window (Gedit.Window window)
@@ -175,13 +185,6 @@ namespace Vtg
 				if (project.project.contains_file (file)) {
 					return project;
 				}
-			}
-
-			//return default_project anyway
-			if (_default_project == null) {
-				_default_project = new ProjectDescriptor ();
-				//_default_project.completion = new Vsc.SymbolCompletion ();
-				//_default_project.completion.parser.resume_parsing ();
 			}
 
 			return _default_project;

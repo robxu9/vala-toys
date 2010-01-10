@@ -159,9 +159,9 @@ namespace Vtg
 			}
 			
 			//default empty project
-			_prjs_combo.append_text (_("(no project opened - default)"));
-			_prjs_combo.set_active (0);
-			_project_count++;
+			//_prjs_combo.append_text (_("(no project opened - default)"));
+			//_prjs_combo.set_active (0);
+			//_project_count++;
 		}
 		
 		public void add_project (Project project)

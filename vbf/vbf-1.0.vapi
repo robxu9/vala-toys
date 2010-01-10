@@ -46,6 +46,7 @@ namespace Vbf {
 		public string name;
 		public weak Vbf.Project project;
 		public Group (Vbf.Project project, string id);
+		public void add_target (Vbf.Target target);
 		public bool contains_target (string id);
 		public Vala.List<string> get_built_libraries ();
 		public Vala.List<string> get_include_dirs ();
@@ -79,6 +80,7 @@ namespace Vbf {
 		public string version;
 		public string working_dir;
 		public Project (string id);
+		public void add_group (Vbf.Group group);
 		public string get_all_source_files ();
 		public Vbf.Group? get_group (string id);
 		public Vala.List<Vbf.Group> get_groups ();
@@ -107,13 +109,16 @@ namespace Vbf {
 		public bool no_install;
 		public Vbf.TargetTypes type;
 		public Target (Vbf.Group group, Vbf.TargetTypes type, string id);
+		public void add_source (Vbf.Source source);
 		public Vala.List<string> get_built_libraries ();
 		public Vala.List<Vbf.File> get_files ();
 		public Vala.List<string> get_include_dirs ();
 		public Vala.List<Vbf.Package> get_packages ();
+		public Vbf.Source? get_source (string filename);
 		public Vala.List<Vbf.Source> get_sources ();
 		public bool has_file_of_type (Vbf.FileTypes type);
 		public bool has_sources_of_type (Vbf.FileTypes type);
+		public void remove_source (Vbf.Source source);
 	}
 	[CCode (cheader_filename = "vbf.h")]
 	public class UnresolvedConfigNode : Vbf.ConfigNode {

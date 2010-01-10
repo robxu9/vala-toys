@@ -85,16 +85,50 @@ namespace Vtg
 			_window = null;
 		}
 		
+		private static void check_vala_source_for_add (ProjectDescriptor project_descriptor, Gedit.Document doc)
+		{
+			if (Utils.is_vala_doc (doc)) {
+				// check if project contains this file, if not add it
+				var group = project_descriptor.project.project.get_group("Sources");
+				var target = group.get_target_for_id ("Default");
+				var source = target.get_source (Utils.get_document_name (doc));
+				if (source == null) {
+					// add the source to the project
+					target.add_source (new Vbf.Source.with_type (target, Utils.get_document_name (doc), FileTypes.VALA_SOURCE));
+					project_descriptor.project.project.update ();
+				}
+			}
+		}
+
+		private static void check_vala_source_for_remove (ProjectDescriptor project_descriptor, Gedit.Document doc)
+		{
+			// check if project contains this file, if not add it
+			var group = project_descriptor.project.project.get_group("Sources");
+			var target = group.get_target_for_id ("Default");
+			var source = target.get_source (Utils.get_document_name (doc));
+			if (source != null) {
+				// add the source to the project
+				target.remove_source (source);
+				project_descriptor.project.project.update ();
+			}	
+		}
+		
 		private static void on_tab_added (Gedit.Window sender, Gedit.Tab tab, Vtg.PluginInstance instance)
 		{
 			var doc = tab.get_document ();
-			var project = instance.plugin.project_descriptor_find_from_document (doc);
+			var project_descriptor = instance.plugin.project_descriptor_find_from_document (doc);
 
+			GLib.debug ("%s: ", project_descriptor.project.project.name);
+			
+			if (project_descriptor != null && project_descriptor.project.project.id == "vtg-default-project") {
+				check_vala_source_for_add (project_descriptor, doc);
+			}
+			
 			if (doc.language != null && doc.language.id == "vala") {
 				var view = tab.get_view ();
 				GLib.debug ("init view");
 				
-				instance.initialize_view (project, view);
+				instance.initialize_view (project_descriptor, view);
 			}
 			instance.initialize_document (doc);
 		}
@@ -106,6 +140,12 @@ namespace Vtg
 
 			instance.uninitialize_view (view);
 			instance.uninitialize_document (doc);
+			
+			var project_descriptor = instance.plugin.project_descriptor_find_from_document (doc);
+
+			if (project_descriptor != null && project_descriptor.project.project.id == "vtg-default-project") {
+				check_vala_source_for_remove (project_descriptor, doc);
+			}
 		}
 
 		public void initialize_views ()
@@ -297,11 +337,18 @@ namespace Vtg
 			var app = App.get_default ();
 			foreach (Gedit.View view in app.get_views ()) {
 				if (view.get_buffer () == sender) {
+					var project_descriptor = instance.plugin.project_descriptor_find_from_document (sender);
+					GLib.debug ("on_notify_language %s: ", project_descriptor.project.project.name);
 					if (sender.language  == null || sender.language.id != "vala") {
+						if (project_descriptor != null && project_descriptor.project.project.id == "vtg-default-project") {
+							check_vala_source_for_remove (project_descriptor, sender);
+						}
 						instance.uninitialize_view (view);
 					} else {
-						var project = instance.plugin.project_descriptor_find_from_document (sender);
-						instance.initialize_view (project, view);
+						if (project_descriptor != null && project_descriptor.project.project.id == "vtg-default-project") {
+							check_vala_source_for_add (project_descriptor, sender);
+						}
+						instance.initialize_view (project_descriptor, view);
 					}
 					break;
 				}
