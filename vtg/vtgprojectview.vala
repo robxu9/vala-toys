@@ -138,7 +138,7 @@ namespace Vtg
 			_side_panel.pack_start (_prjs_combo, false, false, 4);
 			_side_panel.pack_start (scroll, true, true, 4);
 			_side_panel.show_all ();
-			panel.add_item (_side_panel, _("Projects"), null);
+			panel.add_item_with_stock_icon (_side_panel, _("Projects"), Gtk.STOCK_DIRECTORY);
 			panel.activate_item (_side_panel);
 			_project_count = 0;
 

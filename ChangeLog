@@ -1,8 +1,14 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectview.vala:
+
+	added an icon to the project view pane
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutlinerview.vala:
 
-	added a icon to the outiliner view pane
+	added an icon to the outiliner view pane
 
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
