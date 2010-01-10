@@ -26,7 +26,7 @@ namespace Vtg
 {
 	internal class SourceBookmarks : GLib.Object
 	{
-		private Vtg.PluginInstance _plugin_instance;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private ulong signal_id;
 		private const int MAX_BOOKMARKS = 20;
 		private Vala.List<SourceBookmark> _bookmarks = new Vala.ArrayList<SourceBookmark> ();
@@ -35,7 +35,7 @@ namespace Vtg
 		public signal void current_bookmark_changed ();
 		public signal void move_wrapped ();		
 		
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
 
 		public SourceBookmarks (Vtg.PluginInstance plugin_instance)
 		{

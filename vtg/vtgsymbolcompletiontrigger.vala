@@ -29,8 +29,8 @@ namespace Vtg
 {
 	class SymbolCompletionTrigger : GLib.Object, Gsc.Trigger
 	{
-		private Vtg.PluginInstance _plugin;
-		private Gsc.Completion _completion;
+		private unowned Vtg.PluginInstance _plugin = null;
+		private unowned Gsc.Completion _completion = null;
 		private string _trigger_name;
 		private string _filter_proposal;
 
@@ -51,7 +51,6 @@ namespace Vtg
 					apply_filter ();
 				}
 			}
-			default = null;
 		}
 
 		private bool activate ()

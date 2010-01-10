@@ -37,7 +37,7 @@ namespace Vtg
 		private int current_error_row = 0;
 		private int _error_count = 0;
 		private int _warning_count = 0;
-		private Vtg.PluginInstance _plugin_instance;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private unowned ProjectManager _project;
 		
 		private bool show_warnings = true;
@@ -46,7 +46,7 @@ namespace Vtg
 		private ToggleToolButton _vala_warning_button = null;
 		private ToggleToolButton _vala_error_button = null;
 
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
 		
 		public int error_count {
 			get {

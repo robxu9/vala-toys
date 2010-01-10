@@ -39,7 +39,7 @@ namespace Vtg
 		private GConf.Client _gconf;
 		private Gtk.Dialog _dialog;
 		
-		private bool _info_window_visible;
+		private bool _info_window_visible = false;
 
 		public bool bracket_enabled { get; set; }
 
@@ -66,7 +66,6 @@ namespace Vtg
 					}
 				}
 			}
-			default = false;
 		}
 		
 		public bool save_before_build 

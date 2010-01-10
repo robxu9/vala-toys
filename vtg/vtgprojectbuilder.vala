@@ -31,7 +31,7 @@ namespace Vtg
 	{
 		private const string MAKE = "make";
 
-		private Vtg.PluginInstance _plugin_instance;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private BuildLogView _build_view = null;
 		private uint _child_watch_id = 0;
 		private bool is_bottom_pane_visible;
@@ -41,7 +41,7 @@ namespace Vtg
 		public signal void build_start ();
 		public signal void build_exit (int exit_status);
 		
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
  		
 		public BuildLogView error_pane {
 			get {

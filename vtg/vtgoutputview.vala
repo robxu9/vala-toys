@@ -37,7 +37,7 @@ namespace Vtg
 	
 	internal class OutputView : GLib.Object
 	{
-		protected Vtg.PluginInstance _plugin_instance;
+		protected unowned Vtg.PluginInstance _plugin_instance = null;
 
 		private Vala.List<ProcessWatchInfo> _processes = new Vala.ArrayList<ProcessWatchInfo> ();
 		private StringBuilder line = new StringBuilder ();
@@ -52,7 +52,7 @@ namespace Vtg
 			"  testing"
 		};
 		
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
 
 		public OutputView (Vtg.PluginInstance plugin_instance)
 		{

@@ -35,10 +35,10 @@ namespace Vtg
 
 		private TreePath? _current = null;
 		private int _match_count = 0;
-		private Vtg.PluginInstance _plugin_instance;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private unowned ProjectManager _project;
 				
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
 		
 		public ProjectSearchResultsView (Vtg.PluginInstance plugin_instance)
 		{

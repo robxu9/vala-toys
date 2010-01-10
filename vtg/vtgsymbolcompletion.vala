@@ -30,16 +30,16 @@ namespace Vtg
 {
 	internal class SymbolCompletion : GLib.Object
 	{
-		private Vtg.PluginInstance _plugin_instance;
-		private Gedit.View _view;
-		private unowned CompletionEngine _completion_engine;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
+		private unowned Gedit.View _view = null;
+		private unowned CompletionEngine _completion_engine = null;
 		private SymbolCompletionProvider _provider;
 		private Gsc.Completion _manager;
 		private SymbolCompletionTrigger _trigger;
 		
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
-		public Gedit.View view { get { return _view; } construct { _view = value; } default = null; }
-		public CompletionEngine completion_engine { get { return _completion_engine; } construct set { _completion_engine = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
+		public Gedit.View view { get { return _view; } construct { _view = value; } }
+		public CompletionEngine completion_engine { get { return _completion_engine; } construct set { _completion_engine = value; } }
 		public SymbolCompletionTrigger trigger { get { return _trigger; } }
 		
 		public SymbolCompletion (Vtg.PluginInstance plugin_instance, Gedit.View view, CompletionEngine completion_engine)

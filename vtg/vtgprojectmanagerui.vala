@@ -158,7 +158,7 @@ namespace Vtg
 		/* END UI */
 		private Vala.List<ProjectManager> _projects = new Vala.ArrayList<ProjectManager> ();
 		private ActionGroup _actions = null;
-		private Vtg.PluginInstance _plugin_instance;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private ProjectBuilder _prj_builder = null;
 		private ProjectExecuter _prj_executer = null;
 		private ProjectSearch _prj_search = null;		
@@ -169,7 +169,7 @@ namespace Vtg
 		private uint _sb_msg_id = 0;
 		private uint _sb_context_id = 0;
 
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
 
 		//public signal void project_loaded (Project project);
 

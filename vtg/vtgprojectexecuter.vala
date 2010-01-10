@@ -29,7 +29,7 @@ namespace Vtg
 {
 	internal class ProjectExecuter : GLib.Object
 	{
-		private Vtg.PluginInstance _plugin_instance;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private BuildLogView _build_view = null;
 		//TODO: hashtable with Project as key
 		private uint _child_watch_id = 0;
@@ -38,7 +38,7 @@ namespace Vtg
 		public signal void process_start ();
 		public signal void process_exit (int exit_status);
 		
- 		public Vtg.PluginInstance plugin_instance { get { return plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return plugin_instance; } construct { _plugin_instance = value; } }
  		
 		public bool is_executing {
 			get {

@@ -26,9 +26,9 @@ namespace Vtg
 {
 	internal class ChangeLog : GLib.Object
 	{
-		private Vtg.PluginInstance _plugin_instance;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
  		
 		public ChangeLog (Vtg.PluginInstance plugin_instance)
 		{

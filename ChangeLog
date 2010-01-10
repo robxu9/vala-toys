@@ -1,9 +1,30 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* afrodite/astmerger.vala:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearch.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	fixes for the upcoming vala compiler
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgutils.vala:
 
 	better icons for error domains and codes
-
+ 
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/astmerger.vala:

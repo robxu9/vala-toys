@@ -492,7 +492,7 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
-		public override void visit_enum (Enum e) 
+		public override void visit_enum (Vala.Enum e) 
 		{
 			if (!is_symbol_defined_current_source (e))
 				return;

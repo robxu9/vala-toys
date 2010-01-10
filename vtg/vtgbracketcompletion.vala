@@ -28,12 +28,12 @@ namespace Vtg
 {
 	internal class BracketCompletion : GLib.Object 
 	{
-		private Vtg.PluginInstance _plugin_instance;
-		private Gedit.View _view;
+		private Vtg.PluginInstance _plugin_instance = null;
+		private Gedit.View _view = null;
 		private string tab_chars = "";
 
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
-		public Gedit.View view { get { return _view; } construct { _view = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
+		public Gedit.View view { get { return _view; } construct { _view = value; } }
 
 		public BracketCompletion (Vtg.PluginInstance plugin_instance, Gedit.View view)
 		{

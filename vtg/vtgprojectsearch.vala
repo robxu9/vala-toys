@@ -31,7 +31,7 @@ namespace Vtg
 	{
 		private const string GREP = "grep";
 		
-		private Vtg.PluginInstance _plugin_instance;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private ProjectSearchResultsView _results_view = null;
 		//TODO: hashtable with Project as key
 		private uint _child_watch_id = 0;
@@ -42,7 +42,7 @@ namespace Vtg
 		public signal void search_start ();
 		public signal void search_exit (int exit_status);
 		
- 		public Vtg.PluginInstance plugin_instance { get { return plugin_instance; } construct { _plugin_instance = value; } default = null; }
+ 		public Vtg.PluginInstance plugin_instance { get { return plugin_instance; } construct { _plugin_instance = value; } }
  		
 		public bool is_searching {
 			get {

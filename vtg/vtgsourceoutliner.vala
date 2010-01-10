@@ -29,12 +29,12 @@ namespace Vtg
 	internal class SourceOutliner : GLib.Object
 	{
 		private unowned Gedit.View _active_view = null;
-		private unowned PluginInstance _plugin_instance;
+		private unowned PluginInstance _plugin_instance = null;
 		private SourceOutlinerView _outliner_view = null;
 		private uint idle_id = 0;
 		private bool completion_setup = false;
  
-	 	public PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
+	 	public PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
 
 		public View active_view {
 			get {
