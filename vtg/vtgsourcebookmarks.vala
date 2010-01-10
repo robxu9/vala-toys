@@ -57,7 +57,7 @@ namespace Vtg
 			doc.get_iter_at_mark (out start, mark);
 						
 			string uri = doc.get_uri ();
-			var prj = instance._plugin_instance.project_manager_ui.project_view.current_project;
+			var prj = instance._plugin_instance.project_view.current_project;
 			if (prj != null && prj.contains_vala_source_file (uri)) {
 				int line = start.get_line ();
 				int col = start.get_line_offset ();

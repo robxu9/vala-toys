@@ -1,5 +1,18 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojects.vala:
+	* vtg/vtgsourcebookmarks.vala:
+
+	fixed an uri vs filename issue in contains_filename
+	move the project view instance to the plugin instance class where it really belongs
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojects.vala:
 	* vtg/Makefile.am:
 	* vtg/vtgplugin.vala:

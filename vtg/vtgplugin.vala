@@ -106,7 +106,7 @@ namespace Vtg
 				if (doc != null) {
 					var prj = _projects.get_project_descriptor_for_document (doc);
 					if (prj.project != null && Utils.is_vala_doc (doc)) {
-						instance.project_manager_ui.project_view.current_project = prj.project;
+						instance.project_view.current_project = prj.project;
 					}
 					if (instance.source_outliner != null)
 						instance.source_outliner.active_view = view;
@@ -172,14 +172,14 @@ namespace Vtg
 
 			foreach (PluginInstance instance in _instances) {
 				foreach (Gedit.Document doc in instance.window.get_documents ()) {
-					if (project.contains_file (doc.get_uri ())) {
+					if (project.contains_filename (Utils.get_document_name (doc))) {
 						//close tab
 						var tab = Tab.get_from_document (doc);
 						instance.window.close_tab (tab);
 					}
 				}
 				if (instance.project_manager_ui != sender) {
-					instance.project_manager_ui.project_view.remove_project (project.project);
+					instance.project_view.remove_project (project.project);
 				} 
 			}
 
@@ -190,7 +190,7 @@ namespace Vtg
 		{
 			foreach (PluginInstance instance in _instances) {
 				foreach (Gedit.Document doc in instance.window.get_unsaved_documents ()) {
-					if (project.contains_file (doc.get_uri ())) {
+					if (project.contains_filename (Utils.get_document_name (doc))) {
 						return true;
 					}
 				}
@@ -203,8 +203,8 @@ namespace Vtg
 		{
 			foreach (PluginInstance instance in _instances) {
 				foreach (Gedit.Document doc in instance.window.get_unsaved_documents ()) {
-					var uri = doc.get_uri ();
-					if (!StringUtils.is_null_or_empty (uri) && project.contains_file (uri)) {
+					var filename = Utils.get_document_name (doc);
+					if (!StringUtils.is_null_or_empty (filename) && project.contains_filename (filename)) {
 						doc.save (DocumentSaveFlags.IGNORE_MTIME);
 					}
 				}
@@ -219,7 +219,7 @@ namespace Vtg
 			/* update the other project manager views */
 			foreach (PluginInstance instance in _instances) {
 				if (instance.project_manager_ui != sender) {
-					instance.project_manager_ui.project_view.add_project (project);
+					instance.project_view.add_project (project);
 				}
 			}
 

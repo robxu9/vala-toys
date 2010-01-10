@@ -36,6 +36,7 @@ namespace Vtg
 		private ProjectManagerUi _project_manager_ui = null;
 		private SourceOutliner _source_outliner = null;
 		private OutputView _output_view = null;
+		private ProjectView _project_view = null;
 		private Vala.List<Vtg.SymbolCompletionHelper> _scs = new Vala.ArrayList<Vtg.SymbolCompletionHelper> ();
 		private Vala.List<Vtg.BracketCompletion> _bcs = new Vala.ArrayList<Vtg.BracketCompletion> ();
 		
@@ -53,7 +54,14 @@ namespace Vtg
 		{
 			get { return _source_outliner; }
 		}
-	
+
+		public ProjectView project_view 
+		{
+			get {
+				return _project_view;
+			}
+		}
+		
 		public Gedit.Window window
 		{
 			get { return _window; }
@@ -63,6 +71,10 @@ namespace Vtg
 		{
 			this.plugin = plugin;
 			this._window = window;
+			_project_view = new ProjectView (this);
+			foreach (ProjectDescriptor prj in plugin.projects.project_descriptors) {
+				_project_view.add_project (prj.project.project);
+			}
 			Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
 			Signal.connect_after (this._window, "tab-removed", (GLib.Callback) on_tab_removed, this);
 			

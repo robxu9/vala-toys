@@ -92,7 +92,7 @@ namespace Vtg
 			var file = Utils.get_document_name (document);
 			if (file != null) {
 				foreach (ProjectDescriptor project_descriptor in _project_descriptors) {
-					if (project_descriptor.project.contains_file (file)) {
+					if (project_descriptor.project.contains_filename (file)) {
 						return project_descriptor;
 					}
 				}

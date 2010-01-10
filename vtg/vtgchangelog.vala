@@ -37,7 +37,7 @@ namespace Vtg
 		
 		public bool prepare (string? file = null) throws GLib.Error
 		{
-			var project_manager = _plugin_instance.project_manager_ui.project_view.current_project;
+			var project_manager = _plugin_instance.project_view.current_project;
 			if (project_manager == null)
 				return false;
 			

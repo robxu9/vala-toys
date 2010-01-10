@@ -114,19 +114,27 @@ namespace Vtg
 			return null;
 		}
 		
-		public bool contains_file (string? uri)
+		public bool contains_filename (string? filename)
 		{
-			if (uri != null) {
+			if (filename != null) {
 				foreach (Group group in _project.get_groups ()) {
 					foreach (Target target in group.get_targets ()) {
 						foreach (Vbf.Source source in target.get_sources ()) {
-							if (source.uri == uri) {
-								return true;
+							try {
+								if (Filename.from_uri (source.uri) == filename) {
+									return true;
+								}
+							} catch (GLib.ConvertError err) {
+								GLib.warning ("error converting uri %s to filename: %s", source.uri, err.message);
 							}
 						}
 						foreach (Vbf.File file in target.get_files ()) {
-							if (file.uri == uri) {
-								return true;
+							try {
+								if (Filename.from_uri (file.uri) == filename) {
+									return true;
+								}
+							} catch (GLib.ConvertError err) {
+								GLib.warning ("error converting uri %s to filename: %s", file.uri, err.message);
 							}
 						}
 					}

@@ -159,7 +159,6 @@ namespace Vtg
 		private Vala.List<ProjectManager> _projects = new Vala.ArrayList<ProjectManager> ();
 		private ActionGroup _actions = null;
 		private Vtg.PluginInstance _plugin_instance;
-		private ProjectView _prj_view = null;
 		private ProjectBuilder _prj_builder = null;
 		private ProjectExecuter _prj_executer = null;
 		private ProjectSearch _prj_search = null;		
@@ -191,48 +190,37 @@ namespace Vtg
 
 		construct	
 		{
-			_prj_view = new ProjectView (_plugin_instance);
-			foreach (ProjectDescriptor prj in _plugin_instance.plugin.projects.project_descriptors) {
-				_prj_view.add_project (prj.project.project);
-			}			
-			_prj_view.notify["current-project"] += this.on_current_project_changed;
+			_plugin_instance.project_view.notify["current-project"] += this.on_current_project_changed;
 			_prj_builder = new ProjectBuilder (_plugin_instance);
 			_prj_executer = new ProjectExecuter (_plugin_instance);
 			_prj_search = new ProjectSearch (_plugin_instance);
 						
 			_prj_executer.process_start += (sender) => {
-				update_ui (_prj_view.current_project == null);
+				update_ui (_plugin_instance.project_view.current_project == null);
 			};
 			_prj_executer.process_exit += (sender, exit_status) => {
-				update_ui (_prj_view.current_project == null);
+				update_ui (_plugin_instance.project_view.current_project == null);
 			};
 			_prj_builder.build_start += (sender) => {
-				update_ui (_prj_view.current_project == null);
+				update_ui (_plugin_instance.project_view.current_project == null);
 			};
 			_prj_builder.build_exit += (sender, exit_status) => {
-				update_ui (_prj_view.current_project == null);
+				update_ui (_plugin_instance.project_view.current_project == null);
 			};
 			_prj_search.search_start += (sender) => {
-				update_ui (_prj_view.current_project == null);
+				update_ui (_plugin_instance.project_view.current_project == null);
 			};
 			_prj_search.search_exit += (sender, exit_status) => {
-				update_ui (_prj_view.current_project == null);
+				update_ui (_plugin_instance.project_view.current_project == null);
 			};
 						
 			initialize_ui ();
 			_changelog = new ChangeLog (_plugin_instance);
 			_bookmarks = new SourceBookmarks (_plugin_instance);
 			_bookmarks.current_bookmark_changed += this.on_current_bookmark_changed;
-			update_ui (_prj_view.current_project == null);
+			update_ui (_plugin_instance.project_view.current_project == null);
 		}
 
-		public ProjectView project_view 
-		{
-			get {
-				return _prj_view;
-			}
-		}
-		
 		private void initialize_ui ()
 		{
 			_actions = new ActionGroup ("ProjectManagerActionGroup");
@@ -287,7 +275,7 @@ namespace Vtg
 			try {
 				var doc = _plugin_instance.window.get_active_document ();
 				if (doc != null) {
-					var prj = _prj_view.current_project;
+					var prj = _plugin_instance.project_view.current_project;
 					string uri = doc.get_uri ();
 					string file = doc.get_short_name_for_display ();
 					if (prj != null) {
@@ -305,7 +293,7 @@ namespace Vtg
 		
 		private void on_complete_word (Gtk.Action action)
 		{
-			var project = _prj_view.current_project;
+			var project = _plugin_instance.project_view.current_project;
 			return_if_fail (project != null);
 			
 			var view = _plugin_instance.window.get_active_view ();
@@ -321,7 +309,7 @@ namespace Vtg
 
 		private void on_project_goto_definition (Gtk.Action action)
 		{
-			var project = _prj_view.current_project;
+			var project = _plugin_instance.project_view.current_project;
 			return_if_fail (project != null);
 			
 			var view = _plugin_instance.window.get_active_view ();
@@ -354,13 +342,13 @@ namespace Vtg
 
 		private void on_project_save_all (Gtk.Action action)
 		{
-			var project = _prj_view.current_project;
+			var project = _plugin_instance.project_view.current_project;
 			_plugin_instance.plugin.project_save_all (project);
 		}
 		
 		private void on_project_close (Gtk.Action action)
 		{
-			var project = _prj_view.current_project;
+			var project = _plugin_instance.project_view.current_project;
 			return_if_fail (project != null);
 
 			//there are some files that require saving: ask it!
@@ -424,7 +412,7 @@ namespace Vtg
 
 		private void on_project_search (Gtk.Action action)
 		{
-			if (_prj_view.current_project != null) {
+			if (_plugin_instance.project_view.current_project != null) {
 				string proposed_text = "";
 				var view = _plugin_instance.window.get_active_view ();
 				if (view != null) {
@@ -433,7 +421,7 @@ namespace Vtg
 					doc.get_selection_bounds (out start, out end);
 					proposed_text = start.get_text (end);
 				}
-				var project = _prj_view.current_project;
+				var project = _plugin_instance.project_view.current_project;
 				var exec_dialog = new ProjectSearchDialog (_plugin_instance.window, proposed_text);
 				if (exec_dialog.run () == ResponseType.OK) {
 					_prj_search.search (project, exec_dialog.search_text, exec_dialog.match_case);
@@ -453,7 +441,7 @@ namespace Vtg
 		
 		private void on_project_goto_document (Gtk.Action action)
 		{
-			var project = _prj_view.current_project.project;
+			var project = _plugin_instance.project_view.current_project.project;
 			return_if_fail (project != null);
 			var image = new Gtk.Image();
 			
@@ -533,7 +521,7 @@ namespace Vtg
 		
 		private void on_project_goto_symbol (Gtk.Action action)
 		{
-			var project = _prj_view.current_project;
+			var project = _plugin_instance.project_view.current_project;
 			return_if_fail (project != null);
 			
 			var pdes = _plugin_instance.plugin.projects.get_project_descriptor_for_project_manager (project);
@@ -610,7 +598,7 @@ namespace Vtg
 			var doc = _plugin_instance.window.get_active_document ();
 			if (doc != null) {
 				string file = doc.get_uri ();
-				var project = _prj_view.current_project;
+				var project = _plugin_instance.project_view.current_project;
 				if (project != null) {
 					if (project.contains_vala_source_file (file)) {
 						//TODO: we should get the group an issue a make in that subfolder
@@ -640,7 +628,7 @@ namespace Vtg
 		
 		private void on_project_build (Gtk.Action action)
 		{
-			if (_prj_view.current_project != null) {
+			if (_plugin_instance.project_view.current_project != null) {
 				string pars = null;
 				var cache = Vtg.Caches.get_build_cache ();
 								
@@ -677,7 +665,7 @@ namespace Vtg
 					}
 				}
 				
-				var project = _prj_view.current_project;
+				var project = _plugin_instance.project_view.current_project;
 				_plugin_instance.plugin.project_save_all (project);
 				_prj_builder.build (project, pars);
 			}
@@ -685,11 +673,11 @@ namespace Vtg
 
 		private void on_project_configure (Gtk.Action action)
 		{
-			if (_prj_view.current_project != null) {
+			if (_plugin_instance.project_view.current_project != null) {
 				var cache = Vtg.Caches.get_configure_cache ();
 				var params_dialog = new Vtg.Interaction.ParametersDialog (_("Configure Project"), _plugin_instance.window, cache);
 				if (params_dialog.run () == ResponseType.OK) {
-					var project = _prj_view.current_project;
+					var project = _plugin_instance.project_view.current_project;
 					var params = params_dialog.parameters;
 					if (!Vtg.Caches.cache_contains (cache, params)) {
 						Vtg.Caches.cache_add (cache, params);
@@ -712,8 +700,8 @@ namespace Vtg
 
 		private void on_project_execute_process (Gtk.Action action)
 		{
-			if (_prj_view.current_project != null) {
-				var project = _prj_view.current_project;
+			if (_plugin_instance.project_view.current_project != null) {
+				var project = _plugin_instance.project_view.current_project;
 				var exec_dialog = new ProjectExecuterDialog (_plugin_instance.window, project);
 				if (exec_dialog.run () == ResponseType.OK) {
 					var command_line = exec_dialog.command_line;
@@ -731,8 +719,8 @@ namespace Vtg
 
 		private void clean_project (bool stamps = false)
 		{
-			if (_prj_view.current_project != null) {
-				var project = _prj_view.current_project;
+			if (_plugin_instance.project_view.current_project != null) {
+				var project = _plugin_instance.project_view.current_project;
 				_prj_builder.clean (project, stamps);
 			}
 		}
@@ -812,10 +800,10 @@ namespace Vtg
 			
 			bool has_changelog = false;
 			bool has_vcs_backend = false;
-			if (_prj_view.current_project != null 
-			    && _prj_view.current_project.changelog_uri != null) {
+			if (_plugin_instance.project_view.current_project != null 
+			    && _plugin_instance.project_view.current_project.changelog_uri != null) {
 				has_changelog = true;
-				if (_prj_view.current_project.vcs_type != VcsTypes.NONE)
+				if (_plugin_instance.project_view.current_project.vcs_type != VcsTypes.NONE)
 					has_vcs_backend = true;
 			}
 			action = _actions.get_action ("ProjectPrepareChangeLog");
@@ -857,7 +845,7 @@ namespace Vtg
 				
 				if (project != null) {
 					// activate project
-					_prj_view.current_project = project;
+					_plugin_instance.project_view.current_project = project;
 				} else {
 					// open project
 					project = new ProjectManager (_plugin_instance.plugin.config.symbol_enabled);
@@ -869,7 +857,7 @@ namespace Vtg
 						//HACK: why the signal isn't working?!?!
 						//this.project_loaded (project);
 						_plugin_instance.plugin.on_project_loaded (this, project);
-						_prj_view.add_project (project.project);
+						_plugin_instance.project_view.add_project (project.project);
 					}
 				}
 			} catch (Error err) {
@@ -881,7 +869,7 @@ namespace Vtg
 		{
 			project.symbol_cache_building.disconnect (this.on_symbol_cache_building);
 			project.symbol_cache_builded.disconnect (this.on_symbol_cache_builded);
-			_prj_view.remove_project (project.project);
+			_plugin_instance.project_view.remove_project (project.project);
 			_plugin_instance.plugin.on_project_closed (this, project);
 			project.close ();
 			_projects.remove (project);
