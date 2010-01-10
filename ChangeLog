@@ -1,5 +1,12 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	cleanup source code outliner on close
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletion.vala:
 
 	cleanup symbol completion on close

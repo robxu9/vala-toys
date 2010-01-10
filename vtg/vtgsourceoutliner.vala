@@ -28,8 +28,8 @@ namespace Vtg
 {
 	internal class SourceOutliner : GLib.Object
 	{
-		private unowned Gedit.View _active_view = null;
 		private unowned PluginInstance _plugin_instance = null;
+ 		private Gedit.View _active_view = null; // it's not unowned because we need to cleanup later
 		private SourceOutlinerView _outliner_view = null;
 		private uint idle_id = 0;
 		private bool completion_setup = false;
@@ -70,10 +70,12 @@ namespace Vtg
 
 		~SourceOutliner ()
 		{
-			_outliner_view.goto_source -= this.on_goto_source;
-			_outliner_view.clear_view ();
-			_outliner_view.deactivate ();
-			_outliner_view = null;
+			if (_outliner_view != null) {
+				_outliner_view.goto_source -= this.on_goto_source;
+				_outliner_view.clear_view ();
+				_outliner_view.deactivate ();
+				_outliner_view = null;
+			}
 			if (idle_id != 0) {
 				GLib.Source.remove (idle_id);
 			}

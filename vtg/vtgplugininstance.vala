@@ -210,7 +210,9 @@ namespace Vtg
 		
 		public void deactivate_sourcecode_outliner ()
 		{
-			_source_outliner = null;
+			if (_source_outliner != null) {
+				_source_outliner = null;
+			}
 		}
 
 		public void activate_bracket (Gedit.View view)
