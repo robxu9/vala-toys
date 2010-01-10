@@ -304,8 +304,6 @@ namespace Vtg
 
 		public Gedit.Tab activate_uri (string uri, int line = 0, int col = 0)
 		{
-			GLib.debug ("activate uri %s", uri);
-			
 			Gedit.Tab tab = null;
 			Document existing_doc = null;
 			foreach (Document doc in _window.get_documents ()) {
@@ -317,21 +315,16 @@ namespace Vtg
 			}
 			
 			if (tab == null) {
-				GLib.debug ("new tab");
-				
 				tab = _window.create_tab_from_uri (uri, Encoding.get_utf8 (), line, true, false);
 				_window.set_active_tab (tab);
 				_last_created_view = tab.get_view();
 				Idle.add (this.on_idle_cursor_mode, Priority.DEFAULT_IDLE);
 			} else {
-				
 				_window.set_active_tab (tab);
-			}
-			if (existing_doc != null && line > 0) {
-				GLib.debug ("goto line %d", line);
-				
-				existing_doc.goto_line (line - 1);
-				tab.get_view ().scroll_to_cursor ();
+				if (existing_doc != null && line > 0) {
+					existing_doc.goto_line (line - 1);
+					tab.get_view ().scroll_to_cursor ();
+				}
 			}
 			return tab;		
 		}

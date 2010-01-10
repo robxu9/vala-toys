@@ -1,5 +1,11 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugininstance.vala:
+
+	cleanup the gedit bug workaround 
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* afrodite/astmerger.vala:
 	* vtg/vtgbracketcompletion.vala:
