@@ -93,6 +93,9 @@ namespace Afrodite
 		
 		~Completion ()
 		{
+			ast_mutex.lock ();
+			_ast = null;
+			ast_mutex.unlock ();
 			if (AtomicInt.@get (ref parser_stamp) != 0)
 				parser_thread.join ();
 
@@ -190,7 +193,7 @@ namespace Afrodite
 			queue_sources (sources);
 		}
 		
-		public bool try_acquire_ast (out Ast ast)
+		public bool try_acquire_ast (out unowned Ast ast)
 		{
 			bool res = false;
 			ast = null;
@@ -235,6 +238,8 @@ namespace Afrodite
 		
 		private void* parse_sources ()
 		{
+			GLib.Timer timer = new GLib.Timer ();
+			timer.start ();
 			debug ("%s: parser thread starting...", id);
 			begin_parsing (this);
 			Vala.List<SourceItem> sources = new ArrayList<SourceItem> ();
@@ -244,6 +249,7 @@ namespace Afrodite
 				
 				// get the source to parse
 				source_queue_mutex.@lock ();
+				int source_count = source_queue.size;
 				foreach (SourceItem item in source_queue) {
 					sources.add (item.copy ());
 				}
@@ -258,34 +264,42 @@ namespace Afrodite
 				// set the number of sources to process
 				AtomicInt.set (ref parser_remaining_files, sources.size);
 				ast_mutex.@lock ();
-				var merger = new AstMerger (_ast);
-				foreach (SourceItem source in sources) {
-					source.context = p.context;
+				if (_ast != null) {
+					var merger = new AstMerger (_ast);
+					foreach (SourceItem source in sources) {
+						source.context = p.context;
 					
-					if (source.context == null)
-						critical ("source %s context == null, non thread safe access to source item", source.path);
-					else {
-						foreach (Vala.SourceFile s in source.context.get_source_files ()) {
-							if (s.filename == source.path) {
+						if (source.context == null)
+							critical ("source %s context == null, non thread safe access to source item", source.path);
+						else {
+							foreach (Vala.SourceFile s in source.context.get_source_files ()) {
+								if (s.filename == source.path) {
+									bool source_exists = _ast.lookup_source_file (source.path) != null;
 								
-								if (_ast.lookup_source_file (source.path) != null) {
-									//debug ("%s: removing %s", id, source.path);
-									merger.remove_source_filename (source.path);
+									// if I'm parsing just one source and there are errors and the source already
+									// exists in the ast, I'll keep the previous copy
+									if (source_count == 1 && source_exists && p.context.report.get_errors () > 0)
+										break;
+									
+									if (source_exists) {
+										//debug ("%s: removing %s", id, source.path);
+										merger.remove_source_filename (source.path);
+									}
+								
+									//timer.start ();
+									merger.merge_vala_context (s, source.context, source.is_glib);
+									//timer.stop ();
+									//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
+									break;
 								}
-								
-								//timer.start ();
-								merger.merge_vala_context (s, source.context, source.is_glib);
-								//timer.stop ();
-								//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
-								break;
 							}
 						}
-					}
 					
-					AtomicInt.add (ref parser_remaining_files, -1);
+						AtomicInt.add (ref parser_remaining_files, -1);
+					}
+					var resolver = new SymbolResolver ();
+					resolver.resolve (_ast);
 				}
-				var resolver = new SymbolResolver ();
-				resolver.resolve (_ast);
 				ast_mutex.unlock ();
 				
 				sources.clear ();
@@ -298,7 +312,8 @@ namespace Afrodite
 			// clean up and exit
 			sources = null;
 			
-			debug ("%s: parser thread exiting...", id);
+			timer.stop ();
+			debug ("%s: parser thread exiting (elapsed time %g)...", id, timer.elapsed ());
 			end_parsing (this);
 			return null;
 		}

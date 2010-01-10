@@ -1,9 +1,22 @@
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/completionengine.vala:
+
+	better locks to avoid null reference and concurrency problems
+
+2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	Go To next error should include to the next error or warning too. Fixes issue #115	
+
 2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbuildlogview.vala:
 
-	Add the number of errors / warning in the error / warning buttons.
-	Fixes issue #113	
+	Add the number of errors / warning in the error / warning buttons. Fixes issue #113	
 
 2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
 
