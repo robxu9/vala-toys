@@ -28,7 +28,7 @@ using Afrodite;
 
 namespace Vtg
 {
-	internal class SymbolCompletionHelper : GLib.Object
+	internal class SymbolCompletion : GLib.Object
 	{
 		private Vtg.PluginInstance _plugin_instance;
 		private Gedit.View _view;
@@ -42,7 +42,7 @@ namespace Vtg
 		public CompletionEngine completion { get { return _completion; } construct { _completion = value; } default = null; }
 		public SymbolCompletionTrigger trigger { get { return _trigger; } }
 		
-		public SymbolCompletionHelper (Vtg.PluginInstance plugin_instance, Gedit.View view, CompletionEngine completion)
+		public SymbolCompletion (Vtg.PluginInstance plugin_instance, Gedit.View view, CompletionEngine completion)
 		{
 			GLib.Object (plugin_instance: plugin_instance, view: view, completion: completion);
 		}

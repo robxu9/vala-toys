@@ -1,5 +1,13 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/Makefile.am:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsymbolcompletion.vala:
+
+	renamed SymbolCompletionHelper -> SymbolCompletion
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgchangelog.vala:
 	* vtg/vtgplugin.vala:
 	* vtg/vtgplugininstance.vala:

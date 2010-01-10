@@ -37,7 +37,7 @@ namespace Vtg
 		private SourceOutliner _source_outliner = null;
 		private OutputView _output_view = null;
 		private ProjectView _project_view = null;
-		private Vala.List<Vtg.SymbolCompletionHelper> _scs = new Vala.ArrayList<Vtg.SymbolCompletionHelper> ();
+		private Vala.List<Vtg.SymbolCompletion> _scs = new Vala.ArrayList<Vtg.SymbolCompletion> ();
 		private Vala.List<Vtg.BracketCompletion> _bcs = new Vala.ArrayList<Vtg.BracketCompletion> ();
 		
 		public OutputView output_view 
@@ -240,12 +240,12 @@ namespace Vtg
 				GLib.warning ("No completion for file %s", uri);
 				return;
 			}
-			var sc = new Vtg.SymbolCompletionHelper (this, view, completion);
+			var sc = new Vtg.SymbolCompletion (this, view, completion);
 			_scs.add (sc);
 			GLib.debug ("symbol activated for view");
 		}
 
- 		public void deactivate_symbol (SymbolCompletionHelper sc)
+ 		public void deactivate_symbol (SymbolCompletion sc)
 		{
 			sc.deactivate ();
 			_scs.remove (sc);
@@ -289,9 +289,9 @@ namespace Vtg
 			return (scs_find_from_view (view) != null);
 		}
 
-		public Vtg.SymbolCompletionHelper? scs_find_from_view (Gedit.View view)
+		public Vtg.SymbolCompletion? scs_find_from_view (Gedit.View view)
 		{
-			foreach (Vtg.SymbolCompletionHelper sc in _scs) {
+			foreach (Vtg.SymbolCompletion sc in _scs) {
 				if (sc.view == view)
 					return sc;
 			}

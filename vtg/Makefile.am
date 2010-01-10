@@ -28,9 +28,9 @@ libvtg_LTLIBRARIES = libvtg.la
 
 libvtg_la_VALASOURCES = \
 	vtgbracketcompletion.vala \
+	vtgsymbolcompletion.vala \
 	vtgsymbolcompletionprovider.vala \
 	vtgsymbolcompletiontrigger.vala \
-	vtgsymbolcompletionhelper.vala \
 	vtgprojectmanagerui.vala \
 	vtgprojectdescriptor.vala \
 	vtgprojectview.vala \
