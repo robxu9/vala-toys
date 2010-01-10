@@ -1,5 +1,11 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+
+	better signal completion info	
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojects.vala:
 	* vtg/vtgsymbolcompletionprovider.vala:
 

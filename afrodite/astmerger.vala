@@ -540,7 +540,12 @@ namespace Afrodite
 			var prev_sr = _current_sr;
 			
 			set_fqn (s.name);
-			_current.add_child (add_symbol (s, out _current_sr));
+			var sym = add_symbol (s, out _current_sr);
+			sym.return_type = new DataType (s.return_type.to_string ());
+			sym.is_virtual = s.is_virtual;
+			_current.add_child (sym);
+			_current = sym;
+			s.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
