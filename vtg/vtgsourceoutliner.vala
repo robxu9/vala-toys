@@ -32,7 +32,8 @@ namespace Vtg
 		private unowned PluginInstance _plugin_instance;
 		private SourceOutlinerView _outliner_view = null;
 		private uint idle_id = 0;
-		
+		private bool completion_setup = false;
+ 
 	 	public PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 
 		public View active_view {
@@ -44,7 +45,8 @@ namespace Vtg
 					if (_active_view != null) {
 						var doc = (Document) _active_view.get_buffer ();
 						cleanup_document (doc);
-						cleanup_completion (_active_view);
+						if (completion_setup)
+							cleanup_completion (_active_view);
 					}
 					_active_view = value;
 					if (_active_view != null) {
@@ -79,7 +81,8 @@ namespace Vtg
 			{
 				var doc = (Document) _active_view.get_buffer ();
 				cleanup_document (doc);
-				cleanup_completion (_active_view);
+				if (completion_setup)
+					cleanup_completion (_active_view);
 				_active_view = null;
 			}
 		}
@@ -109,21 +112,26 @@ namespace Vtg
 		private void setup_completion (View view)
 		{
 			var scs = _plugin_instance.scs_find_from_view (view);
- 			if (scs == null) {
- 				GLib.warning ("setup_completion: symbol completion helper is null for view");
+ 			if (scs == null || scs.completion == null) {
+ 				//GLib.warning ("setup_completion: symbol completion helper is null for view");
 				return;
 			}
+			GLib.debug ("connected!!!!!!!");
+			completion_setup = true;
 			scs.completion.end_parsing += this.on_end_parsing;
 		}
 
 		private void cleanup_completion (View view)
 		{
 			var scs = _plugin_instance.scs_find_from_view (view);
- 			if (scs == null) {
- 				GLib.warning ("cleanup_completion: symbol completion helper is null for view");
+ 			if (scs == null || scs.completion == null) {
+ 				//GLib.warning ("cleanup_completion: symbol completion helper is null for view");
 				return;
 			}
+			GLib.debug ("disconnecting!!!!!!!");
 			scs.completion.end_parsing -= this.on_end_parsing;
+			completion_setup = false;
+			GLib.debug ("disconnected!!!!!!!");			
 		}
 
 		private void on_notify_language (Gedit.Document sender, ParamSpec pspec)
@@ -160,7 +168,7 @@ namespace Vtg
 		{
 			var scs = _plugin_instance.scs_find_from_view (_active_view);
  			if (scs == null) {
- 				GLib.warning ("update_source_ouliner_view: symbol completion helper is null for view");
+ 				//GLib.warning ("update_source_ouliner_view: symbol completion helper is null for view");
 				return true;
 			}
 			

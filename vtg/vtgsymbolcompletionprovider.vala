@@ -155,6 +155,7 @@ namespace Vtg
 			_doc_changed = true;
 			// parse text only on init or line changes
 			if (_last_line == -1 || _last_line != get_current_line_index ()) {
+				_all_doc = true;
 				schedule_reparse ();
 			}
 		}

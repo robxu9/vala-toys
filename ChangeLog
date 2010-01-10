@@ -1,5 +1,23 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	silenced some glib warning and criticals
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectview.vala:
+
+	added default project support aka "standalone mode"	
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/vbfgroup.vala:
 	* vbf/vbfproject.vala:
 	* vbf/vbftarget.vala:

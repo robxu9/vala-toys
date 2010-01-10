@@ -53,6 +53,11 @@ namespace Vtg
 		public signal void symbol_cache_building (ProjectManager sender);
 		public signal void symbol_cache_builded (ProjectManager sender);
 		
+		public signal void completion_begin_parsing (ProjectManager sender, CompletionEngine completion);
+		public signal void completion_end_parsing (ProjectManager sender, CompletionEngine completion);
+		
+		private uint _idle_id;
+		
 		public bool enable_completion 
 		{
 			get {
@@ -80,24 +85,19 @@ namespace Vtg
 			cleanup_completions ();
 		}
 
-		public Afrodite.CompletionEngine? get_completion_for_file (string uri)
+		public Afrodite.CompletionEngine? get_completion_for_file (string? uri)
 		{
-			foreach (Group group in _project.get_groups ()) {
-				foreach (Target target in group.get_targets ()) {
-					foreach (Vbf.Source source in target.get_sources ()) {
-						if (source.uri == uri) {
-							return get_completion_for_target (target);
+			if (uri != null && _completions != null) {
+				foreach (Group group in _project.get_groups ()) {
+					foreach (Target target in group.get_targets ()) {
+						foreach (Vbf.Source source in target.get_sources ()) {
+							if (source.uri == uri) {
+								return get_completion_for_target (target);
+							}
 						}
 					}
-					/*
-					foreach (Vbf.File file in target.get_files ()) {
-						if (file.uri == uri) {
-							return true;
-						}
-					}*/
 				}
 			}
-
 			return null;
 		}
 
@@ -114,18 +114,20 @@ namespace Vtg
 			return null;
 		}
 		
-		public bool contains_file (string uri)
+		public bool contains_file (string? uri)
 		{
-			foreach (Group group in _project.get_groups ()) {
-				foreach (Target target in group.get_targets ()) {
-					foreach (Vbf.Source source in target.get_sources ()) {
-						if (source.uri == uri) {
-							return true;
+			if (uri != null) {
+				foreach (Group group in _project.get_groups ()) {
+					foreach (Target target in group.get_targets ()) {
+						foreach (Vbf.Source source in target.get_sources ()) {
+							if (source.uri == uri) {
+								return true;
+							}
 						}
-					}
-					foreach (Vbf.File file in target.get_files ()) {
-						if (file.uri == uri) {
-							return true;
+						foreach (Vbf.File file in target.get_files ()) {
+							if (file.uri == uri) {
+								return true;
+							}
 						}
 					}
 				}
@@ -133,13 +135,15 @@ namespace Vtg
 			return false;
 		}
 
-		public Vbf.Source? get_source_file_from_uri (string uri)
+		public Vbf.Source? get_source_file_from_uri (string? uri)
 		{
-			foreach (Group group in _project.get_groups ()) {
-				foreach (Target target in group.get_targets ()) {
-					foreach (Vbf.Source source in target.get_sources ()) {
-						if (source.uri == uri) {
-							return source;
+			if (uri != null) {
+				foreach (Group group in _project.get_groups ()) {
+					foreach (Target target in group.get_targets ()) {
+						foreach (Vbf.Source source in target.get_sources ()) {
+							if (source.uri == uri) {
+								return source;
+							}
 						}
 					}
 				}
@@ -147,49 +151,64 @@ namespace Vtg
 			return null;
 		}
 
-		public bool contains_vala_source_file (string uri)
+		public bool contains_vala_source_file (string? uri)
 		{
-			foreach (Vbf.Source source in all_vala_sources) {
-				if (source.uri == uri) {
-					return true;
+			if (uri != null) {
+				foreach (Vbf.Source source in all_vala_sources) {
+					if (source.uri == uri) {
+						return true;
+					}
 				}
 			}
 
 			return false;
 		}
 		
-		public string? source_uri_for_name (string name)
+		public string? source_uri_for_name (string? name)
 		{
-			string[] name_parts = name.split ("/");
-			foreach (Group group in _project.get_groups ()) {
-				foreach (Target target in group.get_targets ()) {
-					foreach (Vbf.Source source in target.get_sources ()) {
-						if (name_parts.length == 1) {
-							if (source.name == name) {
-								return source.uri;
-							}
-						} else if (source.uri != null) {
-							string[] src_parts = source.uri.split ("/");
-							
-							if (name_parts.length <= src_parts.length) {
-								bool equals = true;
-								for(int idx=0; idx < name_parts.length; idx++) {
-									if (src_parts[src_parts.length - idx] != name_parts[name_parts.length - idx]) {
-										equals = false;
-										break;
-									}
-								}
-								
-								if (equals) {
+			if (name != null) {
+				string[] name_parts = name.split ("/");
+				foreach (Group group in _project.get_groups ()) {
+					foreach (Target target in group.get_targets ()) {
+						foreach (Vbf.Source source in target.get_sources ()) {
+							if (name_parts.length == 1) {
+								if (source.name == name) {
 									return source.uri;
+								}
+							} else if (source.uri != null) {
+								string[] src_parts = source.uri.split ("/");
+							
+								if (name_parts.length <= src_parts.length) {
+									bool equals = true;
+									for(int idx=0; idx < name_parts.length; idx++) {
+										if (src_parts[src_parts.length - idx] != name_parts[name_parts.length - idx]) {
+											equals = false;
+											break;
+										}
+									}
+								
+									if (equals) {
+										return source.uri;
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-
+			
 			return null;
+		}
+
+		public void create_default_project  ()
+		{
+			_project = new Vbf.Project ("vtg-default-project");
+			_project.name = _("default project");
+			var group = new Vbf.Group (_project, "Sources");
+			var target = new Vbf.Target (group, TargetTypes.PROGRAM, "Default");
+			group.add_target (target);
+			_project.add_group (group);
+			_project.updated.connect (this.on_project_updated);
 		}
 
 		public bool open (string project_filename) throws GLib.Error
@@ -290,14 +309,20 @@ namespace Vtg
 
 		private void on_completion_engine_begin_parse (CompletionEngine sender)
 		{
+			this.completion_begin_parsing (this, sender);
+
 			if (AtomicInt.exchange_and_add (ref parser_thread_count, 1) == 0)
-				Idle.add (this.on_idle);
+				if (_idle_id == 0)
+					_idle_id = Idle.add (this.on_idle);
 		}
 		
 		private void on_completion_engine_end_parse (CompletionEngine sender)
 		{
+			this.completion_end_parsing (this, sender);
+
 			if (AtomicInt.dec_and_test (ref parser_thread_count))
-				Idle.add (this.on_idle);
+				if (_idle_id == 0)
+					_idle_id = Idle.add (this.on_idle);
 		}
 
 		private bool on_idle ()
@@ -314,8 +339,10 @@ namespace Vtg
 					this.symbol_cache_builded (this);
 				}
 			}
+			_idle_id = 0;
 			return false;
 		}
+
 		private void vcs_test (string filename)
 		{
 			//test if the project is under some known revision control system
@@ -362,16 +389,26 @@ namespace Vtg
 		private void build_tree_model ()
 		{
 			TreeIter project_iter;
-			TreeIter modules_iter;
+			TreeIter? modules_iter = null;
 			TreeIter groups_iter;
 			TreeIter? group_iter = null;
 
 			_model = new Gtk.TreeStore (5, typeof(string), typeof(string), typeof(string), typeof(GLib.Object), typeof(string));
 			_model.append (out project_iter, null);
-			_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, "%s - %s".printf (_project.name, _project.version), 2, "project-root", 4, "");
-			_model.append (out modules_iter, project_iter);
-			_model.set (modules_iter, 0, Gtk.STOCK_DIRECTORY, 1, _("References"), 2, "project-reference", 4, "1");
+			if (StringUtils.is_null_or_empty (_project.version)) {
+				_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, "%s".printf (_project.name), 2, "project-root", 4, "");				
+			} else {
+				_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, "%s - %s".printf (_project.name, _project.version), 2, "project-root", 4, "");				
+			}
+			
+			bool reference_added = false;
+			
 			foreach (Module module in _project.get_modules ()) {
+				if (!reference_added) {
+					_model.append (out modules_iter, project_iter);
+					_model.set (modules_iter, 0, Gtk.STOCK_DIRECTORY, 1, _("References"), 2, "project-reference", 4, "1");
+					reference_added = true;
+				}
 				TreeIter module_iter;
 				_model.append (out module_iter, modules_iter);
 				_model.set (module_iter, 0, Gtk.STOCK_DIRECTORY, 1, module.name, 2, module.id, 3, module, 4, module.name);

@@ -754,37 +754,49 @@ namespace Vtg
 		private void update_ui (bool default_project)
 		{
 			var action = _actions.get_action ("ProjectClose");
-			action.set_sensitive (!default_project);
+			if (action != null)
+				action.set_sensitive (!default_project);
 			action = _actions.get_action ("ProjectBuild");
-			action.set_sensitive (!default_project);
+			if (action != null)
+				action.set_sensitive (!default_project);
 			action = _actions.get_action ("ProjectBuildClean");
-			action.set_sensitive (!default_project);
+			if (action != null)
+				action.set_sensitive (!default_project);
 			action = _actions.get_action ("ProjectBuildCleanStamps");
-			action.set_sensitive (!default_project);
+			if (action != null)
+				action.set_sensitive (!default_project);
 			
 			var doc = _plugin_instance.window.get_active_document ();
 			bool is_vala_source = (doc != null && doc.language != null && doc.language.id == "vala");
 			action = _actions.get_action ("ProjectBuildCompileFile");
-			action.set_sensitive (default_project && is_vala_source);
+			if (action != null)
+				action.set_sensitive (default_project && is_vala_source);
 			action = _actions.get_action ("ProjectGotoMethod");
-			action.set_sensitive (is_vala_source);
+			if (action != null)
+				action.set_sensitive (is_vala_source);
 			
 			action = _actions.get_action ("ProjectGotoDocument");
-			action.set_sensitive (!default_project);
+			if (action != null)
+				action.set_sensitive (!default_project);
 			
 			bool has_errors = (_prj_builder.error_pane.error_count + _prj_builder.error_pane.warning_count) > 0;
 			action = _actions.get_action ("ProjectBuildNextError");
-			action.set_sensitive (has_errors);
+			if (action != null)
+				action.set_sensitive (has_errors);
 			action = _actions.get_action ("ProjectBuildPreviousError");
-			action.set_sensitive (has_errors);
+			if (action != null)
+				action.set_sensitive (has_errors);
 			
 			action = _actions.get_action ("ProjectBuildExecute");
-			action.set_sensitive (!_prj_executer.is_executing && !default_project);
+			if (action != null)
+				action.set_sensitive (!_prj_executer.is_executing && !default_project);
 			action = _actions.get_action ("ProjectBuildKill");
-			action.set_sensitive (_prj_executer.is_executing && !default_project);
+			if (action != null)
+				action.set_sensitive (_prj_executer.is_executing && !default_project);
 
 			action = _actions.get_action ("ProjectSearch");
-			action.set_sensitive (!_prj_search.is_searching);
+			if (action != null)
+				action.set_sensitive (!_prj_search.is_searching);
 			
 			bool can_complete = false;
 			var view = _plugin_instance.window.get_active_view ();
@@ -793,7 +805,8 @@ namespace Vtg
 				can_complete = (sch != null);
 			}
 			action = _actions.get_action ("ProjectCompleteWord");
-			action.set_sensitive (can_complete);
+			if (action != null)
+				action.set_sensitive (can_complete);
 			
 			bool has_changelog = false;
 			bool has_vcs_backend = false;
@@ -804,13 +817,17 @@ namespace Vtg
 					has_vcs_backend = true;
 			}
 			action = _actions.get_action ("ProjectPrepareChangeLog");
-			action.set_sensitive (has_changelog && has_vcs_backend);
+			if (action != null)
+				action.set_sensitive (has_changelog && has_vcs_backend);
 			action = _actions.get_action ("ProjectPrepareSingleFileChangeLog");
-			action.set_sensitive (has_changelog);
+			if (action != null)
+				action.set_sensitive (has_changelog);
 			action = _actions.get_action ("ProjectGotoNextPosition");
-			action.set_sensitive (!_bookmarks.is_empty);
+			if (action != null)
+				action.set_sensitive (!_bookmarks.is_empty);
 			action = _actions.get_action ("ProjectGotoPrevPosition");
-			action.set_sensitive (!_bookmarks.is_empty);
+			if (action != null)
+				action.set_sensitive (!_bookmarks.is_empty);
 		}
 		
 		private void on_symbol_cache_building (ProjectManager sender)
