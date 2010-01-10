@@ -1,5 +1,11 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+
+	fixed null warning with constructor / destructor names
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgconfiguration.vala:
 	* vtg/vtgsourceoutlinerview.vala:
 

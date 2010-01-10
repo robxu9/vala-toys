@@ -436,7 +436,7 @@ namespace Afrodite
 			var prev = _current;
 			var prev_sr = _current_sr;
 			
-			set_fqn (m.name);
+			set_fqn ("constructor:%s".printf(_current.fully_qualified_name));
 			int last_line = 0;
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
@@ -460,7 +460,7 @@ namespace Afrodite
 			var prev = _current;
 			var prev_sr = _current_sr;
 			
-			set_fqn (m.name);
+			set_fqn ("destructor:%s".printf(_current.fully_qualified_name));
 			int last_line = 0;
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
