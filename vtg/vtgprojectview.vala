@@ -240,16 +240,11 @@ namespace Vtg
 				return;
 			}
 			
-			if (project_name != null) {
-				//find project
-				foreach (ProjectDescriptor item in _plugin_instance.plugin.projects) {
-					if (item.project.project.name == project_name) {
-						prj = item.project;
-						break;
-					}
-				}
-			}
-			
+			//find project
+			var prj_descr = _plugin_instance.plugin.projects.get_project_descriptor_for_project_name (project_name);
+			if (prj_descr != null)
+				prj = prj_descr.project;
+				
 			current_project = prj;
 		}
 

@@ -116,7 +116,7 @@ namespace Vtg
 		private static void on_tab_added (Gedit.Window sender, Gedit.Tab tab, Vtg.PluginInstance instance)
 		{
 			var doc = tab.get_document ();
-			var project_descriptor = instance.plugin.project_descriptor_find_from_document (doc);
+			var project_descriptor = instance.plugin.projects.get_project_descriptor_for_document (doc);
 
 			GLib.debug ("%s: ", project_descriptor.project.project.name);
 			
@@ -141,7 +141,7 @@ namespace Vtg
 			instance.uninitialize_view (view);
 			instance.uninitialize_document (doc);
 			
-			var project_descriptor = instance.plugin.project_descriptor_find_from_document (doc);
+			var project_descriptor = instance.plugin.projects.get_project_descriptor_for_document (doc);
 
 			if (project_descriptor != null && project_descriptor.project.project.id == "vtg-default-project") {
 				check_vala_source_for_remove (project_descriptor, doc);
@@ -153,7 +153,7 @@ namespace Vtg
 			foreach (Gedit.View view in _window.get_views ()) {
 				var doc = (Gedit.Document) (view.get_buffer ());
 				if (doc.language != null && doc.language.id == "vala") {
-					var project = plugin.project_descriptor_find_from_document (doc);
+					var project = plugin.projects.get_project_descriptor_for_document (doc);
 					initialize_view (project, view);
 				}
 			}
@@ -337,7 +337,7 @@ namespace Vtg
 			var app = App.get_default ();
 			foreach (Gedit.View view in app.get_views ()) {
 				if (view.get_buffer () == sender) {
-					var project_descriptor = instance.plugin.project_descriptor_find_from_document (sender);
+					var project_descriptor = instance.plugin.projects.get_project_descriptor_for_document (sender);
 					GLib.debug ("on_notify_language %s: ", project_descriptor.project.project.name);
 					if (sender.language  == null || sender.language.id != "vala") {
 						if (project_descriptor != null && project_descriptor.project.project.id == "vtg-default-project") {

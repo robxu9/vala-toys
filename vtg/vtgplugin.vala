@@ -31,9 +31,8 @@ namespace Vtg
 	public class Plugin : Gedit.Plugin
 	{
 		private Vala.List<PluginInstance> _instances = new Vala.ArrayList<PluginInstance> ();
-		private Vala.List<Vtg.ProjectDescriptor> _projects = new Vala.ArrayList<Vtg.ProjectDescriptor> ();
 		private Configuration _config = null;
-		private Vtg.ProjectDescriptor _default_project = null;
+		private Vtg.Projects _projects = null;
 		
 		private enum DeactivateModuleOptions
 		{
@@ -43,7 +42,7 @@ namespace Vtg
 			SOURCECODE_OUTLINER
 	        }
 
-		public Vala.List<Vtg.ProjectDescriptor> projects
+		public Vtg.Projects projects
 		{
 			get { return _projects; }
 		}
@@ -60,16 +59,7 @@ namespace Vtg
 			_config = new Configuration ();
 			_config.notify += this.on_configuration_property_changed;
 			GLib.Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
-			initialize_default_project ();
-		}
-
-		private void initialize_default_project ()
-		{
-			//return default_project anyway
-			_default_project = new ProjectDescriptor ();
-			_default_project.project = new ProjectManager (_config.symbol_enabled);
-			_default_project.project.create_default_project ();
-			_projects.add (_default_project);
+			_projects = new Vtg.Projects (this);
 		}
 
 		private PluginInstance? get_plugin_instance_for_window (Gedit.Window window)
@@ -114,7 +104,7 @@ namespace Vtg
 				var instance = get_plugin_instance_for_window (window);
 			
 				if (doc != null) {
-					var prj = project_descriptor_find_from_document (doc);
+					var prj = _projects.get_project_descriptor_for_document (doc);
 					if (prj.project != null && Utils.is_vala_doc (doc)) {
 						instance.project_manager_ui.project_view.current_project = prj.project;
 					}
@@ -175,24 +165,10 @@ namespace Vtg
 			}
 		}
 
-		internal ProjectDescriptor project_descriptor_find_from_document (Gedit.Document document)
-		{
-			var file = document.get_uri ();
-			if (file == null) {
-				file = document.get_short_name_for_display ();
-			}
-			foreach (ProjectDescriptor project in _projects) {
-				if (project.project.contains_file (file)) {
-					return project;
-				}
-			}
-
-			return _default_project;
-		}
 
 		internal void on_project_closed (ProjectManagerUi sender, ProjectManager project)
 		{
-			return_if_fail (project != _default_project.project);
+			return_if_fail (project.project.name != "vtg-default-project");
 
 			foreach (PluginInstance instance in _instances) {
 				foreach (Gedit.Document doc in instance.window.get_documents ()) {
@@ -207,13 +183,7 @@ namespace Vtg
 				} 
 			}
 
-			foreach (ProjectDescriptor descriptor in _projects) {
-				if (descriptor.project == project) {
-					_projects.remove (descriptor);
-					break;
-				}
-			}
-
+			_projects.remove_with_project_manager (project);
 		}
 		
 		internal bool project_need_save (ProjectManager project)

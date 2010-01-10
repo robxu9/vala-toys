@@ -1,5 +1,16 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojects.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+
+	added new vtgprojects class which will superseed projectdescriptor one
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanager.vala:
 	* vtg/vtgprojectmanagerui.vala:
 	* vtg/vtgsourceoutliner.vala:

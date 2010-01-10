@@ -192,7 +192,7 @@ namespace Vtg
 		construct	
 		{
 			_prj_view = new ProjectView (_plugin_instance);
-			foreach (ProjectDescriptor prj in _plugin_instance.plugin.projects) {
+			foreach (ProjectDescriptor prj in _plugin_instance.plugin.projects.project_descriptors) {
 				_prj_view.add_project (prj.project.project);
 			}			
 			_prj_view.notify["current-project"] += this.on_current_project_changed;
@@ -536,7 +536,7 @@ namespace Vtg
 			var project = _prj_view.current_project;
 			return_if_fail (project != null);
 			
-			var pdes = get_projectdescriptor_for_project (project);
+			var pdes = _plugin_instance.plugin.projects.get_project_descriptor_for_project_manager (project);
 			return_if_fail (pdes != null);
 			
 			var view = _plugin_instance.window.get_active_view ();
@@ -593,6 +593,7 @@ namespace Vtg
 			}
 		}
 
+/*
 		private ProjectDescriptor? get_projectdescriptor_for_project (ProjectManager project)
 		{
 			foreach (ProjectDescriptor current in _plugin_instance.plugin.projects) {
@@ -602,6 +603,7 @@ namespace Vtg
 			
 			return null;
 		}
+*/
 
 		private void on_standalone_file_compile (Gtk.Action action)
 		{
