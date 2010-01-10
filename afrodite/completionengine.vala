@@ -193,7 +193,7 @@ namespace Afrodite
 			queue_sources (sources);
 		}
 		
-		public bool try_acquire_ast (out unowned Ast ast)
+		public bool try_acquire_ast (out Ast ast)
 		{
 			bool res = false;
 			ast = null;

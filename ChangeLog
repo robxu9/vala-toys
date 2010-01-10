@@ -1,5 +1,11 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+
+	removed a wrong path for fixing memory corruption problem
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/symbol.vala:
 
 	better signal [markup] description
