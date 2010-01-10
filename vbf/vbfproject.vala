@@ -63,7 +63,7 @@ namespace Vbf
 			return null;
 		}
 
-		internal void add_group (Group group)
+		public void add_group (Group group)
 		{
 			groups.add (group);
 		}
@@ -157,7 +157,8 @@ namespace Vbf
 				return;
 				
 			in_refresh = true;
-			backend.refresh (this);
+			if (backend != null)
+				backend.refresh (this);
 			this.updated ();
 			in_refresh = false;
 		}

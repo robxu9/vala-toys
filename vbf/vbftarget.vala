@@ -60,6 +60,16 @@ namespace Vbf
 			return new ReadOnlyList<Source> (sources);
 		}
 		
+		public Source? get_source (string filename)
+		{
+			foreach (Source source in sources) {
+				if (source.filename == filename)
+					return source;
+			}
+			
+			return null;
+		}
+		
 		public bool has_sources_of_type (FileTypes type)
 		{
 			foreach (Source source in sources) {
@@ -71,11 +81,16 @@ namespace Vbf
 			return false;
 		}
 		
-		internal void add_source (Source source)
+		public void add_source (Source source)
 		{
 			sources.add (source);
 		}
 
+		public void remove_source (Source source)
+		{
+			sources.add (source);
+		}
+		
 		public bool has_file_of_type (FileTypes type)
 		{
 			foreach (File file in files) {

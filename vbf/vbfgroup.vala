@@ -73,7 +73,7 @@ namespace Vbf
 			return null;
 		}
 		
-		internal void add_target (Target target)
+		public void add_target (Target target)
 		{
 			targets.add (target);
 		}
@@ -82,6 +82,7 @@ namespace Vbf
 		{
 			return new ReadOnlyList<Package> (packages);
 		}
+		
 		
 		internal void add_package (Package package)
 		{

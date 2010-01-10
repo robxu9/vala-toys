@@ -1,5 +1,13 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbfgroup.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbftarget.vala:
+
+	add the essential methods to manipulate the project structure
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* afrodite/completionengine.vala:
 
