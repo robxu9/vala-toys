@@ -359,7 +359,8 @@ namespace Vtg
 				&& (type_name == "Class" 
 					|| type_name == "CreationMethod" 
 					|| type_name == "Destructor" 
-					|| type_name == "Constructor"))
+					|| type_name == "Constructor"
+					|| type_name == "ErrorDomain"))
 				return icon_class;
 			else if (icon_struct != null && type_name == "Struct")
 				return icon_struct;
@@ -373,7 +374,7 @@ namespace Vtg
 				return icon_method;
 			else if (icon_enum != null && type_name == "Enum")
 				return icon_enum;
-			else if (icon_const != null && (type_name == "Constant" || type_name == "EnumValue"))
+			else if (icon_const != null && (type_name == "Constant" || type_name == "EnumValue" || type_name == "ErrorCode"))
 				return icon_const;
 			else if (icon_signal != null && type_name == "Signal")
 				return icon_signal;

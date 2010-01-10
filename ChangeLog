@@ -1,5 +1,11 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgutils.vala:
+
+	better icons for error domains and codes
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* afrodite/symbol.vala:
 	* vtg/vtgutils.vala:
