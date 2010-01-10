@@ -1,5 +1,11 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugininstance.vala:
+
+	work around a gedit bug when scroll to cursor seems not to work on newly created tabs
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgvcsbackendsgit.vala:
 
 	removed a debug statement	
