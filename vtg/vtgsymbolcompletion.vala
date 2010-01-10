@@ -64,13 +64,17 @@ namespace Vtg
 
 		~SymbolCompletionHelper ()
 		{
-			_manager.unregister_provider (_provider, _trigger);
-			_manager.unregister_trigger (_trigger);
-			_manager = null;
+			if (_manager != null)
+				deactivate ();
 		}
 
 		public void deactivate ()
 		{
+			_trigger.deactivate ();
+			_manager.unregister_provider (_provider, _trigger);
+			_manager.unregister_trigger (_trigger);
+			_trigger = null;
+			_manager = null;
 		}
 
 		private void setup_gsc_completion (Gedit.View view)

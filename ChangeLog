@@ -1,5 +1,11 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletion.vala:
+
+	cleanup symbol completion on close
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 
 	set the symbol accessibility for enum values and error codes
