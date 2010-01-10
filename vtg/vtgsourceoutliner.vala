@@ -121,7 +121,6 @@ namespace Vtg
 
 		public void setup_completion_engine (Afrodite.CompletionEngine engine)
 		{
-			GLib.debug ("connected!!!!!!!");
 			completion_setup = true;
 			engine.end_parsing += this.on_end_parsing;			
 		}
@@ -140,7 +139,6 @@ namespace Vtg
 		{
 			engine.end_parsing -= this.on_end_parsing;
 			completion_setup = false;
-			GLib.debug ("disconnected!!!!!!!");			
 		}
 		
 		private void on_notify_language (Gedit.Document sender, ParamSpec pspec)
