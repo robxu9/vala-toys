@@ -56,11 +56,6 @@ namespace Vtg
 			}
 		}
 
-		internal bool is_default_project (ProjectManager project_manager)
-		{
-			return _default_project == project_manager;
-		}
-
 		internal void add (ProjectManager project_manager)
 		{
 			_project_managers.add (project_manager);

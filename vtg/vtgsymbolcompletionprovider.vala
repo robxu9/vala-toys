@@ -58,33 +58,28 @@ namespace Vtg
 		public SymbolCompletionProvider (Vtg.SymbolCompletion symbol_completion)
 		{
 			_symbol_completion = symbol_completion;
-			try {
-				var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
-				string name = Utils.get_document_name (doc);
+			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
+			string name = Utils.get_document_name (doc);
 
-				_sb = new Afrodite.SourceItem ();
-				_sb.path = name;
-				_sb.content = doc.text;
-				
-				_symbol_completion.view.key_press_event += this.on_view_key_press;
-				doc.notify["text"] += this.on_text_changed;
-				doc.notify["cursor-position"] += this.on_cursor_position_changed;
-				
-				var status_bar = (Gedit.Statusbar) _symbol_completion.plugin_instance.window.get_statusbar ();
-				_sb_context_id = status_bar.get_context_id ("symbol status");
-				
-				_cache_building = true; 
-				_all_doc = true;
-				_symbol_completion.notify["completion-engine"].connect (this.on_completion_engine_changed);
-				_completion = _symbol_completion.completion_engine;
-				if (_completion.is_parsing) {
-					_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
-				}
-				setup_completion (_completion);
-				
-			} catch (Error err) {
-				GLib.warning ("an error occourred: %s", err.message);
+			_sb = new Afrodite.SourceItem ();
+			_sb.path = name;
+			_sb.content = doc.text;
+			
+			_symbol_completion.view.key_press_event += this.on_view_key_press;
+			doc.notify["text"] += this.on_text_changed;
+			doc.notify["cursor-position"] += this.on_cursor_position_changed;
+			
+			var status_bar = (Gedit.Statusbar) _symbol_completion.plugin_instance.window.get_statusbar ();
+			_sb_context_id = status_bar.get_context_id ("symbol status");
+			
+			_cache_building = true; 
+			_all_doc = true;
+			_symbol_completion.notify["completion-engine"].connect (this.on_completion_engine_changed);
+			_completion = _symbol_completion.completion_engine;
+			if (_completion.is_parsing) {
+				_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
 			}
+			setup_completion (_completion);
 		}
 
 		~SymbolCompletionProvider ()

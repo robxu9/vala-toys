@@ -1,5 +1,12 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojects.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed some simple warnings
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugininstance.vala:
 	* vtg/vtgprojectmanager.vala:
 	* vtg/vtgprojects.vala:
