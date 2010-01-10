@@ -443,7 +443,7 @@ namespace Afrodite
 				
 			var s = add_symbol (m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
-			s.return_type = new DataType (get_datatype_typename (m.this_parameter.parameter_type), m.this_parameter.name);
+			s.return_type = new DataType (_current.fully_qualified_name);
 			_current.add_child (s);
 			
 			_current = s;

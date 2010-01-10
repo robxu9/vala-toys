@@ -355,7 +355,11 @@ namespace Vtg
 			}
 			if (icon_namespace != null && type_name == "Namespace")
 				return icon_namespace;
-			else if (icon_class != null && (type_name == "Class" || type_name == "CreationMethod" || type_name == "Destructor"))
+			else if (icon_class != null 
+				&& (type_name == "Class" 
+					|| type_name == "CreationMethod" 
+					|| type_name == "Destructor" 
+					|| type_name == "Constructor"))
 				return icon_class;
 			else if (icon_struct != null && type_name == "Struct")
 				return icon_struct;

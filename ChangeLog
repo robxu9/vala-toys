@@ -1,5 +1,13 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgutils.vala:
+
+	added support for "GObject constructors"
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectview.vala:
 
 	added an icon to the project view pane

@@ -549,14 +549,18 @@ namespace Afrodite
 			}
 			
 			if (return_type != null) {
-				sb.append_printf ("%s ", return_type.description);
+				if (type_name == "Constructor") {
+					sb.append ("constructor: ");
+				} else
+					sb.append_printf ("%s ", return_type.description);
 			}
 			if (markup 
 			    && type_name != null
 			    && (type_name == "Property" 
 			    || type_name.has_suffix ("Method")
 			    || type_name.has_suffix ("Signal")
-			    || type_name == "Field"))
+			    || type_name == "Field"
+			    || type_name == "Constructor"))
 				sb.append_printf ("<b>%s</b>".printf(display_name));
 			else
 				sb.append (display_name);
