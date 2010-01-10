@@ -122,7 +122,8 @@ namespace Vtg
 			_side_panel.pack_start (_check_show_private_symbols, false, true, 8);
 			
 			_side_panel.show_all ();
-			panel.add_item (_side_panel, _("Source"), null);
+			var icon = new Gtk.Image.from_pixbuf (Utils.get_icon_for_type_name ("Class"));
+			panel.add_item (_side_panel, _("Source"), icon);
 			panel.activate_item (_side_panel);
 
 			_actions = new ActionGroup ("SourceOutlinerActionGroup");

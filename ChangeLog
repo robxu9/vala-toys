@@ -1,5 +1,11 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourceoutlinerview.vala:
+
+	added a icon to the outiliner view pane
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugininstance.vala:
 
 	work around a gedit bug when scroll to cursor seems not to work on newly created tabs
