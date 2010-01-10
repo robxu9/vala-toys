@@ -378,5 +378,27 @@ namespace Vtg
 				_source_outliner.cleanup_completion_engine (engine);
 			}
 		}
+		
+		public void bind_completion_engine_with_target (Vbf.Target target, Afrodite.CompletionEngine engine)
+		{
+			foreach (SymbolCompletion sc in _scs) {
+				var doc = (Gedit.Document) sc.view.get_buffer ();
+				
+				if (Vtg.Plugin.main_instance.projects.get_target_for_document (doc) == target) {
+					sc.completion_engine = engine;
+				}
+			}
+			
+			if (_source_outliner != null) {
+				var view = _source_outliner.active_view;
+				if (view != null) {
+					var doc = (Gedit.Document) view.get_buffer ();
+					
+					if (Vtg.Plugin.main_instance.projects.get_target_for_document (doc) == target) {
+						_source_outliner.setup_completion_engine (engine);
+					}
+				}
+			}
+		}
 	}
 }

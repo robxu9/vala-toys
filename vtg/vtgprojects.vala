@@ -98,5 +98,21 @@ namespace Vtg
 			
 			return null;
 		}
+		
+		internal Vbf.Target? get_target_for_document (Gedit.Document? document)
+		{
+			if (document != null) {
+				var file = Utils.get_document_name (document);
+				if (file != null) {
+					foreach (ProjectManager item in _project_managers) {
+						var source = item.get_source_file_for_filename (file);
+						if (source != null)
+							return source.target;
+					}
+				}
+			}
+			
+			return null;
+		}
 	}
 }

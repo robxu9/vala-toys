@@ -159,6 +159,22 @@ namespace Vtg
 			return null;
 		}
 
+		public Vbf.Source? get_source_file_for_filename (string? filename)
+		{
+			if (filename != null) {
+				foreach (Group group in _project.get_groups ()) {
+					foreach (Target target in group.get_targets ()) {
+						foreach (Vbf.Source source in target.get_sources ()) {
+							if (source.filename == filename) {
+								return source;
+							}
+						}
+					}
+				}
+			}
+			return null;
+		}
+
 		public bool contains_vala_source_file (string? uri)
 		{
 			if (uri != null) {
@@ -298,6 +314,11 @@ namespace Vtg
 						if (source.type == FileTypes.VALA_SOURCE) {
 							completion.queue_sourcefile (source.filename);
 						}
+					}
+					
+					/* rebind the completion engine to the open views */
+					foreach (PluginInstance instance in Vtg.Plugin.main_instance.instances) {
+						instance.bind_completion_engine_with_target (target, completion);						
 					}
 				}
 			}

@@ -1,5 +1,13 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojects.vala:
+
+	rebind all completion engines on project reload / update
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugin.vala:
 	* vtg/vtgplugininstance.vala:
 	* vtg/vtgprojectmanager.vala:
@@ -8,7 +16,7 @@
 	* vtg/vtgsymbolcompletion.vala:
 	* vtg/vtgsymbolcompletionprovider.vala:
 
-	refactored SymbolCompletionProvider to store a little enternal reference as possibile.
+	refactored SymbolCompletionProvider to store as little esternal references as possibile.
 
 	workaround invalidate all engine instances when re-reading a project this should fix
 	all memory corruptions seen so far.
