@@ -1,4 +1,3 @@
-ui/vtg.glade
 vtg/vtgconfiguration.c
 vtg/vtgprojectmanager.c
 vtg/vtgchangelog.c
