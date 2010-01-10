@@ -600,7 +600,7 @@ namespace Vtg
 				var sym = ast.lookup_name_for_type_at (word, _sb.path, line, column, LookupCompareMode.EXACT);
 				if (sym != null) {
 					DetachCopyOptions options = null;
-					
+
 					if (whole_line != null) {
 						if (whole_line.str ("= new ") != null || whole_line.str ("=new ") != null) {
 							options = DetachCopyOptions.creation_methods ();
@@ -614,6 +614,14 @@ namespace Vtg
 					if (options == null)
 						options = DetachCopyOptions.standard ();
 
+					if (word == "base") {
+						options.access = Afrodite.SymbolAccessibility.PUBLIC 
+							| Afrodite.SymbolAccessibility.PROTECTED 
+							| Afrodite.SymbolAccessibility.INTERNAL;
+					} else if (word != "this") {
+						options.access = Afrodite.SymbolAccessibility.PUBLIC 
+							| Afrodite.SymbolAccessibility.INTERNAL;						
+					}
 					result = sym.detach_copy (1, options);
 				}
 				_completion.release_ast (ast);
