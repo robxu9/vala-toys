@@ -47,8 +47,6 @@ namespace Vtg.Vcs.Backends
 				
 					while (lines[idx] != null) {
 						string line = lines[idx];
-						GLib.debug ("git line: %s", line);
-						
 						if (modp.match_string (line)) {
 							Item item = new Item ();
 							item.state = States.MODIFIED;

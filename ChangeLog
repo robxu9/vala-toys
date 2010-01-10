@@ -1,5 +1,11 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgvcsbackendsgit.vala:
+
+	removed a debug statement	
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* po/POTFILES.in:
 	* po/POTFILES.skip:
 
