@@ -485,7 +485,9 @@ namespace Afrodite
 			var prev_sr = _current_sr;
 			
 			set_fqn (ev.name);
-			_current.add_child (add_symbol (ev, out _current_sr));
+			var sym = add_symbol (ev, out _current_sr);
+			sym.access = _current.access;
+			_current.add_child (sym);
 			
 			_current = prev;
 			_current_sr = prev_sr;
@@ -662,6 +664,7 @@ namespace Afrodite
 			
 			set_fqn (ecode.name);
 			var s = add_symbol (ecode, out _current_sr);
+			s.access = _current.access;
 			_current.add_child (s);
 			
 			_current = prev;
