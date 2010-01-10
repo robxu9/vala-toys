@@ -555,12 +555,14 @@ namespace Afrodite
 			    && type_name != null
 			    && (type_name == "Property" 
 			    || type_name.has_suffix ("Method")
+			    || type_name.has_suffix ("Signal")
 			    || type_name == "Field"))
 				sb.append_printf ("<b>%s</b>".printf(display_name));
 			else
 				sb.append (display_name);
 
-			if (type_name != null && type_name.has_suffix ("Method")) {
+			if (type_name != null 
+				&& (has_parameters || type_name.has_suffix ("Method") || type_name.has_suffix("Signal"))) {
 				sb.append (" (");
 			}
 			if (has_parameters) {
@@ -569,7 +571,8 @@ namespace Afrodite
 				}
 				sb.truncate (sb.len - 2);
 			}
-			if (type_name != null && type_name.has_suffix ("Method")) {
+			if (type_name != null
+				&& (has_parameters || type_name.has_suffix ("Method") || type_name.has_suffix("Signal"))) {
 				sb.append (")");
 			}
 			

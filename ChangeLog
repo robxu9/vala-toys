@@ -1,5 +1,11 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+
+	better signal [markup] description
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 
 	better signal completion info	
