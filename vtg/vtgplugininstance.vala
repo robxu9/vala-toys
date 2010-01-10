@@ -30,8 +30,6 @@ namespace Vtg
 {
 	internal class PluginInstance : GLib.Object
 	{
-		public unowned Plugin plugin;
-		
 		private unowned Gedit.Window _window = null;
 		private ProjectManagerUi _project_manager_ui = null;
 		private SourceOutliner _source_outliner = null;
@@ -67,12 +65,11 @@ namespace Vtg
 			get { return _window; }
 		}
 
-		public PluginInstance (Plugin plugin, Gedit.Window window)
+		public PluginInstance (Gedit.Window window)
 		{
-			this.plugin = plugin;
 			this._window = window;
 			_project_view = new ProjectView (this);
-			foreach (ProjectManager prj in plugin.projects.project_managers) {
+			foreach (ProjectManager prj in Vtg.Plugin.main_instance.projects.project_managers) {
 				_project_view.add_project (prj.project);
 			}
 			Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
@@ -128,7 +125,7 @@ namespace Vtg
 		private static void on_tab_added (Gedit.Window sender, Gedit.Tab tab, Vtg.PluginInstance instance)
 		{
 			var doc = tab.get_document ();
-			var project_manager = instance.plugin.projects.get_project_manager_for_document (doc);
+			var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 
 			GLib.debug ("%s: ", project_manager.project.name);
 			
@@ -153,7 +150,7 @@ namespace Vtg
 			instance.uninitialize_view (view);
 			instance.uninitialize_document (doc);
 			
-			var project_manager = instance.plugin.projects.get_project_manager_for_document (doc);
+			var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 
 			if (project_manager != null && project_manager.project.id == "vtg-default-project") {
 				check_vala_source_for_remove (project_manager, doc);
@@ -165,22 +162,22 @@ namespace Vtg
 			foreach (Gedit.View view in _window.get_views ()) {
 				var doc = (Gedit.Document) (view.get_buffer ());
 				if (doc.language != null && doc.language.id == "vala") {
-					var project = plugin.projects.get_project_manager_for_document (doc);
+					var project = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 					initialize_view (project, view);
 				}
 			}
-			if (plugin.config.sourcecode_outliner_enabled && _source_outliner == null) {
+			if (Vtg.Plugin.main_instance.config.sourcecode_outliner_enabled && _source_outliner == null) {
 				activate_sourcecode_outliner ();
 			}			
 		}
 
 		public void initialize_view (ProjectManager project, Gedit.View view)
 		{
-			if (plugin.config.symbol_enabled && !scs_contains (view)) {
+			if (Vtg.Plugin.main_instance.config.symbol_enabled && !scs_contains (view)) {
 				activate_symbol (project, view);
 			}
 
-			if (plugin.config.bracket_enabled && !bcs_contains (view)) {
+			if (Vtg.Plugin.main_instance.config.bracket_enabled && !bcs_contains (view)) {
 				activate_bracket (view);
 			}
 		}
@@ -349,7 +346,7 @@ namespace Vtg
 			var app = App.get_default ();
 			foreach (Gedit.View view in app.get_views ()) {
 				if (view.get_buffer () == sender) {
-					var project_manager = instance.plugin.projects.get_project_manager_for_document (sender);
+					var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (sender);
 					GLib.debug ("on_notify_language %s: ", project_manager.project.name);
 					if (sender.language  == null || sender.language.id != "vala") {
 						if (project_manager != null && project_manager.project.id == "vtg-default-project") {

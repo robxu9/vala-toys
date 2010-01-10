@@ -71,8 +71,8 @@ namespace Vtg
 					ctx.iteration (false);
 				
 				Gtk.TextIter iter;
-				string author = _plugin_instance.plugin.config.author;
-				string email = _plugin_instance.plugin.config.email_address;
+				string author = Vtg.Plugin.main_instance.config.author;
+				string email = Vtg.Plugin.main_instance.config.email_address;
 				var today = Time.local (time_t ());
 				
 				if (StringUtils.is_null_or_empty (author))

@@ -85,7 +85,7 @@ namespace Vtg
 		public override void activate (Gedit.Window window)
 		{
 			if (get_plugin_instance_for_window (window) == null) {
-				var instance = new PluginInstance (this, window);
+				var instance = new PluginInstance (window);
 				_instances.add (instance);
 			}
 		}

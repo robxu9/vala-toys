@@ -343,7 +343,7 @@ namespace Vtg
 		private void on_project_save_all (Gtk.Action action)
 		{
 			var project = _plugin_instance.project_view.current_project;
-			_plugin_instance.plugin.project_save_all (project);
+			Vtg.Plugin.main_instance.project_save_all (project);
 		}
 		
 		private void on_project_close (Gtk.Action action)
@@ -352,7 +352,7 @@ namespace Vtg
 			return_if_fail (project != null);
 
 			//there are some files that require saving: ask it!
-			if (_plugin_instance.plugin.project_need_save (project)) {
+			if (Vtg.Plugin.main_instance.project_need_save (project)) {
 				var dialog = new Gtk.MessageDialog (_plugin_instance.window,
                                   DialogFlags.DESTROY_WITH_PARENT,
                                   MessageType.QUESTION,
@@ -366,7 +366,7 @@ namespace Vtg
 				if (response == ResponseType.CANCEL) {
 					return;
 				} else if (response == ResponseType.ACCEPT) {
-					_plugin_instance.plugin.project_save_all (project);
+					Vtg.Plugin.main_instance.project_save_all (project);
 				}
 			}
 
@@ -612,7 +612,7 @@ namespace Vtg
 					}
 					try {
 						file = Filename.from_uri (file);
-						if (!doc.is_untouched () && _plugin_instance.plugin.config.save_before_build)
+						if (!doc.is_untouched () && Vtg.Plugin.main_instance.config.save_before_build)
 							doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
 						
 						_prj_builder.compile_file (file, params);
@@ -663,7 +663,7 @@ namespace Vtg
 				}
 				
 				var project = _plugin_instance.project_view.current_project;
-				_plugin_instance.plugin.project_save_all (project);
+				Vtg.Plugin.main_instance.project_save_all (project);
 				_prj_builder.build (project, pars);
 			}
 		}
@@ -679,7 +679,7 @@ namespace Vtg
 					if (!Vtg.Caches.cache_contains (cache, params)) {
 						Vtg.Caches.cache_add (cache, params);
 					}
-					_plugin_instance.plugin.project_save_all (project);
+					Vtg.Plugin.main_instance.project_save_all (project);
 					_prj_builder.configure (project, params);
 				}
 			}
@@ -845,7 +845,7 @@ namespace Vtg
 					_plugin_instance.project_view.current_project = project;
 				} else {
 					// open project
-					project = new ProjectManager (_plugin_instance.plugin.config.symbol_enabled);
+					project = new ProjectManager (Vtg.Plugin.main_instance.config.symbol_enabled);
 					project.symbol_cache_building.connect (this.on_symbol_cache_building);
 					project.symbol_cache_builded.connect (this.on_symbol_cache_builded);
 					
@@ -853,7 +853,7 @@ namespace Vtg
 						_projects.add (project);
 						//HACK: why the signal isn't working?!?!
 						//this.project_loaded (project);
-						_plugin_instance.plugin.on_project_loaded (this, project);
+						Vtg.Plugin.main_instance.on_project_loaded (this, project);
 						_plugin_instance.project_view.add_project (project.project);
 					}
 				}
@@ -867,7 +867,7 @@ namespace Vtg
 			project.symbol_cache_building.disconnect (this.on_symbol_cache_building);
 			project.symbol_cache_builded.disconnect (this.on_symbol_cache_builded);
 			_plugin_instance.project_view.remove_project (project.project);
-			_plugin_instance.plugin.on_project_closed (this, project);
+			Vtg.Plugin.main_instance.on_project_closed (this, project);
 			project.close ();
 			_projects.remove (project);
 		}

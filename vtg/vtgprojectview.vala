@@ -241,7 +241,7 @@ namespace Vtg
 			}
 			
 			//find project
-			prj = _plugin_instance.plugin.projects.get_project_manager_for_project_name (project_name);
+			prj = Vtg.Plugin.main_instance.projects.get_project_manager_for_project_name (project_name);
 			current_project = prj;
 		}
 

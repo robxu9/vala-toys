@@ -151,7 +151,7 @@ namespace Vtg
 			_completion.trigger_event (this);
 			Gsc.Info info = _completion.get_info_widget ();
 			
-			if (_plugin.plugin.config.info_window_visible && _completion.visible) {
+			if (Vtg.Plugin.main_instance.config.info_window_visible && _completion.visible) {
 				info.show ();
 			}
 			
@@ -171,7 +171,7 @@ namespace Vtg
 		{
 			//only store the visible state if completion popup is active
 			if (_completion.visible) {
-				_plugin.plugin.config.info_window_visible = sender.visible;
+				Vtg.Plugin.main_instance.config.info_window_visible = sender.visible;
 			}
 		}
 		
