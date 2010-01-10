@@ -30,6 +30,8 @@ namespace Vtg
 {	
 	public class Plugin : Gedit.Plugin
 	{
+		public static unowned Vtg.Plugin main_instance = null;
+		
 		private Vala.List<PluginInstance> _instances = new Vala.ArrayList<PluginInstance> ();
 		private Configuration _config = null;
 		private Vtg.Projects _projects = null;
@@ -41,6 +43,11 @@ namespace Vtg
 			SYMBOL,
 			SOURCECODE_OUTLINER
 	        }
+
+		public Vala.List<PluginInstance> instances
+		{
+			get { return _instances; }
+		}
 
 		public Vtg.Projects projects
 		{
@@ -56,10 +63,12 @@ namespace Vtg
 		
 		construct
 		{
+			main_instance = this;
 			_config = new Configuration ();
 			_config.notify += this.on_configuration_property_changed;
 			GLib.Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
 			_projects = new Vtg.Projects (this);
+			
 		}
 
 		private PluginInstance? get_plugin_instance_for_window (Gedit.Window window)
@@ -72,6 +81,7 @@ namespace Vtg
 			
 			return null;
 		}
+		
 		public override void activate (Gedit.Window window)
 		{
 			if (get_plugin_instance_for_window (window) == null) {
@@ -247,6 +257,7 @@ namespace Vtg
 		~Plugin ()
 		{
 			deactivate_modules ();
+			main_instance = null;
 		}
 	}
 }

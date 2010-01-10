@@ -32,19 +32,19 @@ namespace Vtg
 	{
 		private Vtg.PluginInstance _plugin_instance;
 		private Gedit.View _view;
-		private unowned CompletionEngine _completion;
+		private unowned CompletionEngine _completion_engine;
 		private SymbolCompletionProvider _provider;
 		private Gsc.Completion _manager;
 		private SymbolCompletionTrigger _trigger;
 		
  		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } default = null; }
 		public Gedit.View view { get { return _view; } construct { _view = value; } default = null; }
-		public CompletionEngine completion { get { return _completion; } construct { _completion = value; } default = null; }
+		public CompletionEngine completion_engine { get { return _completion_engine; } construct set { _completion_engine = value; } default = null; }
 		public SymbolCompletionTrigger trigger { get { return _trigger; } }
 		
-		public SymbolCompletion (Vtg.PluginInstance plugin_instance, Gedit.View view, CompletionEngine completion)
+		public SymbolCompletion (Vtg.PluginInstance plugin_instance, Gedit.View view, CompletionEngine completion_engine)
 		{
-			GLib.Object (plugin_instance: plugin_instance, view: view, completion: completion);
+			GLib.Object (plugin_instance: plugin_instance, view: view, completion_engine: completion_engine);
 		}
 
 		construct
@@ -78,7 +78,7 @@ namespace Vtg
 			_manager = new Gsc.Completion (view);
 			_manager.remember_info_visibility = true;
 			_manager.select_on_show = true;
-			_provider = new SymbolCompletionProvider (_plugin_instance, view, _completion);
+			_provider = new SymbolCompletionProvider (this);
 			_trigger = new SymbolCompletionTrigger (_plugin_instance, _manager, "SymbolComplete");
 			_manager.register_trigger (_trigger);
 			_manager.register_provider (_provider, _trigger);

@@ -309,6 +309,9 @@ namespace Vtg
 				foreach (CompletionEngine completion in _completions.get_values ()) {
 					completion.begin_parsing.disconnect (this.on_completion_engine_begin_parse);
 					completion.end_parsing.disconnect (this.on_completion_engine_end_parse);
+					foreach (PluginInstance instance in Vtg.Plugin.main_instance.instances) {
+						instance.unbind_completion_engine (completion);						
+					}
 				}
 				_completions.clear ();
 				_completions = null;

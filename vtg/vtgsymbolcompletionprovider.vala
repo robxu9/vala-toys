@@ -31,8 +31,6 @@ namespace Vtg
 	internal class SymbolCompletionProvider : GLib.Object, Gsc.Provider
 	{
 		private Afrodite.SourceItem _sb = null;
-		private unowned Afrodite.CompletionEngine _completion = null;
-		private Gedit.View _view = null;
 		private GLib.List<Gsc.Proposal> _list;
 		
 		private uint _timeout_id = 0;
@@ -49,21 +47,44 @@ namespace Vtg
 		private uint _sb_msg_id = 0;
 		private uint _sb_context_id = 0;
 
-		private Vtg.PluginInstance _plugin_instance;
 		private Gsc.Info _calltip_window = null;
 
 		private int _last_line = -1;
 		private bool _doc_changed = false;
 		
+		private unowned SymbolCompletion _symbol_completion = null;
+		private unowned CompletionEngine _completion = null;
 		
-		public Afrodite.CompletionEngine completion { construct { _completion = value;} }
-		public Gedit.View view { construct { _view = value; } }
- 		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } default = null; }
-
-
-		public SymbolCompletionProvider (Vtg.PluginInstance plugin_instance, Gedit.View view, Afrodite.CompletionEngine completion)
+		public SymbolCompletionProvider (Vtg.SymbolCompletion symbol_completion)
 		{
-			GLib.Object (plugin_instance: plugin_instance, view: view, completion: completion);
+			_symbol_completion = symbol_completion;
+			try {
+				var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
+				string name = Utils.get_document_name (doc);
+
+				_sb = new Afrodite.SourceItem ();
+				_sb.path = name;
+				_sb.content = doc.text;
+				
+				_symbol_completion.view.key_press_event += this.on_view_key_press;
+				doc.notify["text"] += this.on_text_changed;
+				doc.notify["cursor-position"] += this.on_cursor_position_changed;
+				
+				var status_bar = (Gedit.Statusbar) _symbol_completion.plugin_instance.window.get_statusbar ();
+				_sb_context_id = status_bar.get_context_id ("symbol status");
+				
+				_cache_building = true; 
+				_all_doc = true;
+				_symbol_completion.notify["completion-engine"].connect (this.on_completion_engine_changed);
+				_completion = _symbol_completion.completion_engine;
+				if (_completion.is_parsing) {
+					_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
+				}
+				setup_completion (_completion);
+				
+			} catch (Error err) {
+				GLib.warning ("an error occourred: %s", err.message);
+			}
 		}
 
 		~SymbolCompletionProvider ()
@@ -75,45 +96,43 @@ namespace Vtg
 				Source.remove (_idle_id);
 			}
 			
-			_view.key_press_event -= this.on_view_key_press;
-			var doc = (Gedit.Document) _view.get_buffer ();
+			_symbol_completion.view.key_press_event -= this.on_view_key_press;
+			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
+			_symbol_completion.notify["completion-engine"].disconnect (this.on_completion_engine_changed);
 			doc.notify["text"] -= this.on_text_changed;
 			doc.notify["cursor-position"] -= this.on_cursor_position_changed;
 			
 			if (_sb_msg_id != 0) {
-				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
+				var status_bar = (Gedit.Statusbar) _symbol_completion.plugin_instance.window.get_statusbar ();
 				status_bar.remove (_sb_context_id, _sb_msg_id);
 			}
 		}
 		
-		construct { 
-			try {
-				var doc = (Gedit.Document) _view.get_buffer ();
-				string name = Utils.get_document_name (doc);
+		private void setup_completion (CompletionEngine? engine)
+		{
+			if (engine == null)
+				return;
 
-				_sb = new Afrodite.SourceItem ();
-				_sb.path = name;
-				_sb.content = doc.text;
-				
-				
-				_view.key_press_event += this.on_view_key_press;
-				doc.notify["text"] += this.on_text_changed;
-				doc.notify["cursor-position"] += this.on_cursor_position_changed;
-				
-				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
-				_sb_context_id = status_bar.get_context_id ("symbol status");
-				
-				_cache_building = true; 
-				_all_doc = true;
-				if (_completion.is_parsing) {
-					_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
-				}
-				_completion.begin_parsing += this.on_begin_parsing;
-				_completion.end_parsing += this.on_end_parsing;
-				
-			} catch (Error err) {
-				GLib.warning ("an error occourred: %s", err.message);
-			}
+			engine.begin_parsing += this.on_begin_parsing;
+			engine.end_parsing += this.on_end_parsing;
+		}
+		
+		private void cleanup_completion (CompletionEngine? engine)
+		{
+			if (engine != null)
+				return;
+
+			engine.begin_parsing += this.on_begin_parsing;
+			engine.end_parsing += this.on_end_parsing;			
+		}
+		
+		private void on_completion_engine_changed (GLib.Object sender, ParamSpec pspec)
+		{
+			// cleanup previous completion engine instance
+			cleanup_completion (_completion);
+			_completion = _symbol_completion.completion_engine;
+			// setup new completion engine instance
+			setup_completion (_completion);
 		}
 		
 		private void on_begin_parsing (CompletionEngine engine)
@@ -133,7 +152,7 @@ namespace Vtg
 		private int get_current_line_index (Gedit.Document? doc = null)
 		{
 			if (doc == null) {
-				doc = (Gedit.Document) _view.get_buffer ();
+				doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			}
 			
 			// get current line
@@ -171,7 +190,7 @@ namespace Vtg
 		
 		private bool on_idle ()
 		{
-			if (_plugin_instance == null)
+			if (_symbol_completion.plugin_instance == null)
 				return false;
 				
 			if (_cache_building && !_tooltip_is_visible && _prev_cache_building == false) {
@@ -201,7 +220,7 @@ namespace Vtg
 
 		private bool on_timeout_parse ()
 		{
-			var doc = (Gedit.Document) _view.get_buffer ();
+			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			parse (doc);
 			_timeout_id = 0;
 			_last_line = get_current_line_index (doc);
@@ -239,7 +258,7 @@ namespace Vtg
 				string calltip_text = completion_result.info;
 				if (calltip_text != null) {
 					_calltip_window.set_markup (calltip_text);
-					_calltip_window.move_to_cursor (_view);
+					_calltip_window.move_to_cursor (_symbol_completion.view);
 					_calltip_window.show_all ();
 				}
 			}
@@ -257,7 +276,7 @@ namespace Vtg
 		{
 			_calltip_window = new Gsc.Info ();
 			//_calltip_window.set_info_type (InfoType.EXTENDED);
-			_calltip_window.set_transient_for (_plugin_instance.window);
+			_calltip_window.set_transient_for (_symbol_completion.plugin_instance.window);
 			_calltip_window.set_adjust_width (true, 800);
 			_calltip_window.set_adjust_height (true, 600);
 			_calltip_window.allow_grow = true;
@@ -381,7 +400,7 @@ namespace Vtg
 
 		private void parse_current_line (bool skip_leading_spaces, out string symbolname, out string last_symbolname, out string line, out int lineno, out int colno)
 		{
- 			weak Gedit.Document doc = (Gedit.Document) _view.get_buffer ();
+ 			weak Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			weak TextMark mark = (TextMark) doc.get_insert ();
 			TextIter end;
 			TextIter start;

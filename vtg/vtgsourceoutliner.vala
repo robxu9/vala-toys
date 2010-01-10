@@ -46,7 +46,7 @@ namespace Vtg
 						var doc = (Document) _active_view.get_buffer ();
 						cleanup_document (doc);
 						if (completion_setup)
-							cleanup_completion (_active_view);
+							cleanup_completion_with_view (_active_view);
 					}
 					_active_view = value;
 					if (_active_view != null) {
@@ -54,7 +54,7 @@ namespace Vtg
 						setup_document (doc);
 						if (Utils.is_vala_doc (doc)) {
 							update_source_outliner_view ();
-							setup_completion (_active_view);
+							setup_completion_with_view (_active_view);
 						}
 					}
 				}
@@ -82,7 +82,7 @@ namespace Vtg
 				var doc = (Document) _active_view.get_buffer ();
 				cleanup_document (doc);
 				if (completion_setup)
-					cleanup_completion (_active_view);
+					cleanup_completion_with_view (_active_view);
 				_active_view = null;
 			}
 		}
@@ -109,36 +109,45 @@ namespace Vtg
 			doc.notify["language"] -= this.on_notify_language;
 		}
 		
-		private void setup_completion (View view)
+		private void setup_completion_with_view (View view)
 		{
 			var scs = _plugin_instance.scs_find_from_view (view);
- 			if (scs == null || scs.completion == null) {
+ 			if (scs == null || scs.completion_engine == null) {
  				//GLib.warning ("setup_completion: symbol completion helper is null for view");
 				return;
 			}
-			GLib.debug ("connected!!!!!!!");
-			completion_setup = true;
-			scs.completion.end_parsing += this.on_end_parsing;
+			setup_completion_engine (scs.completion_engine);
 		}
 
-		private void cleanup_completion (View view)
+		public void setup_completion_engine (Afrodite.CompletionEngine engine)
+		{
+			GLib.debug ("connected!!!!!!!");
+			completion_setup = true;
+			engine.end_parsing += this.on_end_parsing;			
+		}
+
+		private void cleanup_completion_with_view (View view)
 		{
 			var scs = _plugin_instance.scs_find_from_view (view);
- 			if (scs == null || scs.completion == null) {
+ 			if (scs == null || scs.completion_engine == null) {
  				//GLib.warning ("cleanup_completion: symbol completion helper is null for view");
 				return;
 			}
-			GLib.debug ("disconnecting!!!!!!!");
-			scs.completion.end_parsing -= this.on_end_parsing;
+			cleanup_completion_engine (scs.completion_engine);
+		}
+
+		public void cleanup_completion_engine (Afrodite.CompletionEngine engine)
+		{
+			engine.end_parsing -= this.on_end_parsing;
 			completion_setup = false;
 			GLib.debug ("disconnected!!!!!!!");			
 		}
-
+		
 		private void on_notify_language (Gedit.Document sender, ParamSpec pspec)
 		{
 			if (Utils.is_vala_doc (sender)) {
 				update_source_outliner_view ();
-				setup_completion (_active_view);
+				setup_completion_with_view (_active_view);
 			}
 		}
 		
@@ -167,7 +176,7 @@ namespace Vtg
 		private bool update_source_outliner_view ()
 		{
 			var scs = _plugin_instance.scs_find_from_view (_active_view);
- 			if (scs == null) {
+ 			if (scs == null || scs.completion_engine == null) {
  				//GLib.warning ("update_source_ouliner_view: symbol completion helper is null for view");
 				return true;
 			}
@@ -176,10 +185,10 @@ namespace Vtg
 			var name = Utils.get_document_name (doc);
 			Afrodite.Symbol results = null;
 			Afrodite.Ast ast;
-			bool res = scs.completion.try_acquire_ast (out ast);
+			bool res = scs.completion_engine.try_acquire_ast (out ast);
 			if (res) {
 				results = ast.lookup_symbols_in (name);
-				scs.completion.release_ast (ast);
+				scs.completion_engine.release_ast (ast);
 			}			
 			if (results == null) {
 				_outliner_view.clear_view ();

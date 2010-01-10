@@ -366,5 +366,17 @@ namespace Vtg
 				}
 			}
 		}
+		
+		public void unbind_completion_engine (Afrodite.CompletionEngine engine)
+		{
+			foreach (SymbolCompletion sc in _scs) {
+				if (sc.completion_engine == engine) {
+					sc.completion_engine = null;
+				}
+			}
+			if (_source_outliner != null) {
+				_source_outliner.cleanup_completion_engine (engine);
+			}
+		}
 	}
 }

@@ -548,10 +548,10 @@ namespace Vtg
 				var name = Utils.get_document_name (doc);
 				Afrodite.Symbol results = null;
 				Afrodite.Ast ast;
-				bool res = scs.completion.try_acquire_ast (out ast);
+				bool res = scs.completion_engine.try_acquire_ast (out ast);
 				if (res) {
 					results = ast.lookup_symbols_in (name);
-					scs.completion.release_ast (ast);
+					scs.completion_engine.release_ast (ast);
 				}			
 				if (results == null)
 					return;
