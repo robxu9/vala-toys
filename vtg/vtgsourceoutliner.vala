@@ -30,6 +30,7 @@ namespace Vtg
 	{
 		private unowned PluginInstance _plugin_instance = null;
  		private Gedit.View _active_view = null; // it's not unowned because we need to cleanup later
+ 		private Gedit.Document _active_doc = null; // it's not unowned because we need to cleanup later
 		private SourceOutlinerView _outliner_view = null;
 		private uint idle_id = 0;
 		private bool completion_setup = false;
@@ -43,8 +44,7 @@ namespace Vtg
 			set {
 				if (_active_view != value) {
 					if (_active_view != null) {
-						var doc = (Document) _active_view.get_buffer ();
-						cleanup_document (doc);
+						cleanup_document ();
 						if (completion_setup)
 							cleanup_completion_with_view (_active_view);
 					}
@@ -81,8 +81,7 @@ namespace Vtg
 			}
 			if (_active_view != null)
 			{
-				var doc = (Document) _active_view.get_buffer ();
-				cleanup_document (doc);
+				cleanup_document ();
 				if (completion_setup)
 					cleanup_completion_with_view (_active_view);
 				_active_view = null;
@@ -103,12 +102,16 @@ namespace Vtg
 
 		private void setup_document (Gedit.Document doc)
 		{
+			_active_doc = doc;
 			doc.notify["language"] += this.on_notify_language;
 		}
 	
-		public void cleanup_document (Gedit.Document doc)
+		public void cleanup_document ()
 		{
-			doc.notify["language"] -= this.on_notify_language;
+			if (_active_doc != null) {
+				_active_doc.notify["language"] -= this.on_notify_language;
+				_active_doc = null;
+			}
 		}
 		
 		private void setup_completion_with_view (View view)
