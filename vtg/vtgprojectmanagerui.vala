@@ -524,9 +524,6 @@ namespace Vtg
 			var project = _plugin_instance.project_view.current_project;
 			return_if_fail (project != null);
 			
-			var pdes = _plugin_instance.plugin.projects.get_project_descriptor_for_project_manager (project);
-			return_if_fail (pdes != null);
-			
 			var view = _plugin_instance.window.get_active_view ();
 			if (view == null)
 				return;

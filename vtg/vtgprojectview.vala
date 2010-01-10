@@ -234,17 +234,14 @@ namespace Vtg
 
 		private void update_view (string? project_name)
 		{
-			ProjectManager? prj = null;
+			ProjectManager? prj;
 			
 			if (current_project != null && current_project.project.name == project_name) {
 				return;
 			}
 			
 			//find project
-			var prj_descr = _plugin_instance.plugin.projects.get_project_descriptor_for_project_name (project_name);
-			if (prj_descr != null)
-				prj = prj_descr.project;
-				
+			prj = _plugin_instance.plugin.projects.get_project_manager_for_project_name (project_name);
 			current_project = prj;
 		}
 

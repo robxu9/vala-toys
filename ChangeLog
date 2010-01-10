@@ -1,6 +1,17 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojects.vala:
+	* vtg/vtgprojectview.vala:
+
+	removed the ProjectDescriptor class
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/Makefile.am:
 	* vtg/vtgplugininstance.vala:
 	* vtg/vtgsymbolcompletion.vala:
 

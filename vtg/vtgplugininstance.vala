@@ -72,8 +72,8 @@ namespace Vtg
 			this.plugin = plugin;
 			this._window = window;
 			_project_view = new ProjectView (this);
-			foreach (ProjectDescriptor prj in plugin.projects.project_descriptors) {
-				_project_view.add_project (prj.project.project);
+			foreach (ProjectManager prj in plugin.projects.project_managers) {
+				_project_view.add_project (prj.project);
 			}
 			Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
 			Signal.connect_after (this._window, "tab-removed", (GLib.Callback) on_tab_removed, this);
@@ -97,50 +97,50 @@ namespace Vtg
 			_window = null;
 		}
 		
-		private static void check_vala_source_for_add (ProjectDescriptor project_descriptor, Gedit.Document doc)
+		private static void check_vala_source_for_add (ProjectManager project_manager, Gedit.Document doc)
 		{
 			if (Utils.is_vala_doc (doc)) {
 				// check if project contains this file, if not add it
-				var group = project_descriptor.project.project.get_group("Sources");
+				var group = project_manager.project.get_group("Sources");
 				var target = group.get_target_for_id ("Default");
 				var source = target.get_source (Utils.get_document_name (doc));
 				if (source == null) {
 					// add the source to the project
 					target.add_source (new Vbf.Source.with_type (target, Utils.get_document_name (doc), FileTypes.VALA_SOURCE));
-					project_descriptor.project.project.update ();
+					project_manager.project.update ();
 				}
 			}
 		}
 
-		private static void check_vala_source_for_remove (ProjectDescriptor project_descriptor, Gedit.Document doc)
+		private static void check_vala_source_for_remove (ProjectManager project_manager, Gedit.Document doc)
 		{
 			// check if project contains this file, if not add it
-			var group = project_descriptor.project.project.get_group("Sources");
+			var group = project_manager.project.get_group("Sources");
 			var target = group.get_target_for_id ("Default");
 			var source = target.get_source (Utils.get_document_name (doc));
 			if (source != null) {
 				// add the source to the project
 				target.remove_source (source);
-				project_descriptor.project.project.update ();
+				project_manager.project.update ();
 			}	
 		}
 		
 		private static void on_tab_added (Gedit.Window sender, Gedit.Tab tab, Vtg.PluginInstance instance)
 		{
 			var doc = tab.get_document ();
-			var project_descriptor = instance.plugin.projects.get_project_descriptor_for_document (doc);
+			var project_manager = instance.plugin.projects.get_project_manager_for_document (doc);
 
-			GLib.debug ("%s: ", project_descriptor.project.project.name);
+			GLib.debug ("%s: ", project_manager.project.name);
 			
-			if (project_descriptor != null && project_descriptor.project.project.id == "vtg-default-project") {
-				check_vala_source_for_add (project_descriptor, doc);
+			if (project_manager != null && project_manager.project.id == "vtg-default-project") {
+				check_vala_source_for_add (project_manager, doc);
 			}
 			
 			if (doc.language != null && doc.language.id == "vala") {
 				var view = tab.get_view ();
 				GLib.debug ("init view");
 				
-				instance.initialize_view (project_descriptor, view);
+				instance.initialize_view (project_manager, view);
 			}
 			instance.initialize_document (doc);
 		}
@@ -153,10 +153,10 @@ namespace Vtg
 			instance.uninitialize_view (view);
 			instance.uninitialize_document (doc);
 			
-			var project_descriptor = instance.plugin.projects.get_project_descriptor_for_document (doc);
+			var project_manager = instance.plugin.projects.get_project_manager_for_document (doc);
 
-			if (project_descriptor != null && project_descriptor.project.project.id == "vtg-default-project") {
-				check_vala_source_for_remove (project_descriptor, doc);
+			if (project_manager != null && project_manager.project.id == "vtg-default-project") {
+				check_vala_source_for_remove (project_manager, doc);
 			}
 		}
 
@@ -165,7 +165,7 @@ namespace Vtg
 			foreach (Gedit.View view in _window.get_views ()) {
 				var doc = (Gedit.Document) (view.get_buffer ());
 				if (doc.language != null && doc.language.id == "vala") {
-					var project = plugin.projects.get_project_descriptor_for_document (doc);
+					var project = plugin.projects.get_project_manager_for_document (doc);
 					initialize_view (project, view);
 				}
 			}
@@ -174,7 +174,7 @@ namespace Vtg
 			}			
 		}
 
-		public void initialize_view (ProjectDescriptor project, Gedit.View view)
+		public void initialize_view (ProjectManager project, Gedit.View view)
 		{
 			if (plugin.config.symbol_enabled && !scs_contains (view)) {
 				activate_symbol (project, view);
@@ -226,7 +226,7 @@ namespace Vtg
 			_bcs.remove (bc);
 		}
 		
-		public void activate_symbol (ProjectDescriptor project, Gedit.View view)
+		public void activate_symbol (ProjectManager project, Gedit.View view)
 		{
 			var doc = (Gedit.Document) view.get_buffer ();
 			return_if_fail (doc != null);
@@ -235,7 +235,7 @@ namespace Vtg
 			if (uri == null)
 				return;
 
-			var completion = project.project.get_completion_for_file (uri);
+			var completion = project.get_completion_for_file (uri);
 			if (completion == null) {
 				GLib.warning ("No completion for file %s", uri);
 				return;
@@ -349,18 +349,18 @@ namespace Vtg
 			var app = App.get_default ();
 			foreach (Gedit.View view in app.get_views ()) {
 				if (view.get_buffer () == sender) {
-					var project_descriptor = instance.plugin.projects.get_project_descriptor_for_document (sender);
-					GLib.debug ("on_notify_language %s: ", project_descriptor.project.project.name);
+					var project_manager = instance.plugin.projects.get_project_manager_for_document (sender);
+					GLib.debug ("on_notify_language %s: ", project_manager.project.name);
 					if (sender.language  == null || sender.language.id != "vala") {
-						if (project_descriptor != null && project_descriptor.project.project.id == "vtg-default-project") {
-							check_vala_source_for_remove (project_descriptor, sender);
+						if (project_manager != null && project_manager.project.id == "vtg-default-project") {
+							check_vala_source_for_remove (project_manager, sender);
 						}
 						instance.uninitialize_view (view);
 					} else {
-						if (project_descriptor != null && project_descriptor.project.project.id == "vtg-default-project") {
-							check_vala_source_for_add (project_descriptor, sender);
+						if (project_manager != null && project_manager.project.id == "vtg-default-project") {
+							check_vala_source_for_add (project_manager, sender);
 						}
-						instance.initialize_view (project_descriptor, view);
+						instance.initialize_view (project_manager, view);
 					}
 					break;
 				}

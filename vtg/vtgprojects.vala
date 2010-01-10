@@ -32,8 +32,8 @@ namespace Vtg
 	{
 		private unowned Plugin _plugin;
 		
-		private Vala.List<Vtg.ProjectDescriptor> _project_descriptors = new Vala.ArrayList<Vtg.ProjectDescriptor> ();
-		private Vtg.ProjectDescriptor _default_project = null;
+		private Vala.List<Vtg.ProjectManager> _project_managers = new Vala.ArrayList<Vtg.ProjectManager> ();
+		private Vtg.ProjectManager _default_project = null;
 		
 		public Projects (Plugin plugin)
 		{
@@ -44,56 +44,40 @@ namespace Vtg
 		private void initialize_default_project ()
 		{
 			//return default_project anyway
-			_default_project = new ProjectDescriptor ();
-			_default_project.project = new ProjectManager (_plugin.config.symbol_enabled);
-			_default_project.project.create_default_project ();
-			_project_descriptors.add (_default_project);
+			_default_project = new ProjectManager (_plugin.config.symbol_enabled);
+			_default_project.create_default_project ();
+			_project_managers.add (_default_project);
 		}
 		
-		internal Vala.List<Vtg.ProjectDescriptor> project_descriptors
+		internal Vala.List<Vtg.ProjectManager> project_managers
 		{
 			get {
-				return _project_descriptors;
+				return _project_managers;
 			}
 		}
 
-		internal bool is_default_project (ProjectDescriptor project_descriptor)
+		internal bool is_default_project (ProjectManager project_manager)
 		{
-			return _default_project == project_descriptor;
+			return _default_project == project_manager;
 		}
 
-		internal void add (ProjectDescriptor project_descriptor)
+		internal void add (ProjectManager project_manager)
 		{
-			_project_descriptors.add (project_descriptor);
+			_project_managers.add (project_manager);
 		}
 
-		internal void remove_with_project_manager (ProjectManager project_manager)
+		internal void remove (ProjectManager project_manager)
 		{
-			var project_descriptor = get_project_descriptor_for_project_manager (project_manager);
-			if (project_descriptor != null)
-				_project_descriptors.remove (project_descriptor);
+			_project_managers.remove (project_manager);
 		}
 
-		internal ProjectDescriptor? get_project_descriptor_for_project_manager (Vtg.ProjectManager? project_manager)
-		{
- 			if (project_manager != null) {
-				foreach (ProjectDescriptor project_descriptor in _project_descriptors) {
-					if (project_descriptor.project == project_manager) {
-						return project_descriptor;
-					}
-				}
- 			}
- 			
- 			return null;
-		}
-
-		internal ProjectDescriptor get_project_descriptor_for_document (Gedit.Document document)
+		internal ProjectManager get_project_manager_for_document (Gedit.Document document)
 		{
 			var file = Utils.get_document_name (document);
 			if (file != null) {
-				foreach (ProjectDescriptor project_descriptor in _project_descriptors) {
-					if (project_descriptor.project.contains_filename (file)) {
-						return project_descriptor;
+				foreach (ProjectManager project_manager in _project_managers) {
+					if (project_manager.contains_filename (file)) {
+						return project_manager;
 					}
 				}
 			}
@@ -102,11 +86,11 @@ namespace Vtg
 			return _default_project;
 		}
 		
-		internal ProjectDescriptor? get_project_descriptor_for_project_name (string? project_name)
+		internal ProjectManager? get_project_manager_for_project_name (string? project_name)
 		{
 			if (project_name != null) {
-				foreach (ProjectDescriptor item in _project_descriptors) {
-					if (item.project.project.name == project_name) {
+				foreach (ProjectManager item in _project_managers) {
+					if (item.project.name == project_name) {
 						return item;
 					}
 				}

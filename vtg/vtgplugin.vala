@@ -104,9 +104,9 @@ namespace Vtg
 				var instance = get_plugin_instance_for_window (window);
 			
 				if (doc != null) {
-					var prj = _projects.get_project_descriptor_for_document (doc);
-					if (prj.project != null && Utils.is_vala_doc (doc)) {
-						instance.project_view.current_project = prj.project;
+					var prj = _projects.get_project_manager_for_document (doc);
+					if (prj != null && Utils.is_vala_doc (doc)) {
+						instance.project_view.current_project = prj;
 					}
 					if (instance.source_outliner != null)
 						instance.source_outliner.active_view = view;
@@ -183,7 +183,7 @@ namespace Vtg
 				} 
 			}
 
-			_projects.remove_with_project_manager (project);
+			_projects.remove (project);
 		}
 		
 		internal bool project_need_save (ProjectManager project)
@@ -213,7 +213,6 @@ namespace Vtg
 
 		internal void on_project_loaded (ProjectManagerUi sender, ProjectManager project_manager)
 		{
-			var prj = new ProjectDescriptor ();
 			var project = project_manager.project;
 			
 			/* update the other project manager views */
@@ -223,8 +222,7 @@ namespace Vtg
 				}
 			}
 
-			prj.project = project_manager;
-			_projects.add (prj);
+			_projects.add (project_manager);
 			
 			weak Gtk.RecentManager recent = Gtk.RecentManager.get_default ();
 			Gtk.RecentData recent_data = Gtk.RecentData ();

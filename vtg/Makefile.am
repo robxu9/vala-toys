@@ -32,7 +32,6 @@ libvtg_la_VALASOURCES = \
 	vtgsymbolcompletionprovider.vala \
 	vtgsymbolcompletiontrigger.vala \
 	vtgprojectmanagerui.vala \
-	vtgprojectdescriptor.vala \
 	vtgprojectview.vala \
 	vtgprojectbuilder.vala \
 	vtgprojectexecuter.vala \
