@@ -35,12 +35,14 @@ namespace Vtg
 		private const string VTG_AUTHOR_KEY = VTG_BASE_KEY + "/author";
 		private const string VTG_EMAIL_ADDRESS_KEY = VTG_BASE_KEY + "/email_address";
 		private const string VTG_INFO_WINDOW_VISIBLE = VTG_BASE_KEY + "/info_window_visible";
+		private const string VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS = VTG_BASE_KEY + "/outliner_show_private_symbols";
 		
 		private GConf.Client _gconf;
 		private Gtk.Dialog _dialog;
 		
 		private bool _info_window_visible = false;
-
+		private bool _outliner_show_private_symbols = false;
+		
 		public bool bracket_enabled { get; set; }
 
 		public bool symbol_enabled { get; set; }
@@ -63,6 +65,23 @@ namespace Vtg
 						_gconf.set_bool (VTG_INFO_WINDOW_VISIBLE, _info_window_visible);	
 					} catch (Error e) {
 						GLib.warning ("Error settings info_window_visible: %s", e.message);
+					}
+				}
+			}
+		}
+
+		public bool outliner_show_private_symbols
+		{ 
+			get {
+				return _outliner_show_private_symbols;
+			}
+			set {
+				if (_outliner_show_private_symbols != value) {
+					_outliner_show_private_symbols = value;
+					try {
+						_gconf.set_bool (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS, _outliner_show_private_symbols);	
+					} catch (Error e) {
+						GLib.warning ("Error settings outliner_show_private_symbols: %s", e.message);
 					}
 				}
 			}
@@ -134,7 +153,7 @@ namespace Vtg
 					_gconf.set_schema("/schemas" + VTG_EMAIL_ADDRESS_KEY, schema);
 					_gconf.set_string (VTG_EMAIL_ADDRESS_KEY, "");
 				}
-				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_EMAIL_ADDRESS_KEY) == null) {
+				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_INFO_WINDOW_VISIBLE) == null) {
 					var schema = new GConf.Schema ();
 					schema.set_short_desc (_("Store the completion info window visible status"));
 					schema.set_type (GConf.ValueType.BOOL);
@@ -144,18 +163,30 @@ namespace Vtg
 					_gconf.set_schema("/schemas" + VTG_INFO_WINDOW_VISIBLE, schema);
 					_gconf.set_bool (VTG_INFO_WINDOW_VISIBLE, false);					
 				}				
+				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS) == null) {
+					var schema = new GConf.Schema ();
+					schema.set_short_desc (_("Store the completion info window visible status"));
+					schema.set_type (GConf.ValueType.BOOL);
+					var def_value = new GConf.Value (GConf.ValueType.BOOL);
+					def_value.set_bool (true);
+					schema.set_default_value (def_value);
+					_gconf.set_schema("/schemas" + VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS, schema);
+					_gconf.set_bool (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS, false);
+				}				
 				_gconf.engine.associate_schema (VTG_ENABLE_SYMBOL_COMPLETION_KEY, "/schemas" + VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_gconf.engine.associate_schema (VTG_ENABLE_BRACKET_COMPLETION_KEY, "/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY);
 				_gconf.engine.associate_schema (VTG_ENABLE_SOURCECODE_OUTLINER_KEY, "/schemas" + VTG_ENABLE_SOURCECODE_OUTLINER_KEY);
 				_gconf.engine.associate_schema (VTG_AUTHOR_KEY, "/schemas" + VTG_AUTHOR_KEY);
 				_gconf.engine.associate_schema (VTG_EMAIL_ADDRESS_KEY, "/schemas" + VTG_EMAIL_ADDRESS_KEY);
 				_gconf.engine.associate_schema (VTG_INFO_WINDOW_VISIBLE, "/schemas" + VTG_INFO_WINDOW_VISIBLE);
+				_gconf.engine.associate_schema (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS, "/schemas" + VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS);
 				_symbol_enabled = _gconf.get_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_bracket_enabled = _gconf.get_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY);
 				_sourcecode_outliner_enabled = _gconf.get_bool (VTG_ENABLE_SOURCECODE_OUTLINER_KEY);
 				_author = _gconf.get_string (VTG_AUTHOR_KEY);
 				_email_address = _gconf.get_string (VTG_EMAIL_ADDRESS_KEY);
-				_info_window_visible = _gconf.get_bool (VTG_INFO_WINDOW_VISIBLE);				
+				_info_window_visible = _gconf.get_bool (VTG_INFO_WINDOW_VISIBLE);
+				_outliner_show_private_symbols = _gconf.get_bool (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS);
 				_gconf.add_dir (VTG_BASE_KEY, GConf.ClientPreloadType.ONELEVEL);
 				_gconf.value_changed += this.on_conf_value_changed;
 			} catch (Error err) {
@@ -242,6 +273,11 @@ namespace Vtg
 					var new_val = _gconf.get_string (VTG_EMAIL_ADDRESS_KEY);
 					if (_email_address != new_val) {
 						email_address = new_val;
+					}
+				} else if (key == VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS) {
+					var new_val = _gconf.get_bool (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS);
+					if (_outliner_show_private_symbols != new_val) {
+						outliner_show_private_symbols = new_val;
 					}
 				}
 			} catch (Error err) {

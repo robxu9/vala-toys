@@ -117,7 +117,7 @@ namespace Vtg
 			_side_panel.pack_start (scroll, true, true, 4); // add scroll + treview
 			
 			_check_show_private_symbols = new Gtk.CheckButton.with_label (_("Show also private symbols"));
-			_check_show_private_symbols.active = true;
+			_check_show_private_symbols.active = Vtg.Plugin.main_instance.config.outliner_show_private_symbols;
 			_check_show_private_symbols.toggled.connect (this.on_show_private_symbol_toggled);
 			_side_panel.pack_start (_check_show_private_symbols, false, true, 8);
 			
@@ -181,6 +181,7 @@ namespace Vtg
 		private void on_show_private_symbol_toggled (Widget sender)
 		{
 			update_view ();
+			Vtg.Plugin.main_instance.config.outliner_show_private_symbols = _check_show_private_symbols.active;
 		}
 
 		private void on_source_outliner_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)

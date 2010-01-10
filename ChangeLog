@@ -1,5 +1,12 @@
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	save source outliner show private symbol status in config
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutliner.vala:
 
 	removed some debug print
