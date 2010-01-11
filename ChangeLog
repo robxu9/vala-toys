@@ -1,5 +1,11 @@
 2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgconfiguration.vala:
+
+	added the options to store project view visibility status
+
+2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/datatype.vala:
 
 	copied the target datatype symbol to preserve it between recompilations
@@ -7,7 +13,6 @@
 	* afrodite/symbol.vala:
 	
 	better completion for creation methods
-	
 
 2010-01-11  Andrea Del Signore  <sejerpz@tin.it>
 

@@ -36,12 +36,14 @@ namespace Vtg
 		private const string VTG_EMAIL_ADDRESS_KEY = VTG_BASE_KEY + "/email_address";
 		private const string VTG_INFO_WINDOW_VISIBLE = VTG_BASE_KEY + "/info_window_visible";
 		private const string VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS = VTG_BASE_KEY + "/outliner_show_private_symbols";
+		private const string VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES = VTG_BASE_KEY + "/project_view_only_show_sources";
 		
 		private GConf.Client _gconf;
 		private Gtk.Dialog _dialog;
 		
 		private bool _info_window_visible = false;
 		private bool _outliner_show_private_symbols = false;
+		private bool _project_only_show_sources = true;
 		
 		public bool bracket_enabled { get; set; }
 
@@ -82,6 +84,23 @@ namespace Vtg
 						_gconf.set_bool (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS, _outliner_show_private_symbols);	
 					} catch (Error e) {
 						GLib.warning ("Error settings outliner_show_private_symbols: %s", e.message);
+					}
+				}
+			}
+		}
+
+		public bool project_only_show_sources
+		{ 
+			get {
+				return _project_only_show_sources;
+			}
+			set {
+				if (_project_only_show_sources != value) {
+					_project_only_show_sources = value;
+					try {
+						_gconf.set_bool (VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES, _project_only_show_sources);	
+					} catch (Error e) {
+						GLib.warning ("Error settings project_only_show_sources: %s", e.message);
 					}
 				}
 			}
@@ -165,13 +184,23 @@ namespace Vtg
 				}				
 				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS) == null) {
 					var schema = new GConf.Schema ();
-					schema.set_short_desc (_("Store the completion info window visible status"));
+					schema.set_short_desc (_("Store the source outliner show private symbol check button status"));
 					schema.set_type (GConf.ValueType.BOOL);
 					var def_value = new GConf.Value (GConf.ValueType.BOOL);
 					def_value.set_bool (true);
 					schema.set_default_value (def_value);
 					_gconf.set_schema("/schemas" + VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS, schema);
 					_gconf.set_bool (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS, false);
+				}
+				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES) == null) {
+					var schema = new GConf.Schema ();
+					schema.set_short_desc (_("Store the project view show only sources check button status"));
+					schema.set_type (GConf.ValueType.BOOL);
+					var def_value = new GConf.Value (GConf.ValueType.BOOL);
+					def_value.set_bool (true);
+					schema.set_default_value (def_value);
+					_gconf.set_schema("/schemas" + VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES, schema);
+					_gconf.set_bool (VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES, true);
 				}				
 				_gconf.engine.associate_schema (VTG_ENABLE_SYMBOL_COMPLETION_KEY, "/schemas" + VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_gconf.engine.associate_schema (VTG_ENABLE_BRACKET_COMPLETION_KEY, "/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY);
@@ -180,6 +209,7 @@ namespace Vtg
 				_gconf.engine.associate_schema (VTG_EMAIL_ADDRESS_KEY, "/schemas" + VTG_EMAIL_ADDRESS_KEY);
 				_gconf.engine.associate_schema (VTG_INFO_WINDOW_VISIBLE, "/schemas" + VTG_INFO_WINDOW_VISIBLE);
 				_gconf.engine.associate_schema (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS, "/schemas" + VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS);
+				_gconf.engine.associate_schema (VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES, "/schemas" + VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES);
 				_symbol_enabled = _gconf.get_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_bracket_enabled = _gconf.get_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY);
 				_sourcecode_outliner_enabled = _gconf.get_bool (VTG_ENABLE_SOURCECODE_OUTLINER_KEY);
@@ -187,6 +217,7 @@ namespace Vtg
 				_email_address = _gconf.get_string (VTG_EMAIL_ADDRESS_KEY);
 				_info_window_visible = _gconf.get_bool (VTG_INFO_WINDOW_VISIBLE);
 				_outliner_show_private_symbols = _gconf.get_bool (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS);
+				_project_only_show_sources = _gconf.get_bool (VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES);
 				_gconf.add_dir (VTG_BASE_KEY, GConf.ClientPreloadType.ONELEVEL);
 				_gconf.value_changed += this.on_conf_value_changed;
 			} catch (Error err) {
@@ -278,6 +309,11 @@ namespace Vtg
 					var new_val = _gconf.get_bool (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS);
 					if (_outliner_show_private_symbols != new_val) {
 						outliner_show_private_symbols = new_val;
+					}
+				} else if (key == VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES) {
+					var new_val = _gconf.get_bool (VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES);
+					if (_project_only_show_sources != new_val) {
+						project_only_show_sources = new_val;
 					}
 				}
 			} catch (Error err) {
