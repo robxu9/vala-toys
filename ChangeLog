@@ -1,3 +1,9 @@
+2010-01-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+
+	support for new style makefile target references
+
 2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsourceoutliner.vala:

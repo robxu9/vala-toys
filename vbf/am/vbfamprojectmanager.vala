@@ -611,7 +611,13 @@ namespace Vbf.Am
 				}
 				//try extract the the rule target name
 				if (target == null) {
-					string[] rule_parts = line.split (":", 2);
+					string[] rule_parts = line.split ("=", 2);;
+					if (rule_parts.length >= 2 && rule_parts[0].chomp().has_suffix ("_VALAFLAGS")) {
+						// automake 1.11 with vala support
+						string target_name = rule_parts[0].split ("_", 2)[0].chug();
+						target = group.get_target_for_id (target_name);
+					}
+					rule_parts = line.split (":", 2);
 					if (rule_parts.length == 2) {
 						string[] trgs = rule_parts[0].split (" ");
 						//TODO: add support for multitarget rules if required
