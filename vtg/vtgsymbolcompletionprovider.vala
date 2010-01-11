@@ -329,11 +329,18 @@ namespace Vtg
 
 			
 			foreach (Afrodite.Symbol symbol in symbols) {
-				if (!include_private_symbols && symbol.access == Afrodite.SymbolAccessibility.PRIVATE)
+				if ((!include_private_symbols && symbol.access == Afrodite.SymbolAccessibility.PRIVATE)
+					|| symbol.name == "new")
 					continue;
 
 				Proposal proposal;
-				var name = (symbol.display_name != null ? symbol.display_name : "<null>");
+				string name;
+
+				if (symbol.type_name == "CreationMethod") {
+					name = symbol.name;
+				} else {
+					name = (symbol.display_name != null ? symbol.display_name : "<null>");
+				}
 				var info = (symbol.info != null ? symbol.info : "");
 				Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.type_name);
 	
@@ -599,6 +606,7 @@ namespace Vtg
 			if (_completion.try_acquire_ast (out ast)) {
 				var sym = ast.lookup_name_for_type_at (word, _sb.path, line, column, LookupCompareMode.EXACT);
 				if (sym != null) {
+					int before_child_count = sym.children.size;
 					DetachCopyOptions options = null;
 
 					if (whole_line != null) {
@@ -623,6 +631,9 @@ namespace Vtg
 							| Afrodite.SymbolAccessibility.INTERNAL;						
 					}
 					result = sym.detach_copy (1, options);
+					GLib.debug ("results found before copy %d, after copy %d", before_child_count, result.has_children ? result.children.size : 0);
+				} else {
+					GLib.debug ("no results for: %s", word);
 				}
 				_completion.release_ast (ast);
 			}

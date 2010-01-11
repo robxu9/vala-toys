@@ -1,5 +1,11 @@
 2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed display of creation method names
+
+2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgconfiguration.vala:
 
 	added the options to store project view visibility status
