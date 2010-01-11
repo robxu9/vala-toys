@@ -62,6 +62,7 @@ namespace Afrodite
 		{
 			var opt = new DetachCopyOptions ();
 			opt.only_creation_methods = true;
+			opt.exclude_creation_methods = false;
 			return opt;
 		}
 		
@@ -100,8 +101,9 @@ namespace Afrodite
 		public bool is_virtual = false;
 		public bool is_abstract = false;
 		public bool overrides = false;
-		private int _static_child_count = 0;
-		
+		internal int _static_child_count = 0;
+		internal int _creation_method_child_count = 0;
+
 		private Vala.List<Symbol> detached_children = null;
 		private string _info = null;
 		private string _des = null;
@@ -119,6 +121,32 @@ namespace Afrodite
 				this.type_name = type_name.substring (4);
 		}
 		
+		public int static_child_count
+		{
+			get {
+				return _static_child_count;
+			}
+			set {
+				var delta = _static_child_count - value;
+				_static_child_count = value;
+				if (parent != null)
+					parent.static_child_count += delta;
+			}
+		}
+
+		public int creation_method_child_count
+		{
+			get {
+				return _creation_method_child_count;
+			}
+			set {
+				var delta = _creation_method_child_count - value;
+				_creation_method_child_count = value;
+				if (parent != null)
+					parent.creation_method_child_count += delta;
+			}
+		}
+
 		public void add_child (Symbol child)
 		{
 			if (children == null) {
@@ -127,8 +155,11 @@ namespace Afrodite
 			
 			children.add (child);
 			child.parent = this;
-			if (child.is_static) {
-				_static_child_count++;
+			if (child.is_static || child.has_static_child) {
+				static_child_count++;
+			}
+			if (child.type_name == "CreationMethod" || child.has_creation_method_child) {
+				creation_method_child_count++;
 			}
 		}
 		
@@ -138,8 +169,13 @@ namespace Afrodite
 			if (children.size == 0)
 				children = null;
 				
-			if (child.is_static && _static_child_count > 0) {
-				_static_child_count--;
+			if (_static_child_count > 0
+				&& (child.is_static || child.has_static_child)) {
+				static_child_count--;
+			}
+			if (_creation_method_child_count > 0 
+				&& (child.type_name == "CreationMethod" || child.has_creation_method_child)) {
+				creation_method_child_count++;
 			}
 		}
 		
@@ -318,6 +354,13 @@ namespace Afrodite
 			}
 		}
 
+		public bool has_creation_method_child
+		{
+			get {
+				return _creation_method_child_count > 0;
+			}
+		}
+		
 		public bool is_static
 		{
 			get {
@@ -351,10 +394,10 @@ namespace Afrodite
 					&& ((!symbol.is_static && !symbol.has_static_child) || symbol.type_name == "Struct")) {
 					return false;
 				}
-				if (options.only_creation_methods && symbol.type_name != "CreationMethod") {
-					return false;
-				}
-				if (options.only_creation_methods && symbol.type_name != "ErrorDomain") {
+				if (options.only_creation_methods 
+					&& symbol.type_name != "CreationMethod"
+					&& symbol.type_name != "ErrorDomain"
+					&& !symbol.has_creation_method_child) {
 					return false;
 				}
 				if (options.exclude_creation_methods && symbol.type_name == "CreationMethod") {
@@ -391,20 +434,37 @@ namespace Afrodite
 					return detach_copy; // the symbol was already copied
 				}
 			}
+			
+			if (res != root)
+				root.add_detached_child (res);
 			//debug ("copy %s in %s", fully_qualified_name, root.name);	
 			res.parent = null; // parent reference isn't copied
-			res.return_type = return_type == null ? null : return_type.copy (root);
+			res.fully_qualified_name = fully_qualified_name;
 			res.type_name = type_name;
 			res._static_child_count = _static_child_count;
+			res._creation_method_child_count = _creation_method_child_count;
+			res._info = _info;
+			res._des = _des;
+			res._markup_des = _markup_des;
+			res.access = access;
+			res.binding = binding;
+			res.is_virtual = is_virtual;
+			res.is_abstract = is_abstract;
+			res.overrides = overrides;
+			res._display_name = _display_name;
+			
 			if ((depth == -1 || depth > 0) && has_children) {
 				foreach (Symbol child in children) {
 					if (check_symbol (child, options)) {
 						var copy = child.detach_copy (depth - 1, options, root);
 						res.add_child (copy);
-						root.add_detached_child (copy); // a check is performed on the add to avoid duplicate copies
+						 // a check is performed on the add to avoid duplicate copies
 					}
 				}
+				
 			}
+			
+			res.return_type = return_type == null ? null : return_type.copy (options, root);
 			
 			if (has_source_references) {
 				foreach (SourceReference sr in source_references) {
@@ -414,19 +474,19 @@ namespace Afrodite
 			
 			if (has_parameters) {
 				foreach (DataType p in parameters) {
-					res.add_parameter (p.copy (root));
+					res.add_parameter (p.copy (options, root));
 				}
 			}
 			
 			if (has_local_variables) {
 				foreach (DataType l in local_variables) {
-					res.add_local_variable (l.copy (root));
+					res.add_local_variable (l.copy (options, root));
 				}
 			}
 			
 			if (has_base_types) {
 				foreach  (DataType t in base_types) {
-					res.add_base_type (t.copy (root));
+					res.add_base_type (t.copy (options, root));
 				}
 			}
 			
@@ -437,16 +497,7 @@ namespace Afrodite
 					root.add_detached_child (copy);
 				}
 			}
-			
-			res._info = _info;
-			res._des = _des;
-			res._markup_des = _markup_des;
-			res.access = access;
-			res.binding = binding;
-			res.is_virtual = is_virtual;
-			res.is_abstract = is_abstract;
-			res.overrides = overrides;
-			res._display_name = _display_name;
+
 			return res;
 		}
 		

@@ -124,13 +124,24 @@ namespace Afrodite
 			return sb.str;
 		}
 		
-		public DataType copy (Symbol? root = null)
+		public DataType copy (DetachCopyOptions options, Symbol? root = null)
 		{
 			var res = new DataType (type_name, name);
 			
-			res.symbol = symbol;
-			if (root != null && res.symbol != null) {
-				root.add_detached_child (symbol);
+			if (root != null && symbol != null) {
+				if (symbol.fully_qualified_name == root.fully_qualified_name) {
+					// avoid recoursion
+					res.symbol = root;
+				} else {
+					Symbol detach_copy = root.detached_children_find (symbol.fully_qualified_name);
+					if (detach_copy == null) {
+						detach_copy = symbol.detach_copy (0, options, root);
+						root.add_detached_child (detach_copy);
+					}
+					res.symbol = detach_copy;
+				}
+			} else {
+				res.symbol = null;
 			}
 			res.is_array = is_array;
 			res.is_pointer = is_pointer;
