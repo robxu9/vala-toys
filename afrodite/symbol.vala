@@ -49,6 +49,9 @@ namespace Afrodite
 		public bool only_error_domains = false;
 		public bool exclude_creation_methods = true;
 		
+		/* symbol copy options */
+		public bool deep_copy_data_type_symbols = true; // if false just copy the symbol without any child
+		
 		public SymbolAccessibility access = SymbolAccessibility.ANY;
 		
 		public bool copy_resolved_types = false; // if true also recoursively copies all the types resolved by this type
@@ -416,6 +419,7 @@ namespace Afrodite
 		public Symbol? detach_copy (int depth = 1, DetachCopyOptions options, Symbol? root = null)
 		{
 			var res = new Symbol (fully_qualified_name, type_name);
+			int data_type_copy_depth = options.deep_copy_data_type_symbols ? -1 : 1;
 			
 			// unowned copied symbols are references in the detached_children
 			// collection of the root symbol. So no owned circular references
@@ -464,7 +468,7 @@ namespace Afrodite
 				
 			}
 			
-			res.return_type = return_type == null ? null : return_type.copy (options, root);
+			res.return_type = return_type == null ? null : return_type.copy (1, options, root);
 			
 			if (has_source_references) {
 				foreach (SourceReference sr in source_references) {
@@ -474,19 +478,22 @@ namespace Afrodite
 			
 			if (has_parameters) {
 				foreach (DataType p in parameters) {
-					res.add_parameter (p.copy (options, root));
+					res.add_parameter (p.copy (data_type_copy_depth, options, root));
 				}
 			}
 			
 			if (has_local_variables) {
 				foreach (DataType l in local_variables) {
-					res.add_local_variable (l.copy (options, root));
+					res.add_local_variable (l.copy (data_type_copy_depth, options, root));
 				}
 			}
 			
 			if (has_base_types) {
 				foreach  (DataType t in base_types) {
-					res.add_base_type (t.copy (options, root));
+					// the base types need to be treated at the same depth
+					// of their parent for this reason 1 need to be added
+					// to data_type_copy_depth variables
+					res.add_base_type (t.copy (data_type_copy_depth == -1 ? data_type_copy_depth : data_type_copy_depth + 1, options, root));
 				}
 			}
 			

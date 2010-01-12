@@ -210,12 +210,15 @@ namespace Afrodite
 				return sym;
 		}
 		
-		public Symbol? lookup_symbols_in (string filename)
+		public Symbol? lookup_symbols_in (string filename, DetachCopyOptions? options)
 		{
-			var options = DetachCopyOptions.standard ();
-			var res = root.detach_copy (0, options);
+			var opt = options;
+			if (opt == null)
+				opt = DetachCopyOptions.standard ();
+
+			var res = root.detach_copy (0, opt);
 			
-			lookup_symbol_in_filename (filename, res, root);
+			lookup_symbol_in_filename (filename, opt, res, root);
 			
 			if (res.has_children) {
 				return res;
@@ -224,7 +227,7 @@ namespace Afrodite
 			return null;
 		}
 
-		private void lookup_symbol_in_filename (string filename, Symbol results, Symbol parent)
+		private void lookup_symbol_in_filename (string filename, DetachCopyOptions? options, Symbol results, Symbol parent)
 		{
 			if (!parent.has_children)
 				return;
@@ -233,7 +236,6 @@ namespace Afrodite
 				//print ("  Looking for %s in %s, parent count %d, %s\n", filename, symbol.fully_qualified_name, parent.children.size, parent.fully_qualified_name);
 				
 				if (symbol_has_filename_reference(filename, symbol)) {
-					var options = DetachCopyOptions.standard ();
 					var sym = symbol.detach_copy (0, options);
 					
 					//print ("    adding %s", sym.name);
@@ -255,7 +257,7 @@ namespace Afrodite
 						}
 						// find in children
 						if (!circular_ref)
-							lookup_symbol_in_filename (filename, sym, symbol);
+							lookup_symbol_in_filename (filename, options, sym, symbol);
 					}
 				}
 			}

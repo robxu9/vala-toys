@@ -550,7 +550,9 @@ namespace Vtg
 				Afrodite.Ast ast;
 				bool res = scs.completion_engine.try_acquire_ast (out ast);
 				if (res) {
-					results = ast.lookup_symbols_in (name);
+					var options = Afrodite.DetachCopyOptions.standard ();
+					options.deep_copy_data_type_symbols = false;
+					results = ast.lookup_symbols_in (name, options);
 					scs.completion_engine.release_ast (ast);
 				}			
 				if (results == null)
