@@ -27,6 +27,7 @@ namespace Afrodite
 	public class AstMerger : CodeVisitor
 	{
 		Afrodite.Symbol _current = null;
+		Afrodite.DataType _current_type = null;
 		Afrodite.SourceReference _current_sr = null;
 		Afrodite.SourceFile _source_file = null;
 		Afrodite.DataType _inferred_type = null;
@@ -47,6 +48,7 @@ namespace Afrodite
 		{
 			_merge_glib = merge_glib;
 			_vala_symbol_fqn = null;
+			_current_type = null;
 			_child_count = 0;
 			_current = _ast.root;
 			if (_ast.lookup_source_file (source.filename) != null)
@@ -391,6 +393,7 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = s;
+			visit_type_for_generics (m.return_type, s.return_type);
 			m.accept_children (this);
 			
 			_current = prev;
@@ -423,6 +426,7 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = s;
+			visit_type_for_generics (m.return_type, s.return_type);
 			m.accept_children (this);
 			
 			_current = prev;
@@ -469,10 +473,9 @@ namespace Afrodite
 			s.binding =  get_vala_member_binding (m.binding);
 			s.display_name = "~%s".printf (s.name);
 			_current.add_child (s);
-			
+			 
 			_current = s;
 			m.accept_children (this);
-			
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -552,7 +555,7 @@ namespace Afrodite
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
-
+		
 	       	public override void visit_field (Field f) 
 		{
 			if (!is_symbol_defined_current_source (f))
@@ -563,12 +566,15 @@ namespace Afrodite
 			var prev = _current;
 			var prev_sr = _current_sr;
 			
+			
 			set_fqn (f.name);
 			var s = add_symbol (f, out _current_sr);
 			s.return_type = new DataType (f.field_type.to_string ());
+			
 			s.binding =  get_vala_member_binding (f.binding);
 			_current.add_child (s);
-			
+			_current = s;
+			visit_type_for_generics (f.field_type, s.return_type);
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -610,6 +616,7 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = s;
+			visit_type_for_generics (p.property_type, s.return_type);
 			p.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
@@ -672,10 +679,11 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
-		/*
-		public virtual void visit_type_parameter (TypeParameter p) 
+		
+		public override void visit_type_parameter (TypeParameter p) 
 		{
-			var d = new DataType (get_datatype_typename (p.parameter_type), p.name);
+		/*
+			var d = new DataType (get_datatype_typename (p), p.name);
 			switch (p.direction) {
 				case Vala.ParameterDirection.OUT:
 					d.is_out = true;
@@ -683,10 +691,17 @@ namespace Afrodite
 				case Vala.ParameterDirection.REF:
 					d.is_ref = true;
 					break;
+			}*/
+			
+			if (_current.type_name == "Class" 
+				|| _current.type_name == "Interface" 
+				|| _current.type_name == "Struct") {
+				//debug ("adding generic %s to %s", p.name, _current.fully_qualified_name);
+				var symbol = new Afrodite.Symbol (p.name, p.type_name);
+				symbol.access = SymbolAccessibility.ANY;
+				_current.add_generic_type_argument (symbol);
 			}
-			debug ("type parameter %s", p.name);
-			_current.add_local_variable (d);
-		}*/
+		}
 		
 		public override void visit_formal_parameter (FormalParameter p) 
 		{
@@ -901,12 +916,25 @@ namespace Afrodite
 
 		public override void visit_data_type (Vala.DataType type)
 		{
+			var t = new Afrodite.DataType (get_datatype_typename (type), null);
 			if (_current != null && _current.type_name == "Class") {
 				// add this type to the base class types
-				var t = new Afrodite.DataType (get_datatype_typename (type), null);
 				_current.add_base_type (t);
+			} else if (_current_type != null) {
+				//debug ("adding gen type %s %s %s", _current.name, get_datatype_typename (type), Type.from_instance (type).name ());
+				_current_type.add_generic_type (t);
 				
 			}
+		}
+		
+		private void visit_type_for_generics (Vala.DataType t, Afrodite.DataType ct) 
+		{
+			var prev_type = _current_type;
+			_current_type = ct;
+			foreach (Vala.DataType type in t.get_type_arguments ()) {
+				type.accept (this);
+			}
+			_current_type = prev_type;
 		}
 		
 		private Afrodite.Symbol visit_scoped_codenode (string name, CodeNode node, Block? body)

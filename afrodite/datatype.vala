@@ -38,6 +38,7 @@ namespace Afrodite
 		public bool is_ref = false;
 		public bool is_dynamic = false;
 		public string default_expression = null;
+		public Vala.List<DataType> generic_types = null;
 		
 		public DataType (string type_name, string? name = null)
 		{
@@ -124,6 +125,28 @@ namespace Afrodite
 			return sb.str;
 		}
 		
+		public bool has_generic_types
+		{
+			get {
+				return generic_types != null;
+			}
+		}
+		
+		public void add_generic_type (DataType type)
+		{
+			if (generic_types == null) {
+				generic_types = new Vala.ArrayList<DataType>();
+			}
+			generic_types.add (type);
+		}
+		
+		public void remove_generic_type (DataType type)
+		{
+			generic_types.remove (type);
+			if (generic_types.size == 0) {
+				generic_types = null;
+			}
+		}
 		public DataType copy (int depth, DetachCopyOptions options, Symbol? root = null)
 		{
 			var res = new DataType (type_name, name);
@@ -151,7 +174,11 @@ namespace Afrodite
 			res.is_ref = is_ref;
 			res.is_dynamic = is_dynamic;
 			res.default_expression = default_expression;
-			
+			if (has_generic_types) {
+				foreach (DataType type in this.generic_types) {
+					res.add_generic_type (type);
+				}
+			}
 			return res;
 		}
 		
@@ -176,8 +203,16 @@ namespace Afrodite
 					res += "*";
 				if (is_array)
 					res += "[]";
-				if (is_generic)
-					res += "<T>";
+				if (this.has_generic_types) {
+					var sb = new StringBuilder ();
+					sb.append ("&lt;");
+					foreach (DataType t in generic_types) {
+						sb.append_printf ("%s, ", t.type_name);
+					}
+					sb.truncate (sb.len - 2);
+					sb.append ("&gt;");
+					res += sb.str;
+				}
 				if (is_nullable)
 					res += "?";
 				

@@ -98,6 +98,8 @@ namespace Afrodite
 		public Vala.List<DataType> parameters = null;
 		public Vala.List<DataType> local_variables = null;
 		public Vala.List<DataType> base_types = null;
+		public Vala.List<Symbol> generic_type_arguments = null;
+		
 		public Vala.List<unowned Symbol> resolve_targets = null; // contains a reference to symbols of whose this symbol is a resolved reference for any target data type
 		public SymbolAccessibility access = SymbolAccessibility.INTERNAL;
 		public MemberBinding binding = MemberBinding.INSTANCE;
@@ -193,6 +195,7 @@ namespace Afrodite
 			}			
 			return null;
 		}
+
 		public bool has_children
 		{
 			get {
@@ -254,6 +257,30 @@ namespace Afrodite
 		{
 			get {
 				return parameters != null;
+			}
+		}
+		
+		public void add_generic_type_argument (Symbol sym)
+		{
+			if (generic_type_arguments == null) {
+				generic_type_arguments = new ArrayList<Symbol> ();
+			}
+			
+			//debug ("added generic %s to %s", sym.name, this.fully_qualified_name);
+			generic_type_arguments.add (sym);
+		}
+		
+		public void remove_generic_type_argument (Symbol sym)
+		{
+			generic_type_arguments.remove (sym);
+			if (generic_type_arguments.size == 0)
+				generic_type_arguments = null;
+		}
+
+		public bool has_generic_type_arguments
+		{
+			get {
+				return generic_type_arguments != null;
 			}
 		}
 		
@@ -482,6 +509,12 @@ namespace Afrodite
 				}
 			}
 			
+			if (has_generic_type_arguments) {
+				foreach (Symbol s in generic_type_arguments) {
+					res.add_generic_type_argument (s);
+				}
+			}
+			
 			if (has_local_variables) {
 				foreach (DataType l in local_variables) {
 					res.add_local_variable (l.copy (data_type_copy_depth, options, root));
@@ -556,7 +589,23 @@ namespace Afrodite
 		{
 			int param_count = 0;
 			string params;
+			string generic_args;
+			
 			StringBuilder sb = new StringBuilder ();
+
+			if (has_generic_type_arguments) {
+				sb.append ("&lt;");
+				foreach (Symbol s in generic_type_arguments) {
+					sb.append_printf ("%s, ", s.name);
+				}
+				sb.truncate (sb.len - 2);
+				sb.append ("&gt;");
+				generic_args = sb.str;
+				sb.truncate (0);
+				
+			} else {
+				generic_args = "";
+			}
 			
 			if (has_parameters) {
 				param_count = parameters.size;
@@ -578,12 +627,12 @@ namespace Afrodite
 				params = "";
 			}
 			
-			sb.append_printf("%s: %s\n\n%s%s<b>%s</b> (%s%s)",
+			sb.append_printf("%s: %s\n\n%s%s<b>%s</b> %s (%s%s)",
 				    type_name,
 				    display_name,
 				    return_type != null ? return_type.description : "",
 				    (param_count > 2 ? "\n" : " "),
-				    display_name, 
+				    display_name, generic_args,
 				    (param_count > 2 ? "\n" : ""),
 				    params);
 				    
@@ -623,6 +672,15 @@ namespace Afrodite
 			else
 				sb.append (display_name);
 
+			if (has_generic_type_arguments) {
+				sb.append ("&lt;");
+				foreach (Symbol s in generic_type_arguments) {
+					sb.append_printf ("%s, ", s.name);
+				}
+				sb.truncate (sb.len - 2);
+				sb.append ("&gt;");
+			}
+			
 			if (type_name != null 
 				&& (has_parameters || type_name.has_suffix ("Method") || type_name.has_suffix("Signal"))) {
 				sb.append (" (");
