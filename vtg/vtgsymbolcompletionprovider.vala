@@ -558,6 +558,7 @@ namespace Vtg
 			}
 
 			Afrodite.Symbol? result = null;
+			Afrodite.Symbol? symbol = null;
 			
 			/* 
 			  strip last type part. 
@@ -573,17 +574,45 @@ namespace Vtg
 			
 			GLib.debug ("get_current_symbol_item for %s, %s", first_part, symbol_name);
 			result = complete (null,  null, first_part, lineno, colno);
-			if (result != null && result.has_children) {
-				foreach (Symbol? symbol in result.children) {
+			if (result != null) {
+				symbol = get_symbol_for_name_in_children (symbol_name, result);
+				if (symbol == null)
+					symbol =  get_symbol_for_name_in_base_types (symbol_name, result);
+			}
+			return symbol;
+		}
+
+		private Afrodite.Symbol? get_symbol_for_name_in_children (string symbol_name, Symbol parent)
+		{
+			if (parent.has_children) {
+				foreach (Symbol? symbol in parent.children) {
 					if (symbol.name == symbol_name) {
-						GLib.debug ("get_current_symbol_item found %s", symbol_name);
 						return symbol;
 					}
 				}
 			}
+			
 			return null;
 		}
-
+		
+		private Afrodite.Symbol? get_symbol_for_name_in_base_types (string symbol_name, Symbol parent) 
+		{
+			if (parent.has_base_types) {
+				foreach  (DataType t in parent.base_types) {
+					if (t.symbol != null)  {
+						var base_symbol = get_symbol_for_name_in_children (symbol_name, t.symbol);
+						if (base_symbol == null) {
+							base_symbol = get_symbol_for_name_in_base_types (symbol_name, t.symbol);
+						}
+						
+						if (base_symbol != null)
+							return base_symbol;
+					}
+				}
+			}			
+			return null;
+		}
+		
 		private Symbol? get_completions (SymbolCompletionTrigger trigger)
 		{
 			string whole_line, word, last_part;
@@ -630,6 +659,8 @@ namespace Vtg
 						options.access = Afrodite.SymbolAccessibility.PUBLIC 
 							| Afrodite.SymbolAccessibility.INTERNAL;						
 					}
+					
+					options.deep_copy_data_type_symbols = false;
 					result = sym.detach_copy (1, options);
 					GLib.debug ("results found before copy %d, after copy %d", before_child_count, result.has_children ? result.children.size : 0);
 				} else {

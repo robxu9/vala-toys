@@ -1,5 +1,11 @@
 2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	improved calltip window symbol definition is now searched also on base types
+
+2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/datatype.vala:
 	* afrodite/symbol.vala:
