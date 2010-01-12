@@ -705,14 +705,20 @@ namespace Afrodite
 		
 		public override void visit_formal_parameter (FormalParameter p) 
 		{
-			var d = new DataType (get_datatype_typename (p.parameter_type), p.name);
-			switch (p.direction) {
-				case Vala.ParameterDirection.OUT:
-					d.is_out = true;
-					break;
-				case Vala.ParameterDirection.REF:
-					d.is_ref = true;
-					break;
+			DataType d;
+			
+			if (p.ellipsis) {
+				d = Symbol.ELLIPSIS;
+			} else {
+				d = new DataType (get_datatype_typename (p.parameter_type), p.name);
+				switch (p.direction) {
+					case Vala.ParameterDirection.OUT:
+						d.is_out = true;
+						break;
+					case Vala.ParameterDirection.REF:
+						d.is_ref = true;
+						break;
+				}
 			}
 			_current.add_parameter (d);
 		}

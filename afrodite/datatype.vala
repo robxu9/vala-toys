@@ -37,6 +37,7 @@ namespace Afrodite
 		public bool is_out = false;
 		public bool is_ref = false;
 		public bool is_dynamic = false;
+		public bool is_ellipsis = false;
 		public string default_expression = null;
 		public Vala.List<DataType> generic_types = null;
 		
@@ -149,6 +150,9 @@ namespace Afrodite
 		}
 		public DataType copy (int depth, DetachCopyOptions options, Symbol? root = null)
 		{
+			if (this == Symbol.ELLIPSIS)
+				return this; // don't clone immutable datatypes
+				
 			var res = new DataType (type_name, name);
 			
 			if ((depth >= 0 || depth == -1) && root != null && symbol != null) {
@@ -187,39 +191,42 @@ namespace Afrodite
 			owned get {
 				string res;
 				
-				if (is_out)
-					res = "out ";
-				else if (is_ref)
-					res = "ref ";
-				else
-					res = "";
+				if (is_ellipsis) {
+					res = "...";	
+				} else {
+					if (is_out)
+						res = "out ";
+					else if (is_ref)
+						res = "ref ";
+					else
+						res = "";
 					
-				if (is_dynamic)
-					res += "dynamic ";
+					if (is_dynamic)
+						res += "dynamic ";
 					
-				res += type_name;
+					res += type_name;
 				
-				if (is_pointer)
-					res += "*";
-				if (is_array)
-					res += "[]";
-				if (this.has_generic_types) {
-					var sb = new StringBuilder ();
-					sb.append ("&lt;");
-					foreach (DataType t in generic_types) {
-						sb.append_printf ("%s, ", t.type_name);
+					if (is_pointer)
+						res += "*";
+					if (is_array)
+						res += "[]";
+					if (this.has_generic_types) {
+						var sb = new StringBuilder ();
+						sb.append ("&lt;");
+						foreach (DataType t in generic_types) {
+							sb.append_printf ("%s, ", t.type_name);
+						}
+						sb.truncate (sb.len - 2);
+						sb.append ("&gt;");
+						res += sb.str;
 					}
-					sb.truncate (sb.len - 2);
-					sb.append ("&gt;");
-					res += sb.str;
-				}
-				if (is_nullable)
-					res += "?";
+					if (is_nullable)
+						res += "?";
 				
-				if (name != null && name != "") {
-					res += " %s".printf (name);
+					if (name != null && name != "") {
+						res += " %s".printf (name);
+					}
 				}
-				
 				return res;
 			}
 		}

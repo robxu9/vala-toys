@@ -4,6 +4,14 @@
 	* afrodite/datatype.vala:
 	* afrodite/symbol.vala:
 
+	added ellipsis support
+
+2010-01-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/symbol.vala:
+
 	added preliminary support for Generics info tips
 
 2010-01-12  Andrea Del Signore  <sejerpz@tin.it>

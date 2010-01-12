@@ -84,9 +84,19 @@ namespace Afrodite
 		}
 	}
 
+	public class EllipsisType : DataType
+	{
+		public EllipsisType ()
+		{
+			base ("...");
+			base.is_ellipsis = true;	
+		}
+	}
+	
 	public class Symbol : Object
 	{
 		public static VoidType VOID = new VoidType ();
+		public static EllipsisType ELLIPSIS = new EllipsisType ();
 		
 		public string name = null;
 		public string fully_qualified_name = null;
