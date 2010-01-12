@@ -64,6 +64,8 @@ namespace Vtg
 		private ActionGroup _actions;
 		private VBox _side_panel;
 		private ProjectManager _current_project = null;
+		private Gtk.TreeModelFilter _filtered_model;
+		private Gtk.CheckButton _check_button_show_sources = null;
 		
 		public ProjectManager current_project 
 		{ 
@@ -77,9 +79,14 @@ namespace Vtg
 				_current_project = value; 
 				if (_current_project != null) {
 					_current_project.updated += this.on_current_project_updated;
-					_prj_view.set_model (_current_project.model);
-					_prj_view.expand_all ();
-
+ 					if (_current_project.model != null) {
+						_filtered_model = new Gtk.TreeModelFilter (_current_project.model, null);
+						_filtered_model.set_visible_func (this.filter_function);
+						_prj_view.set_model (_filtered_model);
+						_prj_view.expand_all ();
+					} else {
+						_prj_view.set_model (null);
+					}
 					//sync the project combo view
 					TreeModel model = _prjs_combo.get_model ();
 					Gtk.TreeIter iter;
@@ -123,20 +130,29 @@ namespace Vtg
 			_prjs_combo.changed += this.on_project_combobox_changed;
 			_prj_view = new Gtk.TreeView ();
 			CellRenderer renderer = new CellRendererPixbuf ();
+			
 			var column = new TreeViewColumn ();
  			column.pack_start (renderer, false);
 			column.add_attribute (renderer, "stock-id", 0);
 			renderer = new CellRendererText ();
 			column.pack_start (renderer, true);
 			column.add_attribute (renderer, "text", 1);
+			
 			_prj_view.append_column (column);
 			_prj_view.set_headers_visible (false);
 			_prj_view.row_activated += this.on_project_view_row_activated;
 			_prj_view.button_press_event += this.on_project_view_button_press;
+			
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_prj_view);
+
+			_check_button_show_sources = new Gtk.CheckButton.with_label (_("Show only source files"));
+			_check_button_show_sources.active = Vtg.Plugin.main_instance.config.project_only_show_sources;
+			_check_button_show_sources.toggled.connect (this.on_show_data_dir_toggled);
+			
 			_side_panel.pack_start (_prjs_combo, false, false, 4);
 			_side_panel.pack_start (scroll, true, true, 4);
+			_side_panel.pack_start (_check_button_show_sources, false, false, 4);
 			_side_panel.show_all ();
 			panel.add_item_with_stock_icon (_side_panel, _("Projects"), Gtk.STOCK_DIRECTORY);
 			panel.activate_item (_side_panel);
@@ -157,13 +173,38 @@ namespace Vtg
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
 			}
+		}
+
+		private bool filter_function (Gtk.TreeModel sender, Gtk.TreeIter iter)
+		{
+			bool res = true;
 			
-			//default empty project
-			//_prjs_combo.append_text (_("(no project opened - default)"));
-			//_prjs_combo.set_active (0);
-			//_project_count++;
+			if (_check_button_show_sources.active) {
+				GLib.Object obj;
+				string node_id;
+				sender.get (iter, 2, out node_id, 3, out obj);
+
+				if (node_id == "project-reference")
+					res = false;
+				else if (obj is Vbf.Group) {
+					Vbf.Group group = (Vbf.Group) obj;
+					res = group.has_sources_of_type (FileTypes.VALA_SOURCE);
+				} else if (obj is Vbf.Target) {
+					Vbf.Target target = (Vbf.Target) obj;
+					res = target.has_sources_of_type (FileTypes.VALA_SOURCE);
+				}
+			}
+			
+			return res;
 		}
 		
+		private void on_show_data_dir_toggled (Widget sender)
+		{
+			var check = (CheckButton) sender;
+			Vtg.Plugin.main_instance.config.project_only_show_sources = check.active;
+			_filtered_model.refilter ();
+		}
+
 		public void add_project (Project project)
 		{
 			_prjs_combo.append_text (project.name);

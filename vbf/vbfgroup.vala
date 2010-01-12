@@ -123,6 +123,16 @@ namespace Vbf
 		{
 			variables.add (variable);
 		}
+		
+		public bool has_sources_of_type (FileTypes type)
+		{
+			foreach (Target target in targets) {
+				if (target.has_sources_of_type (type))
+					return true;
+			}
+			
+			return false;
+		}
 	}
 }
 

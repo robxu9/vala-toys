@@ -55,6 +55,7 @@ namespace Vbf {
 		public Vbf.Target? get_target_for_id (string id);
 		public Vala.List<Vbf.Target> get_targets ();
 		public Vala.List<Vbf.Variable> get_variables ();
+		public bool has_sources_of_type (Vbf.FileTypes type);
 	}
 	[CCode (cheader_filename = "vbf.h")]
 	public class Module : GLib.Object {
