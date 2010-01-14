@@ -66,9 +66,16 @@ namespace Vtg
 		private VBox _side_panel;
 		
 		public signal void goto_source (int line, int start_column, int end_column);
+		public signal void filter_changed ();
 		
 		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } }
-
+		
+		public bool show_private_symbols {
+			get {
+				return _check_show_private_symbols.active;
+			}
+		}
+		
 		public SourceOutlinerView (Vtg.PluginInstance plugin_instance)
 		{
 			GLib.Object (plugin_instance: plugin_instance);
@@ -178,8 +185,8 @@ namespace Vtg
 		
 		private void on_show_private_symbol_toggled (Widget sender)
 		{
-			update_view ();
 			Vtg.Plugin.main_instance.config.outliner_show_private_symbols = _check_show_private_symbols.active;
+			this.filter_changed ();
 		}
 
 		private void on_source_outliner_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)

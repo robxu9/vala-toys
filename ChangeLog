@@ -1,5 +1,12 @@
 2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	fixed the show private symbols check button
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/datatype.vala:
 
 	more dead code remove

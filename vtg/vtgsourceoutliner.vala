@@ -66,6 +66,8 @@ namespace Vtg
 			GLib.Object (plugin_instance: plugin_instance);
 			_outliner_view = new SourceOutlinerView (plugin_instance);
 			_outliner_view.goto_source += this.on_goto_source;
+			_outliner_view.filter_changed += this.on_filter_changed;
+			
 		}
 
 		~SourceOutliner ()
@@ -88,6 +90,11 @@ namespace Vtg
 			}
 		}
 
+		private void on_filter_changed (SourceOutlinerView sender)
+		{
+			setup_idle ();
+		}
+		
 		private void on_goto_source (SourceOutlinerView sender, int line, int start_column, int end_column)		
 		{
 			Gedit.Document doc = (Gedit.Document) _active_view.get_buffer ();
