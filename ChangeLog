@@ -1,5 +1,11 @@
 2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+
+	fixed a bug when trying to complete symbols defined in a base class
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutliner.vala:
 	* vtg/vtgsourceoutlinerview.vala:
 

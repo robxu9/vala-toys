@@ -191,20 +191,19 @@ namespace Afrodite
 	 					Symbol parent = sym;
 	 					Symbol dummy;
 	 					
-	 					//print ("lookup %s in %s", parts[i], sym.name);
+	 					print ("lookup %s in %s", parts[i], sym.name);
 						sym = lookup_symbol (parts[i], sym.children, out dummy, options.compare_mode);
-						//print ("... result: %s\n", sym == null ? "not found" : sym.name);
-						if (sym != null && mode == LookupMode.Type && sym.return_type != null) {
-								sym = sym.return_type.symbol;
-						}
-						
+						print ("... result: %s\n", sym == null ? "not found" : sym.name);
 						if (sym == null) {
 							// lookup on base types also
 							sym = lookup_name_in_base_types (parts[i], parent);
 						}
 						
-						if (sym == null)
+						if (sym != null && mode == LookupMode.Type && sym.return_type != null) {
+							sym = sym.return_type.symbol;
+						} else {
 							break;
+						}
 					}
 				}
 			}
