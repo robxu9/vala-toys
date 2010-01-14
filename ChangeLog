@@ -1,5 +1,11 @@
 2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed to use the new afrodite api
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* afrodite/ast.vala:
 	* afrodite/completionengine.vala:

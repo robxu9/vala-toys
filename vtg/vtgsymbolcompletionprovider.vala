@@ -314,7 +314,8 @@ namespace Vtg
 
 		public GLib.List<Gsc.Proposal> get_proposals (Gsc.Trigger trigger)
 		{
-			transform_result (get_completions ((SymbolCompletionTrigger) trigger));
+			build_proposal_item_list ((SymbolCompletionTrigger) trigger);
+
 			if (_list.length () == 0 && _cache_building) {
 				_last_trigger = (SymbolCompletionTrigger) trigger;
 			} else {
@@ -323,7 +324,7 @@ namespace Vtg
 			return (owned) _list;
 		}
 
-		private void append_symbols (Vala.List<Afrodite.Symbol> symbols, bool include_private_symbols = true)
+		private void append_symbols (Afrodite.QueryOptions? options, Vala.List<Afrodite.Symbol> symbols, bool include_private_symbols = true)
 		{
 			unowned Proposal[] proposals = Utils.get_proposal_cache ();
 
@@ -333,28 +334,30 @@ namespace Vtg
 					|| symbol.name == "new")
 					continue;
 
-				Proposal proposal;
-				string name;
+				if (options == null || symbol.check_options (options)) {
+					Proposal proposal;
+					string name;
 
-				if (symbol.type_name == "CreationMethod") {
-					name = symbol.name;
-				} else {
-					name = (symbol.display_name != null ? symbol.display_name : "<null>");
-				}
-				var info = (symbol.info != null ? symbol.info : "");
-				Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.type_name);
+					if (symbol.type_name == "CreationMethod") {
+						name = symbol.name;
+					} else {
+						name = (symbol.display_name != null ? symbol.display_name : "<null>");
+					}
+					var info = (symbol.info != null ? symbol.info : "");
+					Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.type_name);
 	
-				if (_prealloc_index < Utils.prealloc_count) {
-					proposal = proposals [_prealloc_index];
-					_prealloc_index++;
+					if (_prealloc_index < Utils.prealloc_count) {
+						proposal = proposals [_prealloc_index];
+						_prealloc_index++;
 
-					proposal.label = name;
-					proposal.info = info;
-				        proposal.icon = icon;
-				} else {
-					proposal = new Proposal(name, info, icon);
+						proposal.label = name;
+						proposal.info = info;
+						proposal.icon = icon;
+					} else {
+						proposal = new Proposal(name, info, icon);
+					}
+					_list.append (proposal);
 				}
-				_list.append (proposal);
 			}
 			//sort list
 			_list.sort (this.proposal_sort);
@@ -368,36 +371,38 @@ namespace Vtg
 			return strcmp (pa.get_label (), pb.get_label ());
 		}
 
-		private void transform_result (Afrodite.Symbol? result)
+		private void transform_result (Afrodite.QueryOptions? options, Afrodite.QueryResult? result)
 		{
-			var timer = new Timer ();
 			_prealloc_index = 0;
 			_list = new GLib.List<Proposal> ();
 
-			if (result != null) {
-				if (result.has_children) {
-					append_symbols (result.children);
-				}
-				if (result.has_base_types 
-				    && (result.type_name == "Class" || result.type_name == "Interface" || result.type_name == "Struct")) {
-				    	//GLib.debug ("base type for %s-%s", result.name, result.type_name);
+			if (result != null && !result.is_empty) {
+				foreach (ResultItem item in result.children) {
+					var symbol = item.symbol;
+					if (options == null || symbol.check_options (options)) {
+						if (symbol.has_children) {
+							append_symbols (options, symbol.children);
+						}
+						if (symbol.has_base_types 
+						    && (symbol.type_name == "Class" || symbol.type_name == "Interface" || symbol.type_name == "Struct")) {
+						    	//GLib.debug ("base type for %s-%s", result.name, result.type_name);
 					
-					foreach (DataType type in result.base_types) {
-						//GLib.debug ("----> base type for %s-%s", type.name, type.type_name);
-						if (!type.unresolved 
-						    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface")) {
-							if (type.symbol.has_children) {
-								// symbols of base types (classes or interfaces)
-								append_symbols (type.symbol.children, false);
+							foreach (DataType type in symbol.base_types) {
+								//GLib.debug ("----> base type for %s-%s", type.name, type.type_name);
+								if (!type.unresolved 
+								    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface")) {
+									if (type.symbol.has_children) {
+										// symbols of base types (classes or interfaces)
+										append_symbols (options, type.symbol.children, false);
+									}
+								}
 							}
+						} else {
+							GLib.debug ("NO base type for %s-%s", symbol.name, symbol.type_name);
 						}
 					}
-				} else {
-					GLib.debug ("NO base type for %s-%s", result.name, result.type_name);
 				}
 			}
-
-			timer.stop ();
 		}
 
 		private void parse_current_line (bool skip_leading_spaces, out string symbolname, out string last_symbolname, out string line, out int lineno, out int colno)
@@ -556,9 +561,6 @@ namespace Vtg
 			if (is_vala_keyword (symbol_name)) {
 				return null;
 			}
-
-			Afrodite.Symbol? result = null;
-			Afrodite.Symbol? symbol = null;
 			
 			/* 
 			  strip last type part. 
@@ -573,11 +575,21 @@ namespace Vtg
 			}
 			
 			GLib.debug ("get_current_symbol_item for %s, %s", first_part, symbol_name);
-			result = complete (null,  null, first_part, lineno, colno);
-			if (result != null) {
-				symbol = get_symbol_for_name_in_children (symbol_name, result);
-				if (symbol == null)
-					symbol =  get_symbol_for_name_in_base_types (symbol_name, result);
+			Afrodite.Ast ast;
+			Afrodite.Symbol? symbol = null;
+			
+			if (_completion.try_acquire_ast (out ast)) {
+				Afrodite.QueryResult? result = null;
+				Afrodite.QueryOptions options = this.get_options_for_line (line);			
+				
+				result = get_symbol_for_name (options, ast, null,  first_part, null,  lineno, colno);
+				if (result != null && !result.is_empty) {
+					var first = result.children.get (0);
+					symbol = get_symbol_for_name_in_children (symbol_name, first.symbol);
+					if (symbol == null)
+						symbol =  get_symbol_for_name_in_base_types (symbol_name, first.symbol);
+				}
+				_completion.release_ast (ast);
 			}
 			return symbol;
 		}
@@ -613,63 +625,76 @@ namespace Vtg
 			return null;
 		}
 		
-		private Symbol? get_completions (SymbolCompletionTrigger trigger)
+		private QueryOptions get_options_for_line (string line)
+		{
+			QueryOptions options = null;
+			
+			if (line != null) {
+				if (line.str ("= new ") != null || line.str ("=new ") != null) {
+					options = QueryOptions.creation_methods ();
+				} else if (line.str ("=") != null) {
+					options = QueryOptions.standard ();
+				} else if (line.str ("throws ") != null || line.str ("throw ") != null) {
+					options = QueryOptions.error_domains ();
+				}
+			}
+		
+			if (options == null)
+				options = QueryOptions.standard ();
+				
+			/*
+			if (word == "base") {
+				options.access = Afrodite.SymbolAccessibility.PUBLIC 
+					| Afrodite.SymbolAccessibility.PROTECTED 
+					| Afrodite.SymbolAccessibility.INTERNAL;
+			} else if (word != "this") {
+				options.access = Afrodite.SymbolAccessibility.PUBLIC 
+					| Afrodite.SymbolAccessibility.INTERNAL;						
+			}
+			*/
+			
+			options.auto_member_binding_mode = true;
+			options.compare_mode = CompareMode.EXACT;
+			return options;
+		}
+
+		private void build_proposal_item_list (SymbolCompletionTrigger trigger)
 		{
 			string whole_line, word, last_part;
 			int line, column;
 
 			parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
 
-			if (word == null && word == "")
-				return null;
-
-			
-			return complete (trigger, whole_line, word, line, column);
+			Afrodite.Ast ast = null;			
+			if (!StringUtils.is_null_or_empty (word) 
+			    && _completion.try_acquire_ast (out ast)) {
+			        QueryOptions options = get_options_for_line (whole_line);
+        			Afrodite.QueryResult result = null;
+        			
+				result = get_symbol_for_name (options, ast, trigger, word, whole_line, line, column);
+				transform_result (options, result);
+				_completion.release_ast (ast);
+			} else {
+				if (!StringUtils.is_null_or_empty (word))
+					GLib.debug ("build_proposal_item_list: couldn't acquire ast lock");
+					
+				transform_result (null, null);
+			}
 		}
 		
-		private Afrodite.Symbol? complete (SymbolCompletionTrigger? trigger, string? whole_line, string word, int line, int column)
+		private Afrodite.QueryResult? get_symbol_for_name (QueryOptions options, Afrodite.Ast ast, SymbolCompletionTrigger? trigger, string word, string? whole_line, int line, int column)
 		{
-			GLib.debug ("complete %s for %s in %d,%d", word, _sb.path, line, column);
-			Afrodite.Symbol result = null;
-			Afrodite.Ast ast;
-			if (_completion.try_acquire_ast (out ast)) {
-				var sym = ast.lookup_name_for_type_at (word, _sb.path, line, column, LookupCompareMode.EXACT);
-				if (sym != null) {
-					int before_child_count = sym.children.size;
-					QueryOptions options = null;
-
-					if (whole_line != null) {
-						if (whole_line.str ("= new ") != null || whole_line.str ("=new ") != null) {
-							options = QueryOptions.creation_methods ();
-						} else if (whole_line.str ("=") != null) {
-							options = QueryOptions.standard ();
-						} else if (whole_line.str ("throws ") != null || whole_line.str ("throw ") != null) {
-							options = QueryOptions.error_domains ();
-						}
-					}
-					
-					if (options == null)
-						options = QueryOptions.standard ();
-
-					if (word == "base") {
-						options.access = Afrodite.SymbolAccessibility.PUBLIC 
-							| Afrodite.SymbolAccessibility.PROTECTED 
-							| Afrodite.SymbolAccessibility.INTERNAL;
-					} else if (word != "this") {
-						options.access = Afrodite.SymbolAccessibility.PUBLIC 
-							| Afrodite.SymbolAccessibility.INTERNAL;						
-					}
-					
-					result = sym.detach_copy (1, options);
-					GLib.debug ("results found before copy %d, after copy %d", before_child_count, result.has_children ? result.children.size : 0);
-				} else {
-					GLib.debug ("no results for: %s", word);
-				}
-				_completion.release_ast (ast);
-			}
+			GLib.debug ("get_symbol_for_name: %s for %s in %d,%d", word, _sb.path, line, column);
+			Afrodite.QueryResult result = null;
+			Timer timer = new Timer ();
+			timer.start ();
+			result = ast.get_symbol_type_for_name_and_path (options, word, _sb.path, line, column);
+			timer.stop ();
+			GLib.debug ("get_symbol_for_name: found %d symbols in %g", result.items_created, timer.elapsed ());
+			
 			return result;
 		}
-		
+
 		private bool is_vala_keyword (string keyword)
 		{
 			return (keyword == "if"
