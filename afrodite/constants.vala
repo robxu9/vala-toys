@@ -41,4 +41,16 @@ namespace Afrodite
 		STATIC = 1 << 2,
 		ANY = MemberBinding.INSTANCE | MemberBinding.CLASS | MemberBinding.STATIC
 	}
+	
+	public enum CompareMode
+	{
+		EXACT,
+		START_WITH
+	}
+	
+	private enum LookupMode
+	{
+		Symbol,
+		Type
+	}
 }

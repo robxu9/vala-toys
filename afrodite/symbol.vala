@@ -76,7 +76,7 @@ namespace Afrodite
 				return _static_child_count;
 			}
 			set {
-				var delta = _static_child_count - value;
+				var delta = value - _static_child_count;
 				_static_child_count = value;
 				if (parent != null)
 					parent.static_child_count += delta;
@@ -89,7 +89,7 @@ namespace Afrodite
 				return _creation_method_child_count;
 			}
 			set {
-				var delta = _creation_method_child_count - value;
+				var delta = value - _creation_method_child_count;
 				_creation_method_child_count = value;
 				if (parent != null)
 					parent.creation_method_child_count += delta;
@@ -398,16 +398,19 @@ namespace Afrodite
 			
 			if ((access & options.access) != 0) {
 				if (options.only_static_factories 
-					&& ((!is_static && !has_static_child) || type_name == "Struct")) {
+					&& ((!is_static && !has_static_child))) {
+					debug ("excluded only static %s: %s", this.type_name, this.fully_qualified_name);
 					return false;
 				}
 				if (options.only_creation_methods 
 					&& type_name != "CreationMethod"
 					&& type_name != "ErrorDomain"
 					&& !has_creation_method_child) {
+					debug ("excluded only creation %s: %d, %s", type_name, this.creation_method_child_count, this.fully_qualified_name);
 					return false;
 				}
 				if (options.exclude_creation_methods && type_name == "CreationMethod") {
+					debug ("excluded exclude creation %s: %s", type_name, this.fully_qualified_name);
 					return false;
 				}
 				if (type_name == "Destructor") {
@@ -416,7 +419,7 @@ namespace Afrodite
 
 				return true;
 			}
-			
+			debug ("excluded symbol access %s: %s", type_name, this.fully_qualified_name);
 			return false;
 		}
 		

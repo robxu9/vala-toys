@@ -242,7 +242,7 @@ namespace Afrodite
 				// do the actual merging
 				// set the number of sources to process
 				AtomicInt.set (ref parser_remaining_files, sources.size);
-				ast_mutex.@lock ();
+				
 				if (_ast != null) {
 					var merger = new AstMerger (_ast);
 					foreach (SourceItem source in sources) {
@@ -260,6 +260,7 @@ namespace Afrodite
 									if (source_count == 1 && source_exists && p.context.report.get_errors () > 0)
 										break;
 									
+									ast_mutex.@lock ();
 									if (source_exists) {
 										//debug ("%s: removing %s", id, source.path);
 										merger.remove_source_filename (source.path);
@@ -267,6 +268,8 @@ namespace Afrodite
 								
 									//timer.start ();
 									merger.merge_vala_context (s, source.context, source.is_glib);
+									ast_mutex.unlock ();
+									
 									//timer.stop ();
 									//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
 									break;
@@ -276,10 +279,12 @@ namespace Afrodite
 					
 						AtomicInt.add (ref parser_remaining_files, -1);
 					}
+					ast_mutex.@lock ();
 					var resolver = new SymbolResolver ();
 					resolver.resolve (_ast);
+					ast_mutex.unlock ();
 				}
-				ast_mutex.unlock ();
+				
 				
 				sources.clear ();
 				

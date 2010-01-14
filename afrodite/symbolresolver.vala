@@ -58,7 +58,7 @@ namespace Afrodite
 			// first the container types defined in the child symbols
 			if (res == null && symbol.has_children) {
 				
-				var s = Ast.lookup_symbol (type.type_name, symbol.children, out parent, Afrodite.LookupCompareMode.EXACT);
+				var s = Ast.lookup_symbol (type.type_name, symbol.children, out parent, Afrodite.CompareMode.EXACT);
 				if (s != null) {
 					//debug ("resolved symbol %s from children to: %s", symbol.fully_qualified_name, s.fully_qualified_name);
 					res = s;

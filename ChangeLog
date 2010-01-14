@@ -1,5 +1,24 @@
 2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/constants.vala:
+	* afrodite/queryoptions.vala:
+	* afrodite/queryresult.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	changed the api for completion support	
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	try to minimize the duration of locks when parsing / updating the ast
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/vbftarget.vala:
 
 	fixed a bug when removing a vala source from the default project

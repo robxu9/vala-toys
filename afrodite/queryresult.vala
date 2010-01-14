@@ -29,6 +29,7 @@ namespace Afrodite
 	{
 		private Vala.List<Symbol> detached_symbols_storage = new Vala.ArrayList<Symbol> ();
 		public Vala.List<ResultItem> children = new Vala.ArrayList <ResultItem> ();
+		public int items_created = 0;
 		
 		public bool is_empty
 		{
@@ -54,6 +55,7 @@ namespace Afrodite
 			var res = new ResultItem ();
 			res.symbol = symbol;
 			res.parent = parent;
+			items_created++;
 			
 			return res;
 		}

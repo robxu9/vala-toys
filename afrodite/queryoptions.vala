@@ -35,6 +35,11 @@ namespace Afrodite
 		
 		public SymbolAccessibility access = SymbolAccessibility.ANY;
 		
+		public bool auto_member_binding_mode = true; // if true the query function will adapt the member binding value automatically
+		public MemberBinding binding = MemberBinding.ANY;
+
+		public CompareMode compare_mode = CompareMode.EXACT;
+		
 		public static QueryOptions standard ()
 		{
 			return new QueryOptions ();

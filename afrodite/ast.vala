@@ -24,11 +24,7 @@ using Vala;
 
 namespace Afrodite
 {
-	public enum LookupCompareMode
-	{
-		EXACT,
-		START_WITH
-	}
+
 	
 	public class Ast
 	{
@@ -40,7 +36,7 @@ namespace Afrodite
 			Symbol result = null;
 			
 			if (root.has_children) {
-				result = lookup_symbol (fully_qualified_name, root.children, out parent, LookupCompareMode.EXACT);
+				result = lookup_symbol (fully_qualified_name, root.children, out parent, CompareMode.EXACT);
 			}
 			
 			if (parent == null) {
@@ -50,7 +46,7 @@ namespace Afrodite
 		}
 		
 		internal static Symbol? lookup_symbol (string qualified_name, Vala.List<Symbol> symbols, 
-			out Symbol? parent,  LookupCompareMode mode,
+			out Symbol? parent,  CompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			string[] tmp = qualified_name.split (".", 2);
@@ -133,26 +129,30 @@ namespace Afrodite
 			if (source == null || !source.has_symbols)
 				return null;
 			
-			Symbol sym = lookup_symbol_with_source_at (source, line, column);
+			Symbol sym = get_symbol_for_source_and_position (source, line, column);
 			return sym;
 		}
 
-		public Symbol? lookup_name_at (string qualified_name, string filename, int line, int column,
-			LookupCompareMode mode,
+/*
+		public Symbol? lookup_name_at_deprecated (string qualified_name, string filename, int line, int column,
+			CompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			return  lookup_name_or_type_at (qualified_name, filename, line, column, false, mode, access, binding);
 		}
 
-		public Symbol? lookup_name_for_type_at (string qualified_name, string filename, int line, int column,
+
+		public Symbol? lookup_name_for_type_at_deprecated (string qualified_name, string filename, int line, int column,
 			LookupCompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			return  lookup_name_or_type_at (qualified_name, filename, line, column, true, mode, access, binding);
 		}		
-		
+*/
+	
+	/*
 		private Symbol? lookup_name_or_type_at (string qualified_name, string filename, int line, int column, 
-			bool lookup_type, LookupCompareMode mode,
+			bool lookup_type, CompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			var source = lookup_source_file (filename);
@@ -209,7 +209,90 @@ namespace Afrodite
 			else
 				return sym;
 		}
-		
+*/
+		public QueryResult get_symbol_for_name_and_path (QueryOptions options, 
+			string symbol_qualified_name, string path, int line, int column)
+		{
+			var result = new Afrodite.QueryResult ();
+			var symbol = get_symbol_or_type_for_name_and_path (LookupMode.Symbol, options.binding, options, symbol_qualified_name, path, line, column);
+			if (symbol != null) {
+				var item = result.new_result_item (null, symbol);
+				result.add_result_item (item);
+			}
+			return result;
+		}
+	
+		public QueryResult get_symbol_type_for_name_and_path (QueryOptions options, 
+			string symbol_qualified_name, string path, int line, int column)
+		{
+			var result = new Afrodite.QueryResult ();
+			var symbol = get_symbol_or_type_for_name_and_path (LookupMode.Type, options.binding, options, symbol_qualified_name, path, line, column);
+			if (symbol != null) {
+				var item = result.new_result_item (null, symbol);
+				result.add_result_item (item);
+			}
+			return result;
+		}
+
+		private Symbol? get_symbol_or_type_for_name_and_path (LookupMode mode, MemberBinding binding, QueryOptions options, string symbol_qualified_name, string path, int line, int column)
+		{
+			var source = lookup_source_file (path);
+			if (source == null || !source.has_symbols) {
+				warning ("source file not found %s", path);
+				return null;
+			}
+			
+			Symbol sym = get_symbol_for_source_and_position (source, line, column);
+			if (sym != null) {
+				string[] parts = symbol_qualified_name.split (".");
+				sym = lookup_name_with_symbol (parts[0], sym, source, options.compare_mode);
+				if (sym != null && sym.return_type != null)
+					sym = sym.return_type.symbol;
+				
+				if (parts.length > 1 && sym != null && sym.has_children) {
+					// change the scope of symbol search
+					if (options.auto_member_binding_mode) {
+						if (parts[0] == "this") {
+							binding = binding & (~ ((int) MemberBinding.STATIC));
+						} else if (parts[0] == "base") {
+							binding = binding & (~ ((int) MemberBinding.STATIC));
+							options.access = options.access & (~ ((int) SymbolAccessibility.PRIVATE));
+						}
+					}
+					if (sym.type_name == "Namespace"
+					    || (parts[0] == sym.name && (sym.type_name == "Class" || sym.type_name == "Struct" || sym.type_name == "Interface"))) {
+					    	// namespace access or MyClass.my_static_method
+						binding = MemberBinding.STATIC;
+					}
+					for (int i = 1; i < parts.length; i++) {
+	 					Symbol parent = sym;
+	 					Symbol dummy;
+	 					
+	 					//print ("lookup %s in %s", parts[i], sym.name);
+						sym = lookup_symbol (parts[i], sym.children, out dummy, options.compare_mode);
+						//print ("... result: %s\n", sym == null ? "not found" : sym.name);
+						if (sym != null && mode == LookupMode.Type && sym.return_type != null) {
+								sym = sym.return_type.symbol;
+						}
+						
+						if (sym == null) {
+							// lookup on base types also
+							sym = lookup_name_in_base_types (parts[i], parent);
+						}
+						
+						if (sym == null)
+							break;
+					}
+				}
+			}
+			
+			// return the symbol or the return type: for properties, field and methods
+			if (sym != null && sym.return_type != null && mode == LookupMode.Type)
+				return sym.return_type.symbol;
+			else
+				return sym;
+		}
+				
 		public QueryResult get_symbols_for_path (QueryOptions options, string path)
 		{
 			var result = new QueryResult ();
@@ -341,7 +424,7 @@ namespace Afrodite
 							return type.symbol;
 						}
 						if (type.symbol.has_children) {
-							var sym = lookup_symbol (name, type.symbol.children, out parent, LookupCompareMode.EXACT, access, binding);
+							var sym = lookup_symbol (name, type.symbol.children, out parent, CompareMode.EXACT, access, binding);
 							if (sym != null) {
 								return sym;
 							}
@@ -371,16 +454,16 @@ namespace Afrodite
 			return current;
 		}
 		
-		private static bool compare_symbol_names (string name1, string name2, LookupCompareMode mode)
+		private static bool compare_symbol_names (string name1, string name2, CompareMode mode)
 		{
-			if (mode == LookupCompareMode.START_WITH) {
+			if (mode == CompareMode.START_WITH) {
 				return name1.has_prefix (name2);
 			} else {
 				return name1 == name2;
 			}
 		}
 
-		private Symbol? lookup_name_with_symbol (string name, Symbol? symbol, SourceFile source, LookupCompareMode mode,
+		private Symbol? lookup_name_with_symbol (string name, Symbol? symbol, SourceFile source, CompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			// first try to find the symbol datatype
@@ -469,7 +552,7 @@ namespace Afrodite
 			return null;
 		}
 
-		public Symbol? lookup_symbol_with_source_at (SourceFile source, int line, int column)
+		public Symbol? get_symbol_for_source_and_position (SourceFile source, int line, int column)
 		{
 			Symbol result = null;
 			SourceReference result_sr = null;
