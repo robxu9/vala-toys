@@ -53,7 +53,6 @@ namespace Afrodite
 		internal int _static_child_count = 0;
 		internal int _creation_method_child_count = 0;
 
-		private Vala.List<Symbol> detached_children = null;
 		private string _info = null;
 		private string _des = null;
 		private string _markup_des = null;
@@ -341,53 +340,7 @@ namespace Afrodite
 				return (binding & MemberBinding.STATIC) != 0;
 			}
 		}
-		
-		internal void add_detached_child (Symbol item)
-		{
-			if (!detached_children.contains (item))
-				detached_children.add (item);
-				
-		}
 
-		internal Symbol? detached_children_find (string fully_qualified_name)
-		{
-			
-			foreach (Symbol symbol in detached_children) {
-				if (symbol.fully_qualified_name == fully_qualified_name) {
-					return symbol;
-				}
-			}
-			
-			return null;
-		}
-/*
-		private bool check_symbol (Symbol symbol, QueryOptions? options)
-		{
-			if ((symbol.access & options.access) != 0) {
-				if (options.only_static_factories 
-					&& ((!symbol.is_static && !symbol.has_static_child) || symbol.type_name == "Struct")) {
-					return false;
-				}
-				if (options.only_creation_methods 
-					&& symbol.type_name != "CreationMethod"
-					&& symbol.type_name != "ErrorDomain"
-					&& !symbol.has_creation_method_child) {
-					return false;
-				}
-				if (options.exclude_creation_methods && symbol.type_name == "CreationMethod") {
-					return false;
-				}
-				if (symbol.type_name == "Destructor") {
-					return false;
-				}
-
-				return true;
-			}
-			
-			return false;
-		}
-
-*/
 		public bool check_options (QueryOptions? options)
 		{
 			if (options.exclude_code_node && (name == null || name.has_prefix ("!")))
@@ -421,129 +374,6 @@ namespace Afrodite
 			}
 			debug ("excluded symbol access %s: %s", type_name, this.fully_qualified_name);
 			return false;
-		}
-		
-		public Symbol detach_full (QueryResult result, int depth = 1)
-		{
-			result.add_symbol (this);
-
-			if (return_type != null)
-				result.add_symbol (return_type.symbol);
-				
-			if (has_parameters) {
-				foreach (DataType p in parameters) {
-					result.add_symbol (p.symbol);
-				}
-			}
-			
-			if (has_local_variables) {
-				foreach (DataType l in local_variables) {
-					result.add_symbol (l.symbol);
-				}
-			}
-			
-			if (has_base_types) {
-				foreach  (DataType t in base_types) {
-					// the base types need to be treated at the same depth
-					// of their parent for this reason 1 need to be added
-					// to data_type_copy_depth variables
-					if (t.symbol != null) {
-						result.add_symbol (t.symbol.detach_full (result, depth + 1));
-					}						
-				}
-			}
-			
-			return this;
-		}
-		
-		public Symbol? detach_copy (int depth = 1, QueryOptions options, Symbol? root = null)
-		{
-			var res = new Symbol (fully_qualified_name, type_name);
-			int data_type_copy_depth = 1;
-			
-			// unowned copied symbols are references in the detached_children
-			// collection of the root symbol. So no owned circular references
-			// are made.
-			if (root == null)
-				root = res;
-
-			if (root.detached_children == null)
-				root.detached_children = new ArrayList<Symbol> ();
-			
-			// try to avoid circular symbol copy
-			if (fully_qualified_name != null) {
-				Symbol detach_copy = root.detached_children_find (fully_qualified_name);
-				if (detach_copy != null) {
-					debug ("Symbol already copied %s", fully_qualified_name);
-					return detach_copy; // the symbol was already copied
-				}
-			}
-			
-			if (res != root)
-				root.add_detached_child (res);
-			//debug ("copy %s in %s", fully_qualified_name, root.name);	
-			res.parent = null; // parent reference isn't copied
-			res.fully_qualified_name = fully_qualified_name;
-			res.type_name = type_name;
-			res._static_child_count = _static_child_count;
-			res._creation_method_child_count = _creation_method_child_count;
-			res._info = _info;
-			res._des = _des;
-			res._markup_des = _markup_des;
-			res.access = access;
-			res.binding = binding;
-			res.is_virtual = is_virtual;
-			res.is_abstract = is_abstract;
-			res.overrides = overrides;
-			res._display_name = _display_name;
-			
-			if ((depth == -1 || depth > 0) && has_children) {
-				foreach (Symbol child in children) {
-					if (child.check_options (options)) {
-						var copy = child.detach_copy (depth - 1, options, root);
-						res.add_child (copy);
-						 // a check is performed on the add to avoid duplicate copies
-					}
-				}
-				
-			}
-			
-			res.return_type = return_type == null ? null : return_type.copy (1, options, root);
-			
-			if (has_source_references) {
-				foreach (SourceReference sr in source_references) {
-					res.add_source_reference (sr.copy ());
-				}
-			}
-			
-			if (has_parameters) {
-				foreach (DataType p in parameters) {
-					res.add_parameter (p.copy (data_type_copy_depth, options, root));
-				}
-			}
-			
-			if (has_generic_type_arguments) {
-				foreach (Symbol s in generic_type_arguments) {
-					res.add_generic_type_argument (s);
-				}
-			}
-			
-			if (has_local_variables) {
-				foreach (DataType l in local_variables) {
-					res.add_local_variable (l.copy (data_type_copy_depth, options, root));
-				}
-			}
-			
-			if (has_base_types) {
-				foreach  (DataType t in base_types) {
-					// the base types need to be treated at the same depth
-					// of their parent for this reason 1 need to be added
-					// to data_type_copy_depth variables
-					res.add_base_type (t.copy (data_type_copy_depth == -1 ? data_type_copy_depth : data_type_copy_depth + 1, options, root));
-				}
-			}
-
-			return res;
 		}
 		
 		public string description

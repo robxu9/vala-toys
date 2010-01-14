@@ -30,18 +30,5 @@ namespace Afrodite
 		public int last_line = 0;
 		public int first_column = 0;
 		public int last_column = 0;
-		
-		public SourceReference copy ()
-		{
-			var new_copy = new SourceReference ();
-			
-			new_copy.file = this.file;
-			new_copy.first_line = this.first_line;
-			new_copy.last_line = this.last_line;
-			new_copy.first_column = this.first_column;
-			new_copy.last_column = this.last_column;
-			
-			return new_copy;
-		}
 	}
 }

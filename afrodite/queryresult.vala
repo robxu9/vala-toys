@@ -27,7 +27,6 @@ namespace Afrodite
 {
 	public class QueryResult
 	{
-		private Vala.List<Symbol> detached_symbols_storage = new Vala.ArrayList<Symbol> ();
 		public Vala.List<ResultItem> children = new Vala.ArrayList <ResultItem> ();
 		public int items_created = 0;
 		
@@ -35,13 +34,6 @@ namespace Afrodite
 		{
 			get {
 				return children.size == 0;
-			}
-		}
-		
-		internal void add_symbol (Afrodite.Symbol? symbol)
-		{
-			if (symbol != null) {
-				detached_symbols_storage.add (symbol);
 			}
 		}
 		
@@ -62,7 +54,6 @@ namespace Afrodite
 		
 		~Result ()
 		{
-			detached_symbols_storage = null;
 			children = null;
 		}
 	}

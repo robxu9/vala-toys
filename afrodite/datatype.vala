@@ -148,6 +148,8 @@ namespace Afrodite
 				generic_types = null;
 			}
 		}
+		
+		/*
 		public DataType copy (int depth, QueryOptions options, Symbol? root = null)
 		{
 			if (this == Symbol.ELLIPSIS)
@@ -184,7 +186,7 @@ namespace Afrodite
 				}
 			}
 			return res;
-		}
+		}*/
 		
 		public string description		
 		{

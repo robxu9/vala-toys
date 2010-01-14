@@ -116,7 +116,7 @@ namespace Afrodite
 
 					foreach (Symbol child in symbol.children) {
 						if (child.has_source_references) {
-							source_ref = child.source_references.get(0).copy ();
+							source_ref = child.source_references.get(0);
 							break;
 						}
 					}

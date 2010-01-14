@@ -1,5 +1,17 @@
 2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/queryresult.vala:
+	* afrodite/sourcereference.vala:
+	* afrodite/symbol.vala:
+
+	dead code removal
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	fixed to use the new afrodite api
