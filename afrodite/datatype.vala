@@ -149,45 +149,6 @@ namespace Afrodite
 			}
 		}
 		
-		/*
-		public DataType copy (int depth, QueryOptions options, Symbol? root = null)
-		{
-			if (this == Symbol.ELLIPSIS)
-				return this; // don't clone immutable datatypes
-				
-			var res = new DataType (type_name, name);
-			
-			if ((depth >= 0 || depth == -1) && root != null && symbol != null) {
-				if (symbol.fully_qualified_name == root.fully_qualified_name) {
-					// avoid recoursion
-					res.symbol = root;
-				} else {
-					Symbol detach_copy = root.detached_children_find (symbol.fully_qualified_name);
-					if (detach_copy == null) {
-						detach_copy = symbol.detach_copy (depth == -1 ? depth : depth - 1, options, root);
-						root.add_detached_child (detach_copy);
-					}
-					res.symbol = detach_copy;
-				}
-			} else {
-				res.symbol = null;
-			}
-			res.is_array = is_array;
-			res.is_pointer = is_pointer;
-			res.is_generic = is_generic;
-			res.is_nullable = is_nullable;
-			res.is_out = is_out;
-			res.is_ref = is_ref;
-			res.is_dynamic = is_dynamic;
-			res.default_expression = default_expression;
-			if (has_generic_types) {
-				foreach (DataType type in this.generic_types) {
-					res.add_generic_type (type);
-				}
-			}
-			return res;
-		}*/
-		
 		public string description		
 		{
 			owned get {

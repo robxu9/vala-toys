@@ -1,5 +1,11 @@
 2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/datatype.vala:
+
+	more dead code remove
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* afrodite/ast.vala:
 	* afrodite/astmerger.vala:
