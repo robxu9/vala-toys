@@ -636,20 +636,20 @@ namespace Vtg
 				var sym = ast.lookup_name_for_type_at (word, _sb.path, line, column, LookupCompareMode.EXACT);
 				if (sym != null) {
 					int before_child_count = sym.children.size;
-					DetachCopyOptions options = null;
+					QueryOptions options = null;
 
 					if (whole_line != null) {
 						if (whole_line.str ("= new ") != null || whole_line.str ("=new ") != null) {
-							options = DetachCopyOptions.creation_methods ();
+							options = QueryOptions.creation_methods ();
 						} else if (whole_line.str ("=") != null) {
-							options = DetachCopyOptions.standard ();
+							options = QueryOptions.standard ();
 						} else if (whole_line.str ("throws ") != null || whole_line.str ("throw ") != null) {
-							options = DetachCopyOptions.error_domains ();
+							options = QueryOptions.error_domains ();
 						}
 					}
 					
 					if (options == null)
-						options = DetachCopyOptions.standard ();
+						options = QueryOptions.standard ();
 
 					if (word == "base") {
 						options.access = Afrodite.SymbolAccessibility.PUBLIC 
@@ -660,7 +660,6 @@ namespace Vtg
 							| Afrodite.SymbolAccessibility.INTERNAL;						
 					}
 					
-					options.deep_copy_data_type_symbols = false;
 					result = sym.detach_copy (1, options);
 					GLib.debug ("results found before copy %d, after copy %d", before_child_count, result.has_children ? result.children.size : 0);
 				} else {

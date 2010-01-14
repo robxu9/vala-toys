@@ -23,94 +23,28 @@ using GLib;
 using Vala;
 
 namespace Afrodite
-{
-	[Flags]
-	public enum SymbolAccessibility
-	{
-		PRIVATE = 1,
-		INTERNAL = 1 << 1,
-		PROTECTED = 1 << 2,
-		PUBLIC = 1 << 3,
-		ANY = SymbolAccessibility.PRIVATE | SymbolAccessibility.INTERNAL | SymbolAccessibility.PROTECTED | SymbolAccessibility.PUBLIC
-	}
-
-	[Flags]
-	public enum MemberBinding {
-		INSTANCE = 1,
-		CLASS = 1 << 1,
-		STATIC = 1 << 2,
-		ANY = MemberBinding.INSTANCE | MemberBinding.CLASS | MemberBinding.STATIC
-	}
-	
-	public class DetachCopyOptions
-	{
-		public bool only_creation_methods = false;
-		public bool only_static_factories = false; // this covers static methods factories and struct initialization
-		public bool only_error_domains = false;
-		public bool exclude_creation_methods = true;
-		
-		/* symbol copy options */
-		public bool deep_copy_data_type_symbols = true; // if false just copy the symbol without any child
-		
-		public SymbolAccessibility access = SymbolAccessibility.ANY;
-		
-		public bool copy_resolved_types = false; // if true also recoursively copies all the types resolved by this type
-		
-		public static DetachCopyOptions standard ()
-		{
-			return new DetachCopyOptions ();
-		}
-		
-		public static DetachCopyOptions creation_methods ()
-		{
-			var opt = new DetachCopyOptions ();
-			opt.only_creation_methods = true;
-			opt.exclude_creation_methods = false;
-			return opt;
-		}
-		
-		public static DetachCopyOptions factory_methods ()
-		{
-			var opt = new DetachCopyOptions ();
-			opt.only_static_factories = true;
-			return opt;
-		}
-		
-		public static DetachCopyOptions error_domains ()
-		{
-			var opt = new DetachCopyOptions ();
-			opt.only_error_domains = true;
-			return opt;
-		}
-	}
-
-	public class EllipsisType : DataType
-	{
-		public EllipsisType ()
-		{
-			base ("...");
-			base.is_ellipsis = true;	
-		}
-	}
-	
+{	
 	public class Symbol : Object
 	{
 		public static VoidType VOID = new VoidType ();
 		public static EllipsisType ELLIPSIS = new EllipsisType ();
 		
+		public unowned Symbol parent = null;
+		public Vala.List<unowned Symbol> children = null;
+		public Vala.List<unowned Symbol> resolve_targets = null; // contains a reference to symbols of whose this symbol is a resolved reference for any target data type
+		
 		public string name = null;
 		public string fully_qualified_name = null;
-		public unowned Symbol parent = null;
+		
 		public DataType return_type = null;
 		public string type_name = null;
-		public Vala.List<unowned Symbol> children = null;
+		
 		public Vala.List<SourceReference> source_references = null;
 		public Vala.List<DataType> parameters = null;
 		public Vala.List<DataType> local_variables = null;
 		public Vala.List<DataType> base_types = null;
 		public Vala.List<Symbol> generic_type_arguments = null;
 		
-		public Vala.List<unowned Symbol> resolve_targets = null; // contains a reference to symbols of whose this symbol is a resolved reference for any target data type
 		public SymbolAccessibility access = SymbolAccessibility.INTERNAL;
 		public MemberBinding binding = MemberBinding.INSTANCE;
 		public bool is_virtual = false;
@@ -401,7 +335,7 @@ namespace Afrodite
 			}
 		}
 		
-		public bool is_static
+		public bool is_static			
 		{
 			get {
 				return (binding & MemberBinding.STATIC) != 0;
@@ -426,8 +360,8 @@ namespace Afrodite
 			
 			return null;
 		}
-
-		private bool check_symbol (Symbol symbol, DetachCopyOptions? options)
+/*
+		private bool check_symbol (Symbol symbol, QueryOptions? options)
 		{
 			if ((symbol.access & options.access) != 0) {
 				if (options.only_static_factories 
@@ -453,10 +387,76 @@ namespace Afrodite
 			return false;
 		}
 
-		public Symbol? detach_copy (int depth = 1, DetachCopyOptions options, Symbol? root = null)
+*/
+		public bool check_options (QueryOptions? options)
+		{
+			if (options.exclude_code_node && (name == null || name.has_prefix ("!")))
+				return false;
+
+			if (options.all_symbols)
+				return true;
+			
+			if ((access & options.access) != 0) {
+				if (options.only_static_factories 
+					&& ((!is_static && !has_static_child) || type_name == "Struct")) {
+					return false;
+				}
+				if (options.only_creation_methods 
+					&& type_name != "CreationMethod"
+					&& type_name != "ErrorDomain"
+					&& !has_creation_method_child) {
+					return false;
+				}
+				if (options.exclude_creation_methods && type_name == "CreationMethod") {
+					return false;
+				}
+				if (type_name == "Destructor") {
+					return false;
+				}
+
+				return true;
+			}
+			
+			return false;
+		}
+		
+		public Symbol detach_full (QueryResult result, int depth = 1)
+		{
+			result.add_symbol (this);
+
+			if (return_type != null)
+				result.add_symbol (return_type.symbol);
+				
+			if (has_parameters) {
+				foreach (DataType p in parameters) {
+					result.add_symbol (p.symbol);
+				}
+			}
+			
+			if (has_local_variables) {
+				foreach (DataType l in local_variables) {
+					result.add_symbol (l.symbol);
+				}
+			}
+			
+			if (has_base_types) {
+				foreach  (DataType t in base_types) {
+					// the base types need to be treated at the same depth
+					// of their parent for this reason 1 need to be added
+					// to data_type_copy_depth variables
+					if (t.symbol != null) {
+						result.add_symbol (t.symbol.detach_full (result, depth + 1));
+					}						
+				}
+			}
+			
+			return this;
+		}
+		
+		public Symbol? detach_copy (int depth = 1, QueryOptions options, Symbol? root = null)
 		{
 			var res = new Symbol (fully_qualified_name, type_name);
-			int data_type_copy_depth = options.deep_copy_data_type_symbols ? -1 : 1;
+			int data_type_copy_depth = 1;
 			
 			// unowned copied symbols are references in the detached_children
 			// collection of the root symbol. So no owned circular references
@@ -496,7 +496,7 @@ namespace Afrodite
 			
 			if ((depth == -1 || depth > 0) && has_children) {
 				foreach (Symbol child in children) {
-					if (check_symbol (child, options)) {
+					if (child.check_options (options)) {
 						var copy = child.detach_copy (depth - 1, options, root);
 						res.add_child (copy);
 						 // a check is performed on the add to avoid duplicate copies
@@ -537,14 +537,6 @@ namespace Afrodite
 					// of their parent for this reason 1 need to be added
 					// to data_type_copy_depth variables
 					res.add_base_type (t.copy (data_type_copy_depth == -1 ? data_type_copy_depth : data_type_copy_depth + 1, options, root));
-				}
-			}
-			
-			if (options.copy_resolved_types && has_resolve_targets && (depth > 0 || depth == -1)) {
-				foreach (Symbol t in resolve_targets) {
-					var copy = t.detach_copy (0, options, root);
-					res.add_resolve_target (copy);
-					root.add_detached_child (copy);
 				}
 			}
 

@@ -24,12 +24,10 @@ using GLib;
 namespace Afrodite
 {
 	public class DataType
-	{
-		private string _type_name = null;
-		
-		public string name = null;
-		
+	{		
 		public unowned Symbol? symbol = null;
+			
+		public string name = null;
 		public bool is_array = false;
 		public bool is_pointer = false;
 		public bool is_generic = false;
@@ -40,6 +38,8 @@ namespace Afrodite
 		public bool is_ellipsis = false;
 		public string default_expression = null;
 		public Vala.List<DataType> generic_types = null;
+		
+		private string _type_name = null;
 		
 		public DataType (string type_name, string? name = null)
 		{
@@ -148,7 +148,7 @@ namespace Afrodite
 				generic_types = null;
 			}
 		}
-		public DataType copy (int depth, DetachCopyOptions options, Symbol? root = null)
+		public DataType copy (int depth, QueryOptions options, Symbol? root = null)
 		{
 			if (this == Symbol.ELLIPSIS)
 				return this; // don't clone immutable datatypes

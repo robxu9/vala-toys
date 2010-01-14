@@ -210,7 +210,58 @@ namespace Afrodite
 				return sym;
 		}
 		
-		public Symbol? lookup_symbols_in (string filename, DetachCopyOptions? options)
+		public QueryResult get_symbols_for_path (QueryOptions options, string path)
+		{
+			var result = new QueryResult ();
+			var first = result.new_result_item (null, root);
+			var timer = new Timer ();
+			
+			timer.start ();
+			get_child_symbols_for_path (result, options, path, first);
+			if (first.children.size > 0) {
+				result.add_result_item (first);
+				
+			}
+			timer.stop ();
+			debug ("get_symbols_for_path simbols found %d, time elapsed %g", result.children.size, timer.elapsed ());
+			return result;
+		}
+
+		private void get_child_symbols_for_path (QueryResult result, QueryOptions? options, string path, ResultItem parent)
+		{
+			if (!parent.symbol.has_children)
+				return;
+
+			foreach (Symbol symbol in parent.symbol.children) {
+				if (symbol_has_filename_reference(path, symbol)) {
+					if (symbol.check_options (options)) {
+						var result_item = result.new_result_item (parent, symbol);
+						parent.add_result_item (result_item);
+						if (symbol.has_children) {
+							// try to catch circular references
+							var item = parent.symbol;
+							bool circular_ref = false;
+					
+							while (item != null) {
+								if (symbol == item) {
+									error ("circular reference %s", symbol.fully_qualified_name);
+									circular_ref = true;
+									break;
+								}
+								item = item.parent;
+							}
+							// find in children
+							if (!circular_ref) {
+								get_child_symbols_for_path (result, options, path, result_item);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		/*
+		public Symbol? lookup_symbols_in_deprecated2 (string filename, DetachCopyOptions? options)
 		{
 			var opt = options;
 			if (opt == null)
@@ -218,7 +269,7 @@ namespace Afrodite
 
 			var res = root.detach_copy (0, opt);
 			
-			lookup_symbol_in_filename (filename, opt, res, root);
+			lookup_symbol_in_filename_deprecated (filename, opt, res, root);
 			
 			if (res.has_children) {
 				return res;
@@ -227,7 +278,7 @@ namespace Afrodite
 			return null;
 		}
 
-		private void lookup_symbol_in_filename (string filename, DetachCopyOptions? options, Symbol results, Symbol parent)
+		private void lookup_symbol_in_filename_deprecated (string filename, DetachCopyOptions? options, Symbol results, Symbol parent)
 		{
 			if (!parent.has_children)
 				return;
@@ -257,11 +308,11 @@ namespace Afrodite
 						}
 						// find in children
 						if (!circular_ref)
-							lookup_symbol_in_filename (filename, options, sym, symbol);
+							lookup_symbol_in_filename_deprecated (filename, options, sym, symbol);
 					}
 				}
 			}
-		}
+		}*/
 		
 		private bool symbol_has_filename_reference (string filename, Symbol symbol)
 		{

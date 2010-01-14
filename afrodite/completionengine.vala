@@ -24,27 +24,6 @@ using Vala;
 
 namespace Afrodite
 {
-	public class SourceItem
-	{
-		public string path;
-		public string content;
-		public bool is_vapi = false;
-		public bool is_glib = false;
-		public CodeContext context = null;
-		
-		public SourceItem copy ()
-		{
-			var item = new SourceItem();
-			
-			item.path = path;
-			item.content = content;
-			item.is_vapi= is_vapi;
-			item.is_glib = is_glib;
-			
-			return item;
-		}
-	}
-
 	public class CompletionEngine : Object
 	{
 		public string id;

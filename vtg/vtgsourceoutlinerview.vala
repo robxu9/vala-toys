@@ -48,8 +48,6 @@ namespace Vtg
 		private Gtk.TreeModelSort _sorted;
 		private Gtk.CheckButton _check_show_private_symbols;
 		private TreeStore _model = null;
-		private Vala.List<Afrodite.Symbol>? _last_symbols = null;
-
 
 		private Gtk.Menu _popup_symbols;
 		private uint _popup_symbols_ui_id;
@@ -78,6 +76,8 @@ namespace Vtg
 		
 		~SourceOutlinerView ()
 		{
+			GLib.debug ("SourceOutlinerView destructor called, cleanup");
+			_src_view.set_model (null);
 			// this method is never called? a leak?
 			deactivate ();
 
@@ -89,7 +89,6 @@ namespace Vtg
 			manager.remove_action_group (_actions);
 			var panel = _plugin_instance.window.get_side_panel ();
 			panel.remove_item (_side_panel);
-			_last_symbols = null;
 		}
 
 		construct
@@ -153,15 +152,14 @@ namespace Vtg
 			_model.clear ();
 		}
 
-		public void update_view (Vala.List<Afrodite.Symbol>? symbols = null)
+		public void update_view (Afrodite.QueryResult? result = null)
 		{
 			_src_view.set_model (null);
 			clear_view ();
-			if (symbols == null) {
-				symbols = _last_symbols;
+			if (result != null && !result.is_empty) {
+				var first = result.children.get (0);
+				rebuild_model (first.children);
 			}
-			rebuild_model (symbols);
-			_last_symbols = symbols;
 			_src_view.set_model (_sorted);
 			_src_view.expand_all ();
 		}
@@ -229,13 +227,14 @@ namespace Vtg
 			return false;
 		}
 		
-		private void rebuild_model (Vala.List<Afrodite.Symbol>? symbols, TreeIter? parentIter = null)
+		private void rebuild_model (Vala.List<ResultItem>? items, TreeIter? parentIter = null)
 		{
-			if (symbols == null)
+			if (items == null || items.size == 0)
 				return;
 			
-			foreach (Afrodite.Symbol symbol in symbols) {
+			foreach (ResultItem item in items) {
 				TreeIter iter;
+				var symbol = item.symbol;
 				
 				if (!symbol.name.has_prefix ("!") && _check_show_private_symbols.active
 				    || (!_check_show_private_symbols.active && symbol.access != Afrodite.SymbolAccessibility.PRIVATE)) {
@@ -253,13 +252,12 @@ namespace Vtg
 						Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name), 
 						Columns.SYMBOL, symbol);
 
-					if (symbol.has_children) {
-						rebuild_model (symbol.children, iter);
+					if (item.children.size > 0) {
+						rebuild_model (item.children, iter);
 					}
 				}
 			}
 		}
-		
 
 		private int sort_model (TreeModel model, TreeIter a, TreeIter b)
 		{

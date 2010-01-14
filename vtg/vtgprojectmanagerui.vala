@@ -482,27 +482,25 @@ namespace Vtg
 			}
 		}
 
-		private void build_goto_symbol_model (TreeStore model, Vala.List<Afrodite.Symbol>? symbols, TreeIter? parent_iter = null)
+		private void build_goto_symbol_model (TreeStore model, Afrodite.ResultItem parent, TreeIter? parent_iter = null)
 		{
-			if (symbols == null)
+			if (parent.children.size == 0)
 				return;
 			
-			foreach (Afrodite.Symbol symbol in symbols) {
+			foreach (Afrodite.ResultItem item in parent.children) {
 				TreeIter iter;
 				
-				if (!symbol.name.has_prefix ("!")) {
-					model.append (out iter, parent_iter);
-					model.set (iter, 
-						FilteredListDialogColumns.NAME , symbol.display_name, 
-						FilteredListDialogColumns.MARKUP, symbol.display_name,
-						FilteredListDialogColumns.VISIBILITY, true, 
-						FilteredListDialogColumns.OBJECT, symbol,
-						FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
-						FilteredListDialogColumns.SELECTABLE, true);
+				model.append (out iter, parent_iter);
+				model.set (iter, 
+					FilteredListDialogColumns.NAME , item.symbol.display_name, 
+					FilteredListDialogColumns.MARKUP, item.symbol.display_name,
+					FilteredListDialogColumns.VISIBILITY, true, 
+					FilteredListDialogColumns.OBJECT, item.symbol,
+					FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (item.symbol.type_name),
+					FilteredListDialogColumns.SELECTABLE, true);
 
-					if (symbol.has_children) {
-						build_goto_symbol_model (model, symbol.children, iter);
-					}
+				if (item.children.size > 0) {
+					build_goto_symbol_model (model, item, iter);
 				}
 			}
 		}
@@ -543,24 +541,29 @@ namespace Vtg
 
 			try {
 				uri = Filename.from_uri (uri);
-			
+				Gtk.TreeStore model = null;
+				
 				/* getting the symbols */
 				var name = Utils.get_document_name (doc);
-				Afrodite.Symbol results = null;
+				Afrodite.QueryResult result = null;
 				Afrodite.Ast ast;
 				bool res = scs.completion_engine.try_acquire_ast (out ast);
 				if (res) {
-					var options = Afrodite.DetachCopyOptions.standard ();
-					options.deep_copy_data_type_symbols = false;
-					results = ast.lookup_symbols_in (name, options);
+					var options = Afrodite.QueryOptions.standard ();
+					options.all_symbols = true;
+					result = ast.get_symbols_for_path (options, name);
+					
+					/* building the model */
+					model = FilteredListDialog.create_model ();
+					if (!result.is_empty) {
+						var first = result.children.get (0);
+						build_goto_symbol_model (model, first);
+					}					
 					scs.completion_engine.release_ast (ast);
-				}			
-				if (results == null)
+				}
+				if (result == null || result.is_empty)
 					return;
 			
-				/* building the model */
-				Gtk.TreeStore model = FilteredListDialog.create_model ();
-				build_goto_symbol_model (model, results.children);
 			
 				var dialog = new FilteredListDialog (model, this.sort_symbol_model);
 				dialog.set_transient_for (_plugin_instance.window);

@@ -34,6 +34,12 @@ libafrodite_la_VALASOURCES = \
 	ast.vala \
 	utils.vala \
 	completionengine.vala \
+	ellipsistype.vala \
+	queryoptions.vala \
+	queryresult.vala \
+	resultitem.vala \
+	constants.vala \
+	sourceitem.vala \
 	$(NULL)
 
 

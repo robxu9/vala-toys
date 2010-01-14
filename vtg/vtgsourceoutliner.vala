@@ -186,19 +186,18 @@ namespace Vtg
 			
 			var doc = (Gedit.Document) _active_view.get_buffer ();
 			var name = Utils.get_document_name (doc);
-			Afrodite.Symbol results = null;
+			Afrodite.QueryResult result = null;
 			Afrodite.Ast ast;
 			bool res = scs.completion_engine.try_acquire_ast (out ast);
 			if (res) {
-				var options = Afrodite.DetachCopyOptions.standard ();
-				options.deep_copy_data_type_symbols = false;
-				results = ast.lookup_symbols_in (name, options);
+				var options = Afrodite.QueryOptions.standard ();
+				options.all_symbols = true;
+				result = ast.get_symbols_for_path (options, name);
+				_outliner_view.update_view (result);
 				scs.completion_engine.release_ast (ast);
 			}			
-			if (results == null) {
+			if (result == null || result.is_empty) {
 				_outliner_view.clear_view ();
-			} else {
-				_outliner_view.update_view (results.children);
 			}
 			
 			return res;

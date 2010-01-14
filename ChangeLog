@@ -1,3 +1,23 @@
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/constants.vala:
+	* afrodite/ellipsistype.vala:
+	* afrodite/queryoptions.vala:
+	* afrodite/queryresult.vala:
+	* afrodite/resultitem.vala:
+	* afrodite/sourceitem.vala:
+	* afrodite/Makefile.am:
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/datatype.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	source reorganization e api refactoring
+
 2010-01-13  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/astmerger.vala:
