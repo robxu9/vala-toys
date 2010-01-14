@@ -1,5 +1,11 @@
 2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbftarget.vala:
+
+	fixed a bug when removing a vala source from the default project
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/constants.vala:
 	* afrodite/ellipsistype.vala:
 	* afrodite/queryoptions.vala:

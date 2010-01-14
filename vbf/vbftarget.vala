@@ -88,7 +88,7 @@ namespace Vbf
 
 		public void remove_source (Source source)
 		{
-			sources.add (source);
+			sources.remove (source);
 		}
 		
 		public bool has_file_of_type (FileTypes type)
