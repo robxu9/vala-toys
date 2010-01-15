@@ -837,6 +837,7 @@ namespace Vtg
 			if (_cache_building_count == 0 && _sb_msg_id != 0) {
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 				status_bar.remove (_sb_context_id, _sb_msg_id);
+				_sb_msg_id = 0;
 			}
 		}
 		

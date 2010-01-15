@@ -41,6 +41,7 @@ namespace Afrodite
 		private unowned Thread parser_thread;
 		private int parser_stamp = 0;
 		private int parser_remaining_files = 0;
+		private bool _glib_init = false;
 		
 		private Ast _ast;
 		
@@ -57,17 +58,7 @@ namespace Afrodite
 			merge_queue_mutex = new Mutex ();
 			
 			_ast = new Ast ();
-			// merge standard base vapi (glib and gobject)
-			var context = new CodeContext ();
-			ast_mutex = new Mutex ();
-			
-			string[] packages = new string[] { "glib-2.0", "gobject-2.0" };
-			foreach (string package in packages) {
-				var paths = Utils.get_package_paths (package, context);
-				if (paths != null)
-					queue_sourcefiles (paths, null, true, true);
-			}
-			
+			ast_mutex = new Mutex ();			
 		}
 		
 		~Completion ()
@@ -120,6 +111,26 @@ namespace Afrodite
 		public void queue_sources (Vala.List<SourceItem> sources)
 		{
 			source_queue_mutex.@lock ();
+			if (!_glib_init) {
+				// merge standard base vapi (glib and gobject)
+				_glib_init = true;
+				string[] packages = new string[] { "glib-2.0", "gobject-2.0" };
+				var context = new CodeContext ();
+				
+				foreach (string package in packages) {
+					var paths = Utils.get_package_paths (package, context);
+					if (paths != null) {
+						foreach (string path in paths) {
+							var item = new SourceItem ();
+							item.path = path;
+							item.content = null;
+							item.is_vapi = true;
+							item.is_glib = true;
+							sources.add (item);
+						}
+					}
+				}
+			}
 			foreach (SourceItem source in sources) {
 				var item = source_queue_contains (source);
 				if (item == null || item.content != source.content) {

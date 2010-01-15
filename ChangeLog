@@ -1,5 +1,12 @@
 2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed the cache building events and message
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 
 	fixed support for interface prerequisites
