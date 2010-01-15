@@ -254,53 +254,55 @@ namespace Afrodite
 				// set the number of sources to process
 				AtomicInt.set (ref parser_remaining_files, sources.size);
 				
-				if (_ast != null) {
-					var merger = new AstMerger (_ast);
-					foreach (SourceItem source in sources) {
-						source.context = p.context;
-					
-						if (source.context == null)
-							critical ("source %s context == null, non thread safe access to source item", source.path);
-						else {
-							foreach (Vala.SourceFile s in source.context.get_source_files ()) {
-								if (s.filename == source.path) {
-									bool source_exists = _ast.lookup_source_file (source.path) != null;
+				
+				var merger = new AstMerger (_ast);
+				foreach (SourceItem source in sources) {
+					source.context = p.context;
+				
+					if (source.context == null)
+						critical ("source %s context == null, non thread safe access to source item", source.path);
+					else {
+						foreach (Vala.SourceFile s in source.context.get_source_files ()) {
+							if (s.filename == source.path) {
+								bool source_exists = _ast.lookup_source_file (source.path) != null;
+							
+								// if I'm parsing just one source and there are errors and the source already
+								// exists in the ast, I'll keep the previous copy
+								if (source_count == 1 && source_exists && p.context.report.get_errors () > 0)
+									break;
 								
-									// if I'm parsing just one source and there are errors and the source already
-									// exists in the ast, I'll keep the previous copy
-									if (source_count == 1 && source_exists && p.context.report.get_errors () > 0)
-										break;
-									
-									ast_mutex.@lock ();
+								ast_mutex.@lock ();
+								if (_ast != null) {
 									if (source_exists) {
 										//debug ("%s: removing %s", id, source.path);
 										merger.remove_source_filename (source.path);
 									}
-								
+							
 									//timer.start ();
 									merger.merge_vala_context (s, source.context, source.is_glib);
-									ast_mutex.unlock ();
-									
-									//timer.stop ();
-									//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
-									break;
 								}
+								ast_mutex.unlock ();
+								
+								//timer.stop ();
+								//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
+								break;
 							}
 						}
-					
-						AtomicInt.add (ref parser_remaining_files, -1);
 					}
-					ast_mutex.@lock ();
+					AtomicInt.add (ref parser_remaining_files, -1);
+				}
+				ast_mutex.@lock ();
+				if (_ast != null) {
 					var resolver = new SymbolResolver ();
 					resolver.resolve (_ast);
-					ast_mutex.unlock ();
 				}
+				ast_mutex.unlock ();
 				
 				
 				sources.clear ();
 				
-				//check for changes
-				if (AtomicInt.compare_and_exchange (ref parser_stamp, stamp, 0)) {
+				//check for changes or exit request
+				if (_ast == null || AtomicInt.compare_and_exchange (ref parser_stamp, stamp, 0)) {
 					break;
 				}
  			}

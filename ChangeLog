@@ -1,6 +1,12 @@
 2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/completionengine.vala:
+
+	speedup parser thread exit when destroy the completion engine object
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
 	* vtg/vtgprojectmanagerui.vala:
 
 	fixed the cache building events and message
