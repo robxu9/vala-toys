@@ -383,25 +383,29 @@ namespace Vtg
 						if (symbol.has_children) {
 							append_symbols (options, symbol.children);
 						}
-						if (symbol.has_base_types 
-						    && (symbol.type_name == "Class" || symbol.type_name == "Interface" || symbol.type_name == "Struct")) {
-						    	//GLib.debug ("base type for %s-%s", result.name, result.type_name);
-					
-							foreach (DataType type in symbol.base_types) {
-								//GLib.debug ("----> base type for %s-%s", type.name, type.type_name);
-								if (!type.unresolved 
-								    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface")) {
-									if (type.symbol.has_children) {
-										// symbols of base types (classes or interfaces)
-										append_symbols (options, type.symbol.children, false);
-									}
-								}
-							}
-						} else {
-							GLib.debug ("NO base type for %s-%s", symbol.name, symbol.type_name);
-						}
+						
+						append_base_type_symbols (options, symbol);
 					}
 				}
+			}
+		}
+
+		private void append_base_type_symbols (Afrodite.QueryOptions? options, Symbol symbol)
+		{
+			if (symbol.has_base_types 
+			    && (symbol.type_name == "Class" || symbol.type_name == "Interface" || symbol.type_name == "Struct")) {
+				foreach (DataType type in symbol.base_types) {
+					if (!type.unresolved 
+					    && type.symbol.has_children
+					    && (options == null || type.symbol.check_options (options))
+					    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface")) {
+							// symbols of base types (classes or interfaces)
+							append_symbols (options, type.symbol.children, false);
+							append_base_type_symbols (options, type.symbol);
+					}
+				}
+			} else {
+				GLib.debug ("NO base type for %s-%s", symbol.name, symbol.type_name);
 			}
 		}
 

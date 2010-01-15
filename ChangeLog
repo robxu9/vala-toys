@@ -1,5 +1,11 @@
 2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	include base type symbols in completion list
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/symbol.vala:
 
 	fixed a bug caused by last commit when display a signal
