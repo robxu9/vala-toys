@@ -1,5 +1,11 @@
 2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+
+	suppressed some debugging print
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	fixed calltip popup on simple request (eg debug (...) vs GLib.debug (...))

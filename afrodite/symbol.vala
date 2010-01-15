@@ -372,18 +372,18 @@ namespace Afrodite
 			if ((access & options.access) != 0) {
 				if (options.only_static_factories 
 					&& ((!is_static && !has_static_child))) {
-					debug ("excluded only static %s: %s", this.type_name, this.fully_qualified_name);
+					//debug ("excluded only static %s: %s", this.type_name, this.fully_qualified_name);
 					return false;
 				}
 				if (options.only_creation_methods 
 					&& type_name != "CreationMethod"
 					&& type_name != "ErrorDomain"
 					&& !has_creation_method_child) {
-					debug ("excluded only creation %s: %d, %s", type_name, this.creation_method_child_count, this.fully_qualified_name);
+					//debug ("excluded only creation %s: %d, %s", type_name, this.creation_method_child_count, this.fully_qualified_name);
 					return false;
 				}
 				if (options.exclude_creation_methods && type_name == "CreationMethod") {
-					debug ("excluded exclude creation %s: %s", type_name, this.fully_qualified_name);
+					//debug ("excluded exclude creation %s: %s", type_name, this.fully_qualified_name);
 					return false;
 				}
 				if (type_name == "Destructor") {
@@ -392,7 +392,7 @@ namespace Afrodite
 
 				return true;
 			}
-			debug ("excluded symbol access %s: %s", type_name, this.fully_qualified_name);
+			//debug ("excluded symbol access %s: %s", type_name, this.fully_qualified_name);
 			return false;
 		}
 		
