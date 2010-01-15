@@ -389,7 +389,8 @@ namespace Vtg
 		{
 			_prealloc_index = 0;
 			_list = new GLib.List<Proposal> ();
-		
+			var visited_interfaces = new Vala.ArrayList<Symbol> ();
+			
 			if (result != null && !result.is_empty) {
 				foreach (ResultItem item in result.children) {
 					var symbol = item.symbol;
@@ -398,13 +399,13 @@ namespace Vtg
 							append_symbols (options, symbol.children);
 						}
 						
-						append_base_type_symbols (options, symbol);
+						append_base_type_symbols (options, symbol, visited_interfaces);
 					}
 				}
 			}
 		}
 
-		private void append_base_type_symbols (Afrodite.QueryOptions? options, Symbol symbol)
+		private void append_base_type_symbols (Afrodite.QueryOptions? options, Symbol symbol, Vala.List<Symbol> visited_interfaces)
 		{
 			if (symbol.has_base_types 
 			    && (symbol.type_name == "Class" || symbol.type_name == "Interface" || symbol.type_name == "Struct")) {
@@ -414,8 +415,11 @@ namespace Vtg
 					    && (options == null || type.symbol.check_options (options))
 					    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface")) {
 							// symbols of base types (classes or interfaces)
-							append_symbols (options, type.symbol.children, false);
-							append_base_type_symbols (options, type.symbol);
+							if (!visited_interfaces.contains (type.symbol)) {
+								visited_interfaces.add (type.symbol);
+								append_symbols (options, type.symbol.children, false);
+								append_base_type_symbols (options, type.symbol, visited_interfaces);
+							}
 					}
 				}
 			} else {

@@ -2,6 +2,13 @@
 
 	* vtg/vtgsymbolcompletionprovider.vala:
 
+	avoid inclusion of duplicated methods when and interface
+	is implemented multiple times in an object hierarchy
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
 	when building compleiton list check for duplicated item 
 	when symbol overrides flags is true
 
