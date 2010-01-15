@@ -1,5 +1,12 @@
 2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	when building compleiton list check for duplicated item 
+	when symbol overrides flags is true
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/completionengine.vala:
 
 	speedup parser thread exit when destroy the completion engine object

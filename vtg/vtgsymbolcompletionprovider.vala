@@ -324,6 +324,17 @@ namespace Vtg
 			return (owned) _list;
 		}
 
+		private bool proposal_list_contains_name (string name)
+		{
+			foreach (Gsc.Proposal proposal in _list) {
+				if (proposal.label == name) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
 		private void append_symbols (Afrodite.QueryOptions? options, Vala.List<Afrodite.Symbol> symbols, bool include_private_symbols = true)
 		{
 			unowned Proposal[] proposals = Utils.get_proposal_cache ();
@@ -331,21 +342,24 @@ namespace Vtg
 			
 			foreach (Afrodite.Symbol symbol in symbols) {
 				if ((!include_private_symbols && symbol.access == Afrodite.SymbolAccessibility.PRIVATE)
-					|| symbol.name == "new")
+					|| symbol.name == "new"
+					|| (options != null && !symbol.check_options (options)))
 					continue;
 
-				if (options == null || symbol.check_options (options)) {
-					Proposal proposal;
-					string name;
 
-					if (symbol.type_name == "CreationMethod") {
-						name = symbol.name;
-					} else {
-						name = (symbol.display_name != null ? symbol.display_name : "<null>");
-					}
+				string name;
+
+				if (symbol.type_name == "CreationMethod") {
+					name = symbol.name;
+				} else {
+					name = (symbol.display_name != null ? symbol.display_name : "<null>");
+				}
+
+				if (!symbol.overrides || (symbol.overrides && !this.proposal_list_contains_name (name))) {
+					Proposal proposal;					
 					var info = (symbol.info != null ? symbol.info : "");
 					Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.type_name);
-	
+
 					if (_prealloc_index < Utils.prealloc_count) {
 						proposal = proposals [_prealloc_index];
 						_prealloc_index++;
@@ -375,7 +389,7 @@ namespace Vtg
 		{
 			_prealloc_index = 0;
 			_list = new GLib.List<Proposal> ();
-
+		
 			if (result != null && !result.is_empty) {
 				foreach (ResultItem item in result.children) {
 					var symbol = item.symbol;
