@@ -169,8 +169,11 @@ namespace Afrodite
 			if (sym != null) {
 				string[] parts = symbol_qualified_name.split (".");
 				sym = lookup_name_with_symbol (parts[0], sym, source, options.compare_mode);
-				if (sym != null && sym.symbol_type != null)
-					sym = sym.symbol_type.symbol;
+				if (sym != null && sym.symbol_type != null) {
+					if (mode != LookupMode.Symbol || parts.length > 1) {
+						sym = sym.symbol_type.symbol;
+					}
+				}
 				
 				if (parts.length > 1 && sym != null && sym.has_children) {
 					// change the scope of symbol search
