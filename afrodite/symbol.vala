@@ -36,7 +36,7 @@ namespace Afrodite
 		public string name = null;
 		public string fully_qualified_name = null;
 		
-		public DataType return_type = null;
+		public DataType return_type = null; // real symbol return type
 		public string type_name = null;
 		
 		public Vala.List<SourceReference> source_references = null;
@@ -58,6 +58,17 @@ namespace Afrodite
 		private string _markup_des = null;
 		private string _display_name = null;
 		
+		private DataType _symbol_type = null;
+		
+		public DataType symbol_type {
+			get {
+				if (_symbol_type == null)
+					return return_type;
+					
+				return _symbol_type;
+			}
+		}
+	
 		public Symbol (string? fully_qualified_name, string? type_name)
 		{
 			if (fully_qualified_name != null) {
@@ -67,6 +78,13 @@ namespace Afrodite
 			}
 			if (type_name != null && type_name.has_prefix ("Vala"))
 				this.type_name = type_name.substring (4);
+			else
+				this.type_name = type_name;
+					
+			if (this.type_name == "Signal") {
+				this.add_base_type (Afrodite.Utils.Symbols.get_predefined ().signal_type);
+				_symbol_type = Afrodite.Utils.Symbols.get_predefined ().signal_type;
+			}
 		}
 		
 		public int static_child_count
@@ -343,6 +361,9 @@ namespace Afrodite
 
 		public bool check_options (QueryOptions? options)
 		{
+			if (name != null && name.has_prefix ("*")) // vala added symbols like signal.connect or .disconnect
+				return true;
+				
 			if (options.exclude_code_node && (name == null || name.has_prefix ("!")))
 				return false;
 

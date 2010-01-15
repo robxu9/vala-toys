@@ -169,8 +169,8 @@ namespace Afrodite
 			if (sym != null) {
 				string[] parts = symbol_qualified_name.split (".");
 				sym = lookup_name_with_symbol (parts[0], sym, source, options.compare_mode);
-				if (sym != null && sym.return_type != null)
-					sym = sym.return_type.symbol;
+				if (sym != null && sym.symbol_type != null)
+					sym = sym.symbol_type.symbol;
 				
 				if (parts.length > 1 && sym != null && sym.has_children) {
 					// change the scope of symbol search
@@ -193,14 +193,16 @@ namespace Afrodite
 	 					
 	 					print ("lookup %s in %s", parts[i], sym.name);
 						sym = lookup_symbol (parts[i], sym.children, out dummy, options.compare_mode);
-						print ("... result: %s\n", sym == null ? "not found" : sym.name);
 						if (sym == null) {
 							// lookup on base types also
 							sym = lookup_name_in_base_types (parts[i], parent);
 						}
 						
-						if (sym != null && mode == LookupMode.Type && sym.return_type != null) {
-							sym = sym.return_type.symbol;
+						print ("... result: %s\n", sym == null ? "not found" : sym.name);
+						if (sym != null && mode == LookupMode.Type && sym.symbol_type != null) {
+							debug ("result type %s", sym.symbol_type.symbol.name);
+							
+							sym = sym.symbol_type.symbol;
 						} else {
 							break;
 						}
@@ -209,8 +211,8 @@ namespace Afrodite
 			}
 			
 			// return the symbol or the return type: for properties, field and methods
-			if (sym != null && sym.return_type != null && mode == LookupMode.Type)
-				return sym.return_type.symbol;
+			if (sym != null && sym.symbol_type != null && mode == LookupMode.Type)
+				return sym.symbol_type.symbol;
 			else
 				return sym;
 		}

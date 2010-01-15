@@ -85,4 +85,48 @@ namespace Afrodite.Utils
 		}
 		return true;
 	}
+	
+	namespace Symbols
+	{
+		private static PredefinedSymbols _predefined = null;
+		
+		public static PredefinedSymbols get_predefined ()
+		{
+			if (_predefined == null)
+				_predefined = new PredefinedSymbols ();
+				
+			return _predefined;
+		}
+
+		public class PredefinedSymbols
+		{
+			private Symbol _connect_method;
+			private Symbol _disconnect_method;
+			private Symbol _signal_symbol;
+			
+			public DataType signal_type;
+			
+			public PredefinedSymbols ()
+			{
+				_connect_method = new Afrodite.Symbol ("connect", "Method");
+				_connect_method.return_type = new DataType ("void");
+				_connect_method.return_type.symbol =  Symbol.VOID;
+				_connect_method.access = SymbolAccessibility.ANY;
+				_connect_method.binding = MemberBinding.ANY;
+			
+				_disconnect_method = new Afrodite.Symbol ("disconnect", "Method");
+				_disconnect_method.return_type = new DataType ("void");
+				_disconnect_method.return_type.symbol =  Symbol.VOID;
+				_disconnect_method.access = SymbolAccessibility.ANY;
+				_disconnect_method.binding = MemberBinding.ANY;
+				
+				_signal_symbol = new Symbol ("#signal", "Class");
+				_signal_symbol.add_child (_connect_method);
+				_signal_symbol.add_child (_disconnect_method);
+				
+				signal_type = new DataType ("#signal");
+				signal_type.symbol = _signal_symbol;
+			}
+		}
+	}
 }
