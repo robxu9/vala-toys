@@ -82,7 +82,6 @@ namespace Afrodite
 				this.type_name = type_name;
 					
 			if (this.type_name == "Signal") {
-				this.add_base_type (Afrodite.Utils.Symbols.get_predefined ().signal_type);
 				_symbol_type = Afrodite.Utils.Symbols.get_predefined ().signal_type;
 			}
 		}
