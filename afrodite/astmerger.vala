@@ -923,7 +923,8 @@ namespace Afrodite
 		public override void visit_data_type (Vala.DataType type)
 		{
 			var t = new Afrodite.DataType (get_datatype_typename (type), null);
-			if (_current != null && _current.type_name == "Class") {
+			if (_current != null 
+				&& (_current.type_name == "Class" || _current.type_name == "Interface" || _current.type_name == "Struct")) {
 				// add this type to the base class types
 				_current.add_base_type (t);
 			} else if (_current_type != null) {
