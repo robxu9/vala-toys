@@ -593,7 +593,7 @@ namespace Vtg
 			if (word != last_part) {
 				first_part = word.substring (0, word.length - last_part.length - 1);
 			} else {
-				first_part = "this"; //HACK: this won't work for static methods
+				first_part = word; // "this"; //HACK: this won't work for static methods
 			}
 			
 			GLib.debug ("get_current_symbol_item for %s, %s", first_part, symbol_name);
@@ -604,12 +604,20 @@ namespace Vtg
 				Afrodite.QueryResult? result = null;
 				Afrodite.QueryOptions options = this.get_options_for_line (line);			
 				
-				result = get_symbol_for_name (options, ast, null,  first_part, null,  lineno, colno);
+				if (word == symbol_name)
+					result = get_symbol_for_name (options, ast, null,  first_part, null,  lineno, colno);
+				else
+					result = get_symbol_type_for_name (options, ast, null,  first_part, null,  lineno, colno);
+					
 				if (result != null && !result.is_empty) {
 					var first = result.children.get (0);
-					symbol = get_symbol_for_name_in_children (symbol_name, first.symbol);
-					if (symbol == null)
-						symbol =  get_symbol_for_name_in_base_types (symbol_name, first.symbol);
+					if (word == symbol_name) {
+						symbol = first.symbol;
+					} else {
+						symbol = get_symbol_for_name_in_children (symbol_name, first.symbol);
+						if (symbol == null)
+							symbol =  get_symbol_for_name_in_base_types (symbol_name, first.symbol);
+					}
 				}
 				_completion.release_ast (ast);
 			}
@@ -693,7 +701,7 @@ namespace Vtg
 			        QueryOptions options = get_options_for_line (whole_line);
         			Afrodite.QueryResult result = null;
         			
-				result = get_symbol_for_name (options, ast, trigger, word, whole_line, line, column);
+				result = get_symbol_type_for_name (options, ast, trigger, word, whole_line, line, column);
 				transform_result (options, result);
 				_completion.release_ast (ast);
 			} else {
@@ -704,13 +712,26 @@ namespace Vtg
 			}
 		}
 		
+		private Afrodite.QueryResult? get_symbol_type_for_name (QueryOptions options, Afrodite.Ast ast, SymbolCompletionTrigger? trigger, string word, string? whole_line, int line, int column)
+		{
+			GLib.debug ("get_symbol_type_for_name: %s for %s in %d,%d", word, _sb.path, line, column);
+			Afrodite.QueryResult result = null;
+			Timer timer = new Timer ();
+			timer.start ();
+			result = ast.get_symbol_type_for_name_and_path (options, word, _sb.path, line, column);
+			timer.stop ();
+			GLib.debug ("get_symbol_type_for_name: found %d symbols in %g", result.items_created, timer.elapsed ());
+			
+			return result;
+		}
+
 		private Afrodite.QueryResult? get_symbol_for_name (QueryOptions options, Afrodite.Ast ast, SymbolCompletionTrigger? trigger, string word, string? whole_line, int line, int column)
 		{
 			GLib.debug ("get_symbol_for_name: %s for %s in %d,%d", word, _sb.path, line, column);
 			Afrodite.QueryResult result = null;
 			Timer timer = new Timer ();
 			timer.start ();
-			result = ast.get_symbol_type_for_name_and_path (options, word, _sb.path, line, column);
+			result = ast.get_symbol_for_name_and_path (options, word, _sb.path, line, column);
 			timer.stop ();
 			GLib.debug ("get_symbol_for_name: found %d symbols in %g", result.items_created, timer.elapsed ());
 			

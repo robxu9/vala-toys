@@ -1,5 +1,11 @@
 2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed calltip popup on simple request (eg debug (...) vs GLib.debug (...))
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 
 	fixed a bug when request a simple symbol name
