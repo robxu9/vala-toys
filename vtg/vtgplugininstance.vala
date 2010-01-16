@@ -40,6 +40,9 @@ namespace Vtg
 		
 		private unowned Gedit.View _last_created_view = null; // workaround to a gedit scroll to cursor bug
 		
+		private ulong _tab_add_sig_id = 0;
+		private ulong _tab_removed_sig_id = 0;
+		
 		public OutputView output_view 
 		{ 
 			get { return _output_view; }
@@ -74,8 +77,8 @@ namespace Vtg
 			foreach (ProjectManager prj in Vtg.Plugin.main_instance.projects.project_managers) {
 				_project_view.add_project (prj.project);
 			}
-			Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
-			Signal.connect_after (this._window, "tab-removed", (GLib.Callback) on_tab_removed, this);
+			_tab_add_sig_id = Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
+			_tab_removed_sig_id = Signal.connect (this._window, "tab-removed", (GLib.Callback) on_tab_removed, this);
 			
 			_output_view = new OutputView (this);
 			_project_manager_ui = new ProjectManagerUi (this);
@@ -93,6 +96,13 @@ namespace Vtg
 			_source_outliner = null;
 			_project_manager_ui = null;
 			_output_view = null;
+			if (SignalHandler.is_connected (this, _tab_add_sig_id)) {
+				SignalHandler.disconnect (this, _tab_add_sig_id);
+				
+			}
+			if (SignalHandler.is_connected (this, _tab_removed_sig_id)) {
+				SignalHandler.disconnect (this, _tab_removed_sig_id);
+			}
 			_window = null;
 		}
 		

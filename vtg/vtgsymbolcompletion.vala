@@ -76,6 +76,7 @@ namespace Vtg
 			_trigger.deactivate ();
 			_manager.unregister_provider (_provider, _trigger);
 			_manager.unregister_trigger (_trigger);
+			_manager.destroy ();
 			_trigger = null;
 			_manager = null;
 		}

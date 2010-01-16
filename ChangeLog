@@ -1,5 +1,15 @@
 2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugininstance.vala:
+
+	disconnect signals on destroy
+
+	* vtg/vtgsymbolcompletion.vala:
+
+	destroy the Competion widget in the destructor
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/completionengine.vala:
 
 	suppress a warning cause by concourrency when destroy the engine
