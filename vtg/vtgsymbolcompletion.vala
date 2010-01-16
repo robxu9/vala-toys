@@ -100,7 +100,31 @@ namespace Vtg
 			if (item != null && item.has_source_references) {
 				try {
 					string uri = Filename.to_uri (item.source_references.get(0).file.filename);
-					_plugin_instance.activate_uri (uri, item.source_references.get(0).first_line);
+					int line = item.source_references.get(0).first_line;
+					int col = item.source_references.get(0).first_column;
+					
+					SourceBookmark bookmark;
+					var view = _plugin_instance.window.get_active_view ();
+					if (view != null) {
+						var doc = (Gedit.Document) view.get_buffer ();
+						unowned TextMark mark = (TextMark) doc.get_insert ();
+						TextIter start;
+						doc.get_iter_at_mark (out start, mark);
+						
+						// first create a bookmark with the current position
+						bookmark = new SourceBookmark ();
+						bookmark.uri = doc.get_uri ();
+						bookmark.line = start.get_line ();
+						bookmark.column = start.get_line_offset ();
+						_plugin_instance.bookmarks.add_bookmark (bookmark); 
+					}
+					// create  another bookmark with the new position
+					bookmark = new SourceBookmark ();
+					bookmark.uri = uri;
+					bookmark.line = line;
+					bookmark.column = col;
+					_plugin_instance.bookmarks.add_bookmark (bookmark);
+					_plugin_instance.activate_uri (uri, line, col);
 				} catch (Error e) {
 					GLib.warning ("error %s converting file %s to uri", e.message, item.source_references.get(0).file.filename);
 				}

@@ -163,7 +163,7 @@ namespace Vtg
 		private ProjectExecuter _prj_executer = null;
 		private ProjectSearch _prj_search = null;		
 		private ChangeLog _changelog = null;
-		private SourceBookmarks _bookmarks = null;
+		
 		
 		private int _cache_building_count = 0;
 		private uint _sb_msg_id = 0;
@@ -216,8 +216,6 @@ namespace Vtg
 						
 			initialize_ui ();
 			_changelog = new ChangeLog (_plugin_instance);
-			_bookmarks = new SourceBookmarks (_plugin_instance);
-			_bookmarks.current_bookmark_changed += this.on_current_bookmark_changed;
 			update_ui (_plugin_instance.project_view.current_project == null);
 		}
 
@@ -250,14 +248,6 @@ namespace Vtg
 				open_project (project_name);
 			} catch (Error e) {
 				GLib.warning ("error %s converting project name file from uri", e.message);
-			}
-		}
-		
-		private void on_current_bookmark_changed (SourceBookmarks sender)
-		{
-			var book = sender.get_current_bookmark ();
-			if (book != null) {
-				_plugin_instance.activate_uri (book.uri, book.line, book.column);
 			}
 		}
 		
@@ -320,7 +310,7 @@ namespace Vtg
 			if (sch == null)
 				return;
 				
-			sch.goto_definition ();		
+			sch.goto_definition ();
 		}
 		
 		private void on_project_open (Gtk.Action action)
@@ -431,12 +421,12 @@ namespace Vtg
 		
 		private void on_project_goto_next_position (Gtk.Action action)
 		{
-			_bookmarks.move_next ();
+			_plugin_instance.bookmarks.move_next ();
 		}
 		
 		private void on_project_goto_prev_position (Gtk.Action action)
 		{
-			_bookmarks.move_previous ();
+			_plugin_instance.bookmarks.move_previous ();
 		}
 		
 		private void on_project_goto_document (Gtk.Action action)
@@ -816,10 +806,10 @@ namespace Vtg
 				action.set_sensitive (has_changelog);
 			action = _actions.get_action ("ProjectGotoNextPosition");
 			if (action != null)
-				action.set_sensitive (!_bookmarks.is_empty);
+				action.set_sensitive (!_plugin_instance.bookmarks.is_empty);
 			action = _actions.get_action ("ProjectGotoPrevPosition");
 			if (action != null)
-				action.set_sensitive (!_bookmarks.is_empty);
+				action.set_sensitive (!_plugin_instance.bookmarks.is_empty);
 		}
 		
 		private void on_symbol_cache_building (ProjectManager sender)

@@ -398,7 +398,7 @@ namespace Vtg
 			}
 		}
 		
-		public static int symbol_type_compare (Symbol vala, Symbol valb)
+		public static int symbol_type_compare (Symbol? vala, Symbol? valb)
 		{
 			// why I get vala or valb with null???
 			if (vala == null && valb == null)

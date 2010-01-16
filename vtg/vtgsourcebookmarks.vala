@@ -31,6 +31,8 @@ namespace Vtg
 		private const int MAX_BOOKMARKS = 20;
 		private Vala.List<SourceBookmark> _bookmarks = new Vala.ArrayList<SourceBookmark> ();
 		private int _current_bookmark_index = -1;
+		private bool _in_move = false;
+		private Gedit.Document _idle_add_doc = null;
 		
 		public signal void current_bookmark_changed ();
 		public signal void move_wrapped ();		
@@ -52,24 +54,39 @@ namespace Vtg
 		private static void on_tab_changed (Gedit.Window sender, Gedit.Tab tab, Vtg.SourceBookmarks instance)
 		{
 			var doc = tab.get_document ();
-			unowned TextMark mark = (TextMark) doc.get_insert ();
-			TextIter start;
-			doc.get_iter_at_mark (out start, mark);
-						
 			string uri = doc.get_uri ();
 			var prj = instance._plugin_instance.project_view.current_project;
 			if (prj != null && prj.contains_vala_source_file (uri)) {
-				int line = start.get_line ();
-				int col = start.get_line_offset ();
-				var book = new SourceBookmark ();
-				book.uri = uri;
-				book.line = line;
-				book.column = col;
-				instance.add_bookmark (book);
+				instance._idle_add_doc = doc;
+				//HACK: add the bookmark on a idle hanlder to capture line e col values
+				Idle.add (instance.on_idle_bookmark_add, Priority.LOW);
+			} else {
+				instance._idle_add_doc = null;
 			}
 		}
 
-/*
+		public bool on_idle_bookmark_add ()
+		{
+			if (_idle_add_doc != null) {
+				string uri = _idle_add_doc.get_uri ();
+				var prj = _plugin_instance.project_view.current_project;
+				if (prj != null && prj.contains_vala_source_file (uri)) {
+					unowned TextMark mark = (TextMark) _idle_add_doc.get_insert ();
+					TextIter start;
+					_idle_add_doc.get_iter_at_mark (out start, mark);
+						
+					int line = start.get_line ();
+					int col = start.get_line_offset ();
+					var book = new SourceBookmark ();
+					book.uri = uri;
+					book.line = line;
+					book.column = col;
+					add_bookmark (book, true);
+				}
+			}
+			return false;
+		}
+		/*
 		private void debug_dump_list ()
 		{
 			print ("DUMP Bookmarks:\n");
@@ -78,38 +95,45 @@ namespace Vtg
 			} else {
 				int idx = 0;
 				foreach (SourceBookmark item in _bookmarks) {
-					print ("   %d: %s - %d,%d\n", idx, item.uri, item.line, item.column);
+					print ("%s%d: %s - %d,%d\n", idx == _current_bookmark_index ? "-->" : "   ", idx, item.uri, item.line, item.column);
 					idx++;
 				}
-				print ("   current index is %d\n", _current_bookmark_index);
 			}
 		}
-*/
+		*/
 	
-		public void add_bookmark (SourceBookmark item)
+		public void add_bookmark (SourceBookmark item, bool auto = false)
 		{
-			if (_bookmarks.size > 0) {
-				int index = _current_bookmark_index;
-				if (index == -1)
-					index = _bookmarks.size - 1;
-				
-				var prev = _bookmarks.get (index);
-				
-				if (prev.uri == item.uri) {
-					prev.line = item.line;
-					prev.column = item.column;
-					return; //avoid duplicate item
+			if (_in_move)
+				return;
+			
+			if (auto && !is_empty) {
+				// if is an autobookmark search in the list and if found set it current
+				int idx = 0;
+				foreach (SourceBookmark book in _bookmarks) {
+					if (book.uri == item.uri) {
+						_current_bookmark_index = idx;
+						// just update the position
+						book.line = item.line;
+						book.column = item.column;
+						return;
+					}
+					idx++;
 				}
-			}
-			if (_bookmarks.size == MAX_BOOKMARKS) {
-				_bookmarks.remove_at (0);
 			}
 			
 			if (_current_bookmark_index >= (_bookmarks.size - 1)) {
+				if (_bookmarks.size == MAX_BOOKMARKS) {
+					_bookmarks.remove_at (0);
+				}
 				_bookmarks.add (item);
 				 _current_bookmark_index = _bookmarks.size - 1;
 			} else {
 				_current_bookmark_index++;
+				if (_bookmarks.size == MAX_BOOKMARKS) {
+					_bookmarks.remove_at (_current_bookmark_index);
+				}
+
 				_bookmarks.insert (_current_bookmark_index, item);
 			}
 			
@@ -158,9 +182,13 @@ namespace Vtg
 				_current_bookmark_index = 0;
 				wrap = true;
 			}
+			_in_move = true;
 			current_bookmark_changed ();
 			if (wrap)
 				move_wrapped ();
+			_in_move = false;
+			
+			//debug_dump_list ();
 		}
 		
 		public void move_previous ()
@@ -176,10 +204,13 @@ namespace Vtg
 				_current_bookmark_index = _bookmarks.size - 1;
 				wrap = true;
 			}
-			
+			_in_move = true;
 			current_bookmark_changed ();
 			if (wrap)
 				move_wrapped ();
+			_in_move = false;
+			
+			//debug_dump_list ();
 		}
 
 	}

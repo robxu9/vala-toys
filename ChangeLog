@@ -1,5 +1,15 @@
 2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgutils.vala:
+
+	revamped the auto-bookmark feature
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 
 	fixed a null reference crash

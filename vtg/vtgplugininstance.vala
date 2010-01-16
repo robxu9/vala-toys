@@ -35,6 +35,7 @@ namespace Vtg
 		private SourceOutliner _source_outliner = null;
 		private OutputView _output_view = null;
 		private ProjectView _project_view = null;
+		private SourceBookmarks _bookmarks = null;
 		private Vala.List<Vtg.SymbolCompletion> _scs = new Vala.ArrayList<Vtg.SymbolCompletion> ();
 		private Vala.List<Vtg.BracketCompletion> _bcs = new Vala.ArrayList<Vtg.BracketCompletion> ();
 		
@@ -70,13 +71,24 @@ namespace Vtg
 			get { return _window; }
 		}
 
+		public SourceBookmarks bookmarks
+		{
+			get {
+				return _bookmarks;
+			}
+		}
+		
 		public PluginInstance (Gedit.Window window)
 		{
 			this._window = window;
 			_project_view = new ProjectView (this);
+			
 			foreach (ProjectManager prj in Vtg.Plugin.main_instance.projects.project_managers) {
 				_project_view.add_project (prj.project);
 			}
+			
+			_bookmarks = new SourceBookmarks (this);
+			_bookmarks.current_bookmark_changed += this.on_current_bookmark_changed;
 			_tab_add_sig_id = Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
 			_tab_removed_sig_id = Signal.connect (this._window, "tab-removed", (GLib.Callback) on_tab_removed, this);
 			
@@ -106,6 +118,14 @@ namespace Vtg
 			_window = null;
 		}
 		
+		private void on_current_bookmark_changed (SourceBookmarks sender)
+		{
+			var book = sender.get_current_bookmark ();
+			if (book != null) {
+				activate_uri (book.uri, book.line, book.column);
+			}
+		}
+
 		private static void check_vala_source_for_add (ProjectManager project_manager, Gedit.Document doc)
 		{
 			if (Utils.is_vala_doc (doc)) {
@@ -334,6 +354,12 @@ namespace Vtg
 			} else {
 				_window.set_active_tab (tab);
 				if (existing_doc != null && line > 0) {
+					/*
+					TextIter iter
+					
+					existing_doc.get_iter_at_line_offset (out iter, line -1 , col);
+					existing_doc.place_cursor (iter);
+					*/
 					existing_doc.goto_line (line - 1);
 					tab.get_view ().scroll_to_cursor ();
 				}
