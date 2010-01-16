@@ -1,5 +1,12 @@
 2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+	* afrodite/sourceitem.vala:
+
+	determine the is_vapi property from filename extension	
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugininstance.vala:
 	* vtg/vtgprojectmanagerui.vala:
 	* vtg/vtgsourcebookmarks.vala:

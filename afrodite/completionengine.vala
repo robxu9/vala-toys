@@ -124,7 +124,6 @@ namespace Afrodite
 							var item = new SourceItem ();
 							item.path = path;
 							item.content = null;
-							item.is_vapi = true;
 							item.is_glib = true;
 							sources.add (item);
 						}
@@ -175,7 +174,6 @@ namespace Afrodite
 				var item = new SourceItem ();
 				item.path = path;
 				item.content = content;
-				item.is_vapi = is_vapi;
 				item.is_glib = is_glib;
 				sources.add (item);
 			}

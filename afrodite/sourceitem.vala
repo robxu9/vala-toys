@@ -28,9 +28,16 @@ namespace Afrodite
 	{
 		public string path;
 		public string content;
-		public bool is_vapi = false;
+
 		public bool is_glib = false;
 		public CodeContext context = null;
+
+		public bool is_vapi 
+		{
+			get {
+				return path != null && path.has_suffix (".vapi");
+			}
+		}
 		
 		public SourceItem copy ()
 		{
@@ -38,7 +45,6 @@ namespace Afrodite
 			
 			item.path = path;
 			item.content = content;
-			item.is_vapi= is_vapi;
 			item.is_glib = is_glib;
 			
 			return item;
