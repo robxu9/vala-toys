@@ -345,7 +345,7 @@ namespace Vtg
 			if (Vtg.Plugin.main_instance.project_need_save (project)) {
 				var dialog = new Gtk.MessageDialog (_plugin_instance.window,
                                   DialogFlags.DESTROY_WITH_PARENT,
-                                  MessageType.QUESTION,
+                                  Gtk.MessageType.QUESTION,
                                   ButtonsType.NONE,
 				    _("Project files need to be saved"));
 				dialog.add_buttons (Gtk.STOCK_CLOSE, ResponseType.CLOSE,
@@ -629,7 +629,7 @@ namespace Vtg
 					var dialog = new MessageDialog (
 						_plugin_instance.window,
 						DialogFlags.MODAL,
-						MessageType.QUESTION,
+						Gtk.MessageType.QUESTION,
 						ButtonsType.YES_NO,
 						_("Stop the current build process and restart a new one?"));
 					dialog.secondary_text = _("Stop the current build process and start a new one with the same command line parameters");
