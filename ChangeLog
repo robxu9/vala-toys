@@ -1,5 +1,11 @@
 2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourcebookmarks.vala:
+
+	fixed line / column offset when taking the bookmark	
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugininstance.vala:
 	* vtg/vtgsourcebookmarks.vala:
 	* vtg/vtgsymbolcompletion.vala:
