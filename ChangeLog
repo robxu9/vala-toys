@@ -1,5 +1,11 @@
 2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+
+	fixed a null reference crash
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugininstance.vala:
 
 	disconnect signals on destroy

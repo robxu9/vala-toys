@@ -203,7 +203,7 @@ namespace Afrodite
 						
 						print ("... result: %s\n", sym == null ? "not found" : sym.name);
 						if (sym != null && mode == LookupMode.Type && sym.symbol_type != null) {
-							debug ("result type %s", sym.symbol_type.symbol.name);
+							debug ("result type %s", sym.symbol_type.unresolved ? "<unresolved>" : sym.symbol_type.symbol.name);
 							
 							sym = sym.symbol_type.symbol;
 						} else {
