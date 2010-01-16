@@ -191,7 +191,9 @@ namespace Vtg
 			int idx = 0;
 			while (lines[idx] != null) {
 				string[] tmp = lines[idx].split (":",2);
-				if (tmp[0] != null && (tmp[0].has_suffix (".vala") || tmp[0].has_suffix (".vapi"))) {
+				if (!StringUtils.is_null_or_empty (tmp[0])
+				    && !StringUtils.is_null_or_empty (tmp[1]) 
+				    && (tmp[0].has_suffix (".vala") || tmp[0].has_suffix (".vapi"))) {
 					add_message (tmp[0], tmp[1]);
 				}
 				idx++;

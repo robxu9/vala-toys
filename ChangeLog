@@ -1,5 +1,11 @@
 2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbuildlogview.vala:
+
+	fixed a null assertion on the build log view
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vapi/gedit-2.20.vapi:
 	* vapi/packages/gedit-2.20/gedit-2.20.metadata:
 
