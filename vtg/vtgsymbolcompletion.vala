@@ -114,15 +114,15 @@ namespace Vtg
 						// first create a bookmark with the current position
 						bookmark = new SourceBookmark ();
 						bookmark.uri = doc.get_uri ();
-						bookmark.line = start.get_line ();
-						bookmark.column = start.get_line_offset ();
+						bookmark.line = start.get_line () + 1;
+						bookmark.column = start.get_line_offset () + 1;
 						_plugin_instance.bookmarks.add_bookmark (bookmark); 
 					}
 					// create  another bookmark with the new position
 					bookmark = new SourceBookmark ();
 					bookmark.uri = uri;
-					bookmark.line = line;
-					bookmark.column = col;
+					bookmark.line = line + 1;
+					bookmark.column = col + 1;
 					_plugin_instance.bookmarks.add_bookmark (bookmark);
 					_plugin_instance.activate_uri (uri, line, col);
 				} catch (Error e) {

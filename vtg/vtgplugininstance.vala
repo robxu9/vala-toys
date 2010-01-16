@@ -354,13 +354,10 @@ namespace Vtg
 			} else {
 				_window.set_active_tab (tab);
 				if (existing_doc != null && line > 0) {
-					/*
-					TextIter iter
+					if (!existing_doc.goto_line_offset (line - 1, col -1)) {
+						existing_doc.goto_line (line-1);
+					}
 					
-					existing_doc.get_iter_at_line_offset (out iter, line -1 , col);
-					existing_doc.place_cursor (iter);
-					*/
-					existing_doc.goto_line (line - 1);
 					tab.get_view ().scroll_to_cursor ();
 				}
 			}

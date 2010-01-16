@@ -1,5 +1,13 @@
 2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsymbolcompletion.vala:
+
+	fixed goto line / column behaviour in auto bookmarks
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vapi/gedit-2.20.vapi:
 	* vapi/packages/gedit-2.20/gedit-2.20.gi:
 	* vapi/packages/gedit-2.20/gedit-2.20.metadata:
