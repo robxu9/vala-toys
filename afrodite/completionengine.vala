@@ -255,7 +255,7 @@ namespace Afrodite
 				AtomicInt.set (ref parser_remaining_files, sources.size);
 				
 				
-				var merger = new AstMerger (_ast);
+				AstMerger merger = null;
 				foreach (SourceItem source in sources) {
 					source.context = p.context;
 				
@@ -271,8 +271,13 @@ namespace Afrodite
 								if (source_count == 1 && source_exists && p.context.report.get_errors () > 0)
 									break;
 								
+								// do the real merge
 								ast_mutex.@lock ();
 								if (_ast != null) {
+									if (merger == null) {
+										// lazy init the merger, here I'm sure that _ast != null
+										merger = new AstMerger (_ast);
+									}
 									if (source_exists) {
 										//debug ("%s: removing %s", id, source.path);
 										merger.remove_source_filename (source.path);

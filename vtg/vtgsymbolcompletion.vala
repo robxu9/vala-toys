@@ -31,8 +31,9 @@ namespace Vtg
 	internal class SymbolCompletion : GLib.Object
 	{
 		private unowned Vtg.PluginInstance _plugin_instance = null;
-		private unowned Gedit.View _view = null;
 		private unowned CompletionEngine _completion_engine = null;
+		
+		private Gedit.View _view = null;
 		private SymbolCompletionProvider _provider;
 		private Gsc.Completion _manager;
 		private SymbolCompletionTrigger _trigger;
@@ -66,6 +67,8 @@ namespace Vtg
 		{
 			if (_manager != null)
 				deactivate ();
+			_provider = null;
+			_view = null;
 		}
 
 		public void deactivate ()
