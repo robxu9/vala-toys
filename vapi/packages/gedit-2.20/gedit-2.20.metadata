@@ -29,9 +29,6 @@ GeditEncodingsOptionMenu  base_class="GObject" cheader_filename="gedit/gedit-enc
 #FileChooserDialog
 GeditFileChooserDialog base_class="GtkFileChooserDialog" cheader_filename="gedit/gedit-file-chooser-dialog.h"
 
-#MessageArea
-GeditMessageArea base_class="GtkHBox" cheader_filename="gedit/gedit-message-area.h"
-
 #Notebook
 GeditNotebook base_class="GtkNotebook" cheader_filename="gedit/gedit-notebook.h"
 GeditNotebook.notebook hidden="1"
@@ -47,7 +44,7 @@ gedit_plugin_* virtual="1"
 gedit_plugin_create_configure_dialog nullable="1" virtual="1"
 
 #ProgressMessageArea
-GeditProgressMessageArea base_class="GeditMessageArea" cheader_filename="gedit/gedit-progress-message-area.h"
+GeditProgressMessageArea base_class="GtkInfoBar" cheader_filename="gedit/gedit-progress-message-area.h"
 
 #Statusbar
 GeditStatusbar base_class="GtkStatusbar" cheader_filename="gedit/gedit-statusbar.h"

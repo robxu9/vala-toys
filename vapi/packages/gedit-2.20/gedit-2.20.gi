@@ -1,6 +1,37 @@
 <?xml version="1.0"?>
 <api version="1.0">
 	<namespace name="Gedit">
+		<function name="commands_load_uri" symbol="gedit_commands_load_uri">
+			<return-type type="void"/>
+			<parameters>
+				<parameter name="window" type="GeditWindow*"/>
+				<parameter name="uri" type="gchar*"/>
+				<parameter name="encoding" type="GeditEncoding*"/>
+				<parameter name="line_pos" type="gint"/>
+			</parameters>
+		</function>
+		<function name="commands_load_uris" symbol="gedit_commands_load_uris">
+			<return-type type="gint"/>
+			<parameters>
+				<parameter name="window" type="GeditWindow*"/>
+				<parameter name="uris" type="GSList*"/>
+				<parameter name="encoding" type="GeditEncoding*"/>
+				<parameter name="line_pos" type="gint"/>
+			</parameters>
+		</function>
+		<function name="commands_save_all_documents" symbol="gedit_commands_save_all_documents">
+			<return-type type="void"/>
+			<parameters>
+				<parameter name="window" type="GeditWindow*"/>
+			</parameters>
+		</function>
+		<function name="commands_save_document" symbol="gedit_commands_save_document">
+			<return-type type="void"/>
+			<parameters>
+				<parameter name="window" type="GeditWindow*"/>
+				<parameter name="document" type="GeditDocument*"/>
+			</parameters>
+		</function>
 		<function name="convert_error_quark" symbol="gedit_convert_error_quark">
 			<return-type type="GQuark"/>
 		</function>
@@ -81,7 +112,7 @@
 			<return-type type="gboolean"/>
 			<parameters>
 				<parameter name="parent" type="GtkWindow*"/>
-				<parameter name="file_name" type="gchar*"/>
+				<parameter name="name" type="gchar*"/>
 				<parameter name="link_id" type="gchar*"/>
 			</parameters>
 		</function>
@@ -104,6 +135,9 @@
 			<return-type type="void"/>
 		</function>
 		<function name="prefs_manager_active_file_filter_can_set" symbol="gedit_prefs_manager_active_file_filter_can_set">
+			<return-type type="gboolean"/>
+		</function>
+		<function name="prefs_manager_active_plugins_can_set" symbol="gedit_prefs_manager_active_plugins_can_set">
 			<return-type type="gboolean"/>
 		</function>
 		<function name="prefs_manager_app_init" symbol="gedit_prefs_manager_app_init">
@@ -153,6 +187,9 @@
 		</function>
 		<function name="prefs_manager_get_active_file_filter" symbol="gedit_prefs_manager_get_active_file_filter">
 			<return-type type="gint"/>
+		</function>
+		<function name="prefs_manager_get_active_plugins" symbol="gedit_prefs_manager_get_active_plugins">
+			<return-type type="GSList*"/>
 		</function>
 		<function name="prefs_manager_get_auto_detected_encodings" symbol="gedit_prefs_manager_get_auto_detected_encodings">
 			<return-type type="GSList*"/>
@@ -352,6 +389,12 @@
 			<return-type type="void"/>
 			<parameters>
 				<parameter name="id" type="gint"/>
+			</parameters>
+		</function>
+		<function name="prefs_manager_set_active_plugins" symbol="gedit_prefs_manager_set_active_plugins">
+			<return-type type="void"/>
+			<parameters>
+				<parameter name="plugins" type="GSList*"/>
 			</parameters>
 		</function>
 		<function name="prefs_manager_set_auto_indent" symbol="gedit_prefs_manager_set_auto_indent">
@@ -639,6 +682,23 @@
 				<parameter name="data" type="gpointer"/>
 			</parameters>
 		</function>
+		<function name="utils_basename_for_display" symbol="gedit_utils_basename_for_display">
+			<return-type type="gchar*"/>
+			<parameters>
+				<parameter name="uri" type="gchar*"/>
+			</parameters>
+		</function>
+		<function name="utils_decode_uri" symbol="gedit_utils_decode_uri">
+			<return-type type="gboolean"/>
+			<parameters>
+				<parameter name="uri" type="gchar*"/>
+				<parameter name="scheme" type="gchar**"/>
+				<parameter name="user" type="gchar**"/>
+				<parameter name="port" type="gchar**"/>
+				<parameter name="host" type="gchar**"/>
+				<parameter name="path" type="gchar**"/>
+			</parameters>
+		</function>
 		<function name="utils_drop_get_uris" symbol="gedit_utils_drop_get_uris">
 			<return-type type="gchar**"/>
 			<parameters>
@@ -658,10 +718,10 @@
 				<parameter name="length" type="gssize"/>
 			</parameters>
 		</function>
-		<function name="utils_format_uri_for_display" symbol="gedit_utils_format_uri_for_display">
-			<return-type type="gchar*"/>
+		<function name="utils_file_has_parent" symbol="gedit_utils_file_has_parent">
+			<return-type type="gboolean"/>
 			<parameters>
-				<parameter name="uri" type="gchar*"/>
+				<parameter name="gfile" type="GFile*"/>
 			</parameters>
 		</function>
 		<function name="utils_get_current_viewport" symbol="gedit_utils_get_current_viewport">
@@ -678,17 +738,14 @@
 				<parameter name="screen" type="GdkScreen*"/>
 			</parameters>
 		</function>
-		<function name="utils_get_glade_widgets" symbol="gedit_utils_get_glade_widgets">
+		<function name="utils_get_ui_objects" symbol="gedit_utils_get_ui_objects">
 			<return-type type="gboolean"/>
 			<parameters>
 				<parameter name="filename" type="gchar*"/>
-				<parameter name="root_node" type="gchar*"/>
+				<parameter name="root_objects" type="gchar**"/>
 				<parameter name="error_widget" type="GtkWidget**"/>
-				<parameter name="widget_name" type="gchar*"/>
+				<parameter name="object_name" type="gchar*"/>
 			</parameters>
-		</function>
-		<function name="utils_get_stdin" symbol="gedit_utils_get_stdin">
-			<return-type type="gchar*"/>
 		</function>
 		<function name="utils_get_window_workspace" symbol="gedit_utils_get_window_workspace">
 			<return-type type="guint"/>
@@ -700,6 +757,12 @@
 			<return-type type="gboolean"/>
 			<parameters>
 				<parameter name="uri" type="gchar*"/>
+			</parameters>
+		</function>
+		<function name="utils_location_get_dirname_for_display" symbol="gedit_utils_location_get_dirname_for_display">
+			<return-type type="gchar*"/>
+			<parameters>
+				<parameter name="location" type="GFile*"/>
 			</parameters>
 		</function>
 		<function name="utils_make_canonical_uri_from_shell_arg" symbol="gedit_utils_make_canonical_uri_from_shell_arg">
@@ -756,6 +819,13 @@
 				<parameter name="rel_type" type="AtkRelationType"/>
 			</parameters>
 		</function>
+		<function name="utils_str_end_truncate" symbol="gedit_utils_str_end_truncate">
+			<return-type type="gchar*"/>
+			<parameters>
+				<parameter name="string" type="gchar*"/>
+				<parameter name="truncate_length" type="guint"/>
+			</parameters>
+		</function>
 		<function name="utils_str_middle_truncate" symbol="gedit_utils_str_middle_truncate">
 			<return-type type="gchar*"/>
 			<parameters>
@@ -773,6 +843,12 @@
 			<return-type type="gboolean"/>
 			<parameters>
 				<parameter name="text_uri" type="gchar*"/>
+			</parameters>
+		</function>
+		<function name="utils_uri_for_display" symbol="gedit_utils_uri_for_display">
+			<return-type type="gchar*"/>
+			<parameters>
+				<parameter name="uri" type="gchar*"/>
 			</parameters>
 		</function>
 		<function name="utils_uri_get_dirname" symbol="gedit_utils_uri_get_dirname">
@@ -800,6 +876,37 @@
 				<parameter name="format" type="gchar*"/>
 			</parameters>
 		</function>
+		<callback name="GeditMessageBusForeach">
+			<return-type type="void"/>
+			<parameters>
+				<parameter name="message_type" type="GeditMessageType*"/>
+				<parameter name="userdata" type="gpointer"/>
+			</parameters>
+		</callback>
+		<callback name="GeditMessageCallback">
+			<return-type type="void"/>
+			<parameters>
+				<parameter name="bus" type="GeditMessageBus*"/>
+				<parameter name="message" type="GeditMessage*"/>
+				<parameter name="userdata" type="gpointer"/>
+			</parameters>
+		</callback>
+		<callback name="GeditMessageTypeForeach">
+			<return-type type="void"/>
+			<parameters>
+				<parameter name="key" type="gchar*"/>
+				<parameter name="type" type="GType"/>
+				<parameter name="required" type="gboolean"/>
+				<parameter name="user_data" type="gpointer"/>
+			</parameters>
+		</callback>
+		<callback name="GeditMountOperationFactory">
+			<return-type type="GMountOperation*"/>
+			<parameters>
+				<parameter name="doc" type="GeditDocument*"/>
+				<parameter name="userdata" type="gpointer"/>
+			</parameters>
+		</callback>
 		<struct name="GeditApp">
 			<method name="create_window" symbol="gedit_app_create_window">
 				<return-type type="GeditWindow*"/>
@@ -857,6 +964,12 @@
 					<parameter name="doc" type="GeditDocument*"/>
 				</parameters>
 			</method>
+			<method name="get_content_type" symbol="gedit_document_get_content_type">
+				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="doc" type="GeditDocument*"/>
+				</parameters>
+			</method>
 			<method name="get_deleted" symbol="gedit_document_get_deleted">
 				<return-type type="gboolean"/>
 				<parameters>
@@ -877,6 +990,12 @@
 			</method>
 			<method name="get_language" symbol="gedit_document_get_language">
 				<return-type type="GtkSourceLanguage*"/>
+				<parameters>
+					<parameter name="doc" type="GeditDocument*"/>
+				</parameters>
+			</method>
+			<method name="get_location" symbol="gedit_document_get_location">
+				<return-type type="GFile*"/>
 				<parameters>
 					<parameter name="doc" type="GeditDocument*"/>
 				</parameters>
@@ -923,6 +1042,14 @@
 				<parameters>
 					<parameter name="doc" type="GeditDocument*"/>
 					<parameter name="line" type="gint"/>
+				</parameters>
+			</method>
+			<method name="goto_line_offset" symbol="gedit_document_goto_line_offset">
+				<return-type type="gboolean"/>
+				<parameters>
+					<parameter name="doc" type="GeditDocument*"/>
+					<parameter name="line" type="gint"/>
+					<parameter name="line_offset" type="gint"/>
 				</parameters>
 			</method>
 			<method name="insert_file" symbol="gedit_document_insert_file">
@@ -1036,6 +1163,13 @@
 					<parameter name="doc" type="GeditDocument*"/>
 					<parameter name="text" type="gchar*"/>
 					<parameter name="flags" type="guint"/>
+				</parameters>
+			</method>
+			<method name="set_uri" symbol="gedit_document_set_uri">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="doc" type="GeditDocument*"/>
+					<parameter name="uri" type="gchar*"/>
 				</parameters>
 			</method>
 			<field name="buffer" type="GtkSourceBuffer"/>
@@ -1158,86 +1292,361 @@
 		<struct name="GeditFileChooserDialogClass">
 			<field name="parent_class" type="GtkFileChooserDialogClass"/>
 		</struct>
-		<struct name="GeditMessageArea">
-			<method name="add_action_widget" symbol="gedit_message_area_add_action_widget">
+		<struct name="GeditMessage">
+			<method name="get" symbol="gedit_message_get">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="message_area" type="GeditMessageArea*"/>
-					<parameter name="child" type="GtkWidget*"/>
-					<parameter name="response_id" type="gint"/>
+					<parameter name="message" type="GeditMessage*"/>
 				</parameters>
 			</method>
-			<method name="add_button" symbol="gedit_message_area_add_button">
-				<return-type type="GtkWidget*"/>
+			<method name="get_key_type" symbol="gedit_message_get_key_type">
+				<return-type type="GType"/>
 				<parameters>
-					<parameter name="message_area" type="GeditMessageArea*"/>
-					<parameter name="button_text" type="gchar*"/>
-					<parameter name="response_id" type="gint"/>
+					<parameter name="message" type="GeditMessage*"/>
+					<parameter name="key" type="gchar*"/>
 				</parameters>
 			</method>
-			<method name="add_buttons" symbol="gedit_message_area_add_buttons">
+			<method name="get_message_type" symbol="gedit_message_get_message_type">
+				<return-type type="struct _GeditMessageType"/>
+				<parameters>
+					<parameter name="message" type="GeditMessage*"/>
+				</parameters>
+			</method>
+			<method name="get_method" symbol="gedit_message_get_method">
+				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="message" type="GeditMessage*"/>
+				</parameters>
+			</method>
+			<method name="get_object_path" symbol="gedit_message_get_object_path">
+				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="message" type="GeditMessage*"/>
+				</parameters>
+			</method>
+			<method name="get_valist" symbol="gedit_message_get_valist">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="message_area" type="GeditMessageArea*"/>
-					<parameter name="first_button_text" type="gchar*"/>
+					<parameter name="message" type="GeditMessage*"/>
+					<parameter name="var_args" type="va_list"/>
 				</parameters>
 			</method>
-			<method name="add_stock_button_with_text" symbol="gedit_message_area_add_stock_button_with_text">
-				<return-type type="GtkWidget*"/>
-				<parameters>
-					<parameter name="message_area" type="GeditMessageArea*"/>
-					<parameter name="text" type="gchar*"/>
-					<parameter name="stock_id" type="gchar*"/>
-					<parameter name="response_id" type="gint"/>
-				</parameters>
-			</method>
-			<method name="new" symbol="gedit_message_area_new">
-				<return-type type="GtkWidget*"/>
-			</method>
-			<method name="new_with_buttons" symbol="gedit_message_area_new_with_buttons">
-				<return-type type="GtkWidget*"/>
-				<parameters>
-					<parameter name="first_button_text" type="gchar*"/>
-				</parameters>
-			</method>
-			<method name="response" symbol="gedit_message_area_response">
+			<method name="get_value" symbol="gedit_message_get_value">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="message_area" type="GeditMessageArea*"/>
-					<parameter name="response_id" type="gint"/>
+					<parameter name="message" type="GeditMessage*"/>
+					<parameter name="key" type="gchar*"/>
+					<parameter name="value" type="GValue*"/>
 				</parameters>
 			</method>
-			<method name="set_contents" symbol="gedit_message_area_set_contents">
+			<method name="has_key" symbol="gedit_message_has_key">
+				<return-type type="gboolean"/>
+				<parameters>
+					<parameter name="message" type="GeditMessage*"/>
+					<parameter name="key" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="set" symbol="gedit_message_set">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="message_area" type="GeditMessageArea*"/>
-					<parameter name="contents" type="GtkWidget*"/>
+					<parameter name="message" type="GeditMessage*"/>
 				</parameters>
 			</method>
-			<method name="set_default_response" symbol="gedit_message_area_set_default_response">
+			<method name="set_valist" symbol="gedit_message_set_valist">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="message_area" type="GeditMessageArea*"/>
-					<parameter name="response_id" type="gint"/>
+					<parameter name="message" type="GeditMessage*"/>
+					<parameter name="var_args" type="va_list"/>
 				</parameters>
 			</method>
-			<method name="set_response_sensitive" symbol="gedit_message_area_set_response_sensitive">
+			<method name="set_value" symbol="gedit_message_set_value">
 				<return-type type="void"/>
 				<parameters>
-					<parameter name="message_area" type="GeditMessageArea*"/>
-					<parameter name="response_id" type="gint"/>
-					<parameter name="setting" type="gboolean"/>
+					<parameter name="message" type="GeditMessage*"/>
+					<parameter name="key" type="gchar*"/>
+					<parameter name="value" type="GValue*"/>
 				</parameters>
 			</method>
-			<field name="parent" type="GtkHBox"/>
-			<field name="priv" type="GeditMessageAreaPrivate*"/>
+			<method name="set_valuesv" symbol="gedit_message_set_valuesv">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="message" type="GeditMessage*"/>
+					<parameter name="keys" type="gchar**"/>
+					<parameter name="values" type="GValue*"/>
+					<parameter name="n_values" type="gint"/>
+				</parameters>
+			</method>
+			<method name="validate" symbol="gedit_message_validate">
+				<return-type type="gboolean"/>
+				<parameters>
+					<parameter name="message" type="GeditMessage*"/>
+				</parameters>
+			</method>
+			<field name="parent" type="GObject"/>
+			<field name="priv" type="GeditMessagePrivate*"/>
 		</struct>
-		<struct name="GeditMessageAreaClass">
-			<field name="parent_class" type="GtkHBoxClass"/>
-			<field name="response" type="GCallback"/>
-			<field name="close" type="GCallback"/>
-			<field name="_gedit_reserved1" type="GCallback"/>
-			<field name="_gedit_reserved2" type="GCallback"/>
+		<struct name="GeditMessageBus">
+			<method name="block" symbol="gedit_message_bus_block">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="id" type="guint"/>
+				</parameters>
+			</method>
+			<method name="block_by_func" symbol="gedit_message_bus_block_by_func">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+					<parameter name="callback" type="GeditMessageCallback"/>
+					<parameter name="userdata" type="gpointer"/>
+				</parameters>
+			</method>
+			<method name="connect" symbol="gedit_message_bus_connect">
+				<return-type type="guint"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+					<parameter name="callback" type="GeditMessageCallback"/>
+					<parameter name="userdata" type="gpointer"/>
+					<parameter name="destroy_data" type="GDestroyNotify"/>
+				</parameters>
+			</method>
+			<method name="disconnect" symbol="gedit_message_bus_disconnect">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="id" type="guint"/>
+				</parameters>
+			</method>
+			<method name="disconnect_by_func" symbol="gedit_message_bus_disconnect_by_func">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+					<parameter name="callback" type="GeditMessageCallback"/>
+					<parameter name="userdata" type="gpointer"/>
+				</parameters>
+			</method>
+			<method name="foreach" symbol="gedit_message_bus_foreach">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="func" type="GeditMessageBusForeach"/>
+					<parameter name="userdata" type="gpointer"/>
+				</parameters>
+			</method>
+			<method name="get_default" symbol="gedit_message_bus_get_default">
+				<return-type type="GeditMessageBus*"/>
+			</method>
+			<method name="is_registered" symbol="gedit_message_bus_is_registered">
+				<return-type type="gboolean"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="lookup" symbol="gedit_message_bus_lookup">
+				<return-type type="GeditMessageType*"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="new" symbol="gedit_message_bus_new">
+				<return-type type="GeditMessageBus*"/>
+			</method>
+			<method name="register" symbol="gedit_message_bus_register">
+				<return-type type="GeditMessageType*"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+					<parameter name="num_optional" type="guint"/>
+				</parameters>
+			</method>
+			<method name="send" symbol="gedit_message_bus_send">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="send_message" symbol="gedit_message_bus_send_message">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="message" type="GeditMessage*"/>
+				</parameters>
+			</method>
+			<method name="send_message_sync" symbol="gedit_message_bus_send_message_sync">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="message" type="GeditMessage*"/>
+				</parameters>
+			</method>
+			<method name="send_sync" symbol="gedit_message_bus_send_sync">
+				<return-type type="GeditMessage*"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="unblock" symbol="gedit_message_bus_unblock">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="id" type="guint"/>
+				</parameters>
+			</method>
+			<method name="unblock_by_func" symbol="gedit_message_bus_unblock_by_func">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+					<parameter name="callback" type="GeditMessageCallback"/>
+					<parameter name="userdata" type="gpointer"/>
+				</parameters>
+			</method>
+			<method name="unregister" symbol="gedit_message_bus_unregister">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="message_type" type="GeditMessageType*"/>
+				</parameters>
+			</method>
+			<method name="unregister_all" symbol="gedit_message_bus_unregister_all">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="bus" type="GeditMessageBus*"/>
+					<parameter name="object_path" type="gchar*"/>
+				</parameters>
+			</method>
+			<field name="parent" type="GObject"/>
+			<field name="priv" type="GeditMessageBusPrivate*"/>
+		</struct>
+		<struct name="GeditMessageBusClass">
+			<field name="parent_class" type="GObjectClass"/>
+			<field name="dispatch" type="GCallback"/>
+			<field name="registered" type="GCallback"/>
+			<field name="unregistered" type="GCallback"/>
+		</struct>
+		<struct name="GeditMessageClass">
+			<field name="parent_class" type="GObjectClass"/>
+		</struct>
+		<struct name="GeditMessageType">
+			<method name="foreach" symbol="gedit_message_type_foreach">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="message_type" type="GeditMessageType*"/>
+					<parameter name="func" type="GeditMessageTypeForeach"/>
+					<parameter name="user_data" type="gpointer"/>
+				</parameters>
+			</method>
+			<method name="get_method" symbol="gedit_message_type_get_method">
+				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="message_type" type="GeditMessageType*"/>
+				</parameters>
+			</method>
+			<method name="get_object_path" symbol="gedit_message_type_get_object_path">
+				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="message_type" type="GeditMessageType*"/>
+				</parameters>
+			</method>
+			<method name="identifier" symbol="gedit_message_type_identifier">
+				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="instantiate" symbol="gedit_message_type_instantiate">
+				<return-type type="GeditMessage*"/>
+				<parameters>
+					<parameter name="message_type" type="GeditMessageType*"/>
+				</parameters>
+			</method>
+			<method name="instantiate_valist" symbol="gedit_message_type_instantiate_valist">
+				<return-type type="GeditMessage*"/>
+				<parameters>
+					<parameter name="message_type" type="GeditMessageType*"/>
+					<parameter name="va_args" type="va_list"/>
+				</parameters>
+			</method>
+			<method name="is_supported" symbol="gedit_message_type_is_supported">
+				<return-type type="gboolean"/>
+				<parameters>
+					<parameter name="type" type="GType"/>
+				</parameters>
+			</method>
+			<method name="is_valid_object_path" symbol="gedit_message_type_is_valid_object_path">
+				<return-type type="gboolean"/>
+				<parameters>
+					<parameter name="object_path" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="lookup" symbol="gedit_message_type_lookup">
+				<return-type type="GType"/>
+				<parameters>
+					<parameter name="message_type" type="GeditMessageType*"/>
+					<parameter name="key" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="new" symbol="gedit_message_type_new">
+				<return-type type="GeditMessageType*"/>
+				<parameters>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+					<parameter name="num_optional" type="guint"/>
+				</parameters>
+			</method>
+			<method name="new_valist" symbol="gedit_message_type_new_valist">
+				<return-type type="GeditMessageType*"/>
+				<parameters>
+					<parameter name="object_path" type="gchar*"/>
+					<parameter name="method" type="gchar*"/>
+					<parameter name="num_optional" type="guint"/>
+					<parameter name="va_args" type="va_list"/>
+				</parameters>
+			</method>
+			<method name="ref" symbol="gedit_message_type_ref">
+				<return-type type="GeditMessageType*"/>
+				<parameters>
+					<parameter name="message_type" type="GeditMessageType*"/>
+				</parameters>
+			</method>
+			<method name="set" symbol="gedit_message_type_set">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="message_type" type="GeditMessageType*"/>
+					<parameter name="num_optional" type="guint"/>
+				</parameters>
+			</method>
+			<method name="set_valist" symbol="gedit_message_type_set_valist">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="message_type" type="GeditMessageType*"/>
+					<parameter name="num_optional" type="guint"/>
+					<parameter name="va_args" type="va_list"/>
+				</parameters>
+			</method>
+			<method name="unref" symbol="gedit_message_type_unref">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="message_type" type="GeditMessageType*"/>
+				</parameters>
+			</method>
 		</struct>
 		<struct name="GeditNotebook">
 			<method name="add_tab" symbol="gedit_notebook_add_tab">
@@ -1419,6 +1828,18 @@
 					<parameter name="window" type="GeditWindow*"/>
 				</parameters>
 			</method>
+			<method name="get_data_dir" symbol="gedit_plugin_get_data_dir">
+				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="plugin" type="GeditPlugin*"/>
+				</parameters>
+			</method>
+			<method name="get_install_dir" symbol="gedit_plugin_get_install_dir">
+				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="plugin" type="GeditPlugin*"/>
+				</parameters>
+			</method>
 			<method name="is_configurable" symbol="gedit_plugin_is_configurable">
 				<return-type type="gboolean"/>
 				<parameters>
@@ -1489,11 +1910,80 @@
 					<parameter name="text" type="gchar*"/>
 				</parameters>
 			</method>
-			<field name="parent" type="GeditMessageArea"/>
+			<field name="parent" type="GtkInfoBar"/>
 			<field name="priv" type="GeditProgressMessageAreaPrivate*"/>
 		</struct>
 		<struct name="GeditProgressMessageAreaClass">
-			<field name="parent_class" type="GeditMessageAreaClass"/>
+			<field name="parent_class" type="GtkInfoBarClass"/>
+		</struct>
+		<struct name="GeditStatusComboBox">
+			<method name="add_item" symbol="gedit_status_combo_box_add_item">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="combo" type="GeditStatusComboBox*"/>
+					<parameter name="item" type="GtkMenuItem*"/>
+					<parameter name="text" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="get_item_label" symbol="gedit_status_combo_box_get_item_label">
+				<return-type type="GtkLabel*"/>
+				<parameters>
+					<parameter name="combo" type="GeditStatusComboBox*"/>
+				</parameters>
+			</method>
+			<method name="get_item_text" symbol="gedit_status_combo_box_get_item_text">
+				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="combo" type="GeditStatusComboBox*"/>
+					<parameter name="item" type="GtkMenuItem*"/>
+				</parameters>
+			</method>
+			<method name="get_items" symbol="gedit_status_combo_box_get_items">
+				<return-type type="GList*"/>
+				<parameters>
+					<parameter name="combo" type="GeditStatusComboBox*"/>
+				</parameters>
+			</method>
+			<method name="get_label" symbol="gedit_status_combo_box_get_label">
+				<return-type type="gchar*"/>
+				<parameters>
+					<parameter name="combo" type="GeditStatusComboBox*"/>
+				</parameters>
+			</method>
+			<method name="new" symbol="gedit_status_combo_box_new">
+				<return-type type="GtkWidget*"/>
+				<parameters>
+					<parameter name="label" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="set_item" symbol="gedit_status_combo_box_set_item">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="combo" type="GeditStatusComboBox*"/>
+					<parameter name="item" type="GtkMenuItem*"/>
+				</parameters>
+			</method>
+			<method name="set_item_text" symbol="gedit_status_combo_box_set_item_text">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="combo" type="GeditStatusComboBox*"/>
+					<parameter name="item" type="GtkMenuItem*"/>
+					<parameter name="text" type="gchar*"/>
+				</parameters>
+			</method>
+			<method name="set_label" symbol="gedit_status_combo_box_set_label">
+				<return-type type="void"/>
+				<parameters>
+					<parameter name="combo" type="GeditStatusComboBox*"/>
+					<parameter name="label" type="gchar*"/>
+				</parameters>
+			</method>
+			<field name="parent" type="GtkEventBox"/>
+			<field name="priv" type="GeditStatusComboBoxPrivate*"/>
+		</struct>
+		<struct name="GeditStatusComboBoxClass">
+			<field name="parent_class" type="GtkEventBoxClass"/>
+			<field name="changed" type="GCallback"/>
 		</struct>
 		<struct name="GeditStatusbar">
 			<method name="clear_overwrite" symbol="gedit_statusbar_clear_overwrite">
@@ -1735,6 +2225,12 @@
 					<parameter name="window" type="GeditWindow*"/>
 				</parameters>
 			</method>
+			<method name="get_message_bus" symbol="gedit_window_get_message_bus">
+				<return-type type="GeditMessageBus*"/>
+				<parameters>
+					<parameter name="window" type="GeditWindow*"/>
+				</parameters>
+			</method>
 			<method name="get_side_panel" symbol="gedit_window_get_side_panel">
 				<return-type type="GeditPanel*"/>
 				<parameters>
@@ -1751,6 +2247,13 @@
 				<return-type type="GtkWidget*"/>
 				<parameters>
 					<parameter name="window" type="GeditWindow*"/>
+				</parameters>
+			</method>
+			<method name="get_tab_from_location" symbol="gedit_window_get_tab_from_location">
+				<return-type type="GeditTab*"/>
+				<parameters>
+					<parameter name="window" type="GeditWindow*"/>
+					<parameter name="location" type="GFile*"/>
 				</parameters>
 			</method>
 			<method name="get_tab_from_uri" symbol="gedit_window_get_tab_from_uri">
