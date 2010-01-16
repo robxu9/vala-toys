@@ -399,13 +399,13 @@ namespace Gedit {
 	public const string GPM_LOCKDOWN_DIR;
 	[CCode (cheader_filename = "gedit/gedit-prefs-manager.h")]
 	public const string GPM_SYSTEM_FONT;
-	[CCode (cheader_filename = "gedit-2.20.h")]
+	[CCode (cheader_filename = "gedit/gedit-commands.h")]
 	public static void commands_load_uri (Gedit.Window window, string uri, Gedit.Encoding encoding, int line_pos);
-	[CCode (cheader_filename = "gedit-2.20.h")]
+	[CCode (cheader_filename = "gedit/gedit-commands.h")]
 	public static int commands_load_uris (Gedit.Window window, GLib.SList uris, Gedit.Encoding encoding, int line_pos);
-	[CCode (cheader_filename = "gedit-2.20.h")]
+	[CCode (cheader_filename = "gedit/gedit-commands.h")]
 	public static void commands_save_all_documents (Gedit.Window window);
-	[CCode (cheader_filename = "gedit-2.20.h")]
+	[CCode (cheader_filename = "gedit/gedit-commands.h")]
 	public static void commands_save_document (Gedit.Window window, Gedit.Document document);
 	[CCode (cheader_filename = "gedit/gedit-convert.h")]
 	public static GLib.Quark convert_error_quark ();
