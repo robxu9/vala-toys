@@ -79,8 +79,8 @@ namespace Vtg
 					int col = start.get_line_offset ();
 					var book = new SourceBookmark ();
 					book.uri = uri;
-					book.line = line;
-					book.column = col;
+					book.line = line + 1;
+					book.column = col + 1;
 					add_bookmark (book, true);
 				}
 			}
