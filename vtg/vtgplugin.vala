@@ -215,7 +215,7 @@ namespace Vtg
 				foreach (Gedit.Document doc in instance.window.get_unsaved_documents ()) {
 					var filename = Utils.get_document_name (doc);
 					if (!StringUtils.is_null_or_empty (filename) && project.contains_filename (filename)) {
-						doc.save (DocumentSaveFlags.IGNORE_MTIME);
+						Gedit.commands_save_document (instance.window, doc);
 					}
 				}
 			}

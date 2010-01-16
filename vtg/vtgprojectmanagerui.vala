@@ -608,7 +608,7 @@ namespace Vtg
 					try {
 						file = Filename.from_uri (file);
 						if (!doc.is_untouched () && Vtg.Plugin.main_instance.config.save_before_build)
-							doc.save (Gedit.DocumentSaveFlags.IGNORE_MTIME);
+							Gedit.commands_save_document (_plugin_instance.window, doc);
 						
 						_prj_builder.compile_file (file, params);
 					} catch (Error e) {
