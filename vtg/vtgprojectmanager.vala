@@ -40,6 +40,7 @@ namespace Vtg
 
 		public signal void updated ();
 		public string filename = null;
+		public bool is_default = false;
 
 		public Vala.List<Vbf.Target> exec_targets = new Vala.ArrayList<Vbf.Target> ();
 		public Vala.List<Vbf.Source> all_vala_sources = new Vala.ArrayList<Vbf.Source> ();
@@ -233,6 +234,7 @@ namespace Vtg
 			group.add_target (target);
 			_project.add_group (group);
 			_project.updated.connect (this.on_project_updated);
+			is_default = true;
 		}
 
 		public bool open (string project_filename) throws GLib.Error

@@ -196,27 +196,34 @@ namespace Vtg
 			_prj_search = new ProjectSearch (_plugin_instance);
 						
 			_prj_executer.process_start += (sender) => {
-				update_ui (_plugin_instance.project_view.current_project == null);
+				var prj = _plugin_instance.project_view.current_project;
+				update_ui (prj == null || prj.is_default);
 			};
 			_prj_executer.process_exit += (sender, exit_status) => {
-				update_ui (_plugin_instance.project_view.current_project == null);
+				var prj = _plugin_instance.project_view.current_project;
+				update_ui (prj == null || prj.is_default);
 			};
 			_prj_builder.build_start += (sender) => {
-				update_ui (_plugin_instance.project_view.current_project == null);
+				var prj = _plugin_instance.project_view.current_project;
+				update_ui (prj == null || prj.is_default);
 			};
 			_prj_builder.build_exit += (sender, exit_status) => {
-				update_ui (_plugin_instance.project_view.current_project == null);
+				var prj = _plugin_instance.project_view.current_project;
+				update_ui (prj == null || prj.is_default);
 			};
 			_prj_search.search_start += (sender) => {
-				update_ui (_plugin_instance.project_view.current_project == null);
+				var prj = _plugin_instance.project_view.current_project;
+				update_ui (prj == null || prj.is_default);
 			};
 			_prj_search.search_exit += (sender, exit_status) => {
-				update_ui (_plugin_instance.project_view.current_project == null);
+				var prj = _plugin_instance.project_view.current_project;
+				update_ui (prj == null || prj.is_default);
 			};
 						
 			initialize_ui ();
 			_changelog = new ChangeLog (_plugin_instance);
-			update_ui (_plugin_instance.project_view.current_project == null);
+			var prj = _plugin_instance.project_view.current_project;
+			update_ui (prj == null || prj.is_default);
 		}
 
 		private void initialize_ui ()
@@ -730,7 +737,8 @@ namespace Vtg
 		private void on_current_project_changed (GLib.Object sender, ParamSpec pspec)
 		{
 			ProjectView view = (ProjectView) sender;
-			update_ui (view.current_project == null);
+			var prj = view.current_project;
+			update_ui (prj == null || prj.is_default);
 		}
 		
 		private void update_ui (bool default_project)
@@ -758,6 +766,10 @@ namespace Vtg
 				action.set_sensitive (is_vala_source);
 			
 			action = _actions.get_action ("ProjectGotoDocument");
+			if (action != null)
+				action.set_sensitive (!default_project);
+
+			action = _actions.get_action ("ProjectBuildConfigure");
 			if (action != null)
 				action.set_sensitive (!default_project);
 			
