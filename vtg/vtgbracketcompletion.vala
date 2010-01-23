@@ -192,19 +192,53 @@ namespace Vtg
 
 				src.get_iter_at_mark (out pos, mark);
 				if (ch == '(') {
+					// check if I'm inside a  { } block 
+					bool inside_block = false;
+					TextIter start = pos;
+					while (start.backward_char ()) {
+						ch = start.get_char ();
+ 						if (ch == ';' || ch == '{') {
+ 							inside_block = true;
+ 							break;
+ 						} else if (ch == '}') {
+ 							inside_block = false;
+ 							break;
+ 						}
+ 						
+					}
+					
+					// check previous word
+					if (inside_block) {
+						start = pos;
+						if (start.backward_word_start ()) {
+							buffer = start.get_slice (pos);
+							buffer = buffer.replace (" ", "").replace ("\t", "");
+							if (buffer == "if" || buffer == "do" || buffer == "while"
+							    || buffer.has_prefix ("for")) {
+								inside_block = false;    	
+							}
+						}
+					}
+
 					if (src.has_selection) {
 						if (instance.enclose_selection_with_delimiters (src, "(", ")")) {
+							if (inside_block)
+								instance.insert_chars (src, ";");
 							src.get_iter_at_mark (out pos, mark);
 							src.place_cursor (pos);
 							result = true;
 						}
 					} else {
 						if (!instance.find_char (pos, ')', '(', ';')) {
-							instance.insert_chars (src, ")");
-							instance.move_backwards (src, 1);
+							if (inside_block) {
+								instance.insert_chars (src, ");");
+								instance.move_backwards (src, 2);
+							} else {
+								instance.insert_chars (src, ")");
+								instance.move_backwards (src, 1);
+							}
 						}
 					}
-
 				} else if (ch == '[') {
 					if (!instance.find_char (pos, ']', '[', ';')) {
 						instance.insert_chars (src, "]");
@@ -237,17 +271,27 @@ namespace Vtg
 				} else if (ch == '{') {
 					indent = instance.current_indentation_text (src);
 					if (src.has_selection) {
-						if (instance.enclose_selection_with_delimiters (src, "{", "} ")) {
+						if (instance.enclose_selection_with_delimiters (src, "{", "\n%s}\n".printf (indent))) {
 							src.get_iter_at_mark (out pos, mark);
 							src.place_cursor (pos);
 						}
+						result = true;
 					} else {
-						buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);
-						instance.insert_chars (src, buffer);
-						sender.scroll_to_mark (mark, 0, false, 0, 0);
-						instance.move_backwards (src, 2 + (int) indent.length);
+						buffer = "{";
+						if (pos.forward_line ()) {
+							TextIter end = pos;
+							end.forward_to_line_end ();
+							string line = pos.get_slice (end);
+							line = line.replace (" ", "").replace ("\t", "");
+							if (StringUtils.is_null_or_empty (line) || line.has_prefix ("\n")) {
+								buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);	
+								instance.insert_chars (src, buffer);
+								sender.scroll_to_mark (mark, 0, false, 0, 0);
+								instance.move_backwards (src, 2 + (int) indent.length);
+								result = true;
+							}
+						}
 					}
-					result = true;
 				} else if (evt.keyval == Gdk.Key_Return) {
 					indent = instance.current_indentation_text (src);
 					if ((evt.state & ModifierType.SHIFT_MASK) != 0) {
@@ -258,20 +302,26 @@ namespace Vtg
 						}
 						if ((evt.state & ModifierType.CONTROL_MASK) == 0) {
 							//move backward to first non blank char
+							buffer = ";";
 							TextIter tmp = pos;
 							while (pos.backward_char ()) {
 								ch = pos.get_char ();
 								if (!ch.isspace ())
 								{
+									if (ch == ';') {
+										buffer = ""; // line is already terminated with ;
+									}
 									pos.forward_char ();
 									break;
 								}
 							}
+							
 							if (tmp.equal (pos)) {
-								instance.insert_chars (src, ";\n%s".printf(indent));
+								instance.insert_chars (src, "%s\n%s".printf(buffer, indent));
 							} else {
 								src.place_cursor (pos);
-								instance.insert_chars (src, ";");
+								if (buffer != "")
+									instance.insert_chars (src, buffer);
 								src.get_iter_at_mark (out pos, mark);
 								pos.forward_to_line_end ();
 								src.place_cursor (pos);
@@ -282,7 +332,6 @@ namespace Vtg
 							//place cursor to end
 							src.get_iter_at_mark (out pos, mark);
 							src.place_cursor (pos);
-
 						} else {
 						
 							buffer = "\n%s{\n%s%s\n%s}".printf(indent, indent, instance.tab_chars, indent);

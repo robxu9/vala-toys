@@ -1,5 +1,11 @@
 2010-01-17  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+
+	improvements on the bracket completion module
+
+2010-01-17  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanager.vala:
 	* vtg/vtgprojectmanagerui.vala:
 
