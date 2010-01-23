@@ -11,6 +11,7 @@ AM_CPPFLAGS = \
 	-include $(CONFIG_HEADER) \
 	-I $(top_srcdir)/afrodite \
 	-I $(top_srcdir)/vbf \
+	-I $(top_srcdir)/gsc-0.7.0/ \
 	$(NULL)
 
 BUILT_SOURCES = libvtg.vala.stamp
@@ -77,6 +78,7 @@ libvtg_la_LDFLAGS = \
 libvtg_la_LIBADD = \
 	../afrodite/libafrodite.la \
 	../vbf/libvbf.la \
+	../gsc-0.7.0/gtksourcecompletion/libgtksourcecompletion-2.0.la \
 	$(VTGPLUGIN_LIBS) \
 	$(NULL)
 

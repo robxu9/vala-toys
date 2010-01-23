@@ -1,6 +1,6 @@
 
 #Build in these directories:
-SUBDIRS = gen-project doc
+SUBDIRS = gsc-0.7.0 gen-project doc
 
 if HAVE_AFRODITE
 SUBDIRS += afrodite

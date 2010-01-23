@@ -1,0 +1,963 @@
+=== 0.7.0 ===
+
+2009-04-09  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-trigger-userrequest.[ch]:
+	New user request trigger. Raise an event then the user press
+	<Control>Return and filter the content while the user is writting
+	* gtksourcecompletion/gsc-trigger-autowords.c:
+	Removed an unused variable
+
+2009-04-07  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	Bug setting the active page
+
+2009-04-06  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.[ch]:
+	Added new functions to set the page position!
+	If select-on-show is TRUE, we select the first proposal when the
+	filter is updated too
+
+2009-03-30  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-trigger-autowords.c:
+	Changed all the implementation. Now we raise the trigger once and
+	filter the content while the user write
+
+2009-03-19  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/Makefile.am:
+	* gtksourcecompletion/gsc-completion-priv.h:
+	* gtksourcecompletion/gsc-completion.c:
+	* gtksourcecompletion/gsc-tree.c:
+	* gtksourcecompletion/gsc-tree.h:
+	Moved gsc-tree to gsc-completion.
+
+2009-03-19  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	Patch to fix focus problems on osx. Thanks to Andrea Del Signore
+	Removed the "gboolean selected" FIXME.
+
+2009-03-19  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-marshal.c:
+	* gtksourcecompletion/gsc-marshal.h:
+	* gtksourcecompletion/Makefile.am:
+	Do not link with libglade and remove unncessary files.
+
+2009-03-19  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	Minor style fixes, and added a FIXME.
+
+2009-03-18  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-info.c:
+	Added "show-info" signal emitted before the real "show" function
+	* gtksourcecompletion/gsc-completion.c:
+	Uses the new "show-info" signal to a better info management and fix
+	the flickering
+
+2009-03-15  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	Do not block the proposal-selected signal
+
+
+2009-03-08  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	* gtksourcecompletion/gsc-completion-priv.h:
+	Removed _gsc_completion_info_show and hide and now only have
+	_gsc_completion_update_info_pos to set the position. GscCompletion
+	connect "show" and "hide" signals and update the position
+	automatically.
+	You can use get_info_widget and call to gtk_widget_show and hide to
+	show/hide info programmatically.
+	* gtksourcecompletion/gsc-completion.c:
+	Added "select-on-show" property to GscCompletion. If TRUE, it set the
+	selection cursor to the first proposal when the popup is shown
+	* gtksourcecompletion/gsc-completion.[ch]:
+	API changed: removed activate/deactivate functions and added
+	set_active get_active functions and an "active" property.
+
+2009-03-01  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* tools:
+	Updated trigger template
+
+2009-02-23  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/*:
+	* doc/*:
+	A lot of new documentation and fixed some doc issues
+	* debian/*:
+	Updated debian packaging files (Thanks to Andrea Del Signore
+	<sejerpz@tin.it>)
+	* gtksourcecompletion/gsc-completion.c:
+	Added "remember-info-visibility" property 
+
+
+2009-02-22  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	Control if the completion is active when an event is triggered
+	* test/completion-simple.c: 
+	Added "active" check to enable, disable completion
+	* gtksourcecompletion/gsc-trigger-customkey.c:
+	Fixed keys control!!!!
+	* gtksourcecompletion/gsc-info.c:
+	Set text position to middle-left
+	* doc/*:
+	Adapted documentation to gtksourcecompletion-2.0
+
+2009-02-15  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	Fixed a check with the static completion-view pairs
+	* test/completion-custom-widgets.c:
+	Created this test to show how we can change the default info widget
+
+2009-02-14  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.[ch]:
+	Added gsc_completion_get_provider
+
+2009-02-08  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	Added gsc_completion_get_trigger
+
+2009-02-07  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	Added info and page keys control
+	Added movement functions to -priv
+	Added mevement keys control
+	Added gsc_completion_deactivate
+	Added gsc_completion_get_bottom_bar
+	Added gsc_completion_get_info_widget
+	Added "manage-completion-keys" property 
+
+2009-02-02  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	Removed unused functions
+
+2009-01-30  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.h:
+	proposal_select now returns gboolean
+	* gtksourcecompletion/gsc-completion.c:
+	Added gsc_completion_proposal_selected_default for proposal-selected
+	signal.
+	Added gsc_completion_activate for completion activation.
+
+2009-01-29  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.c:
+	Added gsc_completion_filter_proposals function.
+	* gtksourcecompletion:
+	Some fixes.
+	* test/completion-demo: 
+	Compiled against the new library.
+
+2009-01-27  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.[ch]:
+	Added a lot of new functions to (un)register providers and triggers
+	and the trigger_event and finish completion
+
+2009-01-25  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-completion.[ch]:
+	Created new GscCompletion object. This will be the main object with
+	all the features of the old GscPopup and the old GscManager with a lot
+	of less functions and an easy use.
+	* gtksourcecompletion/providers:
+	Moved all providers to the test package
+
+2009-01-24  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion: Changed to 2.0 version because we will change a
+	lot of APIs 
+
+2009-01-18  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.[ch]:
+	gsc_manager_trigger_event returns TRUE if the event has been
+	triggered, FALSE if not.
+	* gtksourcecompletion/gsc-popup.c:
+	Controls if the popup window change its position, update the info
+	window position too.
+
+2009-01-17  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	Added "completion-finished" and "completion-started" signals.
+	Cleaned some external signals names.
+	Fixed focus out bug.
+	Added gsc_manager_info_set_visible function to change the info window
+	visibility.
+	Added "info-visible" to get and change the info window visibility
+	* gtksourcecompletion/gsc-popup-priv.h: 
+	Created an external header to be used with the gsc-manager. With this
+	new header is easier and cleaner manage the popup into the manager.
+
+2009-01-14  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-manager[ch]:
+	Removed gsc_manager_set_current_info function
+	Added some FIXME
+	* TODO:
+	Added some tasks
+
+2009-01-10  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	Not select the first proposal when filter
+
+2009-01-10  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* acinclude.m4:
+	* config.guess:
+	* config.h.in:
+	* config.sub:
+	* getopt.c:
+	* getopt.h:
+	* getopt1.c:
+	* gpl.texinfo:
+	* gtksourcecompletion.1:
+	* gtksourcecompletion.c:
+	* gtksourcecompletion.lsm.in:
+	* gtksourcecompletion.texinfo:
+	* ignore.list:
+	* intltool-extract.in:
+	* intltool-merge.in:
+	* intltool-update.in
+	* m4/*
+	* xmalloc.c:
+	* xmalloc.h:
+	Removed useless files. Perriman if I screwed something
+	you can always blame me. :)
+
+2009-01-09  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	Removed user_data argument of gsc_manager_trigger_event (it is not
+	used)
+
+2009-01-08  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* tools\*proposal*:
+	Generated proposal templates
+
+2009-01-03  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-manager[ch]:
+	* gtksourcecompletion/gsc-popup.[ch]:
+	* gtksourcecompletion/gsc-tree.[ch]:
+	Added a filter function to filter the current proposals with a custom
+	function.
+	* configure.in: 
+	Renamed to configure.ac
+	* docs:
+	Updated API documentation
+
+2008-12-29  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-info.c:
+	* gtksourcecompletion/gsc-popup.c:
+	Minor style fixes.
+
+2008-12-27  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-info.c: 
+	Doing the label selectable
+	* gtksourcecompletion/gsc-popup.[ch]:
+	Added gsc_manager_get_widget to get the popup widget
+	Added gsc_popup_autoselect to autoselect a proposal if there is only
+	one proposal in one page
+	* gtksourcecompletion/gsc-manager.c:
+	Added "autoselect" property (see gsc_popup_autoselect)
+
+2008-12-23  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-proposal.c:
+	Added page-name property
+	Fixed bug in the page-name property
+	* gtksourcecompletion/gsc-popup.c:
+	Scroll to the start on show or update
+
+2008-12-22  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* configure.in:
+	Started 0.6.0 version
+	* gtksourcecompletion/gsc-popup.c:
+	Fixed a bug with only one page
+	* gtksourcecompletion/gsc-trigger-autowords.[ch]:
+	Trigger name is public now to be used when register a provider to this
+	trigger
+	* gtksourcecompletion/gsc-proposal.h:
+	Fixed bug in GSC_PROPOSAL_CLASS
+
+2008-12-21  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gsc-info.[ch]:
+	Removed bottom bar and GscInfoType to simplify the info window.
+	Better resize control showing and hiding the scroll bars by hand.
+	* gsc-popup.c: 
+	Selects the first page with data
+	* gsc-trigger-autowords.c:
+	Added delay and min-len as properties
+	* gsc-proposal.[ch]:
+	ref/unref the icon.
+	* gsc-trigger-customkey.c:
+	ref/unref the completion and does some checks
+
+2008-12-21  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	Switch to g_slice.
+
+2008-12-18  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* Makefile.am:
+	Added test as subdir.
+
+2008-12-18  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	A few style changes.
+
+2008-12-18  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	Use for loop instead of do while.
+
+2008-12-18  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-tree.c:
+	* gtksourcecompletion/gsc-tree.h:
+	* gtksourcecompletion/gsc-popup.h:
+	Removed signals from gsc-tree, now are used directly
+	the GtkTreeView signals.
+
+2008-12-18  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-tree.c:
+	* gtksourcecompletion/gsc-tree.h:
+	Use the right coding style.
+
+2008-12-18  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	* gtksourcecompletion/gsc-popup.c:
+	* gtksourcecompletion/gsc-tree.c:
+	Change }while to } while.
+
+2008-12-18  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-popup.c:
+	Fixed bug showing pages because we must not show a page if it has not
+	proposals
+
+2008-12-14  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+	
+	* gtksourcecompletion/gsc-popup.c:
+	Added next and previous buttons.
+	When the popup is shown, we don't select any proposal for a better
+	user experience.
+	* gtksourcecompletion/gsc-info.c:
+	Better position/size control.
+	Added GtkAdjustment to adjust custom widget.
+	Cleaned some g_debug.
+
+2008-12-13  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	Add some FIXME comments.
+
+	* gtksourcecompletion/gsc-popup.c:
+	Now the active_page is a GscPopupPage instead of a pointer
+	to the list.
+
+2008-12-13  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	Free the lists in a better way.
+
+2008-12-13  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-popup.c:
+	Use a GList instead of a hashmap.
+	
+	* gtksourcecompletion/gsc-tree.c:
+	Cleanup a bit the code.
+
+2008-12-10  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-info.c:
+	* gtksourcecompletion/gsc-popup.c:
+	* gtksourcecompletion/gsc-manager.c:
+	Fixed a few more the coding style and added several FIXMEs.
+
+2008-12-10  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-info.c:
+	Do not use show_all(), use show instead.
+	Make it look like a GtkTooltip.
+
+2008-12-10  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-popup.c:
+	Fix some coding style.
+
+2008-12-10  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-popup.c:
+	Do not use show_all(), use show instead.
+
+2008-12-09  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	* gtksourcecompletion/gsc-trigger-autowords.c:
+	* gtksourcecompletion/gsc-trigger-autowords.h:
+	* test/completion-demo.c:
+	Improve a bit more the style.
+
+2008-12-09  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	* gtksourcecompletion/gsc-manager.h:
+	* gtksourcecompletion/gsc-info.c:
+	Use the rigth coding style.
+
+2008-12-09  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-proposal.c:
+	* gtksourcecompletion/gsc-info.c:
+	* gtksourcecompletion/gsc-info.h:
+	Use the right coding style.
+
+2008-12-09  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-proposal.c:
+	Removed apply signals and use apply and get_info vfuncs
+	correctly
+	* gtksourcecompletion/gsc-manager.c:
+	* gtksourcecompletion/gsc-manager.h:
+	Use "self" instead of "completion"
+
+2008-12-08  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-popup.c:
+	Use the define instead of call get_type directly.
+
+2008-12-08  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-manager.c:
+	Now hides the popup when you press Escape.
+
+2008-12-08  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-trigger-customkey.c:
+	* gtksourcecompletion/gsc-trigger-customkey.c:
+	Use the right coding style.
+
+2008-12-08  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-popup.c
+	* gtksourcecompletion/gsc-popup.h:
+	* gtksourcecompletion/gsc-manager.c:
+	* gtksourcecompletion/gsc-manager.h:
+	Moved gsc_popup_manage_key from gsc-popup to gsc-manager.
+
+2008-12-08  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-proposal.c:
+	* gtksourcecompletion/gsc-proposal.h:
+	Use the right coding style.
+
+2008-12-08  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-popup.c:
+	* gtksourcecompletion/gsc-popup.h:
+	Use the right coding style.
+
+2008-12-07  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-popup.c: Created a new display-info default
+	function. It all to gsc_proposal_get_info by default.
+	* gtksourcecompletion/gsc-info.c: 
+	  - Added bottom bar with an info buttom
+	  - Added GscInfoType signals and management
+
+2008-12-06  Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion/gsc-info.c: 
+	 - Cleaning up the code
+	 - Added custom widget functionality.
+	* gtksourcecompletion/gsc-manager.c:
+	* gtksourcecompletion/gsc-manager.h:
+	* gtksourcecompletion/gsc-popup.c:
+	* gtksourcecompletion/gsc-popup.h:
+	Removing filter management and the trigger options.
+
+
+2008-12-05  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-trigger-autowords.h:
+	* gtksourcecompletion/gsc-trigger-autowords.c:
+	Cleaning up the code and follow the gsv coding style.
+	Added several FIXME comments too.
+
+2008-12-05  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-provider-file.c:
+	Cleaning up the code and add several FIXME comments.
+
+2008-12-04  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-provider-file.c:
+	First hack for having it cleaner.
+
+2008-12-04  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+	
+	* depcomp:
+	* ltmain.sh:
+	* missing:
+	Removed useless files.
+
+2008-12-04  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* aclocal.m4:
+	* install-sh:
+	Removed useless files.
+
+2008-12-04  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-provider.c:
+	* gtksourcecompletion/gsc-provider.h:
+	* gtksourcecompletion/gsc-provider-file.c:
+	* gtksourcecompletion/gsc-provider-file.h:
+	Use the right coding style.
+
+2008-12-02  Ignacio Casal Quinteiro  <nacho.resa@gmail.com>
+
+	* gtksourcecompletion/gsc-trigger.c:
+	* gtksourcecompletion/gsc-trigger.h:
+	Use the right coding style.
+
+2008-11-25  Chuchi  <perriman@homer>
+
+	* gsc-info: added gsc_info_set_adjust_width to adjust width to the
+	text.
+	* gsc-popup: Use the new GscInfo object to show the info
+
+2008-11-24  Chuchi  <perriman@homer>
+
+	* gsc-info: Created the new object to show information like calltips,
+	the completion info etc. Currently it has a few features
+
+2008-11-16  Chuchi  <perriman@homer>
+
+	* gsc-popup:
+		- gsc_popup_show_or_update: Use this function because
+		gtk_widget_show don't call to popup show if the widget is
+		visible and we need to update the pages, selection etc.
+		- GSC_POPUP_FILTER_TREE_HIDDEN: added new filter type to
+		filter the content without show the filter widget. You can set
+		the filter text programmatically.
+		- gsc_popup_set_filter_text: You can set the filter text
+		programmatically.
+	* gsc_manager: 
+		- gsc_manager_update_event_options: You can update the event
+		options without recall to trigger event. Use this function to
+		update the filter text without recall to providers.
+	* gsc_documentwords_provider: 
+		- Only complete words with len > 2
+	* tools: Updated trigger template
+
+
+2008-11-06  Chuchi  <chuchiperriman@gmail.com>
+
+	* gsc-popup: 
+		- It is independent of a GtkTextView!!
+		- Removed positioning. The popup does not set its position.
+		- Gets the keys control into the filter
+		- created a new function gsc_popup_manage_key for manage an
+		event key from other widgets (GtkTextView for example)
+	* gsc-manager: 
+		- Does not control the key events, only call to the new
+		function  gsc_popup_manage_key.
+		- Manage the completion option, popup position and type
+	* API: Api broken!!!!!!!!! removed popup refresh methods and removed 
+	GscPopupOptions (now in GscManagerEventOptions)
+	* gsc-provider-file: Created a new provider that reads the words of
+	file
+	* gsc-utils:
+		- gsc_is_valid_word: Check if the completion_word starts
+		with current_word and it is not the same word.
+		- Added gsc_get_last_word_cleaned: Return the current word
+		in the GtkTextView without special chars at the start
+	* provider-templates: Updates provider templates
+	* test: Created a test folder with some examples
+
+2008-09-17  Chuchi  <chuchiperriman@gmail.com>
+
+	* gsc-utils.c: Fixed problem replacing the current word. This solves 
+	problems with gtksnippets
+
+2008-09-17  Chuchi  <chuchiperriman@gmail.com>
+
+	* gsc-manager.c,
+	  gsc-trigger-custom-key.c,
+	  Fixed #2114854: Fixed problems with lock caps etc. keys
+
+2008-09-04  Chuchi  <chuchiperriman@gmail.com>
+
+	* gsc-manager.h: Added USER_REQUEST_TRIGGER_NAME. This trigger name
+	can be used in a lot of applications (like gedit plugins) to share the
+	same trigger for an user request completion.
+	* gsc-documentwords-provider.c: Modified to support completion of
+	empty filter. If the current word is null, the provider returns all
+	document words.
+
+2008-09-02  Chuchi  <chuchiperriman@gmail.com>
+
+	* gsc-manager.c: Stops the key signal when the manager gets the
+	control
+
+2008-08-30  Chuchi  <chuchiperriman@gmail.com>
+
+	* gsc-trigger-custom-key.c,
+	  gsc-manager: Fixed problem with keys. There is a bug in
+	  gtk_accelerator_name & gtk_accelerator_parse but I have fixed it in
+	  this library.
+
+2008-08-26  Chuchi  <chuchiperriman@gmail.com>
+
+	* gsc-utils: Added indentation functions
+
+2008-08-23  Chuchi  <chuchiperriman@gmail.com>
+
+	* Makefile: Fixed error with portable libraries. I remove all -module
+	* gsc-popup, gsc-tree #2057971: Fixed focus problem when change the
+	current page
+
+=== Version 0.5.0 ===
+
+2008-08-16  Chuchi  <chuchiperriman@gmail.com>
+
+	* doc: Updated api documentation
+	* GscTree: removed gsc_tree_has_proposals function
+	* Version: Closed release 0.5.0
+
+2008-07-28  Chuchi  <chuchi@chuchint>
+
+	* GscPopup: Fixed problem with the popup window in Gnome to set the 
+	focus into the view
+
+2008-07-26  Chuchi  <chuchiperriman@gmail.com>
+
+	* GscPopup: Added CENTER_PARENT to center the popup relative to the
+	parent
+	* GscManager: Control the filter widget keys like in the GtkTextView
+	* GscPopup: 
+		- We control the delete event (alt+F4 problem fixed)
+		- Hide the popup on focus-out event
+		- Added method to get the filter widget
+
+2008-07-19  Chuchi  <chuchiperriman@gmail.com>
+
+	* GscTree:
+	* GscPopup:
+		- Filter is working!!! We have some issues yet (alt-F4 close
+		and crash the completion popup and we currently don't hide the
+		popup when the user change the current window by pressing
+		alt-tab)
+
+2008-07-15  Chuchi  <chuchiperriman@gmail.com>
+
+	* GscTriggerCustomKey: Add support to popup options
+	* GscPopup: 
+		- Added the filter(only the widget and the option to show it)
+		- Using the new hint type for the filter
+
+
+2008-06-30  Chuchi  <chuchiperriman@gmail.com>
+
+	* namespace: Change all application namespace. Now all objects start
+	with gsc_
+	* structure: Changed some methods to remove the gsc-manager dependency
+	en proposal, trigger and provider
+
+2008-06-29  Chuchi  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion-popup: Added PopupOptions in refresh function.
+	You can now set the popup position, the filter type etc.
+	* gtksourcecompletion: Added EventOptions in trigger_event function.
+	You can now set the event options (popup options plus completion
+	options) when trigger an event.
+
+2008-06-28  Chuchi  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion: 
+		- Removed autoselection because I don't like this feature, I
+		think I will insert that in the trigger_event options
+		- Fixed autoselection if the popup has not been
+	shown yet.
+
+2008-06-27  Chuchi  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion: Added autoselection if there is only one proposal
+	in the completion popup (one poposal and one page)
+
+2008-06-07  Chuchi  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion-proposal: Added label, info and icon properties
+
+2008-05-24  Chuchi  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion-proposal: Removed user_data from vfuncs
+
+2008-05-23  Chuchi  <chuchiperriman@gmail.com>
+
+	* general: Changed GTK_SOURCE_IS... by GTK_IS_SOURCE...
+
+2008-05-16  Chuchi  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion-provider: Changed get_data to get_proposals
+	* gtksourcecompletion-proposal: Solved some problems with the signals.
+	* Triggers: Renamed triggers with gtksourcecompletion namespace
+
+2008-05-11  Chuchi  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion-marshal.list: Created the marshals for
+	gtksourcecompletion
+	* gtksourcecompletion-proposal: Changed the apply and display-info
+	mechanism. Now the proposal emits two signals: appy and display-info.
+	The default handler insert the label into the view and te display-info
+	show the proposal info asigned in the constructor
+	* gtksourcecompletion-popup: Now emits a display-info signal when the
+	popup requires this information instead of call the proposal directly.
+	* gtksourcecompletion: 
+		-Adapted to the new changes on proposal and popup
+		-Remove the priority mechanism
+
+2008-05-05  Chuchi  <chuchiperriman@gmail.com>
+	
+	* gtksourcecompletion-tree:
+	* gtksourcecompletion-popup:
+		- Refactor old gsv prefix to the standar gtksourcecompletion
+
+	* gtksourcecompletion-proposal: 
+		- Created a new GObject to store a completion proposal information.
+		- This object has two new functions: apply and get_info. We
+		do not call to the provider to get the info or when the
+		proposal is selected, this object has these functions.
+	* gtksourcecompletion-provider: 
+		- Uses the new GtkSourceCompletionProposal object.
+		- Removed data_selected function
+		- Removed get_info_markup function
+	* gtksourcecompletion.c:
+		- Uses the new GtkSourceCompletionProposal object.
+	* gtksourcecompletion-item: Removed the old item files
+
+2008-05-03  Chuchi  <chuchiperriman@gmail.com>
+
+	* version: Updated to 0.5.0 version because we will break the API
+
+=== Version 0.4.1 ===
+
+2008-04-30  perriman  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion.h: Added gtk_source_completion_get_active_trigger_name
+	 function. 
+	* gtksourcecompletion.c: Check if the view has focus. If the view has not
+	the focus then it does not show the completion.
+	* gsc-autocompletion-trigger.c: Check if the user delete some text and
+	finish the completion.
+	
+
+2008-04-28  perriman  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion.c: Fixed a bug that overwrite a trigger if it had
+	been registered twice.
+
+2008-04-26  perriman  <chuchiperriman@gmail.com>
+
+	* fixed #1952166 (gtksourcecompletion.c): When the user 
+	clicks on a different location on the view, we hide the
+	completion popup
+	* fixed #1952168 (gtksourcecompletion.c): 
+		-Added info-keys property to set the keys to
+	show/hide the info window
+		-Added next-page-keys and previous-page-keys
+	properties to set the keys.
+		-Does not catch the keys if there are any modifiers enabled.
+
+2008-04-07  perriman  <chuchiperriman@gmail.com>
+
+	* gsc-autocompletion-trigger.h
+	* gsc-userrequest-trigger.h: Fixed some API problems!!
+
+2008-04-06  perriman  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion.c: Removed an obsolete struct. Less memory usage an
+	faster
+
+2008-04-05  perriman  <chuchiperriman@gmail.com>
+	
+	* gtksourcecompletion.c: API CHANGED. Added trigger_name to register or
+	unregister a provider. Only calls the providers registered for the
+	triggered event. 
+	* gtksourcecompletion-item: Fixed a type error
+	* gsc-customkey-trigger: Created new generic trigger. You can create this
+	trigger setting the trigger name and the keys. When the user press this
+	keys into the view, the trigger name will be triggered.
+	* templates: fixed some issues.
+
+=== Version 0.4.0 ===
+
+2008-03-29  perriman  <chuchiperriman@gmail.com>
+
+	* fixed #1925665: We don't show the current word.
+	* doc: 
+		- Updated some API documentation
+		- Moved documentation from .c to .h files
+
+2008-03-10  perriman  <chuchiperriman@gmail.com>
+
+	* fixed #1909917: Added a GTK_STOCK_GO_FORWARD if we have two 
+	or more pages with data.
+
+2008-03-09  perriman  <chuchiperriman@gmail.com>
+
+	* fixed #1909908: Break the completion if the user changes
+	the cursor position before the delay
+
+2008-03-01  perriman  <chuchiperriman@gmail.com>
+
+	* gsc-docwordscompletion-provider.c:
+		- Fixed an important memory lost problem!!
+		- Removed references to g_completion (we don't need it and we safe a
+		lot of memory usage)
+
+2008-01-27  perriman  <chuchiperriman@gmail.com>
+
+	* pixmaps: Moved pixmaps foldel to the root folder.
+	* build: Fixed some problems with distcheck
+
+2008-01-26  chuchiperriman  <chuchiperriman@gmail.com>
+	* provider template: fixed a bug in the header
+	* completion, popup, item:
+		Added new multipage support!!! 
+
+2008-01-17  chuchiperriman  <chuchiperriman@gmail.com>
+	* gsv-completion-tree: Created a separated tree widget. With it, the popup
+	can create various completion trees to support multipage
+
+=== Version 0.3.1 ===
+
+2008-01-17  chuchiperriman  <chuchiperriman@gmail.com>
+	* gtksourcecompletion-item: Created separated files with the
+	GtkSourceCompletionItem functions
+	* gsv-completion-popup: Created a new popup widget!!!! It manages all
+	functions related to the popup.
+
+2008-01-16  chuchiperriman  <chuchiperriman@gmail.com>
+	* gktsourcecompletion-utils.c: We find the separators correcty (#1873128)
+	* gsc-docwordscompletion-provider.c: We clean special characters at the 
+	start of the word to better completion
+
+2008-01-13  chuchiperriman  <chuchiperriman@gmail.com>
+	* general: Closed 0.3.0 version and open 0.3.1
+	* gsc-docwordscompletion-provider.c: Sort the completion items by length
+	by default.	I have added a new function gsc_documentwords_provider_set_sort_type to
+	set the sort type. (#1852050)
+
+2008-01-12  chuchiperriman  <chuchiperriman@gmail.com>
+	* general: Added i18n support to gtksourcecompletion!!
+		- Changed license from GPL to LGPL
+	* gsc-autocompletion-trigger.c: Better key control using GtkTextBuffer "insert-text"
+	signal. Fixed (#1869881)
+	* gsc-docwordscompletion-provider.c: 
+		- Change get_all_words function. Now it
+		use GtkTextIter instead of the gchar* text of the buffer. It is more easy 
+		- Fixed problem completing non english characters (#1863114)
+
+=== Version 0.3.0 ===
+
+2008-01-03  chuchiperriman  <chuchiperriman@gmail.com>
+	* gtksourcecompletion-provider: Changed the API to support the new trigger
+	API.
+	* gtksourcecompletion: 
+		- Changed the API to support the new provider API.
+		- Changed gtk_source_completion_has_provider to 
+		gtk_source_completion_get_provider
+		- Added gtk_source_completion_finish_completion function
+	
+
+2008-01-02  chuchiperriman  <chuchiperriman@gmail.com>
+	* fixed #1862126: Better autocompletion control.
+
+2007-12-22  chuchiperriman  <chuchiperriman@gmail.com>
+ * Events: New version because I am changing the events. Now I have created a
+ new Trigger interface instead of the current events
+ * gtksourcecompletion: 
+ 		- Added register and unregister trigger methods.
+ 		- Added activate and deactivate methods. Now is mandatory call to 
+ 		activate if you want to activate the completion
+ * gtksourcecompletion-trigger:
+ 		- Created the trigger objects for user request completion and
+		autocompletion.
+ * trigger generator: Created the trigger template and its generator
+ * gtksourcecompletion-events: Deleted old event mechanism
+
+=== Version 0.2.2 ===
+
+2007-12-20  chuchiperriman  <chuchiperriman@gmail.com>
+ * gtksourcecompletion-events: Added a function to change the default keys.
+ You can configure the keys that will raise the completion trigger
+
+
+2007-11-10  chuchiperriman  <chuchiperriman@gmail.com>
+	* gtksourcecompletion-events: Added new function to change a delay of an
+	autocompletion event.
+
+2007-11-09	chuchiperriman  <chuchiperriman@gmail.com>
+	* gtksourcecompletion-events: Added new function
+	gtk_source_completion_autocompletion_event_disable and renamed activate
+	function to gtk_source_completion_autocompletion_event_enable
+	* fixed #15: We can disable autocompletion event
+
+=== Version 0.2.1 ===
+
+2007-11-06	chuchiperriman  <chuchiperriman@gmail.com>
+	* gtksourcecompletion-provider.c: Added get_name to the interface and
+	adapted all providers to support it.
+	* gtksourcecompletion.c: Added method gtk_source_completion_have_provider
+	* gtksourcecompletion.c: Added method gtk_source_completion_get_from_view
+
+2007-11-06	chuchiperriman  <chuchiperriman@gmail.com>
+	* gtksourcecompletion-events.c: Autocompletion now set a delay to raise the
+	event because if the user write very fast, completion can annoy to the user.
+
+2007-09-22 	chuchiperriman  <chuchiperriman@gmail.com>
+	* gtksourcecompletion: Added functions to register events and we control
+	events in the same gtksourcecompletion.(You can not activate the same
+	event twice in the same gtksourcecompletion)
+
+2007-09-09  chuchiperriman  <chuchiperriman@gmail.com>
+	* fixed #28 gtksourcecompletion: We show the info at right (or left if we cannot
+	show it at right). In the info window we have an scroll now.
+
+2007-08-08  chuchiperriman  <chuchiperriman@gmail.com>
+
+	* gtksourcecompletion: initial version.
+

@@ -1,5 +1,76 @@
 2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gsc-0.7.0/AUTHORS:
+	* gsc-0.7.0/COPYING:
+	* gsc-0.7.0/ChangeLog:
+	* gsc-0.7.0/INSTALL:
+	* gsc-0.7.0/Makefile.am:
+	* gsc-0.7.0/Makefile.in:
+	* gsc-0.7.0/NEWS:
+	* gsc-0.7.0/README:
+	* gsc-0.7.0/TODO:
+	* gsc-0.7.0/aclocal.m4:
+	* gsc-0.7.0/autogen.sh:
+	* gsc-0.7.0/config.guess:
+	* gsc-0.7.0/config.guess.cdbs-orig:
+	* gsc-0.7.0/config.h.in:
+	* gsc-0.7.0/config.sub:
+	* gsc-0.7.0/config.sub.cdbs-orig:
+	* gsc-0.7.0/configure:
+	* gsc-0.7.0/configure.ac:
+	* gsc-0.7.0/depcomp:
+	* gsc-0.7.0/gtk-doc.make:
+	* gsc-0.7.0/gtksourcecompletion-2.0.pc.in:
+	* gsc-0.7.0/gtksourcecompletion.spec.in:
+	* gsc-0.7.0/gtksourcecompletion/Makefile.am:
+	* gsc-0.7.0/gtksourcecompletion/Makefile.in:
+	* gsc-0.7.0/gtksourcecompletion/gsc-completion-priv.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-completion.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-completion.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-i18n.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-info.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-info.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-marshal.list:
+	* gsc-0.7.0/gtksourcecompletion/gsc-proposal.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-proposal.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-provider.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-provider.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-autowords.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-autowords.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-customkey.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-customkey.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-userrequest.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-userrequest.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-utils.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-utils.h:
+	* gsc-0.7.0/install-sh:
+	* gsc-0.7.0/intltool-extract.in:
+	* gsc-0.7.0/intltool-merge.in:
+	* gsc-0.7.0/intltool-update.in:
+	* gsc-0.7.0/ltmain.sh:
+	* gsc-0.7.0/missing:
+	* gsc-0.7.0/mkinstalldirs:
+	* gsc-0.7.0/pixmaps/Makefile.am:
+	* gsc-0.7.0/pixmaps/Makefile.in:
+	* gsc-0.7.0/pixmaps/document-words-icon.png:
+	* gsc-0.7.0/po/ChangeLog:
+	* gsc-0.7.0/po/POTFILES.in:
+	* gsc-0.7.0/po/POTFILES.skip:
+	* gsc-0.7.0/po/es.po:
+	* gsc-0.7.0/po/fr.po:
+	* gsc-0.7.0/po/it.po:
+	* Makefile.am:
+	* configure.ac:
+	* po/POTFILES.in:
+	* vtg/Makefile.am:
+
+	include a modified version of GtkSourceCompletion until vtg will be ported
+	to the new completion api of GtkSourceView
+
+2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectview.vala:
 
 	open the context project menu' on the project node
