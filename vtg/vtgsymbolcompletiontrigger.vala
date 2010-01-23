@@ -104,6 +104,21 @@ namespace Vtg
 				    (event.state & (ModifierType.SHIFT_MASK | ModifierType.META_MASK | ModifierType.CONTROL_MASK)) == 0) {
 					trigger_event (false);
 				}
+			} else {
+				// if completion is visible and I'm deleting the '.' or the '>' close the completion window
+				if (event.keyval == Gdk.Key_BackSpace) {
+	 				var src = view.get_buffer ();
+					unowned TextMark mark = (TextMark) src.get_insert ();
+					TextIter pos;
+					src.get_iter_at_mark (out pos, mark);
+
+					if (pos.backward_char ()) {
+						unichar ch = pos.get_char ();
+						if (ch == '.' || ch == '>') {
+							_completion.finish_completion ();
+						}
+					}
+				}
 			}
 			return false;
 		}

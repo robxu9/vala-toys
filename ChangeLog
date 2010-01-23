@@ -1,3 +1,9 @@
+2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	finish completion when deleting the dot that started it
+
 2010-01-17  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbracketcompletion.vala:
