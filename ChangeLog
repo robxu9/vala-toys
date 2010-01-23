@@ -1,5 +1,16 @@
 2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gsc-0.7.0/po/Makefile.in.in:
+
+	missing file from previous commit
+
+	* debian/changelog:
+	* debian/rules:
+
+	updated to 0.7.0, but still not working	
+
+2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gsc-0.7.0/AUTHORS:
 	* gsc-0.7.0/COPYING:
 	* gsc-0.7.0/ChangeLog:
