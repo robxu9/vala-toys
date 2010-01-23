@@ -256,7 +256,7 @@ namespace Vtg
 					string id;
 					model.get_iter (out iter, path);
 					model.get (iter, 2, out id, 3, out obj);
-					if (id == "project-reference") {
+					if (id == "project-root") {
 						_popup_modules.popup (null, null, null, event.button, event.time);
 					} else if (obj is Group) {
 						_last_selected_group = (Group) obj;

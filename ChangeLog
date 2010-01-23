@@ -1,5 +1,11 @@
 2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectview.vala:
+
+	open the context project menu' on the project node
+
+2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletiontrigger.vala:
 
 	finish completion when deleting the dot that started it
