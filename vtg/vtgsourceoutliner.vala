@@ -195,7 +195,7 @@ namespace Vtg
 			var name = Utils.get_document_name (doc);
 			Afrodite.QueryResult result = null;
 			Afrodite.Ast ast;
-			bool res = scs.completion_engine.try_acquire_ast (out ast);
+			bool res = scs.completion_engine.try_acquire_ast (out ast, 1);
 			if (res) {
 				var options = Afrodite.QueryOptions.standard ();
 				options.all_symbols = true;
