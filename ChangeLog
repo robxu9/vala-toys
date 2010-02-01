@@ -1,5 +1,11 @@
 2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+	
+	improved logic when trying to acquire the ast lock
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	
 	fixed a null assertion warning

@@ -181,21 +181,33 @@ namespace Afrodite
 			queue_sources (sources);
 		}
 		
-		public bool try_acquire_ast (out Ast ast)
+		public bool try_acquire_ast (out Ast ast, int retry_count = 0)
 		{
 			bool res = false;
 			ast = null;
 			int retry = 0;
-			
-			while (ast == null && ast_mutex != null && retry < 20 && AtomicInt.get (ref parser_remaining_files) < 3)
+			int file_count = 0;
+			if (retry_count <= 0)
+				retry_count = 10; // default
+				
+			while (ast == null 
+				&& ast_mutex != null 
+				&& retry < retry_count 
+				&& (file_count = AtomicInt.get (ref parser_remaining_files)) <= 1)
 			{
 				res = ast_mutex.@trylock ();
 
 				if (res) {
 					ast = _ast;
 				} else {
-					GLib.Thread.usleep (100 * 1000);
-					retry++;
+					if (file_count == 0) {
+						retry = retry_count + 1; // force exit
+					} else {
+						retry++;
+						debug ("completion engine: retry %d, file %d", retry, parser_remaining_files);
+						if (retry < retry_count)
+							GLib.Thread.usleep (100 * 1000);
+					}
 				}
 			}
 
@@ -227,6 +239,7 @@ namespace Afrodite
 		private void* parse_sources ()
 		{
 			GLib.Timer timer = new GLib.Timer ();
+			double parsing_time = 0;
 			timer.start ();
 			debug ("%s: parser thread starting...", id);
 			begin_parsing (this);
@@ -234,7 +247,9 @@ namespace Afrodite
 			
 			while (true) {
 				int stamp = AtomicInt.get (ref parser_stamp);
-				
+				// set the number of sources to process + 1, because the last one
+				// will be decreased by the resolve part
+				AtomicInt.set (ref parser_remaining_files, source_queue.size + 1);
 				// get the source to parse
 				source_queue_mutex.@lock ();
 				int source_count = source_queue.size;
@@ -246,12 +261,6 @@ namespace Afrodite
 
 				Parser p = new Parser (sources);
 				p.parse ();
-				
-				
-				// do the actual merging
-				// set the number of sources to process
-				AtomicInt.set (ref parser_remaining_files, sources.size);
-				
 				
 				AstMerger merger = null;
 				foreach (SourceItem source in sources) {
@@ -294,11 +303,17 @@ namespace Afrodite
 					}
 					AtomicInt.add (ref parser_remaining_files, -1);
 				}
+				timer.stop ();
+				parsing_time = timer.elapsed ();
+				timer.reset ();
+				timer.start ();				
+				
 				ast_mutex.@lock ();
 				if (_ast != null) {
 					var resolver = new SymbolResolver ();
 					resolver.resolve (_ast);
 				}
+				AtomicInt.add (ref parser_remaining_files, -1);
 				ast_mutex.unlock ();
 				
 				
@@ -313,7 +328,7 @@ namespace Afrodite
 			sources = null;
 			
 			timer.stop ();
-			debug ("%s: parser thread exiting (elapsed time %g)...", id, timer.elapsed ());
+			debug ("%s: parser thread exiting (elapsed time parsing %g, resolving %g)...", id, parsing_time, timer.elapsed ());
 			end_parsing (this);
 			return null;
 		}
