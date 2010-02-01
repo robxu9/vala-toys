@@ -242,7 +242,7 @@ namespace Vbf.Am
 			if (node is StringLiteral) {
 				add_target (group, type, ((StringLiteral) node).data);
 			} else {
-				foreach (ConfigNode item in ((ConfigNodeList) node).values) {
+				foreach (ConfigNode item in ((ConfigNodeList) node).get_values ()) {
 					if (item is StringLiteral) {
 						add_target (group, type, ((StringLiteral) item).data);
 					} else if (item is ConfigNodeList) {

@@ -1,5 +1,11 @@
 2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/am/vbfamprojectmanager.vala:
+
+	fix a compilation issue with the upcoming vala compiler. Fixes issue #120
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbracketcompletion.vala:
 
 	smarter completion
