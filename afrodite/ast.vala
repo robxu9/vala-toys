@@ -327,9 +327,9 @@ namespace Afrodite
 			return current;
 		}
 		
-		private static bool compare_symbol_names (string name1, string name2, CompareMode mode)
+		private static bool compare_symbol_names (string? name1, string? name2, CompareMode mode)
 		{
-			if (mode == CompareMode.START_WITH) {
+			if (mode == CompareMode.START_WITH && name1 != null && name2 != null) {
 				return name1.has_prefix (name2);
 			} else {
 				return name1 == name2;
