@@ -1,3 +1,9 @@
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	smarter completion
+
 2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
 
 	* gsc-0.7.0/po/Makefile.in.in:

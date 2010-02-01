@@ -123,33 +123,36 @@ namespace Vtg
 			
 			src.get_iter_at_mark (out end, mark);
 			col = end.get_line_offset ();
-			line = end.get_line ();
-			end.set_line_offset (0);
+			if (col > 0) {
+				line = end.get_line ();
+				end.set_line_offset (0);
 
-			start = end;
-			unichar ch = end.get_char ();
+				start = end;
+				unichar ch = end.get_char ();
 
-			if (ch.isspace ()) {
-				while (end.forward_char ()) {
-					if (line != end.get_line ()) {
-						end.backward_char ();
-						break;
-					} else if (end.starts_word ()) {
-						break;
-					} else if (end.get_line_offset () >= col) {
-						break;
-					} else {
-						ch = end.get_char ();
-						if (ch.isspace () == false) {
+				if (ch.isspace ()) {
+					while (end.forward_char ()) {
+						if (line != end.get_line ()) {
+							end.backward_char ();
 							break;
+						} else if (end.starts_word ()) {
+							break;
+						} else if (end.get_line_offset () >= col) {
+							break;
+						} else {
+							ch = end.get_char ();
+							if (ch.isspace () == false) {
+								break;
+							}
 						}
 					}
 				}
+
+				if (!start.equal(end)) {
+					text = start.get_text (end);
+				}
 			}
 
-			if (!start.equal(end)) {
-				text = start.get_text (end);
-			}
 			return text;
 		}
 
@@ -200,7 +203,7 @@ namespace Vtg
  						if (ch == ';' || ch == '{') {
  							inside_block = true;
  							break;
- 						} else if (ch == '}') {
+ 						} else if (ch == '}' || ch == '(' || ch == '|' || ch == '&') {
  							inside_block = false;
  							break;
  						}
@@ -213,9 +216,24 @@ namespace Vtg
 						if (start.backward_word_start ()) {
 							buffer = start.get_slice (pos);
 							buffer = buffer.replace (" ", "").replace ("\t", "");
+							// test if is a vala keyword
 							if (buffer == "if" || buffer == "do" || buffer == "while"
 							    || buffer.has_prefix ("for")) {
 								inside_block = false;    	
+							} else {
+								// continue to move backward to really see if we are
+								// inside a { } block
+								while (start.backward_char ()) {
+									ch = start.get_char ();
+									if (ch == ';' || ch == '{' || ch == '=' || ch == '.') {
+										break;
+									} else if (ch != '\t' && ch != ' ' && ch != '\n' && ch != '\r') {
+										inside_block = false;
+										GLib.debug ("not inside %u", ch);
+									
+										break;
+									}
+								}
 							}
 						}
 					}
@@ -261,10 +279,10 @@ namespace Vtg
 						pos.backward_char ();
 						if (pos.get_char () == '/') {
 
-							buffer = "*\n%s \n%s*/".printf(indent, indent);
+							buffer = "*  */";
 							instance.insert_chars (src, buffer);
 							sender.scroll_to_mark (mark, 0, false, 0, 0);
-							instance.move_backwards (src, 2 + (int) indent.length + 1);
+							instance.move_backwards (src, 3);
 							result = true;
 						}
 					}
@@ -278,18 +296,19 @@ namespace Vtg
 						result = true;
 					} else {
 						buffer = "{";
+						string line = null;
 						if (pos.forward_line ()) {
 							TextIter end = pos;
 							end.forward_to_line_end ();
-							string line = pos.get_slice (end);
+							line = pos.get_slice (end);
 							line = line.replace (" ", "").replace ("\t", "");
-							if (StringUtils.is_null_or_empty (line) || line.has_prefix ("\n")) {
-								buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);	
-								instance.insert_chars (src, buffer);
-								sender.scroll_to_mark (mark, 0, false, 0, 0);
-								instance.move_backwards (src, 2 + (int) indent.length);
-								result = true;
-							}
+						}
+						if (StringUtils.is_null_or_empty (line) || line.has_prefix ("\n")) {
+							buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);	
+							instance.insert_chars (src, buffer);
+							sender.scroll_to_mark (mark, 0, false, 0, 0);
+							instance.move_backwards (src, 2 + (int) indent.length);
+							result = true;
 						}
 					}
 				} else if (evt.keyval == Gdk.Key_Return) {
