@@ -544,7 +544,7 @@ namespace Vtg
 				var name = Utils.get_document_name (doc);
 				Afrodite.QueryResult result = null;
 				Afrodite.Ast ast;
-				bool res = scs.completion_engine.try_acquire_ast (out ast);
+				bool res = scs.completion_engine.try_acquire_ast (out ast, 1000);
 				if (res) {
 					var options = Afrodite.QueryOptions.standard ();
 					options.all_symbols = true;
@@ -598,7 +598,8 @@ namespace Vtg
 			if (doc != null) {
 				string file = doc.get_uri ();
 				var project = _plugin_instance.project_view.current_project;
-				if (project != null) {
+
+				if (project != null && !project.is_default) {
 					if (project.contains_vala_source_file (file)) {
 						//TODO: we should get the group an issue a make in that subfolder
 						GLib.warning ("Can't compile a project file (for now)");
@@ -748,19 +749,19 @@ namespace Vtg
 				action.set_sensitive (!default_project);
 			action = _actions.get_action ("ProjectBuild");
 			if (action != null)
-				action.set_sensitive (!default_project);
+				action.set_sensitive (!default_project && !_prj_builder.is_building);
 			action = _actions.get_action ("ProjectBuildClean");
 			if (action != null)
-				action.set_sensitive (!default_project);
+				action.set_sensitive (!default_project && !_prj_builder.is_building);
 			action = _actions.get_action ("ProjectBuildCleanStamps");
 			if (action != null)
-				action.set_sensitive (!default_project);
+				action.set_sensitive (!default_project && !_prj_builder.is_building);
 			
 			var doc = _plugin_instance.window.get_active_document ();
 			bool is_vala_source = (doc != null && doc.language != null && doc.language.id == "vala");
 			action = _actions.get_action ("ProjectBuildCompileFile");
 			if (action != null)
-				action.set_sensitive (default_project && is_vala_source);
+				action.set_sensitive (default_project && is_vala_source && !_prj_builder.is_building);
 			action = _actions.get_action ("ProjectGotoMethod");
 			if (action != null)
 				action.set_sensitive (is_vala_source);
@@ -771,7 +772,7 @@ namespace Vtg
 
 			action = _actions.get_action ("ProjectBuildConfigure");
 			if (action != null)
-				action.set_sensitive (!default_project);
+				action.set_sensitive (!default_project && !_prj_builder.is_building);
 			
 			bool has_errors = (_prj_builder.error_pane.error_count + _prj_builder.error_pane.warning_count) > 0;
 			action = _actions.get_action ("ProjectBuildNextError");
@@ -783,7 +784,7 @@ namespace Vtg
 			
 			action = _actions.get_action ("ProjectBuildExecute");
 			if (action != null)
-				action.set_sensitive (!_prj_executer.is_executing && !default_project);
+				action.set_sensitive (!_prj_executer.is_executing && !default_project && !_prj_builder.is_building);
 			action = _actions.get_action ("ProjectBuildKill");
 			if (action != null)
 				action.set_sensitive (_prj_executer.is_executing && !default_project);

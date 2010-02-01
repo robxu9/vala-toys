@@ -1,5 +1,12 @@
 2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+
+	using the new delay parameter when appropriate
+	fixed the build menu items status
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gsc-0.7.0/po/Makefile.in.in:
 
 	updated by autotools build system
