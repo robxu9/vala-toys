@@ -1,5 +1,11 @@
 2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gsc-0.7.0/po/Makefile.in.in:
+
+	updated by autotools build system
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutliner.vala:
 	
 	set the delay to 1 when updating the source outliner.
