@@ -1,8 +1,15 @@
 2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	using the new delay parameter when appropriated
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 
-	using the new delay parameter when appropriate
+	using the new delay parameter when appropriated
 	fixed the build menu items status
 
 2010-02-01  Andrea Del Signore  <sejerpz@tin.it>

@@ -95,7 +95,7 @@ namespace Vtg
 		
 		public void goto_definition ()
 		{
-			Afrodite.Symbol? item = _provider.get_current_symbol_item ();
+			Afrodite.Symbol? item = _provider.get_current_symbol_item (500);
 			
 			if (item != null && item.has_source_references) {
 				try {

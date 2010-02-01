@@ -567,7 +567,7 @@ namespace Vtg
 			
 		}
 
-		public Afrodite.Symbol? get_current_symbol_item ()
+		public Afrodite.Symbol? get_current_symbol_item (int retry_count = 0)
 		{
 			string line, word, last_part;
 			int lineno, colno;
@@ -600,7 +600,7 @@ namespace Vtg
 			Afrodite.Ast ast;
 			Afrodite.Symbol? symbol = null;
 			
-			if (_completion.try_acquire_ast (out ast)) {
+			if (_completion.try_acquire_ast (out ast, retry_count)) {
 				Afrodite.QueryResult? result = null;
 				Afrodite.QueryOptions options = this.get_options_for_line (line);			
 				
@@ -633,7 +633,6 @@ namespace Vtg
 					}
 				}
 			}
-			
 			return null;
 		}
 		
