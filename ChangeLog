@@ -1,5 +1,11 @@
 2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+
+	news for the upcoming 0.7.0 release
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* afrodite/ast.vala:
 	* afrodite/completionengine.vala:

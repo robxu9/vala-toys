@@ -1,3 +1,16 @@
+Vala toys for gEdit version 0.7.0
+=================================
+
+* Improved source outliner and project viewer panes
+* Totally new completion library: welcome Afrodite!
+* Added multi-target support to the Goto to file dialog
+* Full source code outline in the Goto to symbol dialog 
+  (once known ad Go to Method)
+* Better autobookmark support, now is active also when
+  jumping in the same source with Goto Definition menu.
+* Smarter bracket completion module
+* Many other bugs fixed
+
 Vala toys for gEdit version 0.6.0
 =================================
 
