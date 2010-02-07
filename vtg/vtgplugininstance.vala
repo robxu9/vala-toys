@@ -159,8 +159,6 @@ namespace Vtg
 			var doc = tab.get_document ();
 			var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 
-			GLib.debug ("%s: ", project_manager.project.name);
-			
 			if (project_manager != null && project_manager.project.id == "vtg-default-project") {
 				check_vala_source_for_add (project_manager, doc);
 			}
@@ -273,7 +271,6 @@ namespace Vtg
 			}
 			var sc = new Vtg.SymbolCompletion (this, view, completion);
 			_scs.add (sc);
-			GLib.debug ("symbol activated for view");
 		}
 
  		public void deactivate_symbol (SymbolCompletion sc)
@@ -392,7 +389,6 @@ namespace Vtg
 			foreach (Gedit.View view in app.get_views ()) {
 				if (view.get_buffer () == sender) {
 					var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (sender);
-					GLib.debug ("on_notify_language %s: ", project_manager.project.name);
 					if (sender.language  == null || sender.language.id != "vala") {
 						if (project_manager != null && project_manager.project.id == "vtg-default-project") {
 							check_vala_source_for_remove (project_manager, sender);

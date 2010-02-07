@@ -82,7 +82,6 @@ namespace Vtg
 		
 		~ProjectManager ()
 		{
-			GLib.debug ("project manager destructor, cleanup completions");
 			cleanup_completions ();
 		}
 
@@ -284,7 +283,6 @@ namespace Vtg
 					_completions.@set (target, completion);
 
 					foreach(string path in target.get_include_dirs ()) {
-						GLib.debug ("adding path to vapi dirs %s for target %s", path, target.id);
 						completion.add_vapi_dir (path);
 					}
 

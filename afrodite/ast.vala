@@ -194,16 +194,16 @@ namespace Afrodite
 	 					Symbol parent = sym;
 	 					Symbol dummy;
 	 					
-	 					print ("lookup %s in %s", parts[i], sym.name);
+	 					//print ("lookup %s in %s", parts[i], sym.name);
 						sym = lookup_symbol (parts[i], sym.children, out dummy, options.compare_mode);
 						if (sym == null) {
 							// lookup on base types also
 							sym = lookup_name_in_base_types (parts[i], parent);
 						}
 						
-						print ("... result: %s\n", sym == null ? "not found" : sym.name);
+						//print ("... result: %s\n", sym == null ? "not found" : sym.name);
 						if (sym != null && mode == LookupMode.Type && sym.symbol_type != null) {
-							debug ("result type %s", sym.symbol_type.unresolved ? "<unresolved>" : sym.symbol_type.symbol.name);
+							//debug ("result type %s", sym.symbol_type.unresolved ? "<unresolved>" : sym.symbol_type.symbol.name);
 							
 							sym = sym.symbol_type.symbol;
 						} else {
@@ -224,16 +224,16 @@ namespace Afrodite
 		{
 			var result = new QueryResult ();
 			var first = result.new_result_item (null, root);
-			var timer = new Timer ();
+			//var timer = new Timer ();
 			
-			timer.start ();
+			//timer.start ();
 			get_child_symbols_for_path (result, options, path, first);
 			if (first.children.size > 0) {
 				result.add_result_item (first);
 				
 			}
-			timer.stop ();
-			debug ("get_symbols_for_path simbols found %d, time elapsed %g", result.children.size, timer.elapsed ());
+			//timer.stop ();
+			//debug ("get_symbols_for_path simbols found %d, time elapsed %g", result.children.size, timer.elapsed ());
 			return result;
 		}
 

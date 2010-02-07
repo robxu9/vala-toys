@@ -229,8 +229,6 @@ namespace Vtg
 										break;
 									} else if (ch != '\t' && ch != ' ' && ch != '\n' && ch != '\r') {
 										inside_block = false;
-										GLib.debug ("not inside %u", ch);
-									
 										break;
 									}
 								}

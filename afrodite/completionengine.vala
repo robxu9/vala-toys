@@ -204,7 +204,7 @@ namespace Afrodite
 						retry = retry_count + 1; // force exit
 					} else {
 						retry++;
-						debug ("completion engine: retry %d, file %d", retry, parser_remaining_files);
+						//debug ("completion engine: retry %d, file %d", retry, parser_remaining_files);
 						if (retry < retry_count)
 							GLib.Thread.usleep (100 * 1000);
 					}
@@ -241,7 +241,7 @@ namespace Afrodite
 			GLib.Timer timer = new GLib.Timer ();
 			double parsing_time = 0;
 			timer.start ();
-			debug ("%s: parser thread starting...", id);
+			//debug ("%s: parser thread starting...", id);
 			begin_parsing (this);
 			Vala.List<SourceItem> sources = new ArrayList<SourceItem> ();
 			
@@ -328,7 +328,7 @@ namespace Afrodite
 			sources = null;
 			
 			timer.stop ();
-			debug ("%s: parser thread exiting (elapsed time parsing %g, resolving %g)...", id, parsing_time, timer.elapsed ());
+			//debug ("%s: parser thread exiting (elapsed time parsing %g, resolving %g)...", id, parsing_time, timer.elapsed ());
 			end_parsing (this);
 			return null;
 		}

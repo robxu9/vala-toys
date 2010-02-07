@@ -83,7 +83,6 @@ namespace Vtg
 		
 		~SourceOutlinerView ()
 		{
-			GLib.debug ("SourceOutlinerView destructor called, cleanup");
 			_src_view.set_model (null);
 			// this method is never called? a leak?
 			deactivate ();

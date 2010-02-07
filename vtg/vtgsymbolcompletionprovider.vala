@@ -596,7 +596,6 @@ namespace Vtg
 				first_part = word; // "this"; //HACK: this won't work for static methods
 			}
 			
-			GLib.debug ("get_current_symbol_item for %s, %s", first_part, symbol_name);
 			Afrodite.Ast ast;
 			Afrodite.Symbol? symbol = null;
 			
@@ -713,26 +712,16 @@ namespace Vtg
 		
 		private Afrodite.QueryResult? get_symbol_type_for_name (QueryOptions options, Afrodite.Ast ast, SymbolCompletionTrigger? trigger, string word, string? whole_line, int line, int column)
 		{
-			GLib.debug ("get_symbol_type_for_name: %s for %s in %d,%d", word, _sb.path, line, column);
 			Afrodite.QueryResult result = null;
-			Timer timer = new Timer ();
-			timer.start ();
 			result = ast.get_symbol_type_for_name_and_path (options, word, _sb.path, line, column);
-			timer.stop ();
-			GLib.debug ("get_symbol_type_for_name: found %d symbols in %g", result.items_created, timer.elapsed ());
 			
 			return result;
 		}
 
 		private Afrodite.QueryResult? get_symbol_for_name (QueryOptions options, Afrodite.Ast ast, SymbolCompletionTrigger? trigger, string word, string? whole_line, int line, int column)
 		{
-			GLib.debug ("get_symbol_for_name: %s for %s in %d,%d", word, _sb.path, line, column);
 			Afrodite.QueryResult result = null;
-			Timer timer = new Timer ();
-			timer.start ();
 			result = ast.get_symbol_for_name_and_path (options, word, _sb.path, line, column);
-			timer.stop ();
-			GLib.debug ("get_symbol_for_name: found %d symbols in %g", result.items_created, timer.elapsed ());
 			
 			return result;
 		}

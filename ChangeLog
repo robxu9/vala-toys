@@ -1,5 +1,24 @@
 2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	removed some debug code
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	removed some 
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectsearchresultsview.vala:
 
 	fixed a segmentation fault
