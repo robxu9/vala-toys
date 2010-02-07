@@ -19,8 +19,6 @@ PKG_CHECK_MODULES(DEP, gtksourceview-2.0)
 AC_SUBST(DEP_CFLAGS)
 AC_SUBST(DEP_LIBS)
 
-LT_INIT([disable-shared])
-
 dnl Checks for programs.
 AC_PROG_INSTALL
 AC_PROG_CC

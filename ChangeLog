@@ -1,5 +1,16 @@
 2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gsc-0.7.0/configure:
+	* gsc-0.7.0/configure.ac:
+
+	reenabled shared library build because there are some
+	problem building vtg on 64bit systems.
+
+	Even if the build is enabled vtg still links with the
+	statically builded version of Gsc
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 
 	post release version bump	
