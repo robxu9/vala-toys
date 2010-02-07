@@ -1,5 +1,11 @@
 2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	post release version bump	
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* README:
 
 	update the readme file to reflect the new dir structure
