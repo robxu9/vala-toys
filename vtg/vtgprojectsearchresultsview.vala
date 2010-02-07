@@ -187,14 +187,23 @@ namespace Vtg
 		 */
 		private void add_message (string file, string message)
 		{
-			string[] parts = message.split (":", 2);
-			int line = parts[0].to_int ();
-			string text = Pango.trim_string (parts[1]);
+			string[] lines = message.split ("\n");
+			foreach (string line in lines) {
+				if (StringUtils.is_null_or_empty (line))
+					continue;
+					
+				string[] parts = line.split (":", 2);
+				if (parts[0] != null && parts.length > 1) {
+					int line_number = parts[0].to_int ();
+					string text = Pango.trim_string (parts[1]);
 
-			TreeIter iter;
-			_model.append (out iter);
-			_model.set (iter, 0, file, 1, line, 2, text, 3, _project);
-			_match_count++;
+					TreeIter iter;
+					_model.append (out iter);
+					_model.set (iter, 0, file, 1, line_number, 2, text, 3, _project);
+					_match_count++;
+				}
+			}
+
 		}
 	}
 }
