@@ -301,7 +301,7 @@ namespace Vtg
 							line = pos.get_slice (end);
 							line = line.replace (" ", "").replace ("\t", "");
 						}
-						if (StringUtils.is_null_or_empty (line) || line.has_prefix ("\n")) {
+						if (StringUtils.is_null_or_empty (line) || line.has_prefix ("\n") || line.has_prefix ("}")) {
 							buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);	
 							instance.insert_chars (src, buffer);
 							sender.scroll_to_mark (mark, 0, false, 0, 0);

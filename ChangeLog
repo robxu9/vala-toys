@@ -1,5 +1,11 @@
 2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+
+	fixed bracket completion of { when there is just a } on a new line
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gsc-0.7.0/configure:
 	* gsc-0.7.0/configure.ac:
 
