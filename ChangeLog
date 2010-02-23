@@ -1,5 +1,14 @@
 2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ui/vtg.ui:
+	* vtg/vtgparametersdialog.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgutils.vala:
+
+	Last compile options are not saved. Fixes issue #123
+
+2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/datatype.vala:
 	* afrodite/queryresult.vala:

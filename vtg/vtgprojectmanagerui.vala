@@ -660,9 +660,8 @@ namespace Vtg
 						return;
 						
 					pars = params_dialog.parameters;
-					if (!Vtg.Caches.cache_contains (cache, pars)) {
-						Vtg.Caches.cache_add (cache, pars);
-					}
+					Vtg.Caches.cache_remove (cache, pars);
+					Vtg.Caches.cache_add (cache, pars);
 				}
 				
 				var project = _plugin_instance.project_view.current_project;

@@ -118,6 +118,25 @@ namespace Vtg
 			return found;
 		}
 		
+		public static bool cache_remove (Gtk.ListStore cache, string data)
+		{
+			TreeIter iter;
+			bool found = false;
+			
+			if (cache.get_iter_first (out iter)) {
+				do {
+					string tmp;
+					cache.get (iter, 0, out tmp);
+					if (tmp == data) {
+						found = true;
+						cache.remove (iter);
+						break;
+					}
+				} while (cache.iter_next (ref iter));
+			}
+			return found;
+		}
+		
 		public static void cache_add (Gtk.ListStore cache, string data)
 		{
 			TreeIter iter;

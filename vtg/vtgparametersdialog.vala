@@ -65,6 +65,7 @@ namespace Vtg.Interaction
 				string val;
 				completions.get (iter, 0, out val);
 				entry.set_text (val);
+				entry.select_region (0, -1);
 			}
 		}
 
