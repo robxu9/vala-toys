@@ -1,3 +1,9 @@
+2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	GEDIT_REQUIRED should be 2.28 fixes issue #121
+
 2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbracketcompletion.vala:
