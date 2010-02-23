@@ -1,5 +1,14 @@
 2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbftarget.vala:
+	* vtg/vtgprojectsearch.vala:
+
+	Search in project doesn't work if source directory 
+	doesn't contains a vapi file. Fixes issue #105
+
+2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 
 	Same fix of the compile options, but for the configure menu item

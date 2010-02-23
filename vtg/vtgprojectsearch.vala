@@ -93,7 +93,10 @@ namespace Vtg
 					foreach (Group group in project.get_groups ()) {
 						foreach (Target target in group.get_targets ()) {
 							if (target.has_sources_of_type (FileTypes.VALA_SOURCE)) {
-								dirs = dirs.concat (" ", Path.build_filename (group.id, "*.vala").replace (" ", "\\ "), " ", Path.build_filename (group.id, "*.vapi").replace (" ", "\\ "));
+								dirs = dirs.concat (" ", Path.build_filename (group.id, "*.vala").replace (" ", "\\ "));
+							}
+							if (target.has_file_with_extension ("vapi")) {
+								dirs = dirs.concat (" ", Path.build_filename (group.id, "*.vapi").replace (" ", "\\ "));
 							}
 						}
 					}

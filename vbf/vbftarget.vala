@@ -101,6 +101,19 @@ namespace Vbf
 			
 			return false;
 		}
+
+		public bool has_file_with_extension (string extension)
+		{
+			var ext = ".%s".printf (extension);
+			foreach (File file in files) {
+				if (file.filename.has_suffix (ext)) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
 		public Vala.List<Vbf.File> get_files ()
 		{
 			return new ReadOnlyList<Vbf.File> (files);

@@ -118,6 +118,7 @@ namespace Vbf {
 		public Vbf.Source? get_source (string filename);
 		public Vala.List<Vbf.Source> get_sources ();
 		public bool has_file_of_type (Vbf.FileTypes type);
+		public bool has_file_with_extension (string extension);
 		public bool has_sources_of_type (Vbf.FileTypes type);
 		public void remove_source (Vbf.Source source);
 	}
