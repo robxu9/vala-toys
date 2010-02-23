@@ -27,13 +27,18 @@ namespace Afrodite
 {
 	public class ResultItem
 	{
-		public unowned Symbol symbol;
-		public unowned ResultItem parent;
-		public Vala.List<ResultItem> children = new Vala.ArrayList <ResultItem> ();		
+		private Vala.List<ResultItem> _children = new Vala.ArrayList <ResultItem> ();
+
+		public unowned Symbol symbol { get; set; }
+		public unowned ResultItem parent { get; set; }
+		public Vala.List<ResultItem> children {
+			get{ return _children; }
+			set{ _children = value; }
+		}
 		
 		public void add_result_item (ResultItem? item)
 		{
-			children.add (item);
+			_children.add (item);
 		}
 		
 		~ResultItem ()

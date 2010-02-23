@@ -27,7 +27,11 @@ namespace Afrodite
 {
 	public class QueryResult
 	{
-		public Vala.List<ResultItem> children = new Vala.ArrayList <ResultItem> ();
+		public Vala.List<ResultItem> children {
+			get{ return _children; }
+			set{ _children = value; }
+		}
+		private Vala.List<ResultItem> _children = new Vala.ArrayList <ResultItem> ();
 		public int items_created = 0;
 		
 		public bool is_empty

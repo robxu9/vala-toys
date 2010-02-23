@@ -25,10 +25,10 @@ namespace Afrodite
 {
 	public class SourceReference
 	{
-		public unowned SourceFile file = null;
-		public int first_line = 0;
-		public int last_line = 0;
-		public int first_column = 0;
-		public int last_column = 0;
+		public unowned SourceFile file { get; set; }
+		public int first_line { get; set; }
+		public int last_line { get; set; }
+		public int first_column { get; set; }
+		public int last_column { get; set; }
 	}
 }

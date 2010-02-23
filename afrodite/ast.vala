@@ -28,19 +28,25 @@ namespace Afrodite
 	
 	public class Ast
 	{
-		public Symbol root = new Symbol (null, null);
-		public Vala.List<SourceFile> source_files = null;
+		private Symbol _root = new Symbol (null, null);
+		
+		public Symbol root {
+			get { return _root; }
+			set { _root = value; }
+		}
+
+		public Vala.List<SourceFile> source_files { get; set; }
 	
 		public Symbol? lookup (string fully_qualified_name, out Symbol? parent)
 		{
 			Symbol result = null;
 			
-			if (root.has_children) {
-				result = lookup_symbol (fully_qualified_name, root.children, out parent, CompareMode.EXACT);
+			if (_root.has_children) {
+				result = lookup_symbol (fully_qualified_name, _root.children, out parent, CompareMode.EXACT);
 			}
 			
 			if (parent == null) {
-				parent = root;
+				parent = _root;
 			}
 			return result;
 		}
@@ -223,7 +229,7 @@ namespace Afrodite
 		public QueryResult get_symbols_for_path (QueryOptions options, string path)
 		{
 			var result = new QueryResult ();
-			var first = result.new_result_item (null, root);
+			var first = result.new_result_item (null, _root);
 			//var timer = new Timer ();
 			
 			//timer.start ();

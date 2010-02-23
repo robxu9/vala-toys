@@ -1,5 +1,17 @@
 2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/datatype.vala:
+	* afrodite/queryresult.vala:
+	* afrodite/resultitem.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/sourcereference.vala:
+	* afrodite/symbol.vala:
+
+	Change public fields to properties. Patch by Levi Bard fixes issue #122
+
+2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 
 	GEDIT_REQUIRED should be 2.28 fixes issue #121

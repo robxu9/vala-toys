@@ -29,23 +29,27 @@ namespace Afrodite
 		public static VoidType VOID = new VoidType ();
 		public static EllipsisType ELLIPSIS = new EllipsisType ();
 		
-		public unowned Symbol parent = null;
-		public Vala.List<unowned Symbol> children = null;
+		public unowned Symbol parent { get; set; }
+		public Vala.List<unowned Symbol> children { get; set; }
 		public Vala.List<unowned Symbol> resolve_targets = null; // contains a reference to symbols of whose this symbol is a resolved reference for any target data type
 		
-		public string name = null;
-		public string fully_qualified_name = null;
+		public string name { get; set; }
+		public string fully_qualified_name { get; set; }
 		
-		public DataType return_type = null; // real symbol return type
-		public string type_name = null;
+		public DataType return_type { get; set; } // real symbol return type
+		public string type_name { get; set; }
 		
-		public Vala.List<SourceReference> source_references = null;
-		public Vala.List<DataType> parameters = null;
-		public Vala.List<DataType> local_variables = null;
-		public Vala.List<DataType> base_types = null;
-		public Vala.List<Symbol> generic_type_arguments = null;
+		public Vala.List<SourceReference> source_references { get; set; }
+		public Vala.List<DataType> parameters { get; set; }
+		public Vala.List<DataType> local_variables { get; set; }
+		public Vala.List<DataType> base_types { get; set; }
+		public Vala.List<Symbol> generic_type_arguments { get; set; }
 		
-		public SymbolAccessibility access = SymbolAccessibility.INTERNAL;
+		public SymbolAccessibility access {
+			get{ return _access; }
+			set{ _access = value; }
+		}
+		private SymbolAccessibility _access = SymbolAccessibility.INTERNAL;
 		public MemberBinding binding = MemberBinding.INSTANCE;
 		public bool is_virtual = false;
 		public bool is_abstract = false;

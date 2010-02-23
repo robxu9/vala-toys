@@ -25,19 +25,19 @@ namespace Afrodite
 {
 	public class DataType
 	{		
-		public unowned Symbol? symbol = null;
+		public unowned Symbol? symbol { get; set; }
 			
-		public string name = null;
-		public bool is_array = false;
-		public bool is_pointer = false;
-		public bool is_generic = false;
-		public bool is_nullable = false;
-		public bool is_out = false;
-		public bool is_ref = false;
-		public bool is_dynamic = false;
-		public bool is_ellipsis = false;
-		public string default_expression = null;
-		public Vala.List<DataType> generic_types = null;
+		public string name { get; set; }
+		public bool is_array { get; set; }
+		public bool is_pointer { get; set; }
+		public bool is_generic { get; set; }
+		public bool is_nullable { get; set; }
+		public bool is_out { get; set; }
+		public bool is_ref { get; set; }
+		public bool is_dynamic { get; set; }
+		public bool is_ellipsis { get; set; }
+		public string default_expression { get; set; }
+		public Vala.List<DataType> generic_types { get; set; }
 		
 		private string _type_name = null;
 		

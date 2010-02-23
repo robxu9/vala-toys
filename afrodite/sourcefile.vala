@@ -26,8 +26,8 @@ namespace Afrodite
 {
 	public class SourceFile
 	{
-		public Vala.List<Symbol> using_directives = null;
-		public Vala.List<Symbol> symbols = null;
+		public Vala.List<Symbol> using_directives { get; set; }
+		public Vala.List<Symbol> symbols { get; set; }
 		
 		public string filename {
 			get; set;
