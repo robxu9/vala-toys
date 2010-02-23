@@ -1,5 +1,11 @@
 2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+
+	Same fix of the compile options, but for the configure menu item
+
+2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ui/vtg.ui:
 	* vtg/vtgparametersdialog.vala:
 	* vtg/vtgprojectmanagerui.vala:

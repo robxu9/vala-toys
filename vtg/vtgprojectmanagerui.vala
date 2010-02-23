@@ -678,9 +678,8 @@ namespace Vtg
 				if (params_dialog.run () == ResponseType.OK) {
 					var project = _plugin_instance.project_view.current_project;
 					var params = params_dialog.parameters;
-					if (!Vtg.Caches.cache_contains (cache, params)) {
-						Vtg.Caches.cache_add (cache, params);
-					}
+					Vtg.Caches.cache_remove (cache, params);
+					Vtg.Caches.cache_add (cache, params);
 					Vtg.Plugin.main_instance.project_save_all (project);
 					_prj_builder.configure (project, params);
 				}
