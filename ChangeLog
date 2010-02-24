@@ -1,3 +1,10 @@
+2010-02-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgutils.vala:
+
+	add a message dialog when project operation fails
+
 2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vbf/vbf-1.0.vapi:

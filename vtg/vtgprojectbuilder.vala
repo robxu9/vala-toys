@@ -37,6 +37,7 @@ namespace Vtg
 		private bool is_bottom_pane_visible;
 		private int last_exit_code = 0;
 		private Pid _child_pid;
+		private string _operation = null;
 		
 		public signal void build_start ();
 		public signal void build_exit (int exit_status);
@@ -92,6 +93,7 @@ namespace Vtg
 				log.log_message (OutputTypes.MESSAGE, "%s\n".printf (cmd));
 				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
+					_operation = _("File '%s': compilation").printf (filename);
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize ();
 					if (last_exit_code == 0)
@@ -138,6 +140,7 @@ namespace Vtg
 				log.log_message (OutputTypes.MESSAGE, "%s\n".printf (cmd));
 				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
+					_operation = _("Project '%s': build").printf (project.name);
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
@@ -192,6 +195,7 @@ namespace Vtg
 				log.log_message (OutputTypes.MESSAGE, "%s\n".printf (cmd));
 				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
+					_operation = _("Project '%s': configuration").printf (project.name);
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
@@ -237,6 +241,7 @@ namespace Vtg
 				log.log_message (OutputTypes.MESSAGE, "%s %s\n".printf (MAKE, "clean"));
 				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE, "clean" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
+					_operation = _("Project '%s': cleaning").printf (project.name);
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
 					_build_view.initialize (project_manager);
 					if (last_exit_code == 0)
@@ -271,7 +276,14 @@ namespace Vtg
 			log.stop_watch (_child_watch_id);
 			last_exit_code = Process.exit_status (status);
 			log.log_message (OutputTypes.MESSAGE, _("\ncompilation end with exit status %d\n").printf (last_exit_code));
-			_build_view.activate ();
+			
+			if (last_exit_code != 0)
+				Interaction.info_message (_("%s failed").printf (_operation));
+				
+			/* Activate the build view on success or on error but when there are error messages */
+			if (last_exit_code == 0 || (last_exit_code != 0 && _build_view.error_count > 0))
+				_build_view.activate ();
+			
 			_child_watch_id = 0;
 			this.build_exit (last_exit_code);
 			

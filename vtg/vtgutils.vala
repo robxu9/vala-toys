@@ -53,6 +53,17 @@ namespace Vtg
 			dialog.run ();
 			dialog.destroy ();
 		}
+		
+		public static void info_message (string message)
+		{
+			var dialog = new MessageDialog (null,
+                                  DialogFlags.DESTROY_WITH_PARENT,
+                                  MessageType.INFO,
+                                  ButtonsType.CLOSE,
+			          message);
+			dialog.run ();
+			dialog.destroy ();
+		}
 	}
 	
 	public class Caches
