@@ -109,9 +109,11 @@ namespace Vtg
 		public override void update_ui (Gedit.Window window)
 		{
 			var view = window.get_active_view ();
+			var instance = get_plugin_instance_for_window (window);
+
+			Gedit.Document doc = null;
 			if (view != null) {
-				var doc =  (Gedit.Document) view.get_buffer ();
-				var instance = get_plugin_instance_for_window (window);
+				doc =  (Gedit.Document) view.get_buffer ();
 			
 				if (doc != null) {
 					var prj = _projects.get_project_manager_for_document (doc);
@@ -122,6 +124,9 @@ namespace Vtg
 						instance.source_outliner.active_view = view;
 				}
 			}
+
+			if (view == null || doc == null || !Utils.is_vala_doc (doc))
+				instance.source_outliner.active_view = null;
 		}
 
 		private void on_configuration_property_changed (GLib.Object sender, ParamSpec param)

@@ -165,9 +165,12 @@ namespace Vtg
 			
 			if (doc.language != null && doc.language.id == "vala") {
 				var view = tab.get_view ();
-				GLib.debug ("init view");
-				
 				instance.initialize_view (project_manager, view);
+				if (instance.source_outliner != null) {
+					GLib.debug ("setup outliner for %s", Utils.get_document_name (doc));
+					instance.source_outliner.active_view = view;
+				}
+
 			}
 			instance.initialize_document (doc);
 		}

@@ -47,13 +47,18 @@ namespace Vtg
 						cleanup_document ();
 						if (completion_setup)
 							cleanup_completion_with_view (_active_view);
+
+						_outliner_view.clear_view ();
 					}
 					_active_view = value;
 					if (_active_view != null) {
 						var doc = (Document) _active_view.get_buffer ();
 						setup_document (doc);
 						if (Utils.is_vala_doc (doc)) {
-							update_source_outliner_view ();
+							// update source outliner view on the idle handler
+							// to be sure that the sourceview document was
+							// loaded from gEdit
+							setup_idle ();
 							setup_completion_with_view (_active_view);
 						}
 					}

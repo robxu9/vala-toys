@@ -1,3 +1,11 @@
+2010-03-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	Fix for: the SourceOutliner pane is not cleaned when last tab is closed. Fixes issue #127
+
 2010-02-24  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectbuilder.vala:
