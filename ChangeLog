@@ -1,5 +1,11 @@
 2010-03-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	bump Gtk+ minimum required version. Fixes issue #129
+
+2010-03-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugin.vala:
 	* vtg/vtgplugininstance.vala:
 	* vtg/vtgsourceoutliner.vala:
