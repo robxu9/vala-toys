@@ -164,6 +164,7 @@ AC_CONFIG_FILES([
 	Makefile
 	afrodite/Makefile
 	gen-project/Makefile
+	gen-project/ui/Makefile
 	gen-project/licenses/Makefile
 	doc/Makefile
 	vtg/Makefile

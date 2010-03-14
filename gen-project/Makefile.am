@@ -1,6 +1,6 @@
 NULL =
 
-SUBDIRS = licenses
+SUBDIRS = ui licenses
 
 #VALAC = valac
 

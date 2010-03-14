@@ -1,5 +1,16 @@
 2010-03-14  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/ui/Makefile.am:
+	* gen-project/ui/gen-project.ui:
+	* configure.ac:
+	* gen-project/Makefile.am:
+	* gen-project/valaprojectgenerator.vala:
+	* po/POTFILES.in:
+
+	ported vala-gen-project to GtkBuider
+
+2010-03-14  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 
 	bump Gtk+ minimum required version. Fixes issue #129
