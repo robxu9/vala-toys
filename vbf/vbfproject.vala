@@ -49,7 +49,7 @@ namespace Vbf
 		
 		public Vala.List<Group> get_groups ()
 		{
-			return new ReadOnlyList<Group> (groups);
+			return groups;
 		}
 		
 		public Group? get_group (string id)
@@ -70,7 +70,7 @@ namespace Vbf
 		
 		public Vala.List<Module> get_modules ()
 		{
-			return new ReadOnlyList<Module> (modules);
+			return modules;
 		}
 		
 		internal void add_module (Module module)
@@ -80,7 +80,7 @@ namespace Vbf
 		
 		public Vala.List<Variable> get_variables ()
 		{
-			return new ReadOnlyList<Variable> (variables);
+			return variables;
 		}
 		
 		internal void add_variable (Variable variable)

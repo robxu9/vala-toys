@@ -41,7 +41,7 @@ namespace Vbf
 		
 		public Vala.List<Package> get_packages ()
 		{
-			return new ReadOnlyList<Package> (packages);
+			return packages;
 		}
 		
 		internal void add_package (Package package)

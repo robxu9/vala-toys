@@ -1,3 +1,15 @@
+2010-04-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* vbf/vbfconfignodelist.vala:
+	* vbf/vbfgroup.vala:
+	* vbf/vbfmodule.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbftarget.vala:
+	* vbf/vbfvariable.vala:
+
+	fix compilation issues with new valac 0.8.0. Fix issue #131
+
 2010-03-14  Andrea Del Signore  <sejerpz@tin.it>
 
 	* gen-project/ui/Makefile.am:

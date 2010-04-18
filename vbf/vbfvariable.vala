@@ -38,7 +38,7 @@ namespace Vbf
 		
 		public Vala.List<Variable> get_childs ()
 		{
-			return new ReadOnlyList<Variable> (childs);
+			return childs;
 		}
 		
 		public void add_child (Variable variable)

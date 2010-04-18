@@ -838,9 +838,9 @@ namespace Afrodite
 				return;
 
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
-				_inferred_type.type_name = lit.get_type_name ();
-			else if (_inferred_type.type_name != lit.get_type_name ())
-				_inferred_type.type_name = "%s.%s".printf (lit.get_type_name (), _inferred_type.type_name);
+				_inferred_type.type_name = lit.type_name;
+			else if (_inferred_type.type_name != lit.type_name)
+				_inferred_type.type_name = "%s.%s".printf (lit.type_name, _inferred_type.type_name);
 		}
 
 		public override void visit_real_literal (RealLiteral lit) 

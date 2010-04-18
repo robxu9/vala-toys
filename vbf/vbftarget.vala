@@ -57,7 +57,7 @@ namespace Vbf
 		
 		public Vala.List<Source> get_sources ()
 		{
-			return new ReadOnlyList<Source> (sources);
+			return sources;
 		}
 		
 		public Source? get_source (string filename)
@@ -116,7 +116,7 @@ namespace Vbf
 		
 		public Vala.List<Vbf.File> get_files ()
 		{
-			return new ReadOnlyList<Vbf.File> (files);
+			return files;
 		}
 		
 		internal void add_file (Vbf.File file)
@@ -126,7 +126,7 @@ namespace Vbf
 
 		public Vala.List<Package> get_packages ()
 		{
-			return new ReadOnlyList<Package> (packages);
+			return packages;
 		}
 				
 		internal void add_package (Package package)
@@ -136,7 +136,7 @@ namespace Vbf
 
 		public Vala.List<string> get_include_dirs ()
 		{
-			return new ReadOnlyList<string> (include_dirs);
+			return include_dirs;
 		}
 		
 		internal void add_include_dir (string dir)
@@ -146,7 +146,7 @@ namespace Vbf
 
 		public Vala.List<string> get_built_libraries ()
 		{
-			return new ReadOnlyList<string> (built_libraries);
+			return built_libraries;
 		}
 		
 		internal void add_built_library (string dir)

@@ -29,7 +29,7 @@ namespace Vbf
 		
 		public Vala.List<ConfigNode> get_values ()
 		{
-			return new ReadOnlyList<ConfigNode> (values);
+			return values;
 		}
 
 		public void add_value (ConfigNode val)

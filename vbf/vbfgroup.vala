@@ -55,7 +55,7 @@ namespace Vbf
 		
 		public Vala.List<Target> get_targets ()
 		{
-			return new ReadOnlyList<Target> (targets);
+			return targets;
 		}
 
 		public bool contains_target (string id)
@@ -80,7 +80,7 @@ namespace Vbf
 		
 		public Vala.List<Package> get_packages ()
 		{
-			return new ReadOnlyList<Package> (packages);
+			return packages;
 		}
 		
 		
@@ -91,7 +91,7 @@ namespace Vbf
 				
 		public Vala.List<string> get_include_dirs ()
 		{
-			return new ReadOnlyList<string> (include_dirs);
+			return include_dirs;
 		}
 		
 		internal void add_include_dir (string dir)
@@ -101,7 +101,7 @@ namespace Vbf
 
 		public Vala.List<string> get_built_libraries ()
 		{
-			return new ReadOnlyList<string> (built_libraries);
+			return built_libraries;
 		}
 		
 		internal void add_built_library (string dir)
@@ -111,12 +111,12 @@ namespace Vbf
 						
 		public Vala.List<Group> get_subgroups ()
 		{
-			return new ReadOnlyList<Group> (subgroups);
+			return subgroups;
 		}
 
 		public Vala.List<Variable> get_variables ()
 		{
-			return new ReadOnlyList<Variable> (variables);
+			return variables;
 		}
 		
 		internal void add_variable (Variable variable)
