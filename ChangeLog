@@ -1,5 +1,16 @@
 2010-04-18  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+	* vtg/vtgutils.vala:
+
+	fix 'weak' deprecated syntax warinings
+
+2010-04-18  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* vbf/vbfconfignodelist.vala:
 	* vbf/vbfgroup.vala:

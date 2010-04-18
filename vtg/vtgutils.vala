@@ -297,7 +297,7 @@ namespace Vtg
 			return _builder;
 		}
 		
-		public static weak Proposal[] get_proposal_cache ()
+		public static unowned Proposal[] get_proposal_cache ()
 		{
 			if (!_initialized) {
 				initialize ();

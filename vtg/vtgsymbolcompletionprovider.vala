@@ -307,7 +307,7 @@ namespace Vtg
 			_list = null;
 		}
 
-		public weak string get_name ()
+		public unowned string get_name ()
 		{
 			return "SymbolCompletionProvider";
 		}

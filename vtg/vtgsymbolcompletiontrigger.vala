@@ -73,7 +73,7 @@ namespace Vtg
 			return true;
 		}
 
-		public weak string get_name ()
+		public unowned string get_name ()
 		{
 			return this._trigger_name;
 		}

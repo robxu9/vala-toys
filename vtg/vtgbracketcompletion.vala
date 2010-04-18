@@ -112,7 +112,7 @@ namespace Vtg
 			src.place_cursor (pos);
 		}
 
-		private weak string current_indentation_text (TextBuffer src)
+		private unowned string current_indentation_text (TextBuffer src)
 		{
 			weak TextMark mark = (TextMark) src.get_insert ();
 			TextIter end;

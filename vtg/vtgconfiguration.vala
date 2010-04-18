@@ -235,7 +235,7 @@ namespace Vtg
 			}
 		}
 
-		public weak Gtk.Widget? get_configuration_dialog ()
+		public unowned Gtk.Widget? get_configuration_dialog ()
 		{
 			try {
 				var builder = new Gtk.Builder ();

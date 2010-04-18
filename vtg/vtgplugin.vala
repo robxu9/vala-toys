@@ -101,7 +101,7 @@ namespace Vtg
 			return true;
 		}
 
-		public override weak Gtk.Widget? create_configure_dialog ()
+		public override unowned Gtk.Widget? create_configure_dialog ()
 		{
 			return _config.get_configuration_dialog ();
 		}
