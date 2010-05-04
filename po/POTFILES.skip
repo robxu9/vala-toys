@@ -13,6 +13,8 @@ vtg/vtgprojectmanagerui.c
 vtg/vtgprojectview.c
 vtg/vtgprojectsearch.c
 vtg/vtgprojectsearchresultsview.c
-gen-project/valaprojectgenerator.c
+gen-project/libgen-project/valaprojectgenerator.c
+gen-project/main.c
+gen-project/valagenprojectdialog.c
 vtg/vtgsourceoutlinerview.c
 vtg/vtgsymbolcompletionprovider.c

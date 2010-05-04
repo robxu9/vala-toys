@@ -49,7 +49,9 @@ vbf/vbfconfignodelist.vala
 vbf/vbfconfignodepair.vala
 vbf/am/vbfamprojectmanager.vala
 #gen-project
-gen-project/valaprojectgenerator.vala
+gen-project/libgen-project/valaprojectgenerator.vala
+gen-project/main.vala
+gen-project/valagenprojectdialog.vala
 [type: getttext/glade]gen-project/ui/gen-project.ui
 #gsc completion
 gsc-0.7.0/gtksourcecompletion/gsc-completion.c

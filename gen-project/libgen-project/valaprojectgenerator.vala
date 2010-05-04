@@ -22,7 +22,7 @@
  * 	Nicolas Joseph <nicolas.joseph@valaide.org>
  */
 
-using Gtk;
+using GLib;
 
 public enum Vala.ProjectType {
 	CONSOLE_APPLICATION,
@@ -54,12 +54,12 @@ public class Vala.ProjectOptions {
   }
 }
 
-class Vala.ProjectGenerator : GLib.Object {
+public class Vala.ProjectGenerator : GLib.Object {
 	private string namespace_name;
 	private string make_name;
 	private string upper_case_make_name;
 
-  public ProjectOptions options { get; construct; }
+	public ProjectOptions options { get; construct; }
 
 	public ProjectGenerator (ProjectOptions options) {
 	  GLib.Object (options: options);

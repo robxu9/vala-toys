@@ -1,5 +1,16 @@
 2010-05-04  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+	* gen-project/Makefile.am:
+	* gen-project/libgen-project/valaprojectgenerator.vala:
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+
+	Refactor gen-project and splitted in an ui frontend and 
+	a convenience (static) library.
+
+2010-05-04  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/main.vala:
 	* gen-project/valagenprojectdialog.vala:
 	* gen-project/Makefile.am:
