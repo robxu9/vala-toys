@@ -1,3 +1,13 @@
+2010-05-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/main.vala:
+	* gen-project/valagenprojectdialog.vala:
+	* gen-project/Makefile.am:
+	* gen-project/valaprojectgenerator.vala:
+	* THANKS
+
+	Split gen-project in ui + backend. Patch by Nicolas Joseph
+
 2010-04-18  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgbracketcompletion.vala:

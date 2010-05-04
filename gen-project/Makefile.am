@@ -18,6 +18,8 @@ bin_PROGRAMS = \
 	$(NULL)
 
 vala_gen_project_VALASOURCES = \
+	main.vala \
+	valagenprojectdialog.vala \
 	valaprojectgenerator.vala \
 	$(NULL)
 
