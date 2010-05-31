@@ -1,3 +1,9 @@
+2010-05-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+
+	gEdit async file save workaround. Fixes issue #134
+
 2010-05-26  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/symbolresolver.vala:
