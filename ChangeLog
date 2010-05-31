@@ -1,3 +1,10 @@
+2010-06-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+	* afrodite/Makefile.am:
+
+	added a simple test program for afrodite
+
 2010-05-31  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgplugin.vala:

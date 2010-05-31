@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
 
-BUILT_SOURCES = libafrodite.vala.stamp
+BUILT_SOURCES = libafrodite.vala.stamp afroditetest.vala.stamp
 
 if ENABLE_DEBUG
         DEBUG = --Xcc "-g" --Xcc "-O0"
@@ -20,6 +20,8 @@ else
 endif
 
 lib_LTLIBRARIES = libafrodite.la
+
+noinst_PROGRAMS = afroditetest
 
 libafrodite_la_VALASOURCES = \
 	astmerger.vala \
@@ -67,10 +69,27 @@ libafrodite_la_LIBADD = \
 	$(AFRODITE_LIBS) \
 	$(NULL)
 
+afroditetest_VALASOURCES = \
+	afroditetest.vala \
+	$(NULL)
+
+afroditetest_SOURCES = \
+	$(afroditetest_VALASOURCES:.vala=.c) \
+	$(NULL)
+
+afroditetest.vala.stamp: $(afroditetest_VALASOURCES)
+	$(VALAC) $(DEBUG) -C --vapidir ../vapi --vapidir ./ --pkg afrodite-1.0 --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/afrodite $^
+	touch $@
+
+afroditetest_LDADD = \
+	$(AFRODITE_LIBS) \
+	libafrodite.la  \
+	$(NULL)
 
 EXTRA_DIST = \
 	$(libafrodite_la_VALASOURCES) \
 	libafrodite.vala.stamp \
+	afroditetest.vala.stamp \
 	$(NULL)
 
 DISTCLEANFILES = \
