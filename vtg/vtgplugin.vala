@@ -222,20 +222,25 @@ namespace Vtg
 			saving = false;
 		}
 		
+		private void save_doc_sync (PluginInstance instance, Gedit.Document doc)
+		{
+			//HACK: save the gEdit document synchronously
+			saving = true;
+			ulong id = Signal.connect (doc, "saved", (GLib.Callback) this.on_document_saved, this);
+			Gedit.commands_save_document (instance.window, doc);
+			while (saving) {
+				MainContext.default().iteration (false);
+			}
+			doc.disconnect (id);
+		}
+		
 		internal void project_save_all (ProjectManager project)
 		{
 			foreach (PluginInstance instance in _instances) {
 				foreach (Gedit.Document doc in instance.window.get_unsaved_documents ()) {
 					var filename = Utils.get_document_name (doc);
 					if (!StringUtils.is_null_or_empty (filename) && project.contains_filename (filename)) {
-						//TEMP HACK: save a doc sync
-						saving = true;
-						ulong id = Signal.connect (doc, "saved", (GLib.Callback) this.on_document_saved, this);
-						Gedit.commands_save_document (instance.window, doc);
-						while (saving) {
-							MainContext.default().iteration (false);
-						}
-						doc.disconnect (id);
+						this.save_doc_sync (instance, doc);
 					}
 				}
 			}

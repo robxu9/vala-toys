@@ -1,5 +1,11 @@
 2010-05-31  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugin.vala:
+
+	refactor the sync save code
+
+2010-05-31  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	reparse all document on save
