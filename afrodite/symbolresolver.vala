@@ -90,6 +90,10 @@ namespace Afrodite
 				if (symbol.has_source_references) {
 					foreach (SourceReference reference in symbol.source_references) {
 						var file = reference.file;
+						if (file.using_directives == null) {
+							warning ("file without any using directive: %s", file.filename);
+							continue;
+						}
 						foreach (Symbol using_directive in file.using_directives) {
 							var ns = _ast.lookup (using_directive.fully_qualified_name, out parent);
 						
