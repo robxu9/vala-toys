@@ -68,6 +68,7 @@ namespace Vtg
 			_symbol_completion.view.key_press_event += this.on_view_key_press;
 			doc.notify["text"] += this.on_text_changed;
 			doc.notify["cursor-position"] += this.on_cursor_position_changed;
+			Signal.connect (doc, "saved", (GLib.Callback) on_document_saved, this);
 			
 			var status_bar = (Gedit.Statusbar) _symbol_completion.plugin_instance.window.get_statusbar ();
 			_sb_context_id = status_bar.get_context_id ("symbol status");
@@ -96,13 +97,22 @@ namespace Vtg
 			_symbol_completion.notify["completion-engine"].disconnect (this.on_completion_engine_changed);
 			doc.notify["text"] -= this.on_text_changed;
 			doc.notify["cursor-position"] -= this.on_cursor_position_changed;
-			
+			SignalHandler.disconnect_by_func (doc, (void*)this.on_document_saved, this);
+						
 			if (_sb_msg_id != 0) {
 				var status_bar = (Gedit.Statusbar) _symbol_completion.plugin_instance.window.get_statusbar ();
 				status_bar.remove (_sb_context_id, _sb_msg_id);
 			}
 		}
 		
+		[CCode(instance_pos=-1)]
+		private void on_document_saved (Gedit.Document doc, void *arg1)
+		{
+			_doc_changed = true;
+			_all_doc = true;
+			this.schedule_reparse ();
+		}
+
 		private void setup_completion (CompletionEngine? engine)
 		{
 			if (engine == null)

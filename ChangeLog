@@ -1,5 +1,11 @@
 2010-05-31  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	reparse all document on save
+
+2010-05-31  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugin.vala:
 
 	gEdit async file save workaround. Fixes issue #134
