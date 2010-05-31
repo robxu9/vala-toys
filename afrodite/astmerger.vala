@@ -756,16 +756,36 @@ namespace Afrodite
  					((MethodCall) local.initializer).call.accept (this); // this avoid visit parameters of method calls
  				} else if (local.initializer is BinaryExpression) {
  					((BinaryExpression) local.initializer).accept_children (this);
+ 				} else if (local.initializer is ArrayCreationExpression) {
+ 					var ac = (ArrayCreationExpression) local.initializer; 
+ 					ac.accept_children (this);
+ 					s.is_array = true;
+ 					s.type_name = get_datatype_typename (ac.element_type);
+					//debug ("init type %s: %s %s", local.name, s.type_name, ac.element_type.type_name);
 				} else {
 					local.accept_children (this);
 				}
 				_last_literal = null;
 				_inferred_type = prev_inferred_type;
 				//debug ("infer from init done %s", s.type_name);
+				
+				if (s.type_name != null && s.type_name.has_suffix ("Literal")) {
+					if (s.type_name == "ValaIntegerLiteral") {
+						s.type_name = "int";
+					} else if (s.type_name == "ValaBooleanLiteral") {
+						s.type_name = "bool";
+					} else if (s.type_name == "ValaCharacterLiteral") {
+						s.type_name = "char";
+					} else if (s.type_name == "ValaStringLiteral") {
+						s.type_name = "string";
+					} else if (s.type_name == "ValaRealLiteral") {
+						s.type_name = "double";
+					}
+				}
 			}
 			
+			s.source_reference = this.create_source_reference (local);
 			_current.add_local_variable (s);
-			
 			_current = prev;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
@@ -872,7 +892,20 @@ namespace Afrodite
 		public override void visit_foreach_statement (ForeachStatement stmt) 
 		{
 			var s = visit_scoped_codenode ("foreach", stmt, stmt.body);
-			var d = new DataType (get_datatype_typename (stmt.type_reference), stmt.variable_name);
+			
+			var d = new DataType ("", stmt.variable_name);
+			if (stmt.type_reference == null) {
+				var prev_inferred_type = _inferred_type;
+				_inferred_type = d;
+
+				stmt.accept_children (this);
+				_inferred_type = prev_inferred_type;
+			} else {
+				d.type_name = get_datatype_typename (stmt.type_reference);
+			}
+
+			d.is_iterator = true;
+			d.source_reference = create_source_reference (stmt);
 			s.add_local_variable (d);
 		}
 

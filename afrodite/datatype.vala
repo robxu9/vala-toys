@@ -36,8 +36,10 @@ namespace Afrodite
 		public bool is_ref { get; set; }
 		public bool is_dynamic { get; set; }
 		public bool is_ellipsis { get; set; }
+		public bool is_iterator { get; set; }
 		public string default_expression { get; set; }
 		public Vala.List<DataType> generic_types { get; set; }
+		public SourceReference source_reference { get; set; }
 		
 		private string _type_name = null;
 		
@@ -168,7 +170,10 @@ namespace Afrodite
 						res += "dynamic ";
 					
 					res += type_name;
-				
+					
+					if (symbol == null)
+						res += "!";
+						
 					if (is_pointer)
 						res += "*";
 					if (is_array)

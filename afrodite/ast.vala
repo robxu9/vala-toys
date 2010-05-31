@@ -24,8 +24,6 @@ using Vala;
 
 namespace Afrodite
 {
-
-	
 	public class Ast
 	{
 		private Symbol _root = new Symbol (null, null);
@@ -298,8 +296,8 @@ namespace Afrodite
 				foreach (DataType type in symbol.base_types) {
 					if (!type.unresolved) {
 						if (type.symbol.name == name
-						    && (type.symbol == null || (type.symbol.access & access) != 0)
-						    && (type.symbol == null || (type.symbol.binding & binding) != 0)) {
+						    && (type.symbol.access & access) != 0
+						    && (type.symbol.binding & binding) != 0) {
 							return type.symbol;
 						}
 						if (type.symbol.has_children) {
@@ -314,7 +312,6 @@ namespace Afrodite
 			}
 			
 			return null;
-
 		}
 		
 		private Symbol? lookup_this_symbol (Symbol? root)
@@ -366,20 +363,24 @@ namespace Afrodite
 				while (current_sym != null) {
 					if (current_sym.has_local_variables) {
 						foreach (DataType type in current_sym.local_variables) {
-							if (compare_symbol_names (type.name, name, mode)
-							    && (type.symbol == null || (type.symbol.access & access) != 0)
-							    && (type.symbol == null || (type.symbol.binding & binding) != 0)) {
-								return type.symbol;
+							if (!type.unresolved) {
+								if (compare_symbol_names (type.name, name, mode)
+								    && (type.symbol.access & access) != 0
+								    && (type.symbol.binding & binding) != 0) {
+									return type.symbol;
+								}
 							}
 						}
 					}
 					// search in symbol parameters
 					if (current_sym.has_parameters) {
 						foreach (DataType type in current_sym.parameters) {
-							if (compare_symbol_names (type.name, name, mode)
-							    && (type.symbol == null || (type.symbol.access & access) != 0)
-							    && (type.symbol == null || (type.symbol.binding & binding) != 0)) {
-								return type.symbol;
+							if (!type.unresolved) {
+								if (compare_symbol_names (type.name, name, mode)
+								    && (type.symbol.access & access) != 0
+								    && (type.symbol.binding & binding) != 0) {
+									return type.symbol;
+								}
 							}
 						}
 					}

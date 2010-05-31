@@ -55,31 +55,65 @@ namespace Afrodite
 				res = Symbol.VOID;
 			}
 			
+			// first resolve type generic types
+			if (type.has_generic_types) {
+				foreach (DataType generic_type in type.generic_types) {
+					if (generic_type.unresolved)
+						generic_type.symbol = resolve_type (symbol, generic_type);
+				}
+			}
+					
 			// first the container types defined in the child symbols
 			if (res == null && symbol.has_children) {
 				
 				var s = Ast.lookup_symbol (type.type_name, symbol.children, out parent, Afrodite.CompareMode.EXACT);
 				if (s != null) {
-					//debug ("resolved symbol %s from children to: %s", symbol.fully_qualified_name, s.fully_qualified_name);
 					res = s;
 				}
 			}
 			
 			// search in the parent chain
-			parent = symbol.parent;
+			parent = symbol;
 			while (parent != null && type.symbol == null) {
+				//debug ("searching1 %s %s", type.type_name, type.name);
 				string[] names =  type.type_name.split (".");
 				
 				var curr_parent = parent;
 				for (int i = 0; i < names.length; i++) {
 					string name = names[i];
-					
 					var s = curr_parent.lookup_child (name);
 					if (s != null) {
-						if (i == names.length -1)
+						if (i == names.length -1) {
 							res = s; // last name part: symbol found
+						}
 						else
 							curr_parent = s; // search inside symbols of the found symbol
+					} else if (i == names.length -1) {
+						// debug ("searching2 %s %s in %s", type.type_name, type.name, curr_parent.name);
+						
+						// search the last part of the name also on the local variables
+						if (curr_parent.has_local_variables) {
+							foreach (var item in curr_parent.local_variables) {
+								//debug ("localvar %s: %s vs %s:%s unresolved %d", item.name, item.type_name, type.name, type.type_name, (int) type.unresolved);
+								if (!item.unresolved && item.name == name) {
+									type.type_name = item.type_name;
+									res = item.symbol;
+									break;
+								}
+							}
+						}
+						// search the last part of the name also on the method parameters
+						if (curr_parent.has_parameters) {
+							foreach (var item in curr_parent.parameters) {
+								//debug ("parameter %s: %s vs %s:%s unresolved %d", item.name, item.type_name, type.name, type.type_name, (int) type.unresolved);
+								if (!item.unresolved && item.name == name) {
+									type.type_name = item.type_name;
+									res = item.symbol;
+									break;
+								}
+							}
+						}
+
 					}
 				}
 				parent = parent.parent;
@@ -119,6 +153,21 @@ namespace Afrodite
 			return res;
 		}
 
+		private void resolve_symbol (Afrodite.Symbol symbol, Afrodite.DataType type)
+		{
+			type.symbol = resolve_type (symbol, type);
+			if (!type.unresolved && type.symbol.return_type != null) {
+				var dt = type.symbol.return_type;
+				type.type_name = dt.type_name;
+				if (type.is_iterator) {
+					if (dt.has_generic_types && dt.generic_types.size == 1) {
+						type.type_name = dt.generic_types[0].type_name;
+						type.symbol = dt.generic_types[0].symbol;
+					}
+				}
+			}
+		}
+		
 		private void visit_symbols (Vala.List<Afrodite.Symbol> symbols)
 		{
 			foreach (Symbol symbol in symbols) {
@@ -133,9 +182,12 @@ namespace Afrodite
 					}
 				}
 				// resolving return type
-				if (symbol.return_type != null && symbol.return_type.unresolved) {
-					symbol.return_type.symbol = resolve_type (symbol, symbol.return_type);
+				if (symbol.return_type != null) {
+					if (symbol.return_type.unresolved) {
+						symbol.return_type.symbol = resolve_type (symbol, symbol.return_type);
+					}
 				}
+				
 				// resolving symbol parameters
 				if (symbol.has_parameters) {
 					foreach (DataType type in symbol.parameters) {
@@ -148,7 +200,7 @@ namespace Afrodite
 				if (symbol.has_local_variables) {
 					foreach (DataType type in symbol.local_variables) {
 						if (type.unresolved) {
-							type.symbol = resolve_type (symbol, type);
+							resolve_symbol (symbol, type);	
 						}
 					}
 				}

@@ -161,7 +161,9 @@ namespace Afrodite
 						inc_pad ();
 						print ("%slocal variables\n", pad);
 						foreach (DataType local in symbol.local_variables) {
-							print ("%s   %s\n", pad, local.description);
+							var sr = local.source_reference;
+							print ("%s   %s     - [(%d - %d) %s]\n", pad, local.description, sr.first_line, sr.last_line, sr.file.filename);
+							
 						}
 						dec_pad ();
 					}

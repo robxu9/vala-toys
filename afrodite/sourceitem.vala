@@ -46,7 +46,6 @@ namespace Afrodite
 			item.path = path;
 			item.content = content;
 			item.is_glib = is_glib;
-			
 			return item;
 		}
 	}

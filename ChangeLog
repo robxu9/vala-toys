@@ -1,5 +1,16 @@
 2010-06-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/sourceitem.vala:
+	* afrodite/symbolresolver.vala:
+
+	better support for "var" keyword
+
+2010-06-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/afroditetest.vala:
 	* afrodite/Makefile.am:
 
