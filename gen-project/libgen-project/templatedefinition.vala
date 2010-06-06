@@ -85,10 +85,8 @@ namespace GenProject
 		private static string read_key (KeyFile file, string key_name, string? default_value = null) throws KeyFileError
 		{
 			if (file.has_key ("Template", key_name)) {
-				debug ("read key %s", key_name);
 				return file.get_string ("Template", key_name).strip ();
 			} else {
-				debug ("no key with name %s", key_name);
 				return default_value;
 			}
 		}

@@ -1,5 +1,14 @@
 2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/libgen-project/templates.vala:
+	* gen-project/templates/console-vala-template/src/main.vala.template:
+
+	added support for license related tags
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/libgen-project/constants.vala:
 	* gen-project/libgen-project/projectgenerator.vala:
 	* gen-project/libgen-project/projectoptions.vala:

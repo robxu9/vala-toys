@@ -71,13 +71,11 @@
 	 			if (dir != null) {
 	 				string file;
 		 			while ((file = dir.read_name ()) != null) {
-		 				debug ("checking file %s", file);
 		 				if (file != null && file.has_suffix (".ini")) {
 		 					string template_name = Path.get_basename (file).substring (0, file.length - 4);
 		 					string tar_filename = Path.build_filename (path, template_name + ".tar.gz"); 
 		 					
 		 					if (FileUtils.test (tar_filename, FileTest.IS_REGULAR | FileTest.IS_SYMLINK)) {
-		 						debug ("added definition for %s", file);
 		 						var template_definition = TemplateDefinition.load (Path.build_filename (path, file));
 		 						if (template_definition != null) {
 		 							template_definition.id = _next_id;

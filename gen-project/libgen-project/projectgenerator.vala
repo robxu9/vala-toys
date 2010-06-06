@@ -27,9 +27,15 @@ using GLib;
 namespace GenProject
 {
 	public class ProjectGenerator : GLib.Object {
-		private string namespace_name;
 		private string make_name;
 		private string upper_case_make_name;
+		private string license_program_type;
+		private string license_name;
+		private string license_version;
+		private string license_publisher;
+		private string license_website;
+		private string license_header;
+		private string license_header_vala;
 		
 		public ProjectOptions options { get; construct; }
 
@@ -55,7 +61,6 @@ namespace GenProject
 			}
 
 			options.name = project_name_str.str;
-			namespace_name = namespace_name_str.str.substring (0, 1).up () + namespace_name_str.str.substring (1, namespace_name_str.str.len () - 1);
 			make_name = make_name_str.str;
 			upper_case_make_name = make_name.up ();
 
@@ -86,35 +91,103 @@ namespace GenProject
 					error ("error extracting data from template. exit code %d", exit_status);
 					return;
 				}
-				
-				scan_path_for_tag_substitution (options.path);
-				
+								
 				string license_filename = null;
-				if (options.license == ProjectLicense.GPL2) {
-					license_filename = Config.PACKAGE_DATADIR + "/licenses/gpl-2.0.txt";
-					if (!FileUtils.test (license_filename, FileTest.EXISTS)) {
-						license_filename = "/usr/share/common-licenses/GPL-2";
-					}
-				} else if (options.license == ProjectLicense.LGPL2) {
-					license_filename = Config.PACKAGE_DATADIR + "/licenses/lgpl-2.1.txt";
-					if (!FileUtils.test (license_filename, FileTest.EXISTS)) {
-						license_filename = "/usr/share/common-licenses/LGPL-2.1";
-					}
-				} else if (options.license == ProjectLicense.GPL3) {
-					license_filename = Config.PACKAGE_DATADIR + "/licenses/gpl-3.0.txt";
-					if (!FileUtils.test (license_filename, FileTest.EXISTS)) {
-						license_filename = "/usr/share/common-licenses/GPL-3";
-					}
-				} else if (options.license == ProjectLicense.LGPL3) {
-					license_filename = Config.PACKAGE_DATADIR + "/licenses/lgpl-3.0.txt";
-					if (!FileUtils.test (license_filename, FileTest.EXISTS)) {
-						license_filename = "/usr/share/common-licenses/LGPL-3";
-					}
+				license_program_type = "program";
+				license_header = "";
+				license_header_vala = "";
+				license_name = "";
+				license_version = "";
+				license_publisher = "";
+				license_website = "";
+				
+				// common initialization for all supported licenses
+				switch (options.license)
+				{
+					case ProjectLicense.GPL2:
+					case ProjectLicense.GPL3:
+					case ProjectLicense.LGPL2:
+					case ProjectLicense.LGPL3:
+				license_header = """This ${license-program-type} is free software: you can redistribute it and/or modify
+it under the terms of the ${license-name} as published by
+the ${license-publisher}, either version ${license-version} of the License, or
+(at your option) any later version.
+ 
+This ${license-program-type} is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+${license-name} for more details.
+ 
+You should have received a copy of the ${license-name}
+along with this ${license-program-type}.  If not, see ${license-web-site}.
+""";
+
+						license_publisher = "Free Software Foundation";
+						license_website = """<http://www.gnu.org/licenses/>""";
+						break;
 				}
+				
+				// per license info
+				switch (options.license) {
+					case ProjectLicense.GPL2:
+						license_filename = Config.PACKAGE_DATADIR + "/licenses/gpl-2.0.txt";
+						if (!FileUtils.test (license_filename, FileTest.EXISTS)) {
+							license_filename = "/usr/share/common-licenses/GPL-2";
+						}					
+						license_name = "GNU General Public License";
+						license_version = "2";
+						license_program_type = "program";
+						break;
+					case ProjectLicense.GPL3:
+						license_filename = Config.PACKAGE_DATADIR + "/licenses/gpl-3.0.txt";
+						if (!FileUtils.test (license_filename, FileTest.EXISTS)) {
+							license_filename = "/usr/share/common-licenses/GPL-3";
+						}
+						license_name = "GNU General Public License";
+						license_version = "3";
+						license_program_type = "program";
+						break;
+					case ProjectLicense.LGPL2:
+						license_filename = Config.PACKAGE_DATADIR + "/licenses/lgpl-2.1.txt";
+						if (!FileUtils.test (license_filename, FileTest.EXISTS)) {
+							license_filename = "/usr/share/common-licenses/LGPL-2.1";
+						}
+						license_name = "GNU Lesser General Public License";
+						license_version = "2.1";
+						license_program_type = "library";
+						break;
+					case ProjectLicense.LGPL3:
+						license_filename = Config.PACKAGE_DATADIR + "/licenses/lgpl-3.0.txt";
+						if (!FileUtils.test (license_filename, FileTest.EXISTS)) {
+							license_filename = "/usr/share/common-licenses/LGPL-3";
+						}
+						license_name = "GNU Lesser General Public License";
+						license_version = "3";
+						license_program_type = "library";
+						break;
+				}
+				
+				// derive a header with a vala compatible syntax
+ 				if (license_header != null) {
+	 				StringBuilder sb = new StringBuilder ();
+	 				sb.append ("\n");
+	 				foreach(string line in license_header.split ("\n")) {
+	 					sb.append (" * ");
+	 					sb.append (line);
+	 					sb.append ("\n");
+	 				}
+	 				sb.truncate (sb.len - 1);
+					license_header_vala = sb.str;
+				}
+
+				// copy the license file
 				if (license_filename != null && FileUtils.test (license_filename, FileTest.EXISTS)) {
 					FileUtils.get_contents (license_filename, out s);
 					FileUtils.set_contents (options.path + "/COPYING", s, -1);
 				}
+				
+				// scan for known tag to substitute
+				scan_path_for_tag_substitution (options.path);
 			} catch (Error e) {
 				critical ("Error while creating project: %s", e.message);
 			}
@@ -157,12 +230,22 @@ namespace GenProject
 		//TODO: this method it'snt very efficient
 		private string replace_tags (string data)
 		{
-			var result = data.replace ("${author-name}", options.author);
+			var result = data;
+			
+			result = result.replace ("${license-header}", license_header);
+			result = result.replace ("${license-header-vala}", license_header_vala);
+			result = result.replace ("${license-program-type}", license_program_type);
+			result = result.replace ("${license-name}", license_name);
+			result = result.replace ("${license-version}", license_version);
+			result = result.replace ("${license-web-site}", license_website);
+			result = result.replace ("${license-publisher}", license_publisher);
+			result = result.replace ("${author-name}", options.author);
 			result = result.replace ("${author-email}", options.email);
 			result = result.replace ("${project-name}", options.name);
 			result = result.replace ("${project-description}", options.name);
 			result = result.replace ("${project-uppercase-make-name}", upper_case_make_name);
-			result = result.replace ("${project-make-name}", make_name);			
+			result = result.replace ("${project-make-name}", make_name);
+			
 			return result;
 		}
 
