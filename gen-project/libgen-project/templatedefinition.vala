@@ -24,8 +24,9 @@ using GLib;
 
 namespace GenProject
 {
-	public class TemplateDefinition
+	public class TemplateDefinition : Object
 	{
+		public int id { get; internal set; }
 		public string version { get; private set; }
 		public string name { get; private set; default = null; }
 		public string description { get; private set; }
@@ -34,48 +35,60 @@ namespace GenProject
 		public string build_system { get; private set; }
 		public List<string> tags { get { return _tags; } }
 		public string icon_filename { get; private set; default = null; }
+		public string archive_filename { get; private set; default = null; }
 		
 		private string _filename;
 		private List<string> _tags = new List<string> ();
 		
-		public TemplateDefinition (string filename)
+		private TemplateDefinition ()
 		{
-			this._filename = filename;
-			load ();
 		}
 		
-		private void load ()
+		public static TemplateDefinition? load (string filename)
 		{
+			TemplateDefinition result = null;
 			try {
 				var file = new KeyFile ();
-				file.load_from_file (_filename, KeyFileFlags.NONE);
+				file.load_from_file (filename, KeyFileFlags.NONE);
 				if (file.has_group ("Template") && file.has_key ("Template", "name")) {
-					this.version = read_key (file, "version");
-					this.name = read_key (file, "name");
-					this.description = read_key (file, "description", "");
-					this.details = read_key (file, "details", "");
-					this.language = read_key (file, "language", "");
-					this.build_system = read_key (file, "build-system", "");
+					result = new TemplateDefinition ();			
+					result._filename = filename;
+					result.version = read_key (file, "version");
+					result.name = read_key (file, "name");
+					result.description = read_key (file, "description", "");
+					result.details = read_key (file, "details", "");
+					result.language = read_key (file, "language", "");
+					result.build_system = read_key (file, "build-system", "");
 					var tmp = read_key (file, "tags", "").split (",");
 				
 					foreach (string tag in tmp) {
-						_tags.append (tag.strip ());
+						result._tags.append (tag.strip ());
 					}
 				
-					icon_filename = Path.build_filename (Path.get_dirname (_filename), Path.get_basename (_filename).replace (".ini", ".png"));
-					if (!FileUtils.test (icon_filename, FileTest.IS_REGULAR))
-						icon_filename = null; // no icon file founds
+					result.icon_filename = Path.build_filename (Path.get_dirname (filename), Path.get_basename (filename).replace (".ini", ".png"));
+					if (!FileUtils.test (result.icon_filename, FileTest.IS_REGULAR)) {
+						debug ("no icon found for project: %s", result.icon_filename);
+						result.icon_filename = null; // no icon file founds
+					}
+					result.archive_filename = Path.build_filename (Path.get_dirname (filename), Path.get_basename (filename).replace (".ini", ".tar.gz"));
+					if (!FileUtils.test (result.archive_filename, FileTest.IS_REGULAR)) {
+						debug ("no archive found for project: %s", result.archive_filename);
+						result.archive_filename = null; // no icon file founds
+					}
 				}
 			} catch (Error err) {
-				warning ("error loading keyfile %s: %s", _filename, err.message);
+				warning ("error loading keyfile %s: %s", filename, err.message);
 			}
+			return result;
 		}
 		
-		private string read_key (KeyFile file, string key_name, string? default_value = null) throws KeyFileError
+		private static string read_key (KeyFile file, string key_name, string? default_value = null) throws KeyFileError
 		{
 			if (file.has_key ("Template", key_name)) {
+				debug ("read key %s", key_name);
 				return file.get_string ("Template", key_name).strip ();
 			} else {
+				debug ("no key with name %s", key_name);
 				return default_value;
 			}
 		}

@@ -1,5 +1,82 @@
 2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/libgen-project/constants.vala:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/libgen-project/projectoptions.vala:
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/libgen-project/templates.vala:
+	* gen-project/templates/console-vala-template/AUTHORS.template:
+	* gen-project/templates/console-vala-template/MAINTAINERS.template:
+	* gen-project/templates/console-vala-template/Makefile.am.template:
+	* gen-project/templates/console-vala-template/autogen.sh.template:
+	* gen-project/templates/console-vala-template/configure.ac.template:
+	* gen-project/templates/console-vala-template/src/Makefile.am.template:
+	* gen-project/templates/console-vala-template/src/main.vala.template:
+	* .gitignore:
+	* ChangeLog:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* gen-project/main.vala:
+	* gen-project/templates/console-vala-template.ini:
+	* gen-project/ui/gen-project.ui:
+
+	something went wrong when doing git svn dcommit, redoing it!
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/templates.vala:
+
+	minor cleanup
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/libgen-project/projectoptions.vala:
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/libgen-project/templates.vala:
+	* gen-project/main.vala:
+	* gen-project/templates/console-vala-template/src/main.vala.template:
+	* gen-project/ui/gen-project.ui:
+
+	initial functional support for templates in vala-gen-project
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/templates.vala:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/libgen-project/projectoptions.vala:
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/libgen-project/templates.vala:
+	* gen-project/main.vala:
+	* gen-project/templates/console-vala-template.ini:
+
+	finish support for templates scanning
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/genprojectdialog.vala:
+	* gen-project/main.vala:
+
+	indentation & coding style cleanup
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/constants.vala:
+	* gen-project/libgen-project/projectoptions.vala:
+	* .gitignore:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/main.vala:
+
+	source reorganization in order to prepare the support for gen-project 2nd generation
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/libgen-project/templatedefinition.vala:
 	* gen-project/templates/Makefile.am:
 	* gen-project/templates/console-vala-template.ini:

@@ -22,14 +22,16 @@
  * 	Nicolas Joseph <nicolas.joseph@valaide.org>
  */
 
+using GenProject;
+
 string option_project_path;
 bool option_version;
 string option_author;
 string option_email;
 [NoArrayLength ()]
 string[] option_files;
-Vala.ProjectType option_project_type;
-Vala.ProjectLicense option_project_license;
+ProjectType option_project_type;
+ProjectLicense option_project_license;
 
 const OptionEntry[] options = {
 	{ "projectdir", 'p', 0, OptionArg.FILENAME, ref option_project_path, "Project directory", "DIRECTORY" },
@@ -46,20 +48,20 @@ bool option_parse_callback (string option_name, string @value,  void *data) thro
 {
 	if (option_name == "--type" || option_name == "-t") {
 		if (@value == "gtk+")
-			option_project_type = Vala.ProjectType.GTK_APPLICATION;
+			option_project_type = ProjectType.GTK_APPLICATION;
 		else if (@value == "console")
-			option_project_type = Vala.ProjectType.CONSOLE_APPLICATION;
+			option_project_type = ProjectType.CONSOLE_APPLICATION;
 		else
 			throw new OptionError.BAD_VALUE (_("project of type %s is not supported").printf (@value));
 	} else if (option_name == "--license"  || option_name == "-l") {
 		if (@value == "gpl2")
-			option_project_license = Vala.ProjectLicense.GPL2;
+			option_project_license = ProjectLicense.GPL2;
 		else if (@value == "gpl3")
-			option_project_license = Vala.ProjectLicense.GPL3;
+			option_project_license = ProjectLicense.GPL3;
 		else if (@value == "lgpl2")
-			option_project_license = Vala.ProjectLicense.LGPL2;
+			option_project_license = ProjectLicense.LGPL2;
 		else if (@value == "lgpl3")
-			option_project_license = Vala.ProjectLicense.LGPL3;
+			option_project_license = ProjectLicense.LGPL3;
 		else
 			throw new OptionError.BAD_VALUE (_("license of type %s is not available").printf (@value));
 	} else {
@@ -70,55 +72,55 @@ bool option_parse_callback (string option_name, string @value,  void *data) thro
 
 int main (string[] args)
 {
-  Vala.ProjectOptions project_options = null;
+	ProjectOptions project_options = null;
 
 	Gtk.init (ref args);
 	Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
 
-  try {
-    project_options = new Vala.ProjectOptions ();
-    var opt_context = new OptionContext ("- Vala Project Generator");
-    opt_context.set_help_enabled (true);
-    opt_context.add_main_entries (options, null);
-    opt_context.parse (ref args);
+	try {
+		project_options = new ProjectOptions ();
+		var opt_context = new OptionContext ("- Vala Project Generator");
+		opt_context.set_help_enabled (true);
+		opt_context.add_main_entries (options, null);
+		opt_context.parse (ref args);
 
-    project_options.version = option_version;
-    if (option_author != null)
-      project_options.author = option_author;
-    if (option_email != null)
-      project_options.email = option_email;
-    if (option_project_type != 0)
-      project_options.type = option_project_type;
-    if (option_project_license != 0)
-      project_options.license = option_project_license;
-    if (option_project_path != null)
-      project_options.path = option_project_path;
+		project_options.version = option_version;
+		if (option_author != null)
+			project_options.author = option_author;
+		if (option_email != null)
+			project_options.email = option_email;
+//		if (option_project_type != 0)
+//			project_options.type = option_project_type;
+		if (option_project_license != 0)
+			project_options.license = option_project_license;
+		if (option_project_path != null)
+			project_options.path = option_project_path;
 
- 		if (option_files != null) {
- 			if (option_files[1] != null) {
- 				//more then a project name
- 				throw new OptionError.BAD_VALUE (_("Just a single project name can be specified on the command line"));
- 			}
- 			project_options.name = option_files[0];
- 			if (option_project_path == null) {
- 				//default to current directory in not specified with -p
- 				project_options.path = Environment.get_current_dir ();
- 			}
- 		}
-  } catch (OptionError e) {
-    stdout.printf ("%s\n", e.message);
-    stdout.printf (_("Run '%s --help' to see a full list of available command line options.\n"), args[0]);
-    return 1;
-  }
+		if (option_files != null) {
+			if (option_files[1] != null) {
+				//more then a project name
+				throw new OptionError.BAD_VALUE (_("Just a single project name can be specified on the command line"));
+			}
+			project_options.name = option_files[0];
+			if (option_project_path == null) {
+				//default to current directory in not specified with -p
+				project_options.path = Environment.get_current_dir ();
+			}
+		}
+	} catch (OptionError e) {
+		stdout.printf ("%s\n", e.message);
+		stdout.printf (_("Run '%s --help' to see a full list of available command line options.\n"), args[0]);
+		return 1;
+	}
 
 	if (option_version) {
 		stdout.printf ("vala-gen-project %s\n", Config.PACKAGE_VERSION);
 		return 0;
 	}
 
-  var dialog = new Vala.GenProjectDialog ();
-	if (project_options.name != null || dialog.ask_parameters (ref project_options) == Gtk.ResponseType.OK) {
-	  var generator = new Vala.ProjectGenerator (project_options);
+	var dialog = new Vala.GenProjectDialog ();
+	if (project_options.name != null || dialog.ask_parameters (project_options) == Gtk.ResponseType.OK) {
+		var generator = new ProjectGenerator (project_options);
 		generator.create_project ();
 		return 0;
 	}

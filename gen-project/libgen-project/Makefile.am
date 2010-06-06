@@ -19,7 +19,10 @@ libgen_project_la_VALAFLAGS = -C -H gen-project.h --library gen-project-1.0 --va
 
 libgen_project_la_SOURCES = \
 	projectgenerator.vala \
+	projectoptions.vala \
 	templatedefinition.vala \
+	templates.vala \
+	constants.vala \
 	$(NULL)
 
 

@@ -87,7 +87,13 @@
                           </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkComboBox" id="combobox-project-type">
+                            <property name="visible">True</property>
+                            <property name="model">liststore-combobox-types</property>
+                          </object>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -280,11 +286,11 @@
   </object>
   <object class="GtkSizeGroup" id="sizegroup-labels">
     <widgets>
-      <widget name="label-project-folder"/>
-      <widget name="label-project-type"/>
-      <widget name="label-project-license"/>
-      <widget name="label-author-name"/>
       <widget name="label-author-email"/>
+      <widget name="label-author-name"/>
+      <widget name="label-project-license"/>
+      <widget name="label-project-type"/>
+      <widget name="label-project-folder"/>
     </widgets>
   </object>
   <object class="GtkListStore" id="liststore-combobox-licenses">
@@ -293,6 +299,14 @@
       <column type="gchararray"/>
       <!-- column-name id -->
       <column type="gint"/>
+    </columns>
+  </object>
+  <object class="GtkListStore" id="liststore-combobox-types">
+    <columns>
+      <!-- column-name description -->
+      <column type="gchararray"/>
+      <!-- column-name item -->
+      <column type="GObject"/>
     </columns>
   </object>
 </interface>
