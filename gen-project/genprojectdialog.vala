@@ -1,4 +1,4 @@
-/* valagenprojectdialog.vala
+/* genprojectdialog.vala
  *
  * Copyright (C) 2010  Jürg Billeter
  *

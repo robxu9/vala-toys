@@ -1,5 +1,33 @@
 2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/templates/Makefile.am:
+	* gen-project/templates/console-vala-template.ini:
+	* gen-project/templates/console-vala-template.png:
+	* gen-project/templates/console-vala-template/AUTHORS:
+	* gen-project/templates/console-vala-template/ChangeLog:
+	* gen-project/templates/console-vala-template/MAINTAINERS:
+	* gen-project/templates/console-vala-template/Makefile.am:
+	* gen-project/templates/console-vala-template/NEWS:
+	* gen-project/templates/console-vala-template/README:
+	* gen-project/templates/console-vala-template/autogen.sh:
+	* gen-project/templates/console-vala-template/configure.ac:
+	* gen-project/templates/console-vala-template/po/ChangeLog:
+	* gen-project/templates/console-vala-template/po/LINGUAS:
+	* gen-project/templates/console-vala-template/po/POTFILES.in:
+	* gen-project/templates/console-vala-template/po/POTFILES.skip:
+	* gen-project/templates/console-vala-template/src/Makefile.am:
+	* gen-project/templates/console-vala-template/src/main.vala:
+	* configure.ac:
+	* gen-project/Makefile.am:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* gen-project/libgen-project/projectgenerator.vala:
+
+	added console template files
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* Makefile.am:
 	* configure.ac:
 	* doc/Makefile.am:

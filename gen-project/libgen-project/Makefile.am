@@ -18,7 +18,8 @@ libgen_project_la_VALAFLAGS = -C -H gen-project.h --library gen-project-1.0 --va
 #--basedir $(top_srcdir)/gen-project/libgen-project 
 
 libgen_project_la_SOURCES = \
-	valaprojectgenerator.vala \
+	projectgenerator.vala \
+	templatedefinition.vala \
 	$(NULL)
 
 

@@ -1,4 +1,4 @@
-/* valaprojectgenerator.vala
+/* projectgenerator.vala
  *
  * Copyright (C) 2007-2010  Jürg Billeter
  *

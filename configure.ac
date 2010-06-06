@@ -182,6 +182,7 @@ AC_CONFIG_FILES([
 	gen-project/ui/Makefile
 	gen-project/Makefile
 	gen-project/licenses/Makefile
+	gen-project/templates/Makefile
 	doc/Makefile
 	vtg/Makefile
 	vbf/Makefile
