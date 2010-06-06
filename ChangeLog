@@ -1,3 +1,17 @@
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* Makefile.am:
+	* configure.ac:
+	* doc/Makefile.am:
+	* gsc-0.7.0/Makefile.in:
+	* gsc-0.7.0/aclocal.m4:
+	* gsc-0.7.0/configure:
+	* gsc-0.7.0/gtk-doc.make:
+	* gsc-0.7.0/gtksourcecompletion/Makefile.in:
+	* gsc-0.7.0/pixmaps/Makefile.in:
+
+	added a configure switch to only compile afrodite library
+
 2010-06-01  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:

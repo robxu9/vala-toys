@@ -1,13 +1,17 @@
 
 #Build in these directories:
-SUBDIRS = gsc-0.7.0 gen-project doc
+SUBDIRS = doc
 
 if HAVE_AFRODITE
 SUBDIRS += afrodite
 endif
 
+if HAVE_GENPROJECT
+SUBDIRS += gen-project
+endif
+
 if HAVE_VTGPLUGIN
-SUBDIRS += vbf vtg images ui po
+SUBDIRS += gsc-0.7.0 vbf vtg images ui po
 endif
 
 vtgdocdir = ${prefix}/doc/vtg

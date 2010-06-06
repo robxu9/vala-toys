@@ -58,6 +58,17 @@ AC_ARG_ENABLE([gen-project],
         ],
         [genprj=yes])
 
+AC_ARG_ENABLE([afrodite],
+    AS_HELP_STRING([--disable-afrodite],[Disable vala afrodite library]),
+        [
+            case "${enableval}" in
+                yes) afrodite=yes ;;
+                no) afrodite=no ;;
+                *) AC_MSG_ERROR(bad value ${enableval} for --disable-afrodite) ;;
+            esac
+        ],
+        [afrodite=yes])
+
 AC_ARG_ENABLE([vtg-plugin],
     AS_HELP_STRING([--disable-vtg-plugin],[Disable vtg gEdit plugin]),
         [
@@ -69,13 +80,16 @@ AC_ARG_ENABLE([vtg-plugin],
         ],
         [vtgplugin=yes])
 
+# dummy check to initialize pkg-config. Is this a PKG_CHECK_MODULES bug?
+PKG_CHECK_MODULES(GLIB, [glib-2.0 >= $GLIB_REQUIRED],,)
+
 ### gen-project ###############################################
 if test "x${genprj}" != xno ; then
 	PKG_CHECK_MODULES(GENPROJECT, 
 		[glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-2.0 >= $GTK_REQUIRED],
-		HAVE_GENPRJ=1,
+		HAVE_GENPROJECT=1,
 		[
-			HAVE_GENPRJ=0
+			HAVE_GENPROJECT=0
 			AC_MSG_RESULT([gen-project dependencies not met:])
 			PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
@@ -85,21 +99,19 @@ if test "x${genprj}" != xno ; then
 			fi
 		])
 else
-    HAVE_GENPRJ=0
+    HAVE_GENPROJECT=0
 fi
 
 AC_SUBST(GENPROJECT_CFLAGS)
 AC_SUBST(GENPROJECT_LIBS)
-AC_SUBST(HAVE_GENPRJ)
-AM_CONDITIONAL([HAVE_GENPRJ], [test "x$HAVE_GENPRJ" = x1])
+AC_SUBST(HAVE_GENPROJECT)
+AM_CONDITIONAL([HAVE_GENPROJECT], [test "x$HAVE_GENPROJECT" = x1])
+
 ###############################################################
 
-if test "x${vtgplugin}" != xno; then
+if test "x${afrodite}" != xno ; then
 	PKG_CHECK_MODULES(AFRODITE, 
-		[glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED
-		gobject-2.0 >= $GLIB_REQUIRED 
-		gthread-2.0 >= $GTHREAD_REQUIRED 
-		vala-1.0 >= $VALA_REQUIRED],
+		[glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED],
 		HAVE_AFRODITE=1,
 		[
 			HAVE_AFRODITE=0
@@ -110,12 +122,15 @@ if test "x${vtgplugin}" != xno; then
 			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([vala-1.0 >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-1.0 >= $VALA_REQUIRED: not found]))
 
-			if "x$vtgplugin" = xyes; then
+			if test "x$afrodite" = xyes ; then
 				AC_MSG_ERROR([afrodite library dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED])
 			fi
 		])
 else
-    HAVE_AFRODITE=0
+	HAVE_AFRODITE=0
+	if test "x${vtgplugin}" != xno ; then
+		AC_MSG_ERROR([afrodite library was disabled from configure command line, but vtg plugin requires it. Please disable vtg plugin too or reenable afrodite.])
+	fi 
 fi
 
 AC_SUBST(AFRODITE_CFLAGS)
@@ -177,12 +192,12 @@ AC_CONFIG_FILES([
 AC_OUTPUT
 
 ##########################################################
-ENABLE_GENPRJ=no
-if test "x$HAVE_GENPRJ" = "x1" ; then
-   ENABLE_GENPRJ=yes
+ENABLE_GENPROJECT=no
+if test "x$HAVE_GENPROJECT" = "x1" ; then
+   ENABLE_GENPROJECT=yes
 fi
 
-ENABLE_VSC=no
+ENABLE_AFRODITE=no
 if test "x$HAVE_AFRODITE" = "x1" ; then
    ENABLE_AFRODITE=yes
 fi
@@ -201,7 +216,7 @@ echo "
     C Compiler:                    ${CC}
     CFLAGS:                        ${CFLAGS}
     Vala Vapidir:                  ${VALA_VAPIDIR}
-    Enable gen-project:            ${ENABLE_GENPRJ}
+    Enable gen-project:            ${ENABLE_GENPROJECT}
     Enable afrodite library:       ${ENABLE_AFRODITE}
     Enable vtg:                    ${ENABLE_VTGPLUGIN}
 "
