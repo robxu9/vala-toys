@@ -1,5 +1,12 @@
 2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/genprojectdialog.vala:
+	* gen-project/main.vala:
+
+	new command line switches to select & list a project template
+
+2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/libgen-project/templates.vala:
 
 	sort the template list by name

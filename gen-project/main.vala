@@ -26,16 +26,18 @@ using GenProject;
 
 string option_project_path;
 bool option_version;
+bool option_list_templates;
+int option_template_id = 0;
 string option_author;
 string option_email;
 [NoArrayLength ()]
 string[] option_files;
-ProjectType option_project_type;
 ProjectLicense option_project_license;
 
 const OptionEntry[] options = {
 	{ "projectdir", 'p', 0, OptionArg.FILENAME, ref option_project_path, "Project directory", "DIRECTORY" },
-	{ "type", 't', 0, OptionArg.CALLBACK, (void *) option_parse_callback, "Project TYPE: gtk+, console", "TYPE" },
+	{ "template-id", 't', 0, OptionArg.INT, ref option_template_id, "Project TYPE id. See --list-templates for a list of avalable templates", "TYPE" },
+	{ "list-templates", 0, 0, OptionArg.NONE, ref option_list_templates, "Print a list of avalable project templates", null },
 	{ "license", 'l', 0, OptionArg.CALLBACK, (void *) option_parse_callback, "License TYPE: gpl2, gpl3, lgpl2, lgpl3", "TYPE" },
 	{ "version", 0, 0, OptionArg.NONE, ref option_version, "Display version number", null },
 	{ "author", 'a', 0, OptionArg.STRING, ref option_author, "Author name", "NAME" },
@@ -46,14 +48,7 @@ const OptionEntry[] options = {
 
 bool option_parse_callback (string option_name, string @value,  void *data) throws OptionError
 {
-	if (option_name == "--type" || option_name == "-t") {
-		if (@value == "gtk+")
-			option_project_type = ProjectType.GTK_APPLICATION;
-		else if (@value == "console")
-			option_project_type = ProjectType.CONSOLE_APPLICATION;
-		else
-			throw new OptionError.BAD_VALUE (_("project of type %s is not supported").printf (@value));
-	} else if (option_name == "--license"  || option_name == "-l") {
+	if (option_name == "--license"  || option_name == "-l") {
 		if (@value == "gpl2")
 			option_project_license = ProjectLicense.GPL2;
 		else if (@value == "gpl3")
@@ -89,8 +84,6 @@ int main (string[] args)
 			project_options.author = option_author;
 		if (option_email != null)
 			project_options.email = option_email;
-//		if (option_project_type != 0)
-//			project_options.type = option_project_type;
 		if (option_project_license != 0)
 			project_options.license = option_project_license;
 		if (option_project_path != null)
@@ -118,6 +111,31 @@ int main (string[] args)
 		return 0;
 	}
 
+	if (option_list_templates) {
+		var templates = Templates.load ();
+		stdout.printf (_("Available project templates\n"));
+		foreach (var definition in templates.definitions) {
+			stdout.printf (_("\tname '%s' - id %d\n").printf (definition.name, definition.id + 1));
+		}
+		return 0;
+	}
+	
+	if (option_template_id > 0) {
+		var templates = Templates.load ();
+		project_options.template = null;
+		foreach (var definition in templates.definitions) {
+			if (definition.id + 1 == option_template_id) {
+				project_options.template = definition;
+				break;
+			}
+		}
+		if (project_options.template == null) {
+			stdout.printf (_("Cannot find template id %d\n"), option_template_id);
+			stdout.printf (_("Run '%s --list-templates' to see a full list of available templates.\n"), args[0]);
+			return 1;
+		}
+	}
+	
 	var dialog = new Vala.GenProjectDialog ();
 	if (project_options.name != null || dialog.ask_parameters (project_options) == Gtk.ResponseType.OK) {
 		var generator = new ProjectGenerator (project_options);

@@ -64,12 +64,17 @@ class Vala.GenProjectDialog
 			/* Setup project types */
 			var model = project_type_combobox.get_model () as Gtk.ListStore;
 			assert (model != null);
+			int selected_id = 0, count = 0;
 			foreach (TemplateDefinition definition in templates.definitions) {
 				Gtk.TreeIter item;
 				model.append (out item);
 				model.set (item, 0, definition.name, 1, definition);
+				if (options.template != null && definition.id == options.template.id) {
+					selected_id = count;
+				}
+				count++;
 			}
-			project_type_combobox.active = 0;
+			project_type_combobox.active = selected_id;
 			
 			license_combobox = builder.get_object ("combobox-project-license") as Gtk.ComboBox;
 			assert (license_combobox != null);
