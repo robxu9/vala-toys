@@ -286,11 +286,11 @@
   </object>
   <object class="GtkSizeGroup" id="sizegroup-labels">
     <widgets>
-      <widget name="label-author-email"/>
-      <widget name="label-author-name"/>
-      <widget name="label-project-license"/>
-      <widget name="label-project-type"/>
       <widget name="label-project-folder"/>
+      <widget name="label-project-type"/>
+      <widget name="label-project-license"/>
+      <widget name="label-author-name"/>
+      <widget name="label-author-email"/>
     </widgets>
   </object>
   <object class="GtkListStore" id="liststore-combobox-licenses">
@@ -307,6 +307,8 @@
       <column type="gchararray"/>
       <!-- column-name item -->
       <column type="GObject"/>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
     </columns>
   </object>
 </interface>

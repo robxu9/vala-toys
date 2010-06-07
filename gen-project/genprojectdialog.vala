@@ -57,7 +57,10 @@ class Vala.GenProjectDialog
 
 			project_type_combobox = builder.get_object ("combobox-project-type") as Gtk.ComboBox; //new Gtk.ComboBox.text ();
 			assert (project_type_combobox != null);
-			var renderer = new Gtk.CellRendererText ();
+			Gtk.CellRenderer renderer = new Gtk.CellRendererPixbuf ();
+ 			project_type_combobox.pack_start (renderer, false);
+			project_type_combobox.add_attribute (renderer, "pixbuf", 2);
+			renderer = new Gtk.CellRendererText ();
 			project_type_combobox.pack_start (renderer, true);
 			project_type_combobox.add_attribute (renderer, "text", 0);
 			
@@ -68,7 +71,14 @@ class Vala.GenProjectDialog
 			foreach (TemplateDefinition definition in templates.definitions) {
 				Gtk.TreeIter item;
 				model.append (out item);
-				model.set (item, 0, definition.name, 1, definition);
+				Gdk.Pixbuf icon = null;
+				
+				if (definition.icon_filename != null) {
+					debug ("get icon for %s", definition.icon_filename);
+					icon = new Gdk.Pixbuf.from_file_at_size (definition.icon_filename, 24, 24);
+				}
+
+				model.set (item, 0, definition.name, 1, definition, 2, icon);
 				if (options.template != null && definition.id == options.template.id) {
 					selected_id = count;
 				}
