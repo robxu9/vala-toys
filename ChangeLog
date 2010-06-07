@@ -1,5 +1,11 @@
 2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/libgen-project/templates.vala:
+
+	sort the template list by name
+
+2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/templates/gtk+-vala-template.ini:
 	* gen-project/templates/gtk+-vala-template.png:
 	* gen-project/templates/gtk+-vala-template/AUTHORS.template:

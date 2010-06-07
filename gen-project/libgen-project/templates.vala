@@ -57,6 +57,13 @@
 	 				result.scan_path (path);
 	 			}
  			}
+ 
+ 			result._definitions.sort ((a,b) => { 
+ 				var t1 = (TemplateDefinition) a;
+ 				var t2 = (TemplateDefinition) b;
+ 				
+ 				return GLib.strcmp (t1.name, t2.name); 
+ 			});
  			
  			return result;
  		}
