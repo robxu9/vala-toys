@@ -1,3 +1,27 @@
+2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/templates/gtk+-vala-template.ini:
+	* gen-project/templates/gtk+-vala-template.png:
+	* gen-project/templates/gtk+-vala-template/AUTHORS.template:
+	* gen-project/templates/gtk+-vala-template/ChangeLog:
+	* gen-project/templates/gtk+-vala-template/MAINTAINERS.template:
+	* gen-project/templates/gtk+-vala-template/Makefile.am.template:
+	* gen-project/templates/gtk+-vala-template/NEWS:
+	* gen-project/templates/gtk+-vala-template/README:
+	* gen-project/templates/gtk+-vala-template/autogen.sh.template:
+	* gen-project/templates/gtk+-vala-template/configure.ac.template:
+	* gen-project/templates/gtk+-vala-template/po/ChangeLog:
+	* gen-project/templates/gtk+-vala-template/po/LINGUAS:
+	* gen-project/templates/gtk+-vala-template/po/POTFILES.in:
+	* gen-project/templates/gtk+-vala-template/po/POTFILES.skip:
+	* gen-project/templates/gtk+-vala-template/src/Makefile.am.template:
+	* gen-project/templates/gtk+-vala-template/src/main.vala.template:
+	* gen-project/templates/Makefile.am:
+	* gen-project/templates/gtk+-vala-template.ini:
+	* gen-project/templates/gtk+-vala-template.png:
+
+	new a Gtk+ project template
+
 2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
 
 	* gen-project/libgen-project/projectgenerator.vala:
