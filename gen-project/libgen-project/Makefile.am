@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
 
-lib_LTLIBRARIES = libgen-project.la
+noinst_LTLIBRARIES = libgen-project.la
 
 libgen_project_la_VALAFLAGS = -C -H gen-project.h --library gen-project-1.0 --vapidir $(top_srcdir)/vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils 
 

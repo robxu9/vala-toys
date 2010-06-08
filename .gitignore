@@ -23,6 +23,8 @@ debian/stamp-makefile-build
 debian/vtg.debhelper.log
 debian/vtg.substvars
 debian/vtg
+debian/tmp
+debian/vala-gen-project
 vsc/*.gir
 vtg-*.cdbs-config_list
 Makefile
@@ -65,6 +67,5 @@ vbf/vbftest
 vbf/am/.dirstamp
 afrodite/afrodite-1.0.vapi
 afrodite/afrodite-1.0.gidl
-gen-project/templates/*.tar.gz
 gen-project/libgen-project/gen-project-1.0.vapi
 gsc-0.7.0/po/*

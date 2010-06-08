@@ -29,5 +29,13 @@ Description: vala development plugin for gEdit
   * Bracket Completion: Automatically adds closing brackets.
   * Symbol Completion: Automatically complete source code.
   * Project Manager: A simple project manager base on autotools
- .
- The vala-gen-project utility is also included 
+
+Package: vala-gen-project
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         gedit (>= 2.20.0),
+Description: Vala gui to create project source skeletons
+ Vala-gen-project can create a wide range of project
+ skeletons and can be expanded with user dedined templates.
+

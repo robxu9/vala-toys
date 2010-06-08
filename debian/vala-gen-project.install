@@ -1,0 +1,5 @@
+debian/tmp/usr/bin/vala-gen-project
+debian/tmp/usr/share/vtg/licenses/*
+debian/tmp/usr/share/vtg/templates/*
+debian/tmp/usr/share/vtg/ui/gen-project.ui
+

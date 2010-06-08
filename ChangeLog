@@ -1,5 +1,14 @@
 2010-06-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* debian/vala-gen-project.install:
+	* .gitignore:
+	* debian/control:
+	* gen-project/libgen-project/Makefile.am:
+
+	separated vala-gen-project from the vtg deb package
+
+2010-06-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/genprojectdialog.vala:
 	* gen-project/libgen-project/Makefile.am:
 	* gen-project/libgen-project/projectgenerator.vala:
