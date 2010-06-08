@@ -1,3 +1,9 @@
+2010-06-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/templates/Makefile.am:
+
+	fixed a typo
+
 2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/Makefile.am:

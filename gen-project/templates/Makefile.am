@@ -53,7 +53,7 @@ dist_templates_DATA = \
 	console-vala-template.tar.gz \
 	gtk+-vala-template.ini \
 	gtk+-vala-template.png \
-	gtk+-vala-tamplate.tar.gz \
+	gtk+-vala-template.tar.gz \
 	$(NULL)
 
 DISTCLEANFILES = \
