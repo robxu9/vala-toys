@@ -1,5 +1,14 @@
 2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/Makefile.am:
+	* gen-project/templates/Makefile.am:
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+
+	make distcheck fixes
+
+2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/genprojectdialog.vala:
 	* gen-project/ui/gen-project.ui:
 

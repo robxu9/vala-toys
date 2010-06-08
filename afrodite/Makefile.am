@@ -88,6 +88,7 @@ afroditetest_LDADD = \
 
 EXTRA_DIST = \
 	$(libafrodite_la_VALASOURCES) \
+	$(afroditetest_VALASOURCES) \
 	libafrodite.vala.stamp \
 	afroditetest.vala.stamp \
 	$(NULL)
