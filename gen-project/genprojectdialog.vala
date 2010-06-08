@@ -74,7 +74,6 @@ class Vala.GenProjectDialog
 				Gdk.Pixbuf icon = null;
 				
 				if (definition.icon_filename != null) {
-					debug ("get icon for %s", definition.icon_filename);
 					icon = new Gdk.Pixbuf.from_file_at_size (definition.icon_filename, 24, 24);
 				}
 

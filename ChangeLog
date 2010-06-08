@@ -1,5 +1,14 @@
 2010-06-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/templates/Makefile.am:
+	
+	fixes to the vala-gen-project distribution
+
+2010-06-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/templates/Makefile.am:
 
 	fixed a typo

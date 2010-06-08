@@ -77,7 +77,7 @@ namespace GenProject
 				string std_err;
 				string s;
 				int exit_status;
-				string[] argv = new string [] { "tar", "-C", options.path, "--strip-components=1", "-zpxf", options.template.archive_filename };
+				string[] argv = new string [] { "tar", "-C", options.path, "-zpxf", options.template.archive_filename };
 				
 				// untar the project in the destination directory
 				if (!Process.spawn_sync (options.path, 
