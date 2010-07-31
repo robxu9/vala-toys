@@ -65,7 +65,7 @@ namespace Vtg
 			_sb.path = name;
 			_sb.content = doc.text;
 			
-			_symbol_completion.view.key_press_event += this.on_view_key_press;
+			_symbol_completion.view.key_press_event.connect (this.on_view_key_press);
 			doc.notify["text"] += this.on_text_changed;
 			doc.notify["cursor-position"] += this.on_cursor_position_changed;
 			Signal.connect (doc, "saved", (GLib.Callback) on_document_saved, this);
@@ -92,7 +92,7 @@ namespace Vtg
 				Source.remove (_idle_id);
 			}
 			
-			_symbol_completion.view.key_press_event -= this.on_view_key_press;
+			_symbol_completion.view.key_press_event.disconnect (this.on_view_key_press);
 			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			_symbol_completion.notify["completion-engine"].disconnect (this.on_completion_engine_changed);
 			doc.notify["text"] -= this.on_text_changed;
@@ -118,8 +118,8 @@ namespace Vtg
 			if (engine == null)
 				return;
 
-			engine.begin_parsing += this.on_begin_parsing;
-			engine.end_parsing += this.on_end_parsing;
+			engine.begin_parsing.connect (this.on_begin_parsing);
+			engine.end_parsing.connect (this.on_end_parsing);
 		}
 		
 		private void cleanup_completion (CompletionEngine? engine)
@@ -127,8 +127,8 @@ namespace Vtg
 			if (engine != null)
 				return;
 
-			engine.begin_parsing += this.on_begin_parsing;
-			engine.end_parsing += this.on_end_parsing;			
+			engine.begin_parsing.connect (this.on_begin_parsing);
+			engine.end_parsing.connect (this.on_end_parsing);			
 		}
 		
 		private void on_completion_engine_changed (GLib.Object sender, ParamSpec pspec)
@@ -232,7 +232,7 @@ namespace Vtg
 			return false;
 		}
 
-		private bool on_view_key_press (Gtk.TextView view, Gdk.EventKey evt)
+		private bool on_view_key_press (Gtk.Widget sender, Gdk.EventKey evt)
 		{
 			unichar ch = Gdk.keyval_to_unicode (evt.keyval);
 			

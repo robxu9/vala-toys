@@ -125,13 +125,13 @@ namespace Vbf
 					file = GLib.File.new_for_path (fname);
 					var file_mon = file.monitor (FileMonitorFlags.NONE, null);
 					file_mons.add (file_mon);
-					file_mon.changed += this.on_project_file_changed;
+					file_mon.changed.connect (this.on_project_file_changed);
 				}
 				fname = Path.build_filename (id, "configure.ac");
 				file = GLib.File.new_for_path (fname);
 				var file_mon = file.monitor (FileMonitorFlags.NONE, null);
 				file_mons.add (file_mon);
-				file_mon.changed += this.on_project_file_changed;
+				file_mon.changed.connect (this.on_project_file_changed);
 			} catch (Error err) {
 				critical ("setup_file_monitors error: %s", err.message);
 			}
@@ -140,7 +140,7 @@ namespace Vbf
 		internal void cleanup_file_monitors ()
 		{
 			foreach (FileMonitor file_mon in file_mons) {
-				file_mon.changed -= this.on_project_file_changed;
+				file_mon.changed.disconnect(this.on_project_file_changed);
 				file_mon.cancel ();
 			}
 			file_mons.clear ();

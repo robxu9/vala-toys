@@ -219,7 +219,7 @@ namespace Vtg
 				_outliner_show_private_symbols = _gconf.get_bool (VTG_OUTLINER_SHOW_PRIVATE_SYMBOLS);
 				_project_only_show_sources = _gconf.get_bool (VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES);
 				_gconf.add_dir (VTG_BASE_KEY, GConf.ClientPreloadType.ONELEVEL);
-				_gconf.value_changed += this.on_conf_value_changed;
+				_gconf.value_changed.connect (this.on_conf_value_changed);
 			} catch (Error err) {
 				GLib.warning ("(configuration): %s", err.message);
 			}
@@ -243,19 +243,19 @@ namespace Vtg
 				_dialog = (Gtk.Dialog) builder.get_object ("dialog-settings");
 				assert (_dialog != null);
 				var button = (Gtk.Button) builder.get_object ("button-settings-close");
-				button.clicked += this.on_button_close_clicked;
+				button.clicked.connect (this.on_button_close_clicked);
 				var check = (Gtk.CheckButton) builder.get_object ("checkbutton-settings-bracket-completion");
 				assert (check != null);
 				check.set_active (_bracket_enabled);
-				check.toggled += this.on_checkbutton_toggled;
+				check.toggled.connect (this.on_checkbutton_toggled);
 				check = (Gtk.CheckButton) builder.get_object ("checkbutton-settings-symbol-completion");
 				assert (check != null);
 				check.set_active (_symbol_enabled);
-				check.toggled += this.on_checkbutton_toggled;
+				check.toggled.connect (this.on_checkbutton_toggled);
 				check = (Gtk.CheckButton) builder.get_object ("checkbutton-settings-sourcecode-outliner");
 				assert (check != null);
 				check.set_active (_sourcecode_outliner_enabled);
-				check.toggled += this.on_checkbutton_toggled;
+				check.toggled.connect (this.on_checkbutton_toggled);
 				var text = (Gtk.Entry) builder.get_object ("entry-settings-author");
 				assert (text != null);
 				text.set_text (_author);

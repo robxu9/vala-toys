@@ -65,7 +65,7 @@ namespace Vtg
 		{
 			main_instance = this;
 			_config = new Configuration ();
-			_config.notify += this.on_configuration_property_changed;
+			_config.notify.connect (this.on_configuration_property_changed);
 			GLib.Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
 			_projects = new Vtg.Projects (this);
 			

@@ -88,7 +88,7 @@ namespace Vtg
 			_vala_warning_button.set_is_important (true);
 			_vala_warning_button.set_icon_name (Gtk.STOCK_DIALOG_WARNING);
 			_vala_warning_button.set_active (true);
-			_vala_warning_button.toggled += on_toggle_warnings_toggled;
+			_vala_warning_button.toggled.connect (on_toggle_warnings_toggled);
 			_vala_warning_button.set_tooltip_text (_("Show or hide the warnings from the build result view"));
 			toolbar.insert (_vala_warning_button, -1);
 
@@ -96,7 +96,7 @@ namespace Vtg
 			_vala_error_button.set_label (_("Errors"));
 			_vala_error_button.set_is_important (true);
 			_vala_error_button.set_icon_name (Gtk.STOCK_DIALOG_ERROR);
-			_vala_error_button.toggled += on_toggle_errors_toggled;
+			_vala_error_button.toggled.connect (on_toggle_errors_toggled);
 			_vala_error_button.set_tooltip_text (_("Show or hide the errors from the build result view"));
 			_vala_error_button.set_active (true);
 			toolbar.insert (_vala_error_button, -1);
@@ -135,14 +135,14 @@ namespace Vtg
 			column.pack_start (renderer, false);
 			column.add_attribute (renderer, "text", 4);
 			_build_view.append_column (column);
-			_build_view.row_activated += this.on_build_view_row_activated;
+			_build_view.row_activated.connect (this.on_build_view_row_activated);
 			_build_view.set_rules_hint (true);
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_build_view);
 			_ui.pack_start (scroll, true, true, 0);
 			_ui.show_all ();
 			panel.add_item_with_stock_icon (_ui, _("Build results"), Gtk.STOCK_EXECUTE);
-			_plugin_instance.output_view.message_added += this.on_message_added;
+			_plugin_instance.output_view.message_added.connect (this.on_message_added);
 			_child_model.set_sort_column_id (5, SortType.ASCENDING);
 			
 			update_toolbar_button_status ();

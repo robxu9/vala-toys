@@ -195,30 +195,30 @@ namespace Vtg
 			_prj_executer = new ProjectExecuter (_plugin_instance);
 			_prj_search = new ProjectSearch (_plugin_instance);
 						
-			_prj_executer.process_start += (sender) => {
+			_prj_executer.process_start.connect ((sender) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj == null || prj.is_default);
-			};
-			_prj_executer.process_exit += (sender, exit_status) => {
+			});
+			_prj_executer.process_exit.connect ((sender, exit_status) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj == null || prj.is_default);
-			};
-			_prj_builder.build_start += (sender) => {
+			});
+			_prj_builder.build_start.connect ((sender) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj == null || prj.is_default);
-			};
-			_prj_builder.build_exit += (sender, exit_status) => {
+			});
+			_prj_builder.build_exit.connect ((sender, exit_status) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj == null || prj.is_default);
-			};
-			_prj_search.search_start += (sender) => {
+			});
+			_prj_search.search_start.connect ((sender) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj == null || prj.is_default);
-			};
-			_prj_search.search_exit += (sender, exit_status) => {
+			});
+			_prj_search.search_exit.connect ((sender, exit_status) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj == null || prj.is_default);
-			};
+			});
 						
 			initialize_ui ();
 			_changelog = new ChangeLog (_plugin_instance);

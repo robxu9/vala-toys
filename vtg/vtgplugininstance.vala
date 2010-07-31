@@ -88,7 +88,7 @@ namespace Vtg
 			}
 			
 			_bookmarks = new SourceBookmarks (this);
-			_bookmarks.current_bookmark_changed += this.on_current_bookmark_changed;
+			_bookmarks.current_bookmark_changed.connect (this.on_current_bookmark_changed);
 			_tab_add_sig_id = Signal.connect_after (this._window, "tab-added", (GLib.Callback) on_tab_added, this);
 			_tab_removed_sig_id = Signal.connect (this._window, "tab-removed", (GLib.Callback) on_tab_removed, this);
 			

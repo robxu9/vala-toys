@@ -1,5 +1,26 @@
 2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbfproject.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgfilteredlistdialog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectexecuterdialog.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	fixed the usage of the depracted +=, -= signal syntax
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 
 	fixed vala 0.9.4 compilation issue

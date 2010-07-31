@@ -72,7 +72,7 @@ namespace Vtg
 			_messages.create_tag ("keyword", "weight", Pango.Weight.BOLD, null);
 
 			_textview = new TextView.with_buffer (_messages);
-			_textview.key_press_event += this.on_textview_key_press;
+			_textview.key_press_event.connect (this.on_textview_key_press);
 
 			/* Change default font throughout the widget */
 			Pango.FontDescription font_desc = Pango.FontDescription.from_string ("Monospace");
@@ -86,7 +86,7 @@ namespace Vtg
 		}
 
 
-		private bool on_textview_key_press (Gtk.TextView sender, Gdk.EventKey evt)
+		private bool on_textview_key_press (Gtk.Widget sender, Gdk.EventKey evt)
 		{
 			if (evt.keyval == Gdk.Key_Return) {
 				string buffer;

@@ -85,11 +85,11 @@ namespace Vtg
 			assert (_treeview != null);
 			_entry = (Gtk.Entry) builder.get_object ("entry-db-filter");
 			assert (_entry != null);
-			_entry.key_press_event += this.on_entry_key_press;
-			_entry.notify["text"] += this.on_entry_text_changed;
+			_entry.key_press_event.connect (this.on_entry_key_press);
+			_entry.notify["text"].connect (this.on_entry_text_changed);
 			_filtered_model = new Gtk.TreeModelFilter (_child_model, null);
 			_filtered_model.set_visible_column (FilteredListDialogColumns.VISIBILITY);
-			_child_model.row_changed += this.on_row_changed;
+			_child_model.row_changed.connect (this.on_row_changed);
 			
 			var column = new TreeViewColumn ();
 			
@@ -366,13 +366,13 @@ namespace Vtg
 		
 		private void filter_and_highlight_rows ()
 		{
-			_child_model.row_changed -= this.on_row_changed;
+			_child_model.row_changed.disconnect (this.on_row_changed);
 			
 			TreeIter iter;
 			if (_child_model.get_iter_first (out iter))
 				filter_and_highlight_item (iter);
 			
-			_child_model.row_changed += this.on_row_changed;
+			_child_model.row_changed.connect (this.on_row_changed);
 			_filtered_model.refilter ();
 			_treeview.expand_all ();
 		}

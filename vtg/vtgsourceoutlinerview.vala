@@ -115,8 +115,8 @@ namespace Vtg
 			
 			_src_view.append_column (column);
 			_src_view.set_headers_visible (false);
-			_src_view.row_activated += this.on_source_outliner_view_row_activated;
-			_src_view.button_press_event += this.on_source_outliner_view_button_press;
+			_src_view.row_activated.connect (this.on_source_outliner_view_row_activated);
+			_src_view.button_press_event.connect (this.on_source_outliner_view_button_press);
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_src_view);
 			_side_panel.pack_start (scroll, true, true, 4); // add scroll + treview

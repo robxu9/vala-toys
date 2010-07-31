@@ -74,11 +74,11 @@ namespace Vtg
 			} 
 			set { 
 				if (_current_project != null) {
-					_current_project.updated -= this.on_current_project_updated;
+					_current_project.updated.disconnect (this.on_current_project_updated);
 				}
 				_current_project = value; 
 				if (_current_project != null) {
-					_current_project.updated += this.on_current_project_updated;
+					_current_project.updated.connect (this.on_current_project_updated);
  					if (_current_project.model != null) {
 						_filtered_model = new Gtk.TreeModelFilter (_current_project.model, null);
 						_filtered_model.set_visible_func (this.filter_function);
@@ -127,7 +127,7 @@ namespace Vtg
 			var panel = _plugin_instance.window.get_side_panel ();
 			_side_panel = new Gtk.VBox (false, 8);
 			_prjs_combo = new Gtk.ComboBox.text ();
-			_prjs_combo.changed += this.on_project_combobox_changed;
+			_prjs_combo.changed.connect (this.on_project_combobox_changed);
 			_prj_view = new Gtk.TreeView ();
 			CellRenderer renderer = new CellRendererPixbuf ();
 			
@@ -140,8 +140,8 @@ namespace Vtg
 			
 			_prj_view.append_column (column);
 			_prj_view.set_headers_visible (false);
-			_prj_view.row_activated += this.on_project_view_row_activated;
-			_prj_view.button_press_event += this.on_project_view_button_press;
+			_prj_view.row_activated.connect (this.on_project_view_row_activated);
+			_prj_view.button_press_event.connect (this.on_project_view_button_press);
 			
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_prj_view);

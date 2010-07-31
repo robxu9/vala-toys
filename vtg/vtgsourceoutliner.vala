@@ -70,15 +70,15 @@ namespace Vtg
 		{
 			GLib.Object (plugin_instance: plugin_instance);
 			_outliner_view = new SourceOutlinerView (plugin_instance);
-			_outliner_view.goto_source += this.on_goto_source;
-			_outliner_view.filter_changed += this.on_filter_changed;
+			_outliner_view.goto_source.connect (this.on_goto_source);
+			_outliner_view.filter_changed.connect (this.on_filter_changed);
 			
 		}
 
 		~SourceOutliner ()
 		{
 			if (_outliner_view != null) {
-				_outliner_view.goto_source -= this.on_goto_source;
+				_outliner_view.goto_source.disconnect (this.on_goto_source);
 				_outliner_view.clear_view ();
 				_outliner_view.deactivate ();
 				_outliner_view = null;
@@ -139,7 +139,7 @@ namespace Vtg
 		public void setup_completion_engine (Afrodite.CompletionEngine engine)
 		{
 			completion_setup = true;
-			engine.end_parsing += this.on_end_parsing;			
+			engine.end_parsing.connect (this.on_end_parsing);			
 		}
 
 		private void cleanup_completion_with_view (View view)
@@ -154,7 +154,7 @@ namespace Vtg
 
 		public void cleanup_completion_engine (Afrodite.CompletionEngine engine)
 		{
-			engine.end_parsing -= this.on_end_parsing;
+			engine.end_parsing.disconnect (this.on_end_parsing);
 			completion_setup = false;
 		}
 		

@@ -249,7 +249,7 @@ namespace Vtg
 				setup_completions ();
 				build_tree_model ();
 				vcs_test (project_filename);
-				_project.updated += this.on_project_updated;
+				_project.updated.connect (this.on_project_updated);
 				return true;
 			} else {
 				throw new ProjectManagerError.NO_BACKEND (_("Can't load project, no suitable backend found"));

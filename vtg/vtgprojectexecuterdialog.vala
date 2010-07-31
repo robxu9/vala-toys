@@ -63,8 +63,8 @@ namespace Vtg
 			var entry = (Gtk.Entry) builder.get_object ("entry-command-line");
 			assert (entry != null);
 			entry.set_completion (_completion);
-			entry.key_press_event += this.on_entry_key_press;			
-			entry.notify["text"] += this.on_command_line_changed;
+			entry.key_press_event.connect (this.on_entry_key_press);			
+			entry.notify["text"].connect (this.on_command_line_changed);
 			_button_exec = (Button) builder.get_object ("button-run-execute");
 			assert (_button_exec != null);
 			_tree = (Gtk.TreeView) builder.get_object ("treeview-executables");
@@ -75,7 +75,7 @@ namespace Vtg
 			column.add_attribute (renderer, "text", 0);
 			_tree.append_column (column);
 			_tree.get_selection ().set_mode (SelectionMode.SINGLE);
-			_tree.get_selection ().changed += this.on_tree_selection_changed;
+			_tree.get_selection ().changed.connect (this.on_tree_selection_changed);
 			
 			//initialize the project list
 			var targets = project.exec_targets;

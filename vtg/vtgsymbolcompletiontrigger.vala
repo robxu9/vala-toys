@@ -56,20 +56,20 @@ namespace Vtg
 		private bool activate ()
 		{
 			var view = _completion.get_view ();
-			view.key_press_event += this.on_view_key_press;
-			view.get_buffer ().changed += this.on_buffer_changed;
+			view.key_press_event.connect (this.on_view_key_press);
+			view.get_buffer ().changed.connect (this.on_buffer_changed);
 			Gsc.Info info = _completion.get_info_widget ();
-			info.notify["visible"] += this.on_info_visible_changed;
+			info.notify["visible"].connect (this.on_info_visible_changed);
 			return true;
 		}
 
 		public bool deactivate ()
 		{
 			var view = _completion.get_view ();
-			view.key_press_event -= this.on_view_key_press;
-			view.get_buffer ().changed -= this.on_buffer_changed;
+			view.key_press_event.disconnect (this.on_view_key_press);
+			view.get_buffer ().changed.disconnect (this.on_buffer_changed);
 			Gsc.Info info = _completion.get_info_widget ();
-			info.notify["visible"] -= this.on_info_visible_changed;
+			info.notify["visible"].disconnect (this.on_info_visible_changed);
 			return true;
 		}
 
@@ -97,8 +97,10 @@ namespace Vtg
 			trigger_event (true);
 		}
 		
-		private bool on_view_key_press (Gtk.TextView view, Gdk.EventKey event)
+		private bool on_view_key_press (Gtk.Widget sender, Gdk.EventKey event)
 		{
+			var view = (Gtk.TextView) sender;
+			
 			if (!_completion.visible) {
 				if (event.keyval == '.' && 
 				    (event.state & (ModifierType.SHIFT_MASK | ModifierType.META_MASK | ModifierType.CONTROL_MASK)) == 0) {
@@ -181,11 +183,12 @@ namespace Vtg
 			}
 		}
 
-		private void on_info_visible_changed (Gsc.Info sender, GLib.ParamSpec param)
+		private void on_info_visible_changed (GLib.Object sender, GLib.ParamSpec param)
 		{
+			var info = (Gsc.Info) sender;
 			//only store the visible state if completion popup is active
 			if (_completion.visible) {
-				Vtg.Plugin.main_instance.config.info_window_visible = sender.visible;
+				Vtg.Plugin.main_instance.config.info_window_visible = info.visible;
 			}
 		}
 		
