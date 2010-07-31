@@ -569,12 +569,12 @@ namespace Afrodite
 			
 			set_fqn (f.name);
 			var s = add_symbol (f, out _current_sr);
-			s.return_type = new DataType (f.field_type.to_string ());
+			s.return_type = new DataType (f.variable_type.to_string ());
 			
 			s.binding =  get_vala_member_binding (f.binding);
 			_current.add_child (s);
 			_current = s;
-			visit_type_for_generics (f.field_type, s.return_type);
+			visit_type_for_generics (f.variable_type, s.return_type);
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -710,7 +710,7 @@ namespace Afrodite
 			if (p.ellipsis) {
 				d = Symbol.ELLIPSIS;
 			} else {
-				d = new DataType (get_datatype_typename (p.parameter_type), p.name);
+				d = new DataType (get_datatype_typename (p.variable_type), p.name);
 				switch (p.direction) {
 					case Vala.ParameterDirection.OUT:
 						d.is_out = true;

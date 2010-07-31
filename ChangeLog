@@ -1,3 +1,9 @@
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	fixed vala 0.9.4 compilation issue
+
 2010-06-19  Andrea Del Signore  <sejerpz@tin.it>
 
 	*   configure:
