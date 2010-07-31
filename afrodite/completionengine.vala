@@ -30,17 +30,17 @@ namespace Afrodite
 		public signal void begin_parsing (CompletionEngine sender);
 		public signal void end_parsing (CompletionEngine sender);
 		
-		private Vala.List<string> vapidirs;
-		private Vala.List<SourceItem> source_queue;
-		private Vala.List<SourceItem> merge_queue;
+		private Vala.List<string> _vapidirs;
+		private Vala.List<SourceItem> _source_queue;
+		private Vala.List<SourceItem> _merge_queue;
 		
-		private Mutex source_queue_mutex;
-		private Mutex merge_queue_mutex;
-		private Mutex ast_mutex = null;
+		private Mutex _source_queue_mutex;
+		private Mutex _merge_queue_mutex;
+		private Mutex _ast_mutex = null;
 		
-		private unowned Thread parser_thread;
-		private int parser_stamp = 0;
-		private int parser_remaining_files = 0;
+		private unowned Thread _parser_thread;
+		private int _parser_stamp = 0;
+		private int _parser_remaining_files = 0;
 		private bool _glib_init = false;
 		
 		private Ast _ast;
@@ -51,42 +51,42 @@ namespace Afrodite
 				id = "";
 				
 			this.id = id;
-			vapidirs = new ArrayList<string> (GLib.str_equal);
-			source_queue = new ArrayList<SourceItem> ();
-			merge_queue = new ArrayList<SourceItem> ();
-			source_queue_mutex = new Mutex ();
-			merge_queue_mutex = new Mutex ();
+			_vapidirs = new ArrayList<string> (GLib.str_equal);
+			_source_queue = new ArrayList<SourceItem> ();
+			_merge_queue = new ArrayList<SourceItem> ();
+			_source_queue_mutex = new Mutex ();
+			_merge_queue_mutex = new Mutex ();
 			
 			_ast = new Ast ();
-			ast_mutex = new Mutex ();			
+			_ast_mutex = new Mutex ();			
 		}
 		
 		~Completion ()
 		{
-			ast_mutex.lock ();
+			_ast_mutex.lock ();
 			_ast = null;
-			ast_mutex.unlock ();
-			if (AtomicInt.@get (ref parser_stamp) != 0)
-				parser_thread.join ();
+			_ast_mutex.unlock ();
+			if (AtomicInt.@get (ref _parser_stamp) != 0)
+				_parser_thread.join ();
 
-			parser_thread = null;
+			_parser_thread = null;
 		}
 
 		public bool is_parsing
 		{
 			get {
-				return AtomicInt.@get (ref parser_stamp) != 0;
+				return AtomicInt.@get (ref _parser_stamp) != 0;
 			}
 		}
 
 		public void add_vapi_dir (string path)
 		{
-			vapidirs.add (path);
+			_vapidirs.add (path);
 		}
 		
 		public void remove_vapi_dir (string path)
 		{
-			if (!vapidirs.remove (path))
+			if (!_vapidirs.remove (path))
 				warning ("remove_vapi_dir: vapidir %s not found", path);
 		}
 		
@@ -99,7 +99,7 @@ namespace Afrodite
 
 		private SourceItem? source_queue_contains (SourceItem value)
 		{
-			foreach (SourceItem source in source_queue) {
+			foreach (SourceItem source in _source_queue) {
  				if (source.path == value.path) {
  					return source;
  				}
@@ -110,7 +110,7 @@ namespace Afrodite
 
 		public void queue_sources (Vala.List<SourceItem> sources)
 		{
-			source_queue_mutex.@lock ();
+			_source_queue_mutex.@lock ();
 			if (!_glib_init) {
 				// merge standard base vapi (glib and gobject)
 				_glib_init = true;
@@ -140,21 +140,21 @@ namespace Afrodite
 						debug ("%s: queued live buffer %s. sources to parse %d", id, source.path, source_queue.size);
 				*/	
 					if (item != null)
-						source_queue.remove (item);
+						_source_queue.remove (item);
 
-					source_queue.add (source.copy ());
+					_source_queue.add (source.copy ());
 				} 
 				else if (item.content == null && source.content != null) {
 					item.content = source.content;
 					//debug ("%s: updated live buffer %s. sources to parse %d", id, source.path, source_queue.size);
 				}
 			}
-			source_queue_mutex.@unlock ();
+			_source_queue_mutex.@unlock ();
 			
-			if (AtomicInt.compare_and_exchange (ref parser_stamp, 0, 1)) {
+			if (AtomicInt.compare_and_exchange (ref _parser_stamp, 0, 1)) {
 				create_parser_thread ();
 			} else {
-				AtomicInt.inc (ref parser_stamp);
+				AtomicInt.inc (ref _parser_stamp);
 			}		
 		}
 		
@@ -189,11 +189,11 @@ namespace Afrodite
 			bool first_run = true;
 				
 			while (ast == null 
-				&& ast_mutex != null 
-				&& (first_run || (file_count = AtomicInt.get (ref parser_remaining_files)) <= 1))
+				&& _ast_mutex != null 
+				&& (first_run || (file_count = AtomicInt.get (ref _parser_remaining_files)) <= 1))
 			{
 				first_run = false;
-				res = ast_mutex.@trylock ();
+				res = _ast_mutex.@trylock ();
 
 				if (res) {
 					ast = _ast;
@@ -212,16 +212,16 @@ namespace Afrodite
 				return;
 			}
 			
-			ast_mutex.unlock ();
+			_ast_mutex.unlock ();
 		}
 
 		private void create_parser_thread ()
 		{				
 			try {
-				if (parser_thread != null) {
-					parser_thread.join ();
+				if (_parser_thread != null) {
+					_parser_thread.join ();
 				}
-				parser_thread = Thread.create_full (this.parse_sources, 0, true, false, ThreadPriority.LOW);
+				_parser_thread = Thread.create_full (this.parse_sources, 0, true, false, ThreadPriority.LOW);
 			} catch (ThreadError err) {
 				error ("%s: can't create parser thread: %s", id, err.message);
 			}
@@ -237,18 +237,18 @@ namespace Afrodite
 			Vala.List<SourceItem> sources = new ArrayList<SourceItem> ();
 			
 			while (true) {
-				int stamp = AtomicInt.get (ref parser_stamp);
+				int stamp = AtomicInt.get (ref _parser_stamp);
 				// set the number of sources to process + 1, because the last one
 				// will be decreased by the resolve part
-				AtomicInt.set (ref parser_remaining_files, source_queue.size + 1);
+				AtomicInt.set (ref _parser_remaining_files, _source_queue.size + 1);
 				// get the source to parse
-				source_queue_mutex.@lock ();
-				int source_count = source_queue.size;
-				foreach (SourceItem item in source_queue) {
+				_source_queue_mutex.@lock ();
+				int source_count = _source_queue.size;
+				foreach (SourceItem item in _source_queue) {
 					sources.add (item.copy ());
 				}
-				source_queue.clear ();
-				source_queue_mutex.@unlock ();
+				_source_queue.clear ();
+				_source_queue_mutex.@unlock ();
 
 				Parser p = new Parser (sources);
 				p.parse ();
@@ -270,7 +270,7 @@ namespace Afrodite
 									break;
 								
 								// do the real merge
-								ast_mutex.@lock ();
+								_ast_mutex.@lock ();
 								if (_ast != null) {
 									if (merger == null) {
 										// lazy init the merger, here I'm sure that _ast != null
@@ -284,7 +284,7 @@ namespace Afrodite
 									//timer.start ();
 									merger.merge_vala_context (s, source.context, source.is_glib);
 								}
-								ast_mutex.unlock ();
+								_ast_mutex.unlock ();
 								
 								//timer.stop ();
 								//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
@@ -292,26 +292,26 @@ namespace Afrodite
 							}
 						}
 					}
-					AtomicInt.add (ref parser_remaining_files, -1);
+					AtomicInt.add (ref _parser_remaining_files, -1);
 				}
 				timer.stop ();
 				parsing_time = timer.elapsed ();
 				timer.reset ();
 				timer.start ();				
 				
-				ast_mutex.@lock ();
+				_ast_mutex.@lock ();
 				if (_ast != null) {
 					var resolver = new SymbolResolver ();
 					resolver.resolve (_ast);
 				}
-				AtomicInt.add (ref parser_remaining_files, -1);
-				ast_mutex.unlock ();
+				AtomicInt.add (ref _parser_remaining_files, -1);
+				_ast_mutex.unlock ();
 				
 				
 				sources.clear ();
 				
 				//check for changes or exit request
-				if (_ast == null || AtomicInt.compare_and_exchange (ref parser_stamp, stamp, 0)) {
+				if (_ast == null || AtomicInt.compare_and_exchange (ref _parser_stamp, stamp, 0)) {
 					break;
 				}
  			}
