@@ -1,5 +1,11 @@
 2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
 
+	* po/POTFILES.in:
+
+	diskcheck fixes
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gst-0.7.0:
 
 	deleted my private copy of the old gtk source completion framework

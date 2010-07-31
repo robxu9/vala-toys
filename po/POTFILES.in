@@ -16,7 +16,6 @@ vtg/vtgprojectexecuter.vala
 vtg/vtgfilteredlistdialog.vala
 vtg/vtgconfiguration.vala
 vtg/vtgsymbolcompletion.vala
-vtg/vtgsymbolcompletiontrigger.vala
 #afrodite
 afrodite/completionengine.vala
 afrodite/symbol.vala
@@ -57,7 +56,3 @@ gen-project/libgen-project/constants.vala
 gen-project/main.vala
 gen-project/genprojectdialog.vala
 [type: getttext/glade]gen-project/ui/gen-project.ui
-#gsc completion
-gsc-0.7.0/gtksourcecompletion/gsc-completion.c
-gsc-0.7.0/gtksourcecompletion/gsc-proposal.c
-gsc-0.7.0/gtksourcecompletion/gsc-trigger-autowords.c
