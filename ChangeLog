@@ -1,5 +1,13 @@
 2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed project build menu should be always enabled
+	because you can interrupt a previous build to start
+	a new one
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
 	* po/POTFILES.in:
 
 	diskcheck fixes

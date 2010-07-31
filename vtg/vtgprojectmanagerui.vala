@@ -747,7 +747,7 @@ namespace Vtg
 				action.set_sensitive (!default_project);
 			action = _actions.get_action ("ProjectBuild");
 			if (action != null)
-				action.set_sensitive (!default_project && !_prj_builder.is_building);
+				action.set_sensitive (!default_project);
 			action = _actions.get_action ("ProjectBuildClean");
 			if (action != null)
 				action.set_sensitive (!default_project && !_prj_builder.is_building);
@@ -759,7 +759,7 @@ namespace Vtg
 			bool is_vala_source = (doc != null && doc.language != null && doc.language.id == "vala");
 			action = _actions.get_action ("ProjectBuildCompileFile");
 			if (action != null)
-				action.set_sensitive (default_project && is_vala_source && !_prj_builder.is_building);
+				action.set_sensitive (default_project && is_vala_source);
 			action = _actions.get_action ("ProjectGotoMethod");
 			if (action != null)
 				action.set_sensitive (is_vala_source);
