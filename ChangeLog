@@ -1,5 +1,11 @@
 2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	hide callip when the source buffer lost the focus
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/am/vbfamprojectmanager.vala:
 
 	fixed library name handling when parsing extended vala informations

@@ -66,6 +66,7 @@ namespace Vtg
 			_sb.content = doc.text;
 			
 			_symbol_completion.view.key_press_event.connect (this.on_view_key_press);
+			_symbol_completion.view.focus_out_event.connect (this.on_view_focus_out);
 			doc.notify["text"] += this.on_text_changed;
 			doc.notify["cursor-position"] += this.on_cursor_position_changed;
 			Signal.connect (doc, "saved", (GLib.Callback) on_document_saved, this);
@@ -93,6 +94,7 @@ namespace Vtg
 			}
 			
 			_symbol_completion.view.key_press_event.disconnect (this.on_view_key_press);
+			_symbol_completion.view.focus_out_event.disconnect (this.on_view_focus_out);
 			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			_symbol_completion.notify["completion-engine"].disconnect (this.on_completion_engine_changed);
 			doc.notify["text"] -= this.on_text_changed;
@@ -103,6 +105,12 @@ namespace Vtg
 				var status_bar = (Gedit.Statusbar) _symbol_completion.plugin_instance.window.get_statusbar ();
 				status_bar.remove (_sb_context_id, _sb_msg_id);
 			}
+		}
+		
+		private bool on_view_focus_out (Gtk.Widget sender, Gdk.EventFocus event)
+		{
+			hide_calltip ();
+			return false;
 		}
 		
 		[CCode(instance_pos=-1)]
