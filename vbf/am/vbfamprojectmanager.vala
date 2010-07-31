@@ -614,7 +614,16 @@ namespace Vbf.Am
 					string[] rule_parts = line.split ("=", 2);;
 					if (rule_parts.length >= 2 && rule_parts[0].chomp().has_suffix ("_VALAFLAGS")) {
 						// automake 1.11 with vala support
-						string target_name = rule_parts[0].split ("_", 2)[0].chug();
+						string target_name = "";
+						
+						string[] target_tmp = rule_parts[0].split ("_");
+						for (int i=0; i < target_tmp.length - 1; i++) {
+							if (i < (rule_parts.length - 1))
+								target_name = target_name.concat (target_tmp[i], ".");
+							else
+								target_name = target_name.concat (target_tmp[i]);
+						}
+
 						target = group.get_target_for_id (target_name);
 					}
 					rule_parts = line.split (":", 2);

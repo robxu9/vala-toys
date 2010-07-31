@@ -1,5 +1,11 @@
 2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/am/vbfamprojectmanager.vala:
+
+	fixed library name handling when parsing extended vala informations
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/completionengine.vala:
 	* vtg/vtgsourceoutlinerview.vala:
