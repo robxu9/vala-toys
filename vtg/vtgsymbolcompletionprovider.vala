@@ -23,15 +23,18 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
-using Gsc;
 using Afrodite;
 
 namespace Vtg
 {
-	internal class SymbolCompletionProvider : GLib.Object, Gsc.Provider
+	internal class SymbolCompletionProvider : GLib.Object, Gtk.SourceCompletionProvider
 	{
+		private Gdk.Pixbuf _icon;
+		private string _name;
+		private int _priority = 1;
+		private List<Gtk.SourceCompletionItem> _proposals;
+	
 		private Afrodite.SourceItem _sb = null;
-		private GLib.List<Gsc.Proposal> _list;
 		
 		private uint _timeout_id = 0;
 		private uint _idle_id = 0;
@@ -43,12 +46,14 @@ namespace Vtg
 		private bool _prev_cache_building = false;
 		private bool _tooltip_is_visible = false;
 
-		private SymbolCompletionTrigger _last_trigger = null;
+		private bool _pending_completion_request = false;
+		private bool _filter = false;
 		private uint _sb_msg_id = 0;
 		private uint _sb_context_id = 0;
 
-		private Gsc.Info _calltip_window = null;
-
+		private Gtk.SourceCompletionInfo _calltip_window = null;
+		private Gtk.Label _calltip_window_label = null;
+		
 		private int _last_line = -1;
 		private bool _doc_changed = false;
 		
@@ -57,6 +62,8 @@ namespace Vtg
 		
 		public SymbolCompletionProvider (Vtg.SymbolCompletion symbol_completion)
 		{
+			_icon = this.get_icon ();
+
 			_symbol_completion = symbol_completion;
 			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			string name = Utils.get_document_name (doc);
@@ -67,6 +74,8 @@ namespace Vtg
 			
 			_symbol_completion.view.key_press_event.connect (this.on_view_key_press);
 			_symbol_completion.view.focus_out_event.connect (this.on_view_focus_out);
+			_symbol_completion.view.get_completion ().show.connect (this.on_completion_window_hide);
+			
 			doc.notify["text"] += this.on_text_changed;
 			doc.notify["cursor-position"] += this.on_cursor_position_changed;
 			Signal.connect (doc, "saved", (GLib.Callback) on_document_saved, this);
@@ -106,7 +115,130 @@ namespace Vtg
 				status_bar.remove (_sb_context_id, _sb_msg_id);
 			}
 		}
+
+		public string get_name ()
+		{
+			return _name;
+		}
+
+		public int get_priority ()
+		{
+			return _priority;
+		}
+
+		public bool match (Gtk.SourceCompletionContext context)
+		{
+			bool result = false;
+			unowned Gtk.TextMark mark = (Gtk.TextMark) context.completion.view.get_buffer ().get_insert ();
+			Gtk.TextIter start;
+			Gtk.TextIter end;
+			context.completion.view.get_buffer ().get_iter_at_mark (out start, mark);
+			context.completion.view.get_buffer ().get_iter_at_mark (out end, mark);
+
+			if (!start.starts_line ())
+			start.set_line_offset (0);
+
+			string text = start.get_text (end);
+			if (text.has_suffix (".")) {
+				result = true;
+				_filter = false; // do a completion
+			}
+			
+			if (result) {
+				if (_cache_building) {
+					this._pending_completion_request = true;
+					result = false;
+				} else if (_pending_completion_request) {
+					this._pending_completion_request = false;
+				}
+			}
+			return result;
+		}
+
+		private void on_completion_window_hide (Gtk.SourceCompletion sender)
+		{
+			_filter = false;
+		}
 		
+		public void populate (Gtk.SourceCompletionContext context)
+		{
+			if (!_filter) {
+				this.build_proposal_item_list ();
+				context.add_proposals (this, _proposals, true);
+				// subsequent call to populate should filter the proposals 
+				// until the proposals window will be closed
+				_filter = true;
+			} else {
+				string whole_line, word, last_part;
+				int line, column;
+
+				parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
+				GLib.debug ("filtering with: '%s' - '%s'", word, last_part);
+				if (!StringUtils.is_null_or_empty (last_part) && word != last_part) {
+					var filtered_proposals = new GLib.List<Gtk.SourceCompletionItem>();
+					foreach (var proposal in _proposals) {
+						if (proposal.get_label ().has_prefix (last_part)) {
+							filtered_proposals.append (proposal);
+						}
+					}
+				
+					if (filtered_proposals.length () == 0) {
+						// no matching add a dummy one to prevent proposal windows from closing
+						var dummy_proposal = new Gtk.SourceCompletionItem (_("No matching proposal"), "", null, null);
+						filtered_proposals.append (dummy_proposal);
+					}
+					context.add_proposals (this, filtered_proposals, true);
+				} else {
+					// match all optimization
+					context.add_proposals (this, _proposals, true);
+				}
+			}
+
+		}
+
+		public unowned Gdk.Pixbuf get_icon ()
+		{
+			if (_icon == null)
+			{
+				try {
+					Gtk.IconTheme theme = Gtk.IconTheme.get_default ();
+					_icon = theme.load_icon (Gtk.STOCK_DIALOG_INFO, 16, 0);
+				} catch (Error err) {
+					critical ("error: %s", err.message);
+				}
+			}
+			return _icon;
+		}
+
+		public bool activate_proposal (Gtk.SourceCompletionProposal proposal, Gtk.TextIter iter)
+		{
+			return false;
+		}
+
+		public Gtk.SourceCompletionActivation get_activation ()
+		{
+			return Gtk.SourceCompletionActivation.INTERACTIVE |
+				Gtk.SourceCompletionActivation.USER_REQUESTED;
+		}
+
+		public unowned Gtk.Widget? get_info_widget (Gtk.SourceCompletionProposal proposal)
+		{
+			return null;
+		}
+
+		public int get_interactive_delay ()
+		{
+			return 10;
+		}
+
+		public bool get_start_iter (Gtk.SourceCompletionContext context, Gtk.SourceCompletionProposal proposal,	Gtk.TextIter iter)
+		{
+			return false;
+		}
+
+		public void update_info (Gtk.SourceCompletionProposal proposal, Gtk.SourceCompletionInfo info)
+		{
+		}
 		private bool on_view_focus_out (Gtk.Widget sender, Gdk.EventFocus event)
 		{
 			hide_calltip ();
@@ -208,23 +340,12 @@ namespace Vtg
 				
 			if (_cache_building && !_tooltip_is_visible && _prev_cache_building == false) {
 				_prev_cache_building = _cache_building;
-				/*
-				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
-				if (_sb_msg_id != 0) {
-					status_bar.remove (_sb_context_id, _sb_msg_id);
-				}
-				_sb_msg_id = status_bar.push (_sb_context_id, _("rebuilding symbol cache for %s...").printf (_completion.id));*/
 			} else if (_cache_building == false && _prev_cache_building == true) {
 				_prev_cache_building = false;
-				//hide tip, show proposal list
-				/*
-				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
-				status_bar.remove (_sb_context_id, _sb_msg_id);
-				_sb_msg_id = 0;
-				*/
-				if (_last_trigger != null) {
-					var trigger = (SymbolCompletionTrigger) _last_trigger;
-					trigger.trigger_event (trigger.shortcut_triggered);
+				if (this._pending_completion_request) {
+					//TODO: the binding is broken ATM
+					//var completion = _symbol_completion.view.get_completion ();
+					//completion.show (null, completion.create_context ());
 				}
 			}
 			_idle_id = 0;
@@ -270,8 +391,8 @@ namespace Vtg
 				}
 				string calltip_text = completion_result.info;
 				if (calltip_text != null) {
-					_calltip_window.set_markup (calltip_text);
-					_calltip_window.move_to_cursor (_symbol_completion.view);
+					_calltip_window_label.set_markup (calltip_text);
+					_calltip_window.move_to_iter (_symbol_completion.view);
 					_calltip_window.show_all ();
 				}
 			}
@@ -287,29 +408,11 @@ namespace Vtg
 
 		private void initialize_calltip_window ()
 		{
-			_calltip_window = new Gsc.Info ();
-			//_calltip_window.set_info_type (InfoType.EXTENDED);
+			_calltip_window = new Gtk.SourceCompletionInfo ();
 			_calltip_window.set_transient_for (_symbol_completion.plugin_instance.window);
-			_calltip_window.set_adjust_width (true, 800);
-			_calltip_window.set_adjust_height (true, 600);
-			_calltip_window.allow_grow = true;
-			_calltip_window.allow_shrink = true;
-			
-			//this is an hack
-			var child = _calltip_window.get_child ();
-			while (child != null && !(child is Gtk.Label)) {
-				if (child is Bin) {
-					child = ((Bin) child).get_child ();
-				} else {
-					child = null;
-				}
-				 
-			}
-			if (child is Gtk.Label) {
-				var l = (Label) child;
-				l.xalign = 0;
-				l.xpad = 8;
-			}
+			_calltip_window.set_sizing (400, 200, true, true);
+			_calltip_window_label = new Gtk.Label ("");
+			_calltip_window.set_widget (_calltip_window_label);			
 		}
 
 		private void parse (Gedit.Document doc)
@@ -322,30 +425,13 @@ namespace Vtg
 
 		public void finish ()
 		{
-			_list = null;
-		}
-
-		public unowned string get_name ()
-		{
-			return "SymbolCompletionProvider";
-		}
-
-		public GLib.List<Gsc.Proposal> get_proposals (Gsc.Trigger trigger)
-		{
-			build_proposal_item_list ((SymbolCompletionTrigger) trigger);
-
-			if (_list.length () == 0 && _cache_building) {
-				_last_trigger = (SymbolCompletionTrigger) trigger;
-			} else {
-				_last_trigger = null;
-			}
-			return (owned) _list;
+			_proposals = null;
 		}
 
 		private bool proposal_list_contains_name (string name)
 		{
-			foreach (Gsc.Proposal proposal in _list) {
-				if (proposal.label == name) {
+			foreach (Gtk.SourceCompletionItem proposal in _proposals) {
+				if (proposal.get_label () == name) {
 					return true;
 				}
 			}
@@ -355,7 +441,7 @@ namespace Vtg
 		
 		private void append_symbols (Afrodite.QueryOptions? options, Vala.List<Afrodite.Symbol> symbols, bool include_private_symbols = true)
 		{
-			unowned Proposal[] proposals = Utils.get_proposal_cache ();
+			unowned Gtk.SourceCompletionItem[] proposals = Utils.get_proposal_cache ();
 
 			
 			foreach (Afrodite.Symbol symbol in symbols) {
@@ -374,7 +460,7 @@ namespace Vtg
 				}
 
 				if (!symbol.overrides || (symbol.overrides && !this.proposal_list_contains_name (name))) {
-					Proposal proposal;					
+					Gtk.SourceCompletionItem proposal;					
 					var info = (symbol.info != null ? symbol.info : "");
 					Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.type_name);
 
@@ -383,22 +469,23 @@ namespace Vtg
 						_prealloc_index++;
 
 						proposal.label = name;
+						proposal.text = name;
 						proposal.info = info;
 						proposal.icon = icon;
 					} else {
-						proposal = new Proposal(name, info, icon);
+						proposal = new Gtk.SourceCompletionItem(name, name, icon, info);
 					}
-					_list.append (proposal);
+					_proposals.append (proposal);
 				}
 			}
 			//sort list
-			_list.sort (this.proposal_sort);
+			_proposals.sort (this.proposal_sort);
 		}
 
 		private static int proposal_sort (void* a, void* b)
 		{
-			Proposal pa = (Proposal) a;
-			Proposal pb = (Proposal) b;
+			Gtk.SourceCompletionItem pa = (Gtk.SourceCompletionItem) a;
+			Gtk.SourceCompletionItem pb = (Gtk.SourceCompletionItem) b;
 
 			return strcmp (pa.get_label (), pb.get_label ());
 		}
@@ -406,7 +493,7 @@ namespace Vtg
 		private void transform_result (Afrodite.QueryOptions? options, Afrodite.QueryResult? result)
 		{
 			_prealloc_index = 0;
-			_list = new GLib.List<Proposal> ();
+			_proposals = new GLib.List<Gtk.SourceCompletionItem> ();
 			var visited_interfaces = new Vala.ArrayList<Symbol> ();
 			
 			if (result != null && !result.is_empty) {
@@ -579,10 +666,11 @@ namespace Vtg
 					prev_char = ch;
 				}
 				symbolname = tmp.str.reverse ();
+				if (symbolname.has_suffix ("."))
+					symbolname = symbolname.substring (0, symbolname.length -1);
 				if (last_symbolname == "")
 					last_symbolname = symbolname;
 			}
-			
 		}
 
 		public Afrodite.Symbol? get_current_symbol_item (int retry_count = 0)
@@ -622,9 +710,9 @@ namespace Vtg
 				Afrodite.QueryOptions options = this.get_options_for_line (line);			
 				
 				if (word == symbol_name)
-					result = get_symbol_for_name (options, ast, null,  first_part, null,  lineno, colno);
+					result = get_symbol_for_name (options, ast, first_part, null,  lineno, colno);
 				else
-					result = get_symbol_type_for_name (options, ast, null,  first_part, null,  lineno, colno);
+					result = get_symbol_type_for_name (options, ast, first_part, null,  lineno, colno);
 					
 				if (result != null && !result.is_empty) {
 					var first = result.children.get (0);
@@ -704,20 +792,21 @@ namespace Vtg
 			return options;
 		}
 
-		private void build_proposal_item_list (SymbolCompletionTrigger trigger)
+		private void build_proposal_item_list ()
 		{
 			string whole_line, word, last_part;
 			int line, column;
 
 			parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
 
-			Afrodite.Ast ast = null;			
+			Afrodite.Ast ast = null;
+			GLib.debug ("completing word: %s", word);
 			if (!StringUtils.is_null_or_empty (word) 
 			    && _completion.try_acquire_ast (out ast)) {
 			        QueryOptions options = get_options_for_line (whole_line);
         			Afrodite.QueryResult result = null;
         			
-				result = get_symbol_type_for_name (options, ast, trigger, word, whole_line, line, column);
+				result = get_symbol_type_for_name (options, ast, word, whole_line, line, column);
 				transform_result (options, result);
 				_completion.release_ast (ast);
 			} else {
@@ -728,7 +817,7 @@ namespace Vtg
 			}
 		}
 		
-		private Afrodite.QueryResult? get_symbol_type_for_name (QueryOptions options, Afrodite.Ast ast, SymbolCompletionTrigger? trigger, string word, string? whole_line, int line, int column)
+		private Afrodite.QueryResult? get_symbol_type_for_name (QueryOptions options, Afrodite.Ast ast, string word, string? whole_line, int line, int column)
 		{
 			Afrodite.QueryResult result = null;
 			result = ast.get_symbol_type_for_name_and_path (options, word, _sb.path, line, column);
@@ -736,7 +825,7 @@ namespace Vtg
 			return result;
 		}
 
-		private Afrodite.QueryResult? get_symbol_for_name (QueryOptions options, Afrodite.Ast ast, SymbolCompletionTrigger? trigger, string word, string? whole_line, int line, int column)
+		private Afrodite.QueryResult? get_symbol_for_name (QueryOptions options, Afrodite.Ast ast,string word, string? whole_line, int line, int column)
 		{
 			Afrodite.QueryResult result = null;
 			result = ast.get_symbol_for_name_and_path (options, word, _sb.path, line, column);

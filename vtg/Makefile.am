@@ -11,7 +11,6 @@ AM_CPPFLAGS = \
 	-include $(CONFIG_HEADER) \
 	-I $(top_srcdir)/afrodite \
 	-I $(top_srcdir)/vbf \
-	-I $(top_srcdir)/gsc-0.7.0/ \
 	$(NULL)
 
 BUILT_SOURCES = libvtg.vala.stamp
@@ -31,7 +30,6 @@ libvtg_la_VALASOURCES = \
 	vtgbracketcompletion.vala \
 	vtgsymbolcompletion.vala \
 	vtgsymbolcompletionprovider.vala \
-	vtgsymbolcompletiontrigger.vala \
 	vtgprojectmanagerui.vala \
 	vtgprojectview.vala \
 	vtgprojectbuilder.vala \
@@ -68,7 +66,7 @@ libvtg_la_SOURCES = \
 	$(NULL)
 
 libvtg.vala.stamp: $(libvtg_la_VALASOURCES)
-	$(VALAC) $(DEBUG) -C --vapidir ../vapi --vapidir ../afrodite --vapidir ../vbf --basedir $(top_srcdir)/vtg --pkg config --pkg vbf-1.0 --pkg afrodite-1.0 --pkg vala-1.0 --pkg gtksourcecompletion-2.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms --pkg gconf-2.0 $^
+	$(VALAC) $(DEBUG) -C --vapidir ../vapi --vapidir ../afrodite --vapidir ../vbf --basedir $(top_srcdir)/vtg --pkg config --pkg vbf-1.0 --pkg afrodite-1.0 --pkg vala-1.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms --pkg gconf-2.0 $^
 	touch $@
 
 libvtg_la_LDFLAGS = \
@@ -78,7 +76,6 @@ libvtg_la_LDFLAGS = \
 libvtg_la_LIBADD = \
 	../afrodite/libafrodite.la \
 	../vbf/libvbf.la \
-	../gsc-0.7.0/gtksourcecompletion/libgtksourcecompletion-2.0.la \
 	$(VTGPLUGIN_LIBS) \
 	$(NULL)
 

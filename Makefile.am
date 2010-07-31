@@ -11,7 +11,7 @@ SUBDIRS += gen-project
 endif
 
 if HAVE_VTGPLUGIN
-SUBDIRS += gsc-0.7.0 vbf vtg images ui po
+SUBDIRS += vbf vtg images ui po
 endif
 
 vtgdocdir = ${prefix}/doc/vtg

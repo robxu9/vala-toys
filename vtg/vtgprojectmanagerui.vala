@@ -301,7 +301,7 @@ namespace Vtg
 			if (sch == null)
 				return;
 				
-			sch.trigger.complete_word ();			
+			sch.complete_word ();			
 		}
 
 		private void on_project_goto_definition (Gtk.Action action)

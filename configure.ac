@@ -5,8 +5,6 @@ AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([dist-bzip2])
 AM_MAINTAINER_MODE
 
-AC_CONFIG_SUBDIRS([gsc-0.7.0])
-
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_DISABLE_STATIC
@@ -30,7 +28,8 @@ GLIB_REQUIRED=2.12.0
 GTHREAD_REQUIRED=2.16.0
 GTK_REQUIRED=2.18.0
 GEDIT_REQUIRED=2.28.0
-VALA_REQUIRED=0.7.7
+GTKSOURCEVIEW_REQUIRED=2.10.3
+VALA_REQUIRED=0.9.4
 GCONF_REQUIRED=2.22.0
 
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
@@ -145,6 +144,7 @@ if test "x${vtgplugin}" != xno ; then
 		gobject-2.0 >= $GLIB_REQUIRED 
 		gthread-2.0 >= $GTHREAD_REQUIRED 
 		gtk+-2.0 >= $GTK_REQUIRED 
+		gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED 
 		gedit-2.20 >= $GEDIT_REQUIRED 
 		vala-1.0 >= $VALA_REQUIRED 
 		gconf-2.0 >= $GCONF_REQUIRED],
@@ -157,6 +157,7 @@ if test "x${vtgplugin}" != xno ; then
 			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gtk+-2.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-2.0 >= $GTK_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gedit-2.20 >= $GEDIT_REQUIRED] ,, AC_MSG_RESULT([    gedit-2.20 >= $GEDIT_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([gtksourceview-2.0 >= $GEDIT_REQUIRED] ,, AC_MSG_RESULT([    gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([vala-1.0 >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-1.0 >= $VALA_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gconf-2.0 >= $GCONF_REQUIRED] ,, AC_MSG_RESULT([    gconf-2.0 >= $GCONF_REQUIRED: not found]))
 			if test "x$vtgplugin" = xyes ; then

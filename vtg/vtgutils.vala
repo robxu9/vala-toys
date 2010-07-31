@@ -20,7 +20,6 @@
  */
 
 using GLib;
-using Gsc;
 using Gtk;
 using Afrodite;
 using Vbf;
@@ -246,7 +245,7 @@ namespace Vtg
 	public class Utils : GLib.Object
 	{
 		private static bool _initialized = false;
-		private static Proposal[] _proposals = null;
+		private static Gtk.SourceCompletionItem[] _proposals = null;
 		private static Vala.List<Package> _available_packages = null;
 		private static Gtk.Builder _builder = null;
 		
@@ -297,7 +296,7 @@ namespace Vtg
 			return _builder;
 		}
 		
-		public static unowned Proposal[] get_proposal_cache ()
+		public static unowned Gtk.SourceCompletionItem[] get_proposal_cache ()
 		{
 			if (!_initialized) {
 				initialize ();
@@ -318,10 +317,10 @@ namespace Vtg
 		private static void initialize ()
 		{
 			try {
-				_proposals = new Proposal[prealloc_count];
+				_proposals = new Gtk.SourceCompletionItem[prealloc_count];
 				var _icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				for (int idx = 0; idx < prealloc_count; idx++) {
-					var obj = new Proposal ("", "", _icon_generic);
+					var obj = new Gtk.SourceCompletionItem ("", "", _icon_generic, "");
 					_proposals[idx] = obj;
 				}
 			

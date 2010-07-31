@@ -1,5 +1,18 @@
 2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
 
+	* Makefile.am:
+	* configure:
+	* configure.ac:
+	* vtg/Makefile.am:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	ported the completion engine to the new Gtk SourceCompletion API
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	hide callip when the source buffer lost the focus

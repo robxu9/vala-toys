@@ -23,7 +23,6 @@ using GLib;
 using Gedit;
 using Gdk;
 using Gtk;
-using Gsc;
 using Afrodite;
 
 namespace Vtg
@@ -35,13 +34,11 @@ namespace Vtg
 		
 		private Gedit.View _view = null;
 		private SymbolCompletionProvider _provider;
-		private Gsc.Completion _manager;
-		private SymbolCompletionTrigger _trigger;
+		private Gtk.SourceCompletion _manager;
 		
  		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
 		public Gedit.View view { get { return _view; } construct { _view = value; } }
 		public CompletionEngine completion_engine { get { return _completion_engine; } construct set { _completion_engine = value; } }
-		public SymbolCompletionTrigger trigger { get { return _trigger; } }
 		
 		public SymbolCompletion (Vtg.PluginInstance plugin_instance, Gedit.View view, CompletionEngine completion_engine)
 		{
@@ -73,24 +70,30 @@ namespace Vtg
 
 		public void deactivate ()
 		{
-			_trigger.deactivate ();
-			_manager.unregister_provider (_provider, _trigger);
-			_manager.unregister_trigger (_trigger);
-			_manager.destroy ();
-			_trigger = null;
-			_manager = null;
+			try {
+				_manager.remove_provider (_provider);
+				_manager = null;
+			} catch (Error err) {
+				critical ("error: %s", err.message);
+			}
 		}
 
 		private void setup_gsc_completion (Gedit.View view)
 		{
-			_manager = new Gsc.Completion (view);
-			_manager.remember_info_visibility = true;
-			_manager.select_on_show = true;
-			_provider = new SymbolCompletionProvider (this);
-			_trigger = new SymbolCompletionTrigger (_plugin_instance, _manager, "SymbolComplete");
-			_manager.register_trigger (_trigger);
-			_manager.register_provider (_provider, _trigger);
-			_manager.set_active (true);
+			try {
+				_manager = view.get_completion ();
+				_provider = new SymbolCompletionProvider (this);
+				_manager.remember_info_visibility = true;
+				_manager.select_on_show = true;
+				_manager.add_provider (_provider);
+			} catch (Error err) {
+				critical ("error: %s", err.message);
+			}
+		}
+		
+		public void complete_word ()
+		{
+			//TODO: force completion
 		}
 		
 		public void goto_definition ()
