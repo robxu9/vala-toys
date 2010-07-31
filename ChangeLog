@@ -1,6 +1,13 @@
 2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/completionengine.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	improved completion responsiveness
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
 
 	renamed some local variables for consistency
 

@@ -43,10 +43,6 @@ namespace Vtg
 		private int _prealloc_index = 0;
 
 		private bool _cache_building = false;
-		private bool _prev_cache_building = false;
-		private bool _tooltip_is_visible = false;
-
-		private bool _pending_completion_request = false;
 		private bool _filter = false;
 		private uint _sb_msg_id = 0;
 		private uint _sb_context_id = 0;
@@ -87,10 +83,6 @@ namespace Vtg
 			_all_doc = true;
 			_symbol_completion.notify["completion-engine"].connect (this.on_completion_engine_changed);
 			_completion = _symbol_completion.completion_engine;
-			if (_completion.is_parsing) {
-				_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
-			}
-			setup_completion (_completion);
 		}
 
 		~SymbolCompletionProvider ()
@@ -144,14 +136,6 @@ namespace Vtg
 				_filter = false; // do a completion
 			}
 			
-			if (result) {
-				if (_cache_building) {
-					this._pending_completion_request = true;
-					result = false;
-				} else if (_pending_completion_request) {
-					this._pending_completion_request = false;
-				}
-			}
 			return result;
 		}
 
@@ -252,46 +236,10 @@ namespace Vtg
 			_all_doc = true;
 			this.schedule_reparse ();
 		}
-
-		private void setup_completion (CompletionEngine? engine)
-		{
-			if (engine == null)
-				return;
-
-			engine.begin_parsing.connect (this.on_begin_parsing);
-			engine.end_parsing.connect (this.on_end_parsing);
-		}
-		
-		private void cleanup_completion (CompletionEngine? engine)
-		{
-			if (engine != null)
-				return;
-
-			engine.begin_parsing.connect (this.on_begin_parsing);
-			engine.end_parsing.connect (this.on_end_parsing);			
-		}
 		
 		private void on_completion_engine_changed (GLib.Object sender, ParamSpec pspec)
 		{
-			// cleanup previous completion engine instance
-			cleanup_completion (_completion);
 			_completion = _symbol_completion.completion_engine;
-			// setup new completion engine instance
-			setup_completion (_completion);
-		}
-		
-		private void on_begin_parsing (CompletionEngine engine)
-		{
-			_cache_building = true;
-			if (_idle_id == 0)
-				_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
-		}
-		
-		private void on_end_parsing (CompletionEngine engine)
-		{
-			_cache_building = false;
-			if (_idle_id == 0)
-				_idle_id = Idle.add (this.on_idle, Priority.DEFAULT_IDLE);
 		}
 		
 		private int get_current_line_index (Gedit.Document? doc = null)
@@ -331,25 +279,6 @@ namespace Vtg
 				_all_doc = true;
 				schedule_reparse ();
 			}
-		}
-		
-		private bool on_idle ()
-		{
-			if (_symbol_completion.plugin_instance == null)
-				return false;
-				
-			if (_cache_building && !_tooltip_is_visible && _prev_cache_building == false) {
-				_prev_cache_building = _cache_building;
-			} else if (_cache_building == false && _prev_cache_building == true) {
-				_prev_cache_building = false;
-				if (this._pending_completion_request) {
-					//TODO: the binding is broken ATM
-					//var completion = _symbol_completion.view.get_completion ();
-					//completion.show (null, completion.create_context ());
-				}
-			}
-			_idle_id = 0;
-			return false;
 		}
 
 		private bool on_timeout_parse ()
@@ -421,11 +350,6 @@ namespace Vtg
 			_sb.content = buffer;
 			_completion.queue_source (_sb);
 			_doc_changed = false;
-		}
-
-		public void finish ()
-		{
-			_proposals = null;
 		}
 
 		private bool proposal_list_contains_name (string name)

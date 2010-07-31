@@ -41,6 +41,7 @@ namespace Afrodite
 		private unowned Thread _parser_thread;
 		private int _parser_stamp = 0;
 		private int _parser_remaining_files = 0;
+		private int _current_parsing_total_file_count = 0;
 		private bool _glib_init = false;
 		
 		private Ast _ast;
@@ -185,12 +186,12 @@ namespace Afrodite
 		{
 			bool res = false;
 			ast = null;
-			int file_count = 0;
 			bool first_run = true;
-				
+			int file_count = 0;
+			
 			while (ast == null 
 				&& _ast_mutex != null 
-				&& (first_run || (file_count = AtomicInt.get (ref _parser_remaining_files)) <= 1))
+				&& (first_run || (file_count = AtomicInt.get (ref _current_parsing_total_file_count)) <= 2))
 			{
 				first_run = false;
 				res = _ast_mutex.@trylock ();
@@ -202,6 +203,11 @@ namespace Afrodite
 				}
 			}
 
+			if (ast == null) {
+				debug ("can't acquire lock: %d", file_count);
+			} else {
+				debug ("lock acquired: %d", file_count);
+			}
 			return res;
 		}
 		
@@ -247,6 +253,10 @@ namespace Afrodite
 				foreach (SourceItem item in _source_queue) {
 					sources.add (item.copy ());
 				}
+				
+				GLib.debug ("queued %d", sources.size);
+				AtomicInt.set (ref _current_parsing_total_file_count, sources.size);
+				
 				_source_queue.clear ();
 				_source_queue_mutex.@unlock ();
 
@@ -315,7 +325,9 @@ namespace Afrodite
 					break;
 				}
  			}
+ 			
 			// clean up and exit
+			AtomicInt.set (ref _current_parsing_total_file_count, 0);
 			sources = null;
 			
 			timer.stop ();
