@@ -136,6 +136,7 @@ namespace Vtg
 			_actions.add_actions (_action_entries, this);
 			var manager = _plugin_instance.window.get_ui_manager ();
 			manager.insert_action_group (_actions, -1);
+			
 			try {
 				_popup_symbols_ui_id = manager.add_ui_from_string (_popup_symbols_ui_def, -1);
 				_popup_symbols = (Gtk.Menu) manager.get_widget ("/SourceOutlinerPopupGoto");

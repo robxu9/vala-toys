@@ -185,29 +185,20 @@ namespace Afrodite
 		{
 			bool res = false;
 			ast = null;
-			int retry = 0;
 			int file_count = 0;
-			if (retry_count <= 0)
-				retry_count = 10; // default
+			bool first_run = true;
 				
 			while (ast == null 
 				&& ast_mutex != null 
-				&& retry < retry_count 
-				&& (file_count = AtomicInt.get (ref parser_remaining_files)) <= 1)
+				&& (first_run || (file_count = AtomicInt.get (ref parser_remaining_files)) <= 1))
 			{
+				first_run = false;
 				res = ast_mutex.@trylock ();
 
 				if (res) {
 					ast = _ast;
 				} else {
-					if (file_count == 0) {
-						retry = retry_count + 1; // force exit
-					} else {
-						retry++;
-						//debug ("completion engine: retry %d, file %d", retry, parser_remaining_files);
-						if (retry < retry_count)
-							GLib.Thread.usleep (100 * 1000);
-					}
+					GLib.Thread.usleep (100 * 1000);
 				}
 			}
 

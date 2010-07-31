@@ -1,6 +1,14 @@
 2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	use a more aggressive policy to acquire the ast lock
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
 	* gen-project/libgen-project/projectgenerator.vala:
 
 	fix some unreachable code warnings
