@@ -88,7 +88,7 @@ namespace GenProject
 					out std_out,
 					out std_err,
 					out exit_status)) {
-					error ("error extracting data from template. exit code %d", exit_status);
+					critical ("error extracting data from template. exit code %d", exit_status);
 					return;
 				}
 								

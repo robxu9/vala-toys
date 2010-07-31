@@ -1,5 +1,12 @@
 2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* gen-project/libgen-project/projectgenerator.vala:
+
+	fix some unreachable code warnings
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/vbfproject.vala:
 	* vtg/vtgbuildlogview.vala:
 	* vtg/vtgconfiguration.vala:

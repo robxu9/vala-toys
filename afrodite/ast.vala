@@ -258,7 +258,7 @@ namespace Afrodite
 					
 							while (item != null) {
 								if (symbol == item) {
-									error ("circular reference %s", symbol.fully_qualified_name);
+									critical ("circular reference %s", symbol.fully_qualified_name);
 									circular_ref = true;
 									break;
 								}
