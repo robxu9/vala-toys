@@ -27,7 +27,6 @@ namespace Afrodite
 	public class Parser : GLib.Object
 	{
 		private Vala.List<SourceItem> _sources;
-		public Vala.SourceFile source_file;
 		public CodeContext context = null;
 		
 		public Parser (Vala.List<SourceItem> sources)
@@ -54,6 +53,8 @@ namespace Afrodite
 					GLib.error ("failed to add GObject 2.0");
 			}			
 			foreach (SourceItem source in _sources) {
+				Vala.SourceFile source_file = null;
+				
 				if (!FileUtils.test (source.path, FileTest.EXISTS)) {
 					warning ("file %s not exists", source.path);
 					continue;
@@ -65,10 +66,16 @@ namespace Afrodite
 				} else {
 					warning ("sourcefile %s with empty content not queued", source.path);
 				}
-				var ns_ref = new UsingDirective (new UnresolvedSymbol (null, "GLib", null));
-				context.root.add_using_directive (ns_ref);
-				context.add_source_file (source_file);
-				source_file.add_using_directive (ns_ref);
+				
+				if (source_file != null) {
+					var ns_ref = new UsingDirective (new UnresolvedSymbol (null, "GLib", null));
+					if (!source.is_glib)
+						context.root.add_using_directive (ns_ref);
+					
+					context.add_source_file (source_file);
+					if (!source.is_glib)
+						source_file.add_using_directive (ns_ref);
+				}
 			}
 						
 			context.assert = false;

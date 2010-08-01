@@ -1,5 +1,22 @@
 2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/parser.vala:
+	* afrodite/symbolresolver.vala:
+	* afrodite/utils.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfgroup.vala:
+	* vbf/vbfmodule.vala:
+	* vbf/vbfpackage.vala:
+	* vbf/vbftarget.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added initial support for dynamic namespace import
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	avoid adding interface methods since they're duplicated by the class implementation

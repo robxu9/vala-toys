@@ -24,6 +24,54 @@ using Vala;
 
 namespace Afrodite.Utils
 {
+	public static string? guess_package_name (string using_name, string[]? vapi_dirs = null)
+	{
+		// known using names;
+		string real_using_name;
+		
+		if (using_name == "Gtk")
+			real_using_name = "gtk+";
+		else
+			real_using_name = using_name;
+			
+		string filename = real_using_name + ".vapi";
+		string lowercase_filename = filename.down ();
+		string lowercase_using_name = real_using_name.down ();
+		string curr;
+		string[] dirs;
+		int dir_count = 1;
+		
+		if (vapi_dirs != null)
+			dir_count += vapi_dirs.length;
+			
+		dirs = new string[dir_count];
+		dirs[0] = Config.VALA_VAPIDIR;
+		for (int i=0; i < vapi_dirs.length; i++) {
+			dirs[i+1] = vapi_dirs[1];
+		}
+		
+		try {
+			// search in the standard package path
+			foreach (string vapi_dir in dirs) {
+				var dir = GLib.Dir.open (vapi_dir);
+				while ((curr = dir.read_name ()) != null) {
+					curr = curr.locale_to_utf8 (-1, null, null, null);
+			
+					debug ("searching %s vs %s", real_using_name, curr);
+					if (curr == filename 
+					    || curr == lowercase_filename
+					    || curr.has_prefix (lowercase_using_name)) {
+						return curr.substring (0, curr.length - 5); // 5 = ".vapi".length
+					}
+				}
+			}
+		} catch (Error err) {
+			critical ("error: %s", err.message);
+		}
+
+		return null;
+	}
+	
 	public static Vala.List<string>? get_package_paths (string pkg, CodeContext? context = null, string[]? vapi_dirs = null)
 	{
 		var ctx = context;

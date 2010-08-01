@@ -125,7 +125,7 @@ namespace Afrodite
 					foreach (SourceReference reference in symbol.source_references) {
 						var file = reference.file;
 						if (file.using_directives == null) {
-							warning ("file without any using directive: %s", file.filename);
+							//warning ("file without any using directive: %s", file.filename);
 							continue;
 						}
 						foreach (Symbol using_directive in file.using_directives) {

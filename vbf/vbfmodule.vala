@@ -47,6 +47,7 @@ namespace Vbf
 		internal void add_package (Package package)
 		{
 			packages.add (package);
+			package.parent_module = this;
 		}
 	}
 }

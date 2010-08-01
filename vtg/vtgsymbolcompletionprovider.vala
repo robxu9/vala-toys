@@ -345,12 +345,56 @@ namespace Vtg
 
 		private void parse (Gedit.Document doc)
 		{
+			// automatically add package if this buffer
+			// belong to the default project
+			var current_project = _symbol_completion.plugin_instance.project_view.current_project; 
+			if (current_project.is_default) {
+				if (autoadd_packages (doc, current_project) > 0) {
+					GLib.debug ("autoadd packages updatin project");
+					current_project.project.update ();
+				}
+			}
+			
+			// schedule a parse
 			var buffer = this.get_document_text (doc, _all_doc);
 			_sb.content = buffer;
 			_completion.queue_source (_sb);
 			_doc_changed = false;
 		}
 
+		private int autoadd_packages (Gedit.Document doc, Vtg.ProjectManager project_manager)
+		{
+		
+			int added_count = 0;
+			
+			try {
+				var text = this.get_document_text (doc, true);
+				GLib.Regex regex = new GLib.Regex ("""^\s*(using)\s+(\w\S*)\s*;.*$""");
+			
+				foreach (string line in text.split ("\n")) {
+					GLib.MatchInfo match;
+					regex.match (line, RegexMatchFlags.NEWLINE_ANY, out match);
+					while (match.matches ()) {
+						string package_name = Afrodite.Utils.guess_package_name (match.fetch (2));
+						GLib.debug ("guessing name for %s: %s", match.fetch (2), package_name);
+						if (package_name != null) {
+							var group = project_manager.project.get_group("Sources");
+							var target = group.get_target_for_id ("Default");
+							if (!target.contains_package (package_name))
+								target.add_package (new Vbf.Package (package_name));
+							
+							added_count++;
+						}
+						match.next ();
+					}
+				}
+			} catch (Error err) {
+				critical ("error: %s", err.message);
+			}
+
+			return added_count;
+		}
+		
 		private bool proposal_list_contains_name (string name)
 		{
 			foreach (Gtk.SourceCompletionItem proposal in _proposals) {

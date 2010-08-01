@@ -70,8 +70,12 @@ namespace Vbf {
 		public string constraint;
 		public string id;
 		public string name;
+		public weak Vbf.Group parent_group;
+		public weak Vbf.Module parent_module;
+		public weak Vbf.Target parent_target;
 		public Vbf.ConfigNode version;
 		public Package (string id);
+		public string uri { get; }
 	}
 	[CCode (cheader_filename = "vbf.h")]
 	public class Project : Vbf.ConfigNode {
@@ -110,7 +114,9 @@ namespace Vbf {
 		public bool no_install;
 		public Vbf.TargetTypes type;
 		public Target (Vbf.Group group, Vbf.TargetTypes type, string id);
+		public void add_package (Vbf.Package package);
 		public void add_source (Vbf.Source source);
+		public bool contains_package (string package_id);
 		public Vala.List<string> get_built_libraries ();
 		public Vala.List<Vbf.File> get_files ();
 		public Vala.List<string> get_include_dirs ();

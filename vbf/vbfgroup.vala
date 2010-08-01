@@ -87,6 +87,7 @@ namespace Vbf
 		internal void add_package (Package package)
 		{
 			packages.add (package);
+			package.parent_group = this;
 		}
 				
 		public Vala.List<string> get_include_dirs ()

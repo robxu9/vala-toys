@@ -29,11 +29,48 @@ namespace Vbf
 		public string name;
 		public string constraint;
 		public ConfigNode version;
+		public unowned Target parent_target = null;
+		public unowned Group parent_group = null;
+		public unowned Module parent_module = null;
+		
+		private string _uri;
 		
 		public Package (string id)
 		{
 			this.id = id;
 			this.name = id;
+		}
+		
+		public string uri
+		{
+			get {
+				if (_uri == null) {
+					initialize_uri ();
+				}
+				
+				return _uri;
+			}
+		}
+		
+		private void initialize_uri ()
+		{
+			var ctx = new Vala.CodeContext();
+			string[] vapi_dirs = null;
+			
+			if (parent_target != null) {
+				vapi_dirs = new string[parent_target.get_include_dirs ().size];
+				int i = 0;
+				foreach (string vapi_dir in parent_target.get_include_dirs ()) {
+					vapi_dirs[i] = vapi_dir;
+					i++;
+				}
+			}
+			
+			try {
+				_uri = GLib.Filename.to_uri (ctx.get_package_path (id, vapi_dirs));
+			} catch (Error err) {
+				critical ("error: %s", err.message);
+			}
 		}
 	}
 }

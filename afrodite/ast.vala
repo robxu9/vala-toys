@@ -110,13 +110,14 @@ namespace Afrodite
 		{
 			if (source_files != null) {
 				foreach (SourceFile file in source_files) {
-					//debug ("searching %s vs %s", file.filename, filename);
+					debug ("lookup_source_file: searching %s vs %s", filename, file.filename);
 					
 					if (file.filename == filename) {
+						debug ("filename found: %s", file.filename);
 						return file;
 					}
 				}
-				//debug ("no source files for %s!!!", filename);
+				debug ("no source files for %s!!!", filename);
 			}		
 			return null;
 		}
@@ -165,7 +166,7 @@ namespace Afrodite
 		{
 			var source = lookup_source_file (path);
 			if (source == null || !source.has_symbols) {
-				warning ("source file not found %s", path);
+				warning ("source file %s %s without any symbols", path, source == null ? "not found, so" : "found but");
 				return null;
 			}
 			

@@ -300,7 +300,7 @@ namespace Vtg
 						vapi_dirs[index++] = item;
 
 					foreach (Package package in target.get_packages ()) {
-						//GLib.debug ("target %s, referenced package: %s", target.id, package.id);
+						GLib.debug ("setup_completions: target %s, referenced package: %s", target.id, package.id);
 						var paths = Afrodite.Utils.get_package_paths (package.id, null, vapi_dirs);
 						if (paths != null) {
 							//foreach (string path in paths)
@@ -312,6 +312,7 @@ namespace Vtg
 					/* setup source files */
 					foreach (Vbf.Source source in target.get_sources ()) {
 						if (source.type == FileTypes.VALA_SOURCE) {
+							GLib.debug ("setup_completions: source %s", source.filename);
 							completion.queue_sourcefile (source.filename);
 						}
 					}
@@ -406,6 +407,7 @@ namespace Vtg
 
 		private void on_project_updated (Vbf.Project sender)
 		{
+			GLib.debug ("project updated");
 			if (in_update)
 				return;
 
@@ -416,6 +418,7 @@ namespace Vtg
 			setup_completions ();
 			this.updated ();
 			in_update = false;
+			GLib.debug ("project updated end");
 		}
 
 		private void build_tree_model ()
@@ -458,6 +461,8 @@ namespace Vtg
 				foreach (Target target in group.get_targets ()) {
 					if (target.has_sources_of_type (FileTypes.VALA_SOURCE) || target.get_files ().size > 0) {
 						TreeIter target_iter = groups_iter;
+						TreeIter vapi_group_iter = target_iter;
+						
 						bool target_added = false;
 
 						foreach (Vbf.Source source in target.get_sources ()) {
@@ -496,6 +501,19 @@ namespace Vtg
 							TreeIter file_iter;
 							_model.append (out file_iter, target_iter);
 							_model.set (file_iter, 0, Gtk.STOCK_FILE, 1, file.name, 2, file.uri, 3, file, 4, file.name);
+						}
+						
+						bool vapi_group_added = false;
+						foreach (Vbf.Package package in target.get_packages ()) {
+							if (!vapi_group_added) {
+								_model.append (out vapi_group_iter, target_iter);
+								_model.set (vapi_group_iter, 0, Gtk.STOCK_DIRECTORY, 1, _("Referenced packages"), 2, "vapi-targets", 3, null, 4, "2");
+								vapi_group_added = true;
+							}
+							
+							TreeIter vapi_iter;
+							_model.append (out vapi_iter, vapi_group_iter);
+							_model.set (vapi_iter, 0, Gtk.STOCK_FILE, 1, package.name, 2, package.uri, 3, package, 4, package.name);
 						}
 					}
 					

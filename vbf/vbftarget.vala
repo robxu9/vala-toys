@@ -129,9 +129,21 @@ namespace Vbf
 			return packages;
 		}
 				
-		internal void add_package (Package package)
+		public void add_package (Package package)
 		{
 			packages.add (package);
+			package.parent_target = this;
+		}
+
+		public bool contains_package (string package_id)
+		{
+			foreach (Package package in packages) {
+				if (package.id == package_id) {
+					return true;
+				}
+			}
+			
+			return false;
 		}
 
 		public Vala.List<string> get_include_dirs ()
