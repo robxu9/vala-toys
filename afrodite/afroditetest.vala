@@ -46,7 +46,11 @@ public class AfroditeTest.Application : Object {
 		var opt_context = new OptionContext ("- Afrodite Test");
 		opt_context.set_help_enabled (true);
 		opt_context.add_main_entries (options, null);
-		opt_context.parse (ref args);
+		try {
+			opt_context.parse (ref args);
+		} catch (Error err) {
+			error (_("parsing options"));
+		}
 		
 		var engine = new Afrodite.CompletionEngine ("afrodite-test-engine");
 		
@@ -93,8 +97,14 @@ public class AfroditeTest.Application : Object {
 				QueryResult sym = ast.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
 				print ("The type for '%s' is: ", option_symbol_name);
 				if (!sym.is_empty) {
-					foreach (ResultItem item in sym.children)
-						print ("%s\n", item.symbol.name);
+					foreach (ResultItem item in sym.children) {
+						print ("%s\n     Childs:\n", item.symbol.name);
+						if (item.symbol.has_children) {
+							foreach (var child in item.symbol.children) {
+								print ("          %s\n", child.description);
+							}
+						}
+					}
 				} else {
 					print ("unresolved :(\n");
 				}

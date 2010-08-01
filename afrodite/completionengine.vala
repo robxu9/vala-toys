@@ -297,7 +297,7 @@ namespace Afrodite
 								_ast_mutex.unlock ();
 								
 								//timer.stop ();
-								debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
+								//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
 								break;
 							}
 						}

@@ -406,14 +406,19 @@ namespace Afrodite
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
-			
+
 			set_fqn (m.name);
 			int last_line = 0;
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
 				
 			var s = add_symbol (m, out _current_sr, last_line);
-			s.return_type = new DataType (m.return_type.to_string ());
+			if (m.name == ".new")
+				s.return_type = new DataType (m.return_type.to_string ());
+			else {
+				// creation method
+				s.return_type = new DataType (m.parent_symbol.get_full_name ());
+			}
 			s.is_abstract = m.is_abstract;
 			s.is_virtual = m.is_virtual;
 			s.overrides = m.overrides;
@@ -751,7 +756,15 @@ namespace Afrodite
 				//debug ("infer from init %s", s.name);
 				
 				if (local.initializer is ObjectCreationExpression) {
-					local.initializer.accept_children (this); // this fix duplicated name like GLib.Object.GLib
+					debug ("START: initialization %s from %s: %s", local.name, s.name, _inferred_type.type_name);
+					var obj_initializer = (ObjectCreationExpression) local.initializer;
+					debug ("     name: %s", obj_initializer.member_name.member_name);
+					//if (obj_initializer.member_name.creation_member) {
+					//	obj_initializer.member_name.accept_children (this);
+					//} else {
+						obj_initializer.member_name.accept (this); 
+					//}
+					debug ("END: initialization done %s", _inferred_type.type_name);
 				} else if (local.initializer is MethodCall) {
  					((MethodCall) local.initializer).call.accept (this); // this avoid visit parameters of method calls
  				} else if (local.initializer is BinaryExpression) {
@@ -766,8 +779,9 @@ namespace Afrodite
 					local.accept_children (this);
 				}
 				_last_literal = null;
+				debug ("infer from init done %s", _inferred_type.type_name);
 				_inferred_type = prev_inferred_type;
-				//debug ("infer from init done %s", s.type_name);
+				
 				
 				if (s.type_name != null && s.type_name.has_suffix ("Literal")) {
 					if (s.type_name == "ValaIntegerLiteral") {
@@ -795,7 +809,7 @@ namespace Afrodite
 			if (_inferred_type == null)
 				return;
 			
-			//debug ("visit member access %s %s", expr.member_name, _inferred_type.type_name);
+			debug ("visit member access %s %s %s", _inferred_type.type_name, expr.member_name, _inferred_type.type_name);
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
 				_inferred_type.type_name = expr.member_name;
 			else
@@ -877,7 +891,7 @@ namespace Afrodite
 		{
 			if (_inferred_type == null)
 				return;
-				
+			
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
 				_inferred_type.type_name = "string";
 			else if (_inferred_type.type_name != "string")
