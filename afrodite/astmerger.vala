@@ -533,7 +533,10 @@ namespace Afrodite
 			var prev_sr = _current_sr;
 			
 			set_fqn (d.name);
-			_current.add_child (add_symbol (d, out _current_sr));
+			var sym = add_symbol (d, out _current_sr);
+			_current.add_child (sym);
+			_current = sym;
+			d.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -804,6 +807,11 @@ namespace Afrodite
 			_current.add_local_variable (s);
 			_current = prev;
 			_vala_symbol_fqn = prev_vala_fqn;
+		}
+
+		public override void visit_lambda_expression (LambdaExpression expr)
+		{
+			expr.accept (this);
 		}
 
 		public override void visit_member_access (MemberAccess expr) 

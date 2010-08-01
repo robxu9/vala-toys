@@ -1,5 +1,14 @@
 2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/queryoptions.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	various fixes to the completion engine
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	added a simple tooltip message when the cache is still building

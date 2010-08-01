@@ -328,6 +328,7 @@ namespace Vtg
 				_calltip_window_label.set_markup (markup_text);
 				_calltip_window.move_to_iter (_symbol_completion.view);
 				_calltip_window.show_all ();
+				_calltip_window.show ();
 			}
 		}
 		
@@ -736,20 +737,25 @@ namespace Vtg
 		{
 			QueryOptions options = null;
 			
+			
 			if (line != null) {
 				if (line.str ("= new ") != null || line.str ("=new ") != null) {
 					options = QueryOptions.creation_methods ();
-				} else if (line.str ("=") != null) {
+				} else if (line.str ("=") != null || line.str (":") != null) {
 					options = QueryOptions.standard ();
+					options.binding |= Afrodite.MemberBinding.STATIC;
 				} else if (line.str ("throws ") != null || line.str ("throw ") != null) {
 					options = QueryOptions.error_domains ();
 				}
 			}
 		
-			if (options == null)
+			if (options == null) {
 				options = QueryOptions.standard ();
-				
-			/*
+				options.auto_member_binding_mode = true;
+			} else {
+				options.auto_member_binding_mode = true;
+			}
+			/* 
 			if (word == "base") {
 				options.access = Afrodite.SymbolAccessibility.PUBLIC 
 					| Afrodite.SymbolAccessibility.PROTECTED 
@@ -758,10 +764,12 @@ namespace Vtg
 				options.access = Afrodite.SymbolAccessibility.PUBLIC 
 					| Afrodite.SymbolAccessibility.INTERNAL;						
 			}
-			*/
+			*/		
 			
-			options.auto_member_binding_mode = true;
 			options.compare_mode = CompareMode.EXACT;
+			
+			options.dump_settings ();
+			
 			return options;
 		}
 
@@ -773,7 +781,7 @@ namespace Vtg
 			parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
 
 			Afrodite.Ast ast = null;
-			GLib.debug ("completing word: %s", word);
+			GLib.debug ("completing word: '%s'", word);
 			if (!StringUtils.is_null_or_empty (word) 
 			    && _completion.try_acquire_ast (out ast)) {
 			        QueryOptions options = get_options_for_line (whole_line);

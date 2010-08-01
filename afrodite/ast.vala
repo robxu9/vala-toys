@@ -184,8 +184,10 @@ namespace Afrodite
 					// change the scope of symbol search
 					if (options.auto_member_binding_mode) {
 						if (parts[0] == "this") {
+							//debug ("CHANGE REMOVE STATIC");
 							binding = binding & (~ ((int) MemberBinding.STATIC));
 						} else if (parts[0] == "base") {
+							//debug ("CHANGE REMOVE STATIC & PRIVATE");
 							binding = binding & (~ ((int) MemberBinding.STATIC));
 							options.access = options.access & (~ ((int) SymbolAccessibility.PRIVATE));
 						}
@@ -193,6 +195,7 @@ namespace Afrodite
 					if (sym.type_name == "Namespace"
 					    || (parts[0] == sym.name && (sym.type_name == "Class" || sym.type_name == "Struct" || sym.type_name == "Interface"))) {
 					    	// namespace access or MyClass.my_static_method
+						//debug ("CHANGE ONLY STATIC");
 						binding = MemberBinding.STATIC;
 					}
 					for (int i = 1; i < parts.length; i++) {
@@ -438,15 +441,19 @@ namespace Afrodite
 			Symbol result = null;
 			SourceReference result_sr = null;
 			
+			// base 0
+			line++;
+			column++;
+			
 			foreach (Symbol symbol in source.symbols) {
 				var sr = symbol.lookup_source_reference_sourcefile (source);
 				if (sr == null) {
 					critical ("symbol %s doesn't belong to source %s", symbol.fully_qualified_name, source.filename);
 					continue;
 				}
-				//print ("%s: %d-%d %d-%d vs %d, %d\n", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);
+				print ("%s: %d-%d %d-%d vs %d, %d\n", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);
 				if ((sr.first_line < line || ((line == sr.first_line && column >= sr.first_column) || sr.first_column == 0))
-				    && (line < sr.last_line || ((line == sr.last_line && column <= sr.last_column) || sr.last_column == 0))) {
+				    && (line < sr.last_line || ((line == sr.last_line) || sr.last_column == 0))) {
 					// let's find the best symbol
 					if (result == null 
 					   || result_sr.first_line < sr.first_line 
@@ -462,6 +469,9 @@ namespace Afrodite
 				}
 			}
 			
+			if (result == null) {
+				debug ("no symbol found");
+			}
 			return result;
 		}
 	}
