@@ -618,22 +618,21 @@ namespace Vbf.Am
 						
 						string[] target_tmp = rule_parts[0].split ("_");
 						for (int i=0; i < target_tmp.length - 1; i++) {
-							if (i < (rule_parts.length - 1))
-								target_name = target_name.concat (target_tmp[i], ".");
-							else
-								target_name = target_name.concat (target_tmp[i]);
+							target_name = target_name.concat (target_tmp[i], ".");
 						}
-
+						while (target_name.has_suffix ("."))
+							target_name = target_name.substring (0, target_name.length - 1);
 						target = group.get_target_for_id (target_name);
-					}
-					rule_parts = line.split (":", 2);
-					if (rule_parts.length == 2) {
-						string[] trgs = rule_parts[0].split (" ");
-						//TODO: add support for multitarget rules if required
-						foreach (string trg in trgs) {
-							target = group.get_target_for_id (trg);
-							if (target != null) {
-								break;
+					} else {
+						rule_parts = line.split (":", 2);
+						if (rule_parts.length == 2) {
+							string[] trgs = rule_parts[0].split (" ");
+							//TODO: add support for multitarget rules if required
+							foreach (string trg in trgs) {
+								target = group.get_target_for_id (trg);
+								if (target != null) {
+									break;
+								}
 							}
 						}
 					}
@@ -663,6 +662,7 @@ namespace Vbf.Am
 						if (target != null) {
 							target.add_package (new Package (tmp));
 						} else {
+							debug ("adding to group because target is null");
 							group.add_package (new Package (tmp));
 						}
 						idx++;
