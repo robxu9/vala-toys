@@ -1,5 +1,14 @@
 2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/templates/sharedlib-vala-template.ini:
+	* gen-project/templates/sharedlib-vala-template.png:
+	* gen-project/templates/sharedlib-vala-template.tar.gz:
+	* gen-project/templates/Makefile.am:
+
+	added a shared library template. Fixes issue #90
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/astmerger.vala:
 	* afrodite/queryoptions.vala:

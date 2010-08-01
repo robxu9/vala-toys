@@ -11,6 +11,9 @@ dist_templates_DATA = \
 	gtk+-vala-template.ini \
 	gtk+-vala-template.png \
 	gtk+-vala-template.tar.gz \
+	sharedlib-vala-template.ini \
+	sharedlib-vala-template.png \
+	sharedlib-vala-template.tar.gz \
 	$(NULL)
 
 DISTCLEANFILES = \
