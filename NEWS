@@ -1,3 +1,15 @@
+Vala toys for gEdit version 0.8.0
+=================================
+
+* Vala Gen Project now supports user project template
+  (see http://code.google.com/p/vtg/wiki/ValaGenProject
+   to know how to do yours and please share it ;) )
+* Integrate the completion with the new Gtk SourceView
+  completion framework
+* Better support for completing 'var' variables
+* Better support for completion on standalone vala files
+* Many other bugs fixed
+
 Vala toys for gEdit version 0.7.0
 =================================
 

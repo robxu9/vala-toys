@@ -22,3 +22,4 @@ gen-project/main.c
 gen-project/genprojectdialog.c
 vtg/vtgsourceoutlinerview.c
 vtg/vtgsymbolcompletionprovider.c
+afrodite/afroditetest.c

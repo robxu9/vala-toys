@@ -1,5 +1,15 @@
 2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
+	* NEWS:
+	* configure:
+	* configure.ac:
+	* po/POTFILES.skip:
+
+	distcheck fixed and preparative for a new release
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/templates/sharedlib-vala-template.ini:
 	* gen-project/templates/sharedlib-vala-template.png:
 	* gen-project/templates/sharedlib-vala-template.tar.gz:
