@@ -30,7 +30,6 @@ namespace Vtg
 	internal class SymbolCompletionProvider : GLib.Object, Gtk.SourceCompletionProvider
 	{
 		private Gdk.Pixbuf _icon;
-		private string _name;
 		private int _priority = 1;
 		private List<Gtk.SourceCompletionItem> _proposals;
 	
@@ -110,7 +109,7 @@ namespace Vtg
 
 		public string get_name ()
 		{
-			return _name;
+			return _("Vala Toys Completion Provider");
 		}
 
 		public int get_priority ()
@@ -442,7 +441,7 @@ namespace Vtg
 					if (!type.unresolved 
 					    && type.symbol.has_children
 					    && (options == null || type.symbol.check_options (options))
-					    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface")) {
+					    && (type.symbol.type_name == "Class")) {
 							// symbols of base types (classes or interfaces)
 							if (!visited_interfaces.contains (type.symbol)) {
 								visited_interfaces.add (type.symbol);

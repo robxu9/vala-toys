@@ -1,3 +1,9 @@
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	avoid adding interface methods since they're duplicated by the class implementation
+
 2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/completionengine.vala:
