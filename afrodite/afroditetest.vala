@@ -100,8 +100,15 @@ public class AfroditeTest.Application : Object {
 					foreach (ResultItem item in sym.children) {
 						print ("%s\n     Childs:\n", item.symbol.name);
 						if (item.symbol.has_children) {
+							int count = 0;
+							// print an excerpt of the child symbols
 							foreach (var child in item.symbol.children) {
 								print ("          %s\n", child.description);
+								count++;
+								if (count == 6) {
+									print ("          ......\n");
+									break;
+								}
 							}
 						}
 					}

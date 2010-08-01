@@ -2,6 +2,13 @@
 
 	* afrodite/afroditetest.vala:
 	* afrodite/astmerger.vala:
+
+	first support for var type inference from cast expressions
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+	* afrodite/astmerger.vala:
 	* afrodite/completionengine.vala:
 
 	fixed var type inference from method creation

@@ -753,22 +753,24 @@ namespace Afrodite
 				// try to resolve local variable type from initializers
 				var prev_inferred_type = _inferred_type;
 				_inferred_type = s;
-				//debug ("infer from init %s", s.name);
+				debug ("infer from init %s %s", s.name, local.initializer.type_name);
 				
 				if (local.initializer is ObjectCreationExpression) {
-					debug ("START: initialization %s from %s: %s", local.name, s.name, _inferred_type.type_name);
+					//debug ("START: initialization %s from %s: %s", local.name, s.name, _inferred_type.type_name);
 					var obj_initializer = (ObjectCreationExpression) local.initializer;
-					debug ("     name: %s", obj_initializer.member_name.member_name);
-					//if (obj_initializer.member_name.creation_member) {
-					//	obj_initializer.member_name.accept_children (this);
-					//} else {
-						obj_initializer.member_name.accept (this); 
-					//}
-					debug ("END: initialization done %s", _inferred_type.type_name);
+					obj_initializer.member_name.accept (this); 
+					//debug ("END: initialization done %s", _inferred_type.type_name);
 				} else if (local.initializer is MethodCall) {
  					((MethodCall) local.initializer).call.accept (this); // this avoid visit parameters of method calls
  				} else if (local.initializer is BinaryExpression) {
  					((BinaryExpression) local.initializer).accept_children (this);
+ 				} else if (local.initializer is CastExpression) {
+ 					var cast_expr = (CastExpression)local.initializer;
+					cast_expr.accept (this);
+ 					if (cast_expr.type_reference != null)
+ 					{
+	 					s.type_name = get_datatype_typename (cast_expr.type_reference);
+ 					}
  				} else if (local.initializer is ArrayCreationExpression) {
  					var ac = (ArrayCreationExpression) local.initializer; 
  					ac.accept_children (this);
@@ -803,7 +805,7 @@ namespace Afrodite
 			_current = prev;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
-		
+
 		public override void visit_member_access (MemberAccess expr) 
 		{
 			if (_inferred_type == null)
