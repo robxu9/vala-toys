@@ -314,18 +314,23 @@ namespace Vtg
 		{
 			Afrodite.Symbol? completion_result = get_current_symbol_item ();
 			if (completion_result != null) {
-				if (_calltip_window == null) {
-					initialize_calltip_window ();
-				}
-				string calltip_text = completion_result.info;
-				if (calltip_text != null) {
-					_calltip_window_label.set_markup (calltip_text);
-					_calltip_window.move_to_iter (_symbol_completion.view);
-					_calltip_window.show_all ();
-				}
+				show_calltip_info (completion_result.info);
 			}
 		}
 
+		private void show_calltip_info (string markup_text)
+		{
+			if (_calltip_window == null) {
+				initialize_calltip_window ();
+			}
+
+			if (markup_text != null) {
+				_calltip_window_label.set_markup (markup_text);
+				_calltip_window.move_to_iter (_symbol_completion.view);
+				_calltip_window.show_all ();
+			}
+		}
+		
 		private void hide_calltip ()
 		{
 			if (_calltip_window == null)
@@ -338,7 +343,7 @@ namespace Vtg
 		{
 			_calltip_window = new Gtk.SourceCompletionInfo ();
 			_calltip_window.set_transient_for (_symbol_completion.plugin_instance.window);
-			_calltip_window.set_sizing (400, 200, true, true);
+			_calltip_window.set_sizing (800, 400, true, true);
 			_calltip_window_label = new Gtk.Label ("");
 			_calltip_window.set_widget (_calltip_window_label);			
 		}
@@ -778,11 +783,19 @@ namespace Vtg
 				transform_result (options, result);
 				_completion.release_ast (ast);
 			} else {
-				if (!StringUtils.is_null_or_empty (word))
+				if (!StringUtils.is_null_or_empty (word)) {
 					GLib.debug ("build_proposal_item_list: couldn't acquire ast lock");
-					
+					this.show_calltip_info (_("<i>symbol cache is still building...</i>"));
+					Timeout.add_seconds (1, this.on_hide_calltip_timeout);
+				}
 				transform_result (null, null);
 			}
+		}
+		
+		private bool on_hide_calltip_timeout ()
+		{
+			this.hide_calltip ();
+			return false;
 		}
 		
 		private Afrodite.QueryResult? get_symbol_type_for_name (QueryOptions options, Afrodite.Ast ast, string word, string? whole_line, int line, int column)
