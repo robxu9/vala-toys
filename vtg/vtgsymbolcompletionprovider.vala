@@ -381,9 +381,10 @@ namespace Vtg
 							var group = project_manager.project.get_group("Sources");
 							var target = group.get_target_for_id ("Default");
 							if (!target.contains_package (package_name))
+							{
 								target.add_package (new Vbf.Package (package_name));
-							
-							added_count++;
+								added_count++;
+							}
 						}
 						match.next ();
 					}

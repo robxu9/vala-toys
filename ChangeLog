@@ -1,5 +1,13 @@
 2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/utils.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed some bug in the standalone file edit mode
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/am/vbfamprojectmanager.vala:
 
 	fix wrong target name search in automake 1.11 profile

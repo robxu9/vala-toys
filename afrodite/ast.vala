@@ -110,14 +110,14 @@ namespace Afrodite
 		{
 			if (source_files != null) {
 				foreach (SourceFile file in source_files) {
-					debug ("lookup_source_file: searching %s vs %s", filename, file.filename);
+					//debug ("lookup_source_file: searching %s vs %s", filename, file.filename);
 					
 					if (file.filename == filename) {
-						debug ("filename found: %s", file.filename);
+						//debug ("filename found: %s", file.filename);
 						return file;
 					}
 				}
-				debug ("no source files for %s!!!", filename);
+				//debug ("no source files for %s!!!", filename);
 			}		
 			return null;
 		}
