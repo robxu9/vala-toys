@@ -14,9 +14,7 @@ AM_CPPFLAGS = \
 BUILT_SOURCES = libafrodite.vala.stamp afroditetest.vala.stamp
 
 if ENABLE_DEBUG
-        DEBUG = --Xcc "-g" --Xcc "-O0"
-else
-        DEBUG = --Xcc "-D G_DISABLE_DEBUG"
+        DEBUG_FLAGS = -g -D DEBUG
 endif
 
 lib_LTLIBRARIES = libafrodite.la
@@ -58,7 +56,7 @@ libafrodite_la_SOURCES = \
 	$(NULL)
 
 libafrodite.vala.stamp: $(libafrodite_la_VALASOURCES)
-	$(VALAC) $(DEBUG) -C -H afrodite.h --library afrodite-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/afrodite $^
+	$(VALAC) $(DEBUG_FLAGS) -C -H afrodite.h --library afrodite-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/afrodite $^
 	touch $@
 
 libafrodite_la_LDFLAGS = \
@@ -78,7 +76,7 @@ afroditetest_SOURCES = \
 	$(NULL)
 
 afroditetest.vala.stamp: $(afroditetest_VALASOURCES)
-	$(VALAC) $(DEBUG) -C --vapidir ../vapi --vapidir ./ --pkg afrodite-1.0 --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/afrodite $^
+	$(VALAC) $(DEBUG_FLAGS) -C --vapidir ../vapi --vapidir ./ --pkg afrodite-1.0 --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/afrodite $^
 	touch $@
 
 afroditetest_LDADD = \

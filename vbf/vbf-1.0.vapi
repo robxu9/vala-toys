@@ -9,6 +9,9 @@ namespace Vbf {
 			public ProjectManager ();
 		}
 	}
+	[CCode (cprefix = "VbfUtils", lower_case_cprefix = "vbf_utils_")]
+	namespace Utils {
+	}
 	[CCode (cheader_filename = "vbf.h")]
 	public abstract class ConfigNode : GLib.Object {
 		public weak Vbf.ConfigNode parent;

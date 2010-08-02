@@ -737,7 +737,6 @@ namespace Vtg
 		{
 			QueryOptions options = null;
 			
-			
 			if (line != null) {
 				if (line.str ("= new ") != null || line.str ("=new ") != null) {
 					options = QueryOptions.creation_methods ();
@@ -748,28 +747,14 @@ namespace Vtg
 					options = QueryOptions.error_domains ();
 				}
 			}
-		
 			if (options == null) {
 				options = QueryOptions.standard ();
 				options.auto_member_binding_mode = true;
 			} else {
 				options.auto_member_binding_mode = true;
 			}
-			/* 
-			if (word == "base") {
-				options.access = Afrodite.SymbolAccessibility.PUBLIC 
-					| Afrodite.SymbolAccessibility.PROTECTED 
-					| Afrodite.SymbolAccessibility.INTERNAL;
-			} else if (word != "this") {
-				options.access = Afrodite.SymbolAccessibility.PUBLIC 
-					| Afrodite.SymbolAccessibility.INTERNAL;						
-			}
-			*/		
-			
 			options.compare_mode = CompareMode.EXACT;
-			
-			options.dump_settings ();
-			
+			//options.dump_settings ();
 			return options;
 		}
 

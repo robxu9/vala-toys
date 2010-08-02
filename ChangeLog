@@ -1,5 +1,18 @@
 2010-08-02  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbfutils.vala:
+	* afrodite/Makefile.am:
+	* afrodite/completionengine.vala:
+	* afrodite/utils.vala:
+	* vbf/Makefile.am:
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	added a trace utility function to Afrodite & Vbf
+
+2010-08-02  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 
 	visit also lambda expressions

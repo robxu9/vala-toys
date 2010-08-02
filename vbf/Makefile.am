@@ -14,9 +14,7 @@ AM_CPPFLAGS = \
 BUILT_SOURCES = libvbf.vala.stamp vbftest.vala.stamp
 
 if ENABLE_DEBUG
-        DEBUG = --Xcc "-g" --Xcc "-O0"
-else
-        DEBUG = --Xcc "-D G_DISABLE_DEBUG"
+        DEBUG_FLAGS = -g -D DEBUG
 endif
 
 noinst_LTLIBRARIES = libvbf.la
@@ -43,6 +41,7 @@ libvbf_la_VALASOURCES = \
 	vbfconfignodepair.vala \
 	vbfconfignodelist.vala \
 	vbfunresolvedconfignode.vala \
+	vbfutils.vala \
 	am/vbfamprojectmanager.vala \
 	$(NULL)
 
@@ -61,11 +60,11 @@ libvbf_la_SOURCES = \
 	$(NULL)
 
 libvbf.vala.stamp: $(libvbf_la_VALASOURCES)
-	$(VALAC) $(DEBUG) -C -H vbf.h --library vbf-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/vbf $^
+	$(VALAC) $(DEBUG_FLAGS) -C -H vbf.h --library vbf-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/vbf $^
 	touch $@
 
 vbftest.vala.stamp: $(vbftest_VALASOURCES)
-	$(VALAC) $(DEBUG) -C  --vapidir $(srcdir)/../vapi --vapidir $(srcdir) --pkg vala-1.0 --pkg vbf-1.0 $^
+	$(VALAC) $(DEBUG_FLAGS) -C  --vapidir $(srcdir)/../vapi --vapidir $(srcdir) --pkg vala-1.0 --pkg vbf-1.0 $^
 	touch $@
 
 libvbf_la_LDFLAGS = \

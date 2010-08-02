@@ -263,6 +263,15 @@ namespace Vtg
 		public static Gdk.Pixbuf icon_enum;
 		public static Gdk.Pixbuf icon_namespace;
 
+		[Diagnostics]
+		[PrintfFormat]
+		internal static inline void trace (string format, ...)
+		{
+#if DEBUG
+			Afrodite.Utils.log_message ("ValaToys", format, va_list ());
+#endif
+		}
+	
 		public static bool is_vala_doc (Gedit.Document doc)
 		{
 			return doc.language != null && doc.language.id == "vala";

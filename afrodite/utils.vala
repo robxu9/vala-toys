@@ -22,8 +22,31 @@
 using GLib;
 using Vala;
 
+/* Not yet binded */
+
+[CCode (cname="g_logv")]
+extern static void logv (string? log_domain, LogLevelFlags log_level, string format, va_list args);
+
 namespace Afrodite.Utils
 {
+	/**
+	 * This function shouldn't be used directly but just wrapped with a private one that
+	 * will specify the correct log domain. See the function trace (...) in this same source 
+	 */
+	public static inline void log_message (string log_domain, string format, va_list args)
+	{
+		logv (log_domain, GLib.LogLevelFlags.LEVEL_INFO, format, args);
+	}
+
+	[Diagnostics]
+	[PrintfFormat]
+	internal static inline void trace (string format, ...)
+	{
+#if DEBUG
+		log_message ("Afrodite", format, va_list ());
+#endif
+	}
+
 	public static string? guess_package_name (string using_name, string[]? vapi_dirs = null)
 	{
 		// known using names;

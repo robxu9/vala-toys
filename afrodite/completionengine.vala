@@ -235,10 +235,10 @@ namespace Afrodite
 		
 		private void* parse_sources ()
 		{
-			GLib.Timer timer = new GLib.Timer ();
-			double parsing_time = 0;
-			timer.start ();
-			//debug ("%s: parser thread starting...", id);
+			//GLib.Timer timer = new GLib.Timer ();
+			//double parsing_time = 0;
+			//timer.start ();
+			Utils.trace ("%s: parser thread starting...", id);
 			begin_parsing (this);
 			Vala.List<SourceItem> sources = new ArrayList<SourceItem> ();
 			
@@ -254,7 +254,7 @@ namespace Afrodite
 					sources.add (item.copy ());
 				}
 				
-				GLib.debug ("queued %d", sources.size);
+				//GLib.debug ("queued %d", sources.size);
 				AtomicInt.set (ref _current_parsing_total_file_count, sources.size);
 				
 				_source_queue.clear ();
@@ -304,10 +304,10 @@ namespace Afrodite
 					}
 					AtomicInt.add (ref _parser_remaining_files, -1);
 				}
-				timer.stop ();
-				parsing_time = timer.elapsed ();
-				timer.reset ();
-				timer.start ();				
+				//timer.stop ();
+				//parsing_time = timer.elapsed ();
+				//timer.reset ();
+				//timer.start ();				
 				
 				_ast_mutex.@lock ();
 				if (_ast != null) {
@@ -330,7 +330,7 @@ namespace Afrodite
 			AtomicInt.set (ref _current_parsing_total_file_count, 0);
 			sources = null;
 			
-			timer.stop ();
+			//timer.stop ();
 			//debug ("%s: parser thread exiting (elapsed time parsing %g, resolving %g)...", id, parsing_time, timer.elapsed ());
 			end_parsing (this);
 			return null;
