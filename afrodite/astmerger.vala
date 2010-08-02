@@ -1,4 +1,4 @@
-/* contextmerger.vala
+/* astmerger.vala
  *
  * Copyright (C) 2009  Andrea Del Signore
  *
@@ -369,6 +369,17 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
+		public override void visit_expression_statement (Vala.ExpressionStatement e)
+		{
+			e.accept_children (this);
+		}
+		
+		public override void visit_method_call (Vala.MethodCall c)
+		{
+			//debug ("visit method call");
+			c.accept_children (this);	
+		}
+		
 		public override void visit_method (Method m)
 		{
 			if (!is_symbol_defined_current_source (m))
@@ -709,6 +720,7 @@ namespace Afrodite
 				symbol.access = SymbolAccessibility.ANY;
 				_current.add_generic_type_argument (symbol);
 			}
+			p.accept_children (this);
 		}
 		
 		public override void visit_formal_parameter (FormalParameter p) 
@@ -731,7 +743,6 @@ namespace Afrodite
 			_current.add_parameter (d);
 		}
 
-		
 		public override void visit_block (Block b) 
 		{
 			if (_current != null && _current_sr != null) {
@@ -756,7 +767,7 @@ namespace Afrodite
 				// try to resolve local variable type from initializers
 				var prev_inferred_type = _inferred_type;
 				_inferred_type = s;
-				debug ("infer from init %s %s", s.name, local.initializer.type_name);
+				//debug ("infer from init %s %s", s.name, local.initializer.type_name);
 				
 				if (local.initializer is ObjectCreationExpression) {
 					//debug ("START: initialization %s from %s: %s", local.name, s.name, _inferred_type.type_name);
@@ -784,7 +795,7 @@ namespace Afrodite
 					local.accept_children (this);
 				}
 				_last_literal = null;
-				debug ("infer from init done %s", _inferred_type.type_name);
+				//debug ("infer from init done %s", _inferred_type.type_name);
 				_inferred_type = prev_inferred_type;
 				
 				
@@ -811,7 +822,8 @@ namespace Afrodite
 
 		public override void visit_lambda_expression (LambdaExpression expr)
 		{
-			expr.accept (this);
+			//debug ("visit lambda called");
+			expr.accept_children (this);
 		}
 
 		public override void visit_member_access (MemberAccess expr) 
@@ -819,7 +831,7 @@ namespace Afrodite
 			if (_inferred_type == null)
 				return;
 			
-			debug ("visit member access %s %s %s", _inferred_type.type_name, expr.member_name, _inferred_type.type_name);
+			//debug ("visit member access %s %s %s", _inferred_type.type_name, expr.member_name, _inferred_type.type_name);
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
 				_inferred_type.type_name = expr.member_name;
 			else
