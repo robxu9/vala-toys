@@ -158,7 +158,7 @@ namespace Vtg
 				int line, column;
 
 				parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
-				GLib.debug ("filtering with: '%s' - '%s'", word, last_part);
+				Utils.trace ("filtering with: '%s' - '%s'", word, last_part);
 				if (!StringUtils.is_null_or_empty (last_part) && word != last_part) {
 					var filtered_proposals = new GLib.List<Gtk.SourceCompletionItem>();
 					foreach (var proposal in _proposals) {
@@ -358,7 +358,6 @@ namespace Vtg
 			var current_project = _symbol_completion.plugin_instance.project_view.current_project; 
 			if (current_project.is_default) {
 				if (autoadd_packages (doc, current_project) > 0) {
-					GLib.debug ("autoadd packages updatin project");
 					current_project.project.update ();
 				}
 			}
@@ -384,7 +383,7 @@ namespace Vtg
 					regex.match (line, RegexMatchFlags.NEWLINE_ANY, out match);
 					while (match.matches ()) {
 						string package_name = Afrodite.Utils.guess_package_name (match.fetch (2));
-						GLib.debug ("guessing name for %s: %s", match.fetch (2), package_name);
+						Utils.trace ("guessing name for %s: %s", match.fetch (2), package_name);
 						if (package_name != null) {
 							var group = project_manager.project.get_group("Sources");
 							var target = group.get_target_for_id ("Default");
@@ -504,7 +503,7 @@ namespace Vtg
 					}
 				}
 			} else {
-				GLib.debug ("NO base type for %s-%s", symbol.name, symbol.type_name);
+				Utils.trace ("NO base type for %s-%s", symbol.name, symbol.type_name);
 			}
 		}
 
@@ -779,7 +778,7 @@ namespace Vtg
 				_completion.release_ast (ast);
 			} else {
 				if (!StringUtils.is_null_or_empty (word)) {
-					GLib.debug ("build_proposal_item_list: couldn't acquire ast lock");
+					Utils.trace ("build_proposal_item_list: couldn't acquire ast lock");
 					this.show_calltip_info (_("<i>symbol cache is still building...</i>"));
 					Timeout.add_seconds (1, this.on_hide_calltip_timeout);
 				}

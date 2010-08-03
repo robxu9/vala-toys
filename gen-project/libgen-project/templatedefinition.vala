@@ -67,13 +67,13 @@ namespace GenProject
 				
 					result.icon_filename = Path.build_filename (Path.get_dirname (filename), Path.get_basename (filename).replace (".ini", ".png"));
 					if (!FileUtils.test (result.icon_filename, FileTest.IS_REGULAR)) {
-						debug ("no icon found for project: %s", result.icon_filename);
+						message ("no icon found for project: %s", result.icon_filename);
 						result.icon_filename = null; // no icon file founds
 					}
 					result.archive_filename = Path.build_filename (Path.get_dirname (filename), Path.get_basename (filename).replace (".ini", ".tar.gz"));
 					if (!FileUtils.test (result.archive_filename, FileTest.IS_REGULAR)) {
-						debug ("no archive found for project: %s", result.archive_filename);
-						result.archive_filename = null; // no icon file founds
+						critical ("no archive found for project: %s", result.archive_filename);
+						result.archive_filename = null; // template archive file founds
 					}
 				}
 			} catch (Error err) {

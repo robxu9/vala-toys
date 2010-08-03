@@ -1,5 +1,18 @@
 2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/queryoptions.vala:
+	* afrodite/symbolresolver.vala:
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/libgen-project/templates.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed all the active debug (...) function left in
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* afrodite/symbol.vala:
 

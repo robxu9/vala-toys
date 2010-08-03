@@ -46,14 +46,14 @@
  			};
  			
  			foreach (string path in standard_path) {
- 				debug ("scanning directory %s for templates", path);
+ 				message ("scanning directory %s for templates", path);
  				result.scan_path (path);
  				
  			}
  			
  			if (user_path != null) {
 	 			foreach (string path in user_path) {
-	 				debug ("scanning user directory %s for templates", path);
+	 				message ("scanning user directory %s for templates", path);
 	 				result.scan_path (path);
 	 			}
  			}

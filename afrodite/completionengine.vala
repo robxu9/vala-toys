@@ -136,9 +136,9 @@ namespace Afrodite
 				if (item == null || item.content != source.content) {
 				/*
 					if (source.content == null || source.content == "")
-						debug ("%s: queued source %s. sources to parse %d", id, source.path, source_queue.size);
+						Utils.trace ("%s: queued source %s. sources to parse %d", id, source.path, source_queue.size);
 					else
-						debug ("%s: queued live buffer %s. sources to parse %d", id, source.path, source_queue.size);
+						Utils.trace ("%s: queued live buffer %s. sources to parse %d", id, source.path, source_queue.size);
 				*/	
 					if (item != null)
 						_source_queue.remove (item);
@@ -147,7 +147,7 @@ namespace Afrodite
 				} 
 				else if (item.content == null && source.content != null) {
 					item.content = source.content;
-					//debug ("%s: updated live buffer %s. sources to parse %d", id, source.path, source_queue.size);
+					//Utils.trace ("%s: updated live buffer %s. sources to parse %d", id, source.path, source_queue.size);
 				}
 			}
 			_source_queue_mutex.@unlock ();
@@ -203,11 +203,14 @@ namespace Afrodite
 				}
 			}
 
+#if DEBUG
 			if (ast == null) {
-				debug ("can't acquire lock: %d", file_count);
+				Utils.trace ("can't acquire lock: %d", file_count);
 			} else {
-				debug ("lock acquired: %d", file_count);
+				Utils.trace ("lock acquired: %d", file_count);
 			}
+#endif
+
 			return res;
 		}
 		

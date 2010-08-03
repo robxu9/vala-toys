@@ -75,7 +75,7 @@ namespace Afrodite
 			// search in the parent chain
 			parent = symbol;
 			while (parent != null && type.symbol == null) {
-				//debug ("searching1 %s %s", type.type_name, type.name);
+				//Utils.trace ("searching1 %s %s", type.type_name, type.name);
 				string[] names =  type.type_name.split (".");
 				
 				var curr_parent = parent;
@@ -94,7 +94,7 @@ namespace Afrodite
 						// search the last part of the name also on the local variables
 						if (curr_parent.has_local_variables) {
 							foreach (var item in curr_parent.local_variables) {
-								//debug ("localvar %s: %s vs %s:%s unresolved %d", item.name, item.type_name, type.name, type.type_name, (int) type.unresolved);
+								//Utils.trace ("localvar %s: %s vs %s:%s unresolved %d", item.name, item.type_name, type.name, type.type_name, (int) type.unresolved);
 								if (!item.unresolved && item.name == name) {
 									type.type_name = item.type_name;
 									res = item.symbol;
@@ -105,7 +105,7 @@ namespace Afrodite
 						// search the last part of the name also on the method parameters
 						if (curr_parent.has_parameters) {
 							foreach (var item in curr_parent.parameters) {
-								//debug ("parameter %s: %s vs %s:%s unresolved %d", item.name, item.type_name, type.name, type.type_name, (int) type.unresolved);
+								//Utils.trace ("parameter %s: %s vs %s:%s unresolved %d", item.name, item.type_name, type.name, type.type_name, (int) type.unresolved);
 								if (!item.unresolved && item.name == name) {
 									type.type_name = item.type_name;
 									res = item.symbol;

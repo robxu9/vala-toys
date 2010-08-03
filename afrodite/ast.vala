@@ -470,8 +470,9 @@ namespace Afrodite
 			}
 			
 			if (result == null) {
-				debug ("no symbol found");
+				Utils.trace ("no symbol found");
 			}
+			
 			return result;
 		}
 	}

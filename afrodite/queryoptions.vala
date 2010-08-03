@@ -69,22 +69,22 @@ namespace Afrodite
 		
 		public void dump_settings ()
 		{
-			debug ("Member Binding (autoadapt: %s)", auto_member_binding_mode ? "true" : "false");
-			debug ("    Instance: %s", (binding & MemberBinding.INSTANCE) != 0 ? "true" : "false");
-			debug ("    Static: %s", (binding & MemberBinding.STATIC) != 0 ? "true" : "false");
-			debug ("    Class: %s", (binding & MemberBinding.CLASS) != 0 ? "true" : "false");
+			Utils.trace ("Member Binding (autoadapt: %s)", auto_member_binding_mode ? "true" : "false");
+			Utils.trace ("    Instance: %s", (binding & MemberBinding.INSTANCE) != 0 ? "true" : "false");
+			Utils.trace ("    Static: %s", (binding & MemberBinding.STATIC) != 0 ? "true" : "false");
+			Utils.trace ("    Class: %s", (binding & MemberBinding.CLASS) != 0 ? "true" : "false");
 
-			debug ("Scope");
-			debug ("    Private: %s", (access & SymbolAccessibility.PRIVATE) != 0 ? "true" : "false");
-			debug ("    Protected: %s", (access & SymbolAccessibility.PROTECTED) != 0 ? "true" : "false");
-			debug ("    Internal: %s", (access & SymbolAccessibility.INTERNAL) != 0 ? "true" : "false");
-			debug ("    Public: %s", (access & SymbolAccessibility.PUBLIC) != 0 ? "true" : "false");
+			Utils.trace ("Scope");
+			Utils.trace ("    Private: %s", (access & SymbolAccessibility.PRIVATE) != 0 ? "true" : "false");
+			Utils.trace ("    Protected: %s", (access & SymbolAccessibility.PROTECTED) != 0 ? "true" : "false");
+			Utils.trace ("    Internal: %s", (access & SymbolAccessibility.INTERNAL) != 0 ? "true" : "false");
+			Utils.trace ("    Public: %s", (access & SymbolAccessibility.PUBLIC) != 0 ? "true" : "false");
 			
-			debug ("All symbols.............: %s", all_symbols ? "true" : "false");
-			debug ("Error domains only......: %s", only_error_domains ? "true" : "false");
-			debug ("Static factories only...: %s", only_static_factories ? "true" : "false");
-			debug ("Creation methods only...: %s", only_creation_methods ? "true" : "false");
-			debug ("Creation methods exclude: %s", exclude_creation_methods ? "true" : "false");
+			Utils.trace ("All symbols.............: %s", all_symbols ? "true" : "false");
+			Utils.trace ("Error domains only......: %s", only_error_domains ? "true" : "false");
+			Utils.trace ("Static factories only...: %s", only_static_factories ? "true" : "false");
+			Utils.trace ("Creation methods only...: %s", only_creation_methods ? "true" : "false");
+			Utils.trace ("Creation methods exclude: %s", exclude_creation_methods ? "true" : "false");
 		}
 	}
 }

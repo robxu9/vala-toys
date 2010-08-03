@@ -300,7 +300,7 @@ namespace Vtg
 						vapi_dirs[index++] = item;
 
 					foreach (Package package in target.get_packages ()) {
-						GLib.debug ("setup_completions: target %s, referenced package: %s", target.id, package.id);
+						Utils.trace ("setup_completions: target %s, referenced package: %s", target.id, package.id);
 						var paths = Afrodite.Utils.get_package_paths (package.id, null, vapi_dirs);
 						if (paths != null) {
 							//foreach (string path in paths)
@@ -312,7 +312,7 @@ namespace Vtg
 					/* setup source files */
 					foreach (Vbf.Source source in target.get_sources ()) {
 						if (source.type == FileTypes.VALA_SOURCE) {
-							GLib.debug ("setup_completions: source %s", source.filename);
+							Utils.trace ("setup_completions: source %s", source.filename);
 							completion.queue_sourcefile (source.filename);
 						}
 					}
@@ -407,7 +407,6 @@ namespace Vtg
 
 		private void on_project_updated (Vbf.Project sender)
 		{
-			GLib.debug ("project updated");
 			if (in_update)
 				return;
 
@@ -418,7 +417,6 @@ namespace Vtg
 			setup_completions ();
 			this.updated ();
 			in_update = false;
-			GLib.debug ("project updated end");
 		}
 
 		private void build_tree_model ()
@@ -431,9 +429,9 @@ namespace Vtg
 			_model = new Gtk.TreeStore (5, typeof(string), typeof(string), typeof(string), typeof(GLib.Object), typeof(string));
 			_model.append (out project_iter, null);
 			if (StringUtils.is_null_or_empty (_project.version)) {
-				_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, "%s".printf (_project.name), 2, "project-root", 4, "");				
+				_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, "%s".printf (_project.name), 2, "project-root", 4, "");
 			} else {
-				_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, "%s - %s".printf (_project.name, _project.version), 2, "project-root", 4, "");				
+				_model.set (project_iter, 0, Gtk.STOCK_DIRECTORY, 1, "%s - %s".printf (_project.name, _project.version), 2, "project-root", 4, "");
 			}
 			
 			bool reference_added = false;
