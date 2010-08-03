@@ -2,6 +2,14 @@
 
 	* vtg/vtgbracketcompletion.vala:
 
+	use the information provided by the syntax highlighting do
+	deactivate the bracket completion in comments or string literals.
+	Fixes issue #51
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
 	semicolon is now added also on single line conditional statements
 
 2010-08-03  Andrea Del Signore  <sejerpz@tin.it>

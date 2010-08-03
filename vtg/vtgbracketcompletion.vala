@@ -227,14 +227,24 @@ namespace Vtg
 			bool result = false;
 	
 			if ((evt.state & ( ModifierType.MOD1_MASK)) == 0) {
- 				var src = sender.get_buffer ();
+				var src = (Gtk.SourceBuffer)sender.get_buffer ();
 				weak TextMark mark = (TextMark) src.get_insert ();
 				TextIter pos;
+
+				src.get_iter_at_mark (out pos, mark);
+				string[] context_classes = new string[] { "string", "comment" };
+				
+				foreach (string context_class in context_classes) {
+					if (src.iter_has_context_class (pos, context_class)) {
+						// inside a comment or string
+						return result;
+					}
+				}
+ 				
 				weak string indent;
 				string buffer;
 				unichar ch = Gdk.keyval_to_unicode (evt.keyval);
-
-				src.get_iter_at_mark (out pos, mark);
+ 				
 				if (ch == '(') {
 					// check if I'm inside a  { } block 
 					bool inside_block = false;
