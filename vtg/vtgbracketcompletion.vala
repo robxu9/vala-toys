@@ -241,7 +241,7 @@ namespace Vtg
 					TextIter start = pos;
 					while (start.backward_char ()) {
 						ch = start.get_char ();
- 						if (ch == ';' || ch == '{') {
+ 						if (ch == ';' || ch == '{' || ch == ')') {
  							inside_block = true;
  							break;
  						} else if (ch == '}' || ch == '(' || ch == '|' || ch == '&') {
@@ -266,7 +266,7 @@ namespace Vtg
 								// inside a { } block
 								while (start.backward_char ()) {
 									ch = start.get_char ();
-									if (ch == ';' || ch == '{' || ch == '=' || ch == '.') {
+									if (ch == ';' || ch == '{' || ch == '=' || ch == '.' || ch == ')') {
 										break;
 									} else if (ch != '\t' && ch != ' ' && ch != '\n' && ch != '\r') {
 										inside_block = false;

@@ -2,6 +2,12 @@
 
 	* vtg/vtgbracketcompletion.vala:
 
+	semicolon is now added also on single line conditional statements
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
 	better indentation when completing '{'
 
 2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
