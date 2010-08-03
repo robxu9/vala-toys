@@ -1,6 +1,12 @@
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:
+
+	reverted to the old symbol search code
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
 	* afrodite/astmerger.vala:
 	* afrodite/symbol.vala:
 	* afrodite/symbolresolver.vala:

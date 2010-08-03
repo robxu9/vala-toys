@@ -363,16 +363,36 @@ namespace Afrodite
 				}
 			} else {
 				// search in local vars going up in the scope chain
-				var d = symbol.scope_lookup_datatype_for_variable (mode, name);
-				if (d != null 
-				    && !d.unresolved 
-				    && (d.symbol.access & access) != 0
-				    && (d.symbol.binding & binding) != 0) {
-					return d.symbol;
+				var current_sym = symbol;
+				while (current_sym != null) {
+					if (current_sym.has_local_variables) {
+						foreach (DataType type in current_sym.local_variables) {
+							if (!type.unresolved) {
+								if (compare_symbol_names (type.name, name, mode)
+								    && (type.symbol.access & access) != 0
+								    && (type.symbol.binding & binding) != 0) {
+									return type.symbol;
+								}
+							}
+						}
+					}
+					// search in symbol parameters
+					if (current_sym.has_parameters) {
+						foreach (DataType type in current_sym.parameters) {
+							if (!type.unresolved) {
+								if (compare_symbol_names (type.name, name, mode)
+								    && (type.symbol.access & access) != 0
+								    && (type.symbol.binding & binding) != 0) {
+									return type.symbol;
+								}
+							}
+						}
+					}
+					current_sym = current_sym.parent;
 				}
-/*
+
 				// search in sibling
-				var current_sym = symbol.parent;
+				current_sym = symbol.parent;
 				while (current_sym != null) {
 					if (current_sym != null && current_sym.has_children) {
 						foreach (Symbol sibling in current_sym.children) {
@@ -409,7 +429,7 @@ namespace Afrodite
 						}
 					}
 				}
-*/
+
 			}
 			return null;
 		}
