@@ -1,3 +1,9 @@
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbolresolver.vala:
+
+	fix resolving symbols from imported namespaces
+
 2010-08-02  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vbf/vbfutils.vala:

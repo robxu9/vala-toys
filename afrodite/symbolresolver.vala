@@ -129,14 +129,19 @@ namespace Afrodite
 							continue;
 						}
 						foreach (Symbol using_directive in file.using_directives) {
+							//Utils.trace ("searching %s in imported namespace: %s", type.type_name, using_directive.name);
 							var ns = _ast.lookup (using_directive.fully_qualified_name, out parent);
 						
 							if (ns != null) {
-								var s = ns.lookup_child (type.type_name);
-								if (s != null) {
-									res = s;
-									break; // file.using_directives
+								string[] parts = type.type_name.split (".");
+								Symbol s = ns;
+								for (int i = 0; i < parts.length; i++) {
+									s = s.lookup_child (parts[i]);
+									if (s == null) {
+										break; // file.using_directives
+									}
 								}
+								res = s;
 							}
 						}
 						
