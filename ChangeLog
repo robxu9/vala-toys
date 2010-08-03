@@ -1,5 +1,11 @@
 2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+
+	merged the clean & clean vala stamps menus. Fixes issue #124
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbracketcompletion.vala:
 
 	use the information provided by the syntax highlighting do

@@ -64,8 +64,6 @@ namespace Vtg
                                                         <menuitem name="ProjectBuild" action="ProjectBuild"/>
                                                         <menuitem name="ProjectBuildClean" action="ProjectBuildClean"/>
                                                         <separator />
-                                                        <menuitem name="ProjectBuildCleanStamps" action="ProjectBuildCleanStamps"/>
-                                                        <separator />
                                                         <menuitem name="ProjectBuildConfigure" action="ProjectBuildConfigure"/>
                                                         <separator />
                                                         <menuitem name="ProjectBuildCompileFile" action="ProjectBuildCompileFile"/>
@@ -132,9 +130,8 @@ namespace Vtg
 			{"ProjectSaveAll", null, N_("Save All"), null, N_("Save all project files"), on_project_save_all},			
 			{"ProjectClose", null, N_("_Close Current Project"), null, N_("Close current selected project"), on_project_close},
 			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
-			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project using 'make'"), on_project_build},
-			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project using 'make clean'"), on_project_clean},
-			{"ProjectBuildCleanStamps", null, N_("_Clean Project and Vala 'Stamp' Files"), null, N_("Clean the current project stamp files"), on_project_clean_stamps},
+			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project"), on_project_build},
+			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project"), on_project_clean},
 			{"ProjectBuildConfigure", null, N_("C_onfigure Project"), null, N_("Configure or reconfigure the current project"), on_project_configure},
 			{"ProjectBuildCompileFile", null, N_("_Compile File"), "<control>B", N_("Compile the current file with the vala compiler"), on_standalone_file_compile},			
 			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
@@ -691,11 +688,6 @@ namespace Vtg
 			clean_project ();
 		}
 
-		private void on_project_clean_stamps (Gtk.Action action)
-		{
-			clean_project (true);
-		}
-
 		private void on_project_execute_process (Gtk.Action action)
 		{
 			if (_plugin_instance.project_view.current_project != null) {
@@ -715,11 +707,11 @@ namespace Vtg
 			_prj_executer.kill_last ();
 		}
 
-		private void clean_project (bool stamps = false)
+		private void clean_project ()
 		{
 			if (_plugin_instance.project_view.current_project != null) {
 				var project = _plugin_instance.project_view.current_project;
-				_prj_builder.clean (project, stamps);
+				_prj_builder.clean (project, true);
 			}
 		}
 
