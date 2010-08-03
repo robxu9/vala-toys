@@ -156,6 +156,26 @@ namespace Vtg
 			return text;
 		}
 
+		private void forward_skip_spaces (TextIter start)
+		{
+			if (start.get_char ().isspace ()) {
+				while (start.forward_char ()) {
+					if (!start.get_char ().isspace ()) {
+						break;
+					}
+				}
+			}
+		}
+		
+		private void backward_skip_spaces (TextIter start)
+		{
+			while (start.backward_char ()) {
+				if (!start.get_char ().isspace ()) {
+					break;
+				}
+			}
+		}
+		
 		private bool find_char (TextIter start, unichar char_to_find, unichar complementary_char, unichar[] stop_to_chars)
 		{
 			bool result = false;
@@ -243,17 +263,28 @@ namespace Vtg
 						}
 					}
 
+					bool prev_char_is_parenthesis = false;
+					bool next_char_is_semicolon = false;
+					
+					start = pos;
+					instance.backward_skip_spaces (start);
+					prev_char_is_parenthesis = start.get_char () == '(';
+					
+					start = pos;
+					instance.forward_skip_spaces (start);
+					next_char_is_semicolon = start.get_char () == ';';
+				
 					if (src.has_selection) {
 						if (instance.enclose_selection_with_delimiters (src, "(", ")")) {
-							if (inside_block)
+							if (inside_block && !next_char_is_semicolon)
 								instance.insert_chars (src, ";");
 							src.get_iter_at_mark (out pos, mark);
 							src.place_cursor (pos);
 							result = true;
 						}
 					} else {
-						if (!instance.find_char (pos, ')', '(', new unichar[] {'}', ';'} )) {
-							if (inside_block) {
+						if (prev_char_is_parenthesis || !instance.find_char (pos, ')', '(', new unichar[] {'}', ';'} )) {
+							if (inside_block && !next_char_is_semicolon) {
 								instance.insert_chars (src, ");");
 								instance.move_backwards (src, 2);
 							} else {
