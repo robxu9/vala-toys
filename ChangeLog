@@ -1,5 +1,12 @@
 2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added some trace 
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* vtg/vtgbracketcompletion.vala:
 	

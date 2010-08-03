@@ -119,6 +119,7 @@ namespace Vtg
 
 		public bool match (Gtk.SourceCompletionContext context)
 		{
+			Utils.trace ("match");
 			bool result = false;
 			unowned Gtk.TextMark mark = (Gtk.TextMark) context.completion.view.get_buffer ().get_insert ();
 			Gtk.TextIter start;
@@ -145,6 +146,7 @@ namespace Vtg
 		
 		public void populate (Gtk.SourceCompletionContext context)
 		{
+			Utils.trace ("populate");
 			if (!_filter) {
 				this.build_proposal_item_list ();
 				context.add_proposals (this, _proposals, true);
@@ -766,7 +768,7 @@ namespace Vtg
 			parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
 
 			Afrodite.Ast ast = null;
-			GLib.debug ("completing word: '%s'", word);
+			Utils.trace ("completing word: '%s'", word);
 			if (!StringUtils.is_null_or_empty (word) 
 			    && _completion.try_acquire_ast (out ast)) {
 			        QueryOptions options = get_options_for_line (whole_line);
@@ -795,7 +797,6 @@ namespace Vtg
 		{
 			Afrodite.QueryResult result = null;
 			result = ast.get_symbol_type_for_name_and_path (options, word, _sb.path, line, column);
-			
 			return result;
 		}
 

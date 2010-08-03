@@ -167,7 +167,7 @@ namespace Vtg
 				var view = tab.get_view ();
 				instance.initialize_view (project_manager, view);
 				if (instance.source_outliner != null) {
-					GLib.debug ("setup outliner for %s", Utils.get_document_name (doc));
+					Utils.trace ("setup outliner for %s", Utils.get_document_name (doc));
 					instance.source_outliner.active_view = view;
 				}
 
