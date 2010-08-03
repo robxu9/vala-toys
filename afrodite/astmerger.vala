@@ -376,7 +376,7 @@ namespace Afrodite
 		
 		public override void visit_method_call (Vala.MethodCall c)
 		{
-			Utils.trace ("visit method call: %s", c.call.type_name);
+			//Utils.trace ("visit method call: %s", c.call.type_name);
 			c.accept_children (this);
 		}
 		
@@ -575,7 +575,7 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
-	       	public override void visit_field (Field f) 
+		public override void visit_field (Field f) 
 		{
 			if (!is_symbol_defined_current_source (f))
 				return;
@@ -599,7 +599,7 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 
-	       	public override void visit_constant (Vala.Constant c) 
+		public override void visit_constant (Vala.Constant c) 
 		{
 			if (!is_symbol_defined_current_source (c))
 				return;
@@ -619,7 +619,7 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 	
-	       	public override void visit_property (Property p) 
+		public override void visit_property (Property p) 
 		{
 			if (!is_symbol_defined_current_source (p))
 				return;
@@ -840,11 +840,9 @@ namespace Afrodite
 				string member_name = null;
 				// lookup in the scope variables
 				if (_current != null) {
-					Utils.trace ("lookup in local variables: %s", expr.member_name);
-					DataType d = _current.lookup_local_variable (expr.member_name);
+					DataType d = _current.scope_lookup_datatype_for_variable (expr.member_name);
 					if (d != null) {
 						member_name = d.type_name;
-						//Utils.trace ("lookup in local variables: %s found %s", expr.member_name, member_name);
 					}
 				}
 				

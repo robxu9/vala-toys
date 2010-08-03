@@ -3,6 +3,13 @@
 	* afrodite/astmerger.vala:
 	* afrodite/symbol.vala:
 
+	extended the local variable search to parent scopes and symbols
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+
 	fixed type inference from local variable and member access initialization
 
 2010-08-03  Andrea Del Signore  <sejerpz@tin.it>

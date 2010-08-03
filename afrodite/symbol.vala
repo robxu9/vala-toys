@@ -160,7 +160,7 @@ namespace Afrodite
 			return null;
 		}
 
-		public DataType? lookup_local_variable (string name)
+		public DataType? lookup_datatype_for_variable (string name, bool include_private = true)
 		{
 			if (has_local_variables) {
 				foreach (DataType d in local_variables) {
@@ -168,10 +168,52 @@ namespace Afrodite
 						return d;
 					}
 				}
-			}			
+			}
+			if (has_children) {
+				foreach (Symbol s in this.children) {
+					if ((include_private == true 
+					     || (s.access & SymbolAccessibility.INTERNAL) != 0 
+					     || (s.access & SymbolAccessibility.PUBLIC) != 0)
+					    && s.name == name) {
+						return s.return_type;
+					}
+				}
+			}
 			return null;
 		}
 
+		public DataType? scope_lookup_datatype_for_variable (string name)
+		{
+			DataType result = lookup_datatype_for_variable (name);
+			
+			if (result == null) {
+
+				if (this.parent != null) {
+					result = this.parent.scope_lookup_datatype_for_variable (name);
+				}
+				
+				if (result == null) {
+					// search in the imported namespaces
+					if (this.has_source_references) {
+						foreach (SourceReference s in this.source_references) {
+							if (s.file.has_using_directives) {
+								foreach (var u in s.file.using_directives) {
+									result = u.lookup_datatype_for_variable (name, false);
+									if (result != null) {
+										break;
+									}
+								}
+							}
+
+							if (result != null) {
+								break;
+							}
+						}
+					}
+				}
+			}
+			return result;
+		}
 		public bool has_children
 		{
 			get {
