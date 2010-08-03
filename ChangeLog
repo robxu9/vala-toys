@@ -1,5 +1,14 @@
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	Fix symbol resolution when importing more that one namespace
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/Makefile.am:
 
 	Fix debug support

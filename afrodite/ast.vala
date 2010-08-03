@@ -363,38 +363,16 @@ namespace Afrodite
 				}
 			} else {
 				// search in local vars going up in the scope chain
-				var current_sym = symbol;
-				while (current_sym != null) {
-					if (current_sym.has_local_variables) {
-						foreach (DataType type in current_sym.local_variables) {
-							if (!type.unresolved) {
-								if (compare_symbol_names (type.name, name, mode)
-								    && (type.symbol.access & access) != 0
-								    && (type.symbol.binding & binding) != 0) {
-									return type.symbol;
-								}
-							}
-						}
-					}
-					// search in symbol parameters
-					if (current_sym.has_parameters) {
-						foreach (DataType type in current_sym.parameters) {
-							if (!type.unresolved) {
-								if (compare_symbol_names (type.name, name, mode)
-								    && (type.symbol.access & access) != 0
-								    && (type.symbol.binding & binding) != 0) {
-									return type.symbol;
-								}
-							}
-						}
-					}
-					current_sym = current_sym.parent;
+				var d = symbol.scope_lookup_datatype_for_variable (mode, name);
+				if (d != null 
+				    && !d.unresolved 
+				    && (d.symbol.access & access) != 0
+				    && (d.symbol.binding & binding) != 0) {
+					return d.symbol;
 				}
-				
-			
-				
+/*
 				// search in sibling
-				current_sym = symbol.parent;
+				var current_sym = symbol.parent;
 				while (current_sym != null) {
 					if (current_sym != null && current_sym.has_children) {
 						foreach (Symbol sibling in current_sym.children) {
@@ -431,8 +409,8 @@ namespace Afrodite
 						}
 					}
 				}
+*/
 			}
-			
 			return null;
 		}
 
@@ -451,7 +429,7 @@ namespace Afrodite
 					critical ("symbol %s doesn't belong to source %s", symbol.fully_qualified_name, source.filename);
 					continue;
 				}
-				print ("%s: %d-%d %d-%d vs %d, %d\n", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);
+				Utils.trace ("searching %s: %d-%d %d-%d vs %d, %d", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);
 				if ((sr.first_line < line || ((line == sr.first_line && column >= sr.first_column) || sr.first_column == 0))
 				    && (line < sr.last_line || ((line == sr.last_line) || sr.last_column == 0))) {
 					// let's find the best symbol
@@ -462,7 +440,7 @@ namespace Afrodite
 					   || (result_sr.last_line == sr.last_line && result_sr.last_column  > sr.last_column && result_sr.last_column != 0 && sr.last_column  != 0))
 					{
 						// this symbol is better
-						//print ("lookup_symbol_at: found %s\n", symbol.name);
+						Utils.trace ("   found %s", symbol.name);
 						result = symbol;
 						result_sr = sr;
 					}

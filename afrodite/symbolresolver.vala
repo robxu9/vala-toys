@@ -136,12 +136,18 @@ namespace Afrodite
 								string[] parts = type.type_name.split (".");
 								Symbol s = ns;
 								for (int i = 0; i < parts.length; i++) {
+									//Utils.trace ("ns look: %d '%s' in %s '%s'", i, symbol.name, ns.fully_qualified_name, parts[i]);
 									s = s.lookup_child (parts[i]);
 									if (s == null) {
+										Utils.trace ("    %s not found", symbol.name);
 										break; // file.using_directives
 									}
 								}
 								res = s;
+								
+								if (res != null) {
+									break;
+								}
 							}
 						}
 						

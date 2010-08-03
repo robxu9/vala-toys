@@ -588,7 +588,7 @@ namespace Afrodite
 			
 			set_fqn (f.name);
 			var s = add_symbol (f, out _current_sr);
-			s.return_type = new DataType (f.variable_type.to_string ());
+			s.return_type = new DataType (get_datatype_typename (f.variable_type));
 			
 			s.binding =  get_vala_member_binding (f.binding);
 			_current.add_child (s);
@@ -767,7 +767,7 @@ namespace Afrodite
 				// try to resolve local variable type from initializers
 				var prev_inferred_type = _inferred_type;
 				_inferred_type = s;
-				Utils.trace ("infer from init '%s': %s", s.name, local.initializer.type_name);
+				//Utils.trace ("infer from init '%s': %s", s.name, local.initializer.type_name);
 				
 				if (local.initializer is ObjectCreationExpression) {
 					//debug ("START: initialization %s from %s: %s", local.name, s.name, _inferred_type.type_name);
@@ -775,7 +775,7 @@ namespace Afrodite
 					obj_initializer.member_name.accept (this); 
 					//debug ("END: initialization done %s", _inferred_type.type_name);
 				} else if (local.initializer is MethodCall) {
-					Utils.trace ("method call: %s", s.name);
+					//Utils.trace ("method call: %s", s.name);
  					((MethodCall) local.initializer).call.accept (this); // this avoid visit parameters of method calls
  				} else if (local.initializer is BinaryExpression) {
  					((BinaryExpression) local.initializer).accept_children (this);
@@ -787,12 +787,12 @@ namespace Afrodite
 	 					s.type_name = get_datatype_typename (cast_expr.type_reference);
  					}
  				} else if (local.initializer is ArrayCreationExpression) {
- 					Utils.trace ("ArrayCreationExpression infer from init '%s' %s", s.name, local.initializer.type_name);
+ 					//Utils.trace ("ArrayCreationExpression infer from init '%s' %s", s.name, local.initializer.type_name);
  					var ac = (ArrayCreationExpression) local.initializer; 
  					ac.accept_children (this);
  					s.is_array = true;
  					s.type_name = get_datatype_typename (ac.element_type);
-					Utils.trace ("init type %s: %s %s", local.name, s.type_name, ac.element_type.type_name);
+					//Utils.trace ("init type %s: %s %s", local.name, s.type_name, ac.element_type.type_name);
 				} else {
 					local.accept_children (this);
 				}
@@ -840,7 +840,7 @@ namespace Afrodite
 				string member_name = null;
 				// lookup in the scope variables
 				if (_current != null) {
-					DataType d = _current.scope_lookup_datatype_for_variable (expr.member_name);
+					DataType d = _current.scope_lookup_datatype_for_variable (CompareMode.EXACT, expr.member_name);
 					if (d != null) {
 						member_name = d.type_name;
 					}
