@@ -160,6 +160,18 @@ namespace Afrodite
 			return null;
 		}
 
+		public DataType? lookup_local_variable (string name)
+		{
+			if (has_local_variables) {
+				foreach (DataType d in local_variables) {
+					if (d.name == name) {
+						return d;
+					}
+				}
+			}			
+			return null;
+		}
+
 		public bool has_children
 		{
 			get {

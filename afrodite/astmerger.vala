@@ -376,8 +376,8 @@ namespace Afrodite
 		
 		public override void visit_method_call (Vala.MethodCall c)
 		{
-			//debug ("visit method call");
-			c.accept_children (this);	
+			Utils.trace ("visit method call: %s", c.call.type_name);
+			c.accept_children (this);
 		}
 		
 		public override void visit_method (Method m)
@@ -767,7 +767,7 @@ namespace Afrodite
 				// try to resolve local variable type from initializers
 				var prev_inferred_type = _inferred_type;
 				_inferred_type = s;
-				//debug ("infer from init %s %s", s.name, local.initializer.type_name);
+				Utils.trace ("infer from init '%s': %s", s.name, local.initializer.type_name);
 				
 				if (local.initializer is ObjectCreationExpression) {
 					//debug ("START: initialization %s from %s: %s", local.name, s.name, _inferred_type.type_name);
@@ -775,6 +775,7 @@ namespace Afrodite
 					obj_initializer.member_name.accept (this); 
 					//debug ("END: initialization done %s", _inferred_type.type_name);
 				} else if (local.initializer is MethodCall) {
+					Utils.trace ("method call: %s", s.name);
  					((MethodCall) local.initializer).call.accept (this); // this avoid visit parameters of method calls
  				} else if (local.initializer is BinaryExpression) {
  					((BinaryExpression) local.initializer).accept_children (this);
@@ -786,11 +787,12 @@ namespace Afrodite
 	 					s.type_name = get_datatype_typename (cast_expr.type_reference);
  					}
  				} else if (local.initializer is ArrayCreationExpression) {
+ 					Utils.trace ("ArrayCreationExpression infer from init '%s' %s", s.name, local.initializer.type_name);
  					var ac = (ArrayCreationExpression) local.initializer; 
  					ac.accept_children (this);
  					s.is_array = true;
  					s.type_name = get_datatype_typename (ac.element_type);
-					//debug ("init type %s: %s %s", local.name, s.type_name, ac.element_type.type_name);
+					Utils.trace ("init type %s: %s %s", local.name, s.type_name, ac.element_type.type_name);
 				} else {
 					local.accept_children (this);
 				}
@@ -831,12 +833,26 @@ namespace Afrodite
 			if (_inferred_type == null)
 				return;
 			
-			//debug ("visit member access %s %s %s", _inferred_type.type_name, expr.member_name, _inferred_type.type_name);
+			//Utils.trace ("visit member access %s: %s", _inferred_type.type_name, expr.member_name);
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
 				_inferred_type.type_name = expr.member_name;
-			else
-				_inferred_type.type_name = "%s.%s".printf (expr.member_name, _inferred_type.type_name);
+			else {
+				string member_name = null;
+				// lookup in the scope variables
+				if (_current != null) {
+					Utils.trace ("lookup in local variables: %s", expr.member_name);
+					DataType d = _current.lookup_local_variable (expr.member_name);
+					if (d != null) {
+						member_name = d.type_name;
+						//Utils.trace ("lookup in local variables: %s found %s", expr.member_name, member_name);
+					}
+				}
 				
+				// if not found assume that is a static type
+				if (member_name == null)
+					member_name = expr.member_name;
+				_inferred_type.type_name = "%s.%s".printf (member_name, _inferred_type.type_name);
+			}
 		}
 		
 		public override void visit_object_creation_expression (ObjectCreationExpression expr) 
