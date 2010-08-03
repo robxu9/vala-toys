@@ -151,7 +151,7 @@ namespace Afrodite
 			}
 		}
 		
-		public string description		
+		public string description
 		{
 			owned get {
 				string res;
@@ -169,10 +169,10 @@ namespace Afrodite
 					if (is_dynamic)
 						res += "dynamic ";
 					
-					res += type_name;
-					
 					if (symbol == null)
-						res += "!";
+						res += "%s!".printf (type_name);
+					else
+						res += symbol.fully_qualified_name;
 						
 					if (is_pointer)
 						res += "*";

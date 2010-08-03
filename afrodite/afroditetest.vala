@@ -39,8 +39,9 @@ const OptionEntry[] options = {
 };
 
 public class AfroditeTest.Application : Object {
-	public void run (string[] args) {
+	public int run (string[] args) {
 		int i = 0;
+		int result = 0;
 		
 		// parse options
 		var opt_context = new OptionContext ("- Afrodite Test");
@@ -86,34 +87,38 @@ public class AfroditeTest.Application : Object {
 				dumper.dump (ast, option_namespace);
 				print ("\n");
 				
-				// Setup query options
-				QueryOptions options = QueryOptions.standard ();
-				options.auto_member_binding_mode = true;
-				options.compare_mode = CompareMode.EXACT;
-				options.access = Afrodite.SymbolAccessibility.ANY;
-				options.binding = Afrodite.MemberBinding.ANY;
 				
 				// Query the AST
-				QueryResult sym = ast.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
-				print ("The type for '%s' is: ", option_symbol_name);
-				if (!sym.is_empty) {
-					foreach (ResultItem item in sym.children) {
-						print ("%s\n     Childs:\n", item.symbol.name);
-						if (item.symbol.has_children) {
-							int count = 0;
-							// print an excerpt of the child symbols
-							foreach (var child in item.symbol.children) {
-								print ("          %s\n", child.description);
-								count++;
-								if (count == 6) {
-									print ("          ......\n");
-									break;
+				if (option_symbol_name != null) {
+					// Setup query options
+					QueryOptions options = QueryOptions.standard ();
+					options.auto_member_binding_mode = true;
+					options.compare_mode = CompareMode.EXACT;
+					options.access = Afrodite.SymbolAccessibility.ANY;
+					options.binding = Afrodite.MemberBinding.ANY;
+
+					QueryResult sym = ast.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
+					print ("The type for '%s' is: ", option_symbol_name);
+					if (!sym.is_empty) {
+						foreach (ResultItem item in sym.children) {
+							print ("%s\n     Childs:\n", item.symbol.fully_qualified_name);
+							if (item.symbol.has_children) {
+								int count = 0;
+								// print an excerpt of the child symbols
+								foreach (var child in item.symbol.children) {
+									print ("          %s\n", child.description);
+									count++;
+									if (count == 6) {
+										print ("          ......\n");
+										break;
+									}
 								}
 							}
 						}
+					} else {
+						print ("unresolved :(\n");
+						result = 1;
 					}
-				} else {
-					print ("unresolved :(\n");
 				}
 				engine.release_ast (ast);
 				break;
@@ -121,6 +126,7 @@ public class AfroditeTest.Application : Object {
 		}
 		
 		print ("done\n");
+		return result;
 	}
 
 	static int main (string[] args) {

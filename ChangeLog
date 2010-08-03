@@ -1,5 +1,12 @@
 2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/afroditetest.vala:
+	* afrodite/datatype.vala:
+
+	better diagnostic output from afroditetest utility
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 
 	merged the clean & clean vala stamps menus. Fixes issue #124
