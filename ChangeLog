@@ -1,5 +1,11 @@
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+
+	allow ctrl/shift + enter even if in a string or comment
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 
 	reverted to the old symbol search code
