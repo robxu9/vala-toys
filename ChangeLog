@@ -1,5 +1,12 @@
 2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+	
+	better handling of '(' completion
+	
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/symbolresolver.vala:
 
 	fix resolving symbols from imported namespaces

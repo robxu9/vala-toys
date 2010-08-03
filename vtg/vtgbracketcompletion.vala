@@ -156,7 +156,7 @@ namespace Vtg
 			return text;
 		}
 
-		private bool find_char (TextIter start, unichar char_to_find, unichar complementary_char, unichar stop_to_char)
+		private bool find_char (TextIter start, unichar char_to_find, unichar complementary_char, unichar[] stop_to_chars)
 		{
 			bool result = false;
 			int level = 0;
@@ -164,7 +164,14 @@ namespace Vtg
 			TextIter curr = start;
 			do {
 				unichar ch = curr.get_char ();
-				if (ch == stop_to_char) {
+				bool stop_char_found = false;
+				foreach (unichar stop_to_char in stop_to_chars) {
+					if (ch == stop_to_char) {
+						stop_char_found = true;
+						break;
+					}					
+				}
+				if (stop_char_found) {
 					break;
 				} else if (ch == char_to_find) {
 					if (level == 0) {
@@ -245,7 +252,7 @@ namespace Vtg
 							result = true;
 						}
 					} else {
-						if (!instance.find_char (pos, ')', '(', ';')) {
+						if (!instance.find_char (pos, ')', '(', new unichar[] {'}', ';'} )) {
 							if (inside_block) {
 								instance.insert_chars (src, ");");
 								instance.move_backwards (src, 2);
@@ -256,7 +263,7 @@ namespace Vtg
 						}
 					}
 				} else if (ch == '[') {
-					if (!instance.find_char (pos, ']', '[', ';')) {
+					if (!instance.find_char (pos, ']', '[', new unichar[] {'}', ';'})) {
 						instance.insert_chars (src, "]");
 						instance.move_backwards (src, 1);
 					}
@@ -370,7 +377,7 @@ namespace Vtg
 							result = true;
 						}
 					} else {
-						if (!instance.find_char (pos, '\"', '\"', ';')) {
+						if (!instance.find_char (pos, '\"', '\"', new unichar[] {'}', ';'})) {
 							instance.insert_chars (src, "\"");
 							instance.move_backwards (src, 1);
 						}
