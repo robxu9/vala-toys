@@ -112,6 +112,20 @@ namespace Vtg
 			src.place_cursor (pos);
 		}
 
+		private string subtract_indentation (string indentation, int levels)
+		{
+			string current = "";
+			
+			for (int i=0; i < levels; i++) {
+				current = current.concat (tab_chars);
+			}
+			if (indentation.length < current.length) {
+				return "";
+			}
+			
+			return "%s".printf (indentation.substring (current.length));
+		}
+		
 		private unowned string current_indentation_text (TextBuffer src)
 		{
 			weak TextMark mark = (TextMark) src.get_insert ();
@@ -246,7 +260,7 @@ namespace Vtg
 							// test if is a vala keyword
 							if (buffer == "if" || buffer == "do" || buffer == "while"
 							    || buffer.has_prefix ("for")) {
-								inside_block = false;    	
+								inside_block = false;
 							} else {
 								// continue to move backward to really see if we are
 								// inside a { } block
@@ -325,7 +339,8 @@ namespace Vtg
 				} else if (ch == '{') {
 					indent = instance.current_indentation_text (src);
 					if (src.has_selection) {
-						if (instance.enclose_selection_with_delimiters (src, "{", "\n%s}\n".printf (indent))) {
+						var tmp = instance.subtract_indentation (indent, 1);
+						if (instance.enclose_selection_with_delimiters (src, "{", "\n%s}\n".printf (tmp))) {
 							src.get_iter_at_mark (out pos, mark);
 							src.place_cursor (pos);
 						}
@@ -340,7 +355,7 @@ namespace Vtg
 							line = line.replace (" ", "").replace ("\t", "");
 						}
 						if (StringUtils.is_null_or_empty (line) || line.has_prefix ("\n") || line.has_prefix ("}")) {
-							buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);	
+							buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);
 							instance.insert_chars (src, buffer);
 							sender.scroll_to_mark (mark, 0, false, 0, 0);
 							instance.move_backwards (src, 2 + (int) indent.length);
