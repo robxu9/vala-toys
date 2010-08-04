@@ -811,6 +811,7 @@ namespace Vtg
 					Utils.trace ("build_proposal_item_list: couldn't acquire ast lock");
 					this.show_calltip_info (_("<i>symbol cache is still building...</i>"));
 					Timeout.add_seconds (2, this.on_hide_calltip_timeout);
+					this.completion_lock_failed ();
 				}
 				transform_result (null, null);
 			}
