@@ -139,7 +139,7 @@ namespace Vtg
 		public void setup_completion_engine (Afrodite.CompletionEngine engine)
 		{
 			completion_setup = true;
-			engine.end_parsing.connect (this.on_end_parsing);			
+			engine.end_parsing.connect (this.on_end_parsing);
 		}
 
 		private void cleanup_completion_with_view (View view)
@@ -175,24 +175,33 @@ namespace Vtg
 		
 		private void setup_idle ()
 		{
-			if (idle_id == 0) {
-				idle_id =  Idle.add (this.on_idle_update, Priority.DEFAULT_IDLE);
+			Utils.trace ("Idle setup");
+			lock (idle_id) {
+				if (idle_id == 0) {
+					Utils.trace ("Idle setup real");
+					idle_id =  Idle.add (this.on_idle_update, Priority.DEFAULT_IDLE);
+				}
 			}
 		}
 		
 		private bool on_idle_update ()
 		{
-			bool res = !update_source_outliner_view ();
-			if (!res)
-				idle_id = 0;
-			return res;
+			bool success = update_source_outliner_view ();
+			if (success) {
+				lock (idle_id) {
+					idle_id = 0;
+				}
+				Utils.trace ("removind the source");
+			}
+			
+			return !success; // remove the idle on a sucessful update
 		}
 		
 		private bool update_source_outliner_view ()
 		{
 			var scs = _plugin_instance.scs_find_from_view (_active_view);
  			if (scs == null || scs.completion_engine == null) {
- 				//GLib.warning ("update_source_ouliner_view: symbol completion helper is null for view");
+ 				Utils.trace ("symbol completion helper is null for view");
 				return true;
 			}
 			
@@ -202,6 +211,7 @@ namespace Vtg
 			Afrodite.Ast ast;
 			bool res = scs.completion_engine.try_acquire_ast (out ast, 1);
 			if (res) {
+				Utils.trace ("ast acquired");
 				var options = Afrodite.QueryOptions.standard ();
 				options.all_symbols = true;
 				result = ast.get_symbols_for_path (options, name);

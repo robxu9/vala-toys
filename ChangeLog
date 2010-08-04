@@ -1,5 +1,13 @@
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	avoid concurrency problems in the source outliner view
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/astmerger.vala:
 	* afrodite/symbol.vala:
