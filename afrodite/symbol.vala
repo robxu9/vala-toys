@@ -201,15 +201,6 @@ namespace Afrodite
 			}
 			return null;
 		}
-
-		private static bool compare_symbol_names (string? name1, string? name2, CompareMode mode)
-		{
-			if (mode == CompareMode.START_WITH && name1 != null && name2 != null) {
-				return name1.has_prefix (name2);
-			} else {
-				return name1 == name2;
-			}
-		}
 		
 		public DataType? scope_lookup_datatype_for_variable (CompareMode mode, string name)
 		{
@@ -227,9 +218,11 @@ namespace Afrodite
 						foreach (SourceReference s in this.source_references) {
 							if (s.file.has_using_directives) {
 								foreach (var u in s.file.using_directives) {
-									result = u.lookup_datatype_for_variable (mode, name, SymbolAccessibility.INTERNAL | SymbolAccessibility.PUBLIC);
-									if (result != null) {
-										break;
+									if (!u.unresolved) {
+										result = u.symbol.lookup_datatype_for_variable (mode, name, SymbolAccessibility.INTERNAL | SymbolAccessibility.PUBLIC);
+										if (result != null) {
+											break;
+										}
 									}
 								}
 							}
@@ -243,6 +236,16 @@ namespace Afrodite
 			}
 			return result;
 		}
+		
+		private static bool compare_symbol_names (string? name1, string? name2, CompareMode mode)
+		{
+			if (mode == CompareMode.START_WITH && name1 != null && name2 != null) {
+				return name1.has_prefix (name2);
+			} else {
+				return name1 == name2;
+			}
+		}
+		
 		public bool has_children
 		{
 			get {

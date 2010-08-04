@@ -119,8 +119,8 @@ namespace Vtg
 
 		public bool match (Gtk.SourceCompletionContext context)
 		{
-			Utils.trace ("match");
-			bool result = false;
+			bool result = true;
+			/* 
 			unowned Gtk.TextMark mark = (Gtk.TextMark) context.completion.view.get_buffer ().get_insert ();
 			Gtk.TextIter start;
 			Gtk.TextIter end;
@@ -128,14 +128,14 @@ namespace Vtg
 			context.completion.view.get_buffer ().get_iter_at_mark (out end, mark);
 
 			if (!start.starts_line ())
-			start.set_line_offset (0);
+				start.set_line_offset (0);
 
 			string text = start.get_text (end);
 			if (text.has_suffix (".")) {
 				result = true;
 				_filter = false; // do a completion
 			}
-			
+			*/
 			return result;
 		}
 
@@ -147,19 +147,46 @@ namespace Vtg
 		public void populate (Gtk.SourceCompletionContext context)
 		{
 			Utils.trace ("populate");
-			if (!_filter) {
-				this.build_proposal_item_list ();
-				context.add_proposals (this, _proposals, true);
-				// subsequent call to populate should filter the proposals 
-				// until the proposals window will be closed
+			unowned Gtk.TextMark mark = (Gtk.TextMark) context.completion.view.get_buffer ().get_insert ();
+			Gtk.TextIter start;
+			Gtk.TextIter end;
+			context.completion.view.get_buffer ().get_iter_at_mark (out start, mark);
+			context.completion.view.get_buffer ().get_iter_at_mark (out end, mark);
+
+			if (!start.starts_line ())
+				start.set_line_offset (0);
+
+			string text = start.get_text (end);
+			unichar ch = 'a';
+			if (end.backward_char ())
+				ch = end.get_char ();
+				
+			bool symbols_in_scope_mode = false;
+			
+			if (text.has_suffix (".") || (ch != '_' && !ch.isalnum())) {
+				_filter = false;
+			} else if (text.rstr (".") == null) {
+				// TODO: this check doesn't works always. Eg. this.test = aaa should not match
+				symbols_in_scope_mode = true;
+			} else {
 				_filter = true;
+			}
+			
+			if (!_filter) {
+				_proposals = new GLib.List<Gtk.SourceCompletionItem> ();
+				if (symbols_in_scope_mode)
+					this.lookup_visible_symbols_in_scope (CompareMode.START_WITH);
+				else
+					this.complete_current_word ();
+				
+				context.add_proposals (this, _proposals, true);
 			} else {
 				string whole_line, word, last_part;
 				int line, column;
 
 				parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
 				Utils.trace ("filtering with: '%s' - '%s'", word, last_part);
-				if (!StringUtils.is_null_or_empty (last_part) && word != last_part) {
+				if (!StringUtils.is_null_or_empty (last_part)) {
 					var filtered_proposals = new GLib.List<Gtk.SourceCompletionItem>();
 					foreach (var proposal in _proposals) {
 						if (proposal.get_label ().has_prefix (last_part)) {
@@ -167,7 +194,7 @@ namespace Vtg
 						}
 					}
 				
-					if (filtered_proposals.length () == 0) {
+					if (_proposals.length () > 0 && filtered_proposals.length () == 0) {
 						// no matching add a dummy one to prevent proposal windows from closing
 						var dummy_proposal = new Gtk.SourceCompletionItem (_("No matching proposal"), "", null, null);
 						filtered_proposals.append (dummy_proposal);
@@ -178,7 +205,6 @@ namespace Vtg
 					context.add_proposals (this, _proposals, true);
 				}
 			}
-
 		}
 
 		public unowned Gdk.Pixbuf get_icon ()
@@ -197,6 +223,7 @@ namespace Vtg
 
 		public bool activate_proposal (Gtk.SourceCompletionProposal proposal, Gtk.TextIter iter)
 		{
+			_filter = false;
 			return false;
 		}
 
@@ -435,7 +462,7 @@ namespace Vtg
 				}
 
 				if (!symbol.overrides || (symbol.overrides && !this.proposal_list_contains_name (name))) {
-					Gtk.SourceCompletionItem proposal;					
+					Gtk.SourceCompletionItem proposal;
 					var info = (symbol.info != null ? symbol.info : "");
 					Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.type_name);
 
@@ -596,7 +623,7 @@ namespace Vtg
 									last_symbolname = tmp.str.reverse ();
 									
 								tmp.truncate (0);
-								status = 1; //skip spaces								
+								status = 1; //skip spaces
 							} else if (ch == '\"') {
 								string_lev++;
 								status = 3;
@@ -730,7 +757,7 @@ namespace Vtg
 							return base_symbol;
 					}
 				}
-			}			
+			}
 			return null;
 		}
 		
@@ -759,7 +786,7 @@ namespace Vtg
 			return options;
 		}
 
-		private void build_proposal_item_list ()
+		private void complete_current_word ()
 		{
 			string whole_line, word, last_part;
 			int line, column;
@@ -780,7 +807,48 @@ namespace Vtg
 				if (!StringUtils.is_null_or_empty (word)) {
 					Utils.trace ("build_proposal_item_list: couldn't acquire ast lock");
 					this.show_calltip_info (_("<i>symbol cache is still building...</i>"));
-					Timeout.add_seconds (1, this.on_hide_calltip_timeout);
+					Timeout.add_seconds (2, this.on_hide_calltip_timeout);
+				}
+				transform_result (null, null);
+			}
+		}
+
+		private void lookup_visible_symbols_in_scope (CompareMode mode)
+		{
+			string whole_line, word, last_part;
+			int line, column;
+
+			parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
+
+			Afrodite.Ast ast = null;
+			Utils.trace ("lookup_all_symbols_in_scope: mode: %s word:'%s' ", 
+				mode == CompareMode.EXACT ? "exact" : "start-with",
+				word);
+			if (!StringUtils.is_null_or_empty (word) 
+			    && _completion.try_acquire_ast (out ast)) {
+        			Vala.List<Afrodite.Symbol> results = new Vala.ArrayList<Afrodite.Symbol> ();
+        			
+				weak Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
+				var source = ast.lookup_source_file (Utils.get_document_name (doc));
+				if (source != null) {
+					// get the source node at this position
+					var s = ast.get_symbol_for_source_and_position (source, line, column);
+					if (s != null) {
+						results = ast.lookup_visible_symbols_from_symbol (s, word, mode, CaseSensitiveness.CASE_SENSITIVE);
+					}
+				}
+				
+				if (results.size == 0) {
+					Utils.trace ("no symbol visible");
+					transform_result (null, null);
+				} else {
+					_proposals = new GLib.List<Gtk.SourceCompletionItem> ();
+					append_symbols (null, results);
+				}
+				_completion.release_ast (ast);
+			} else {
+				if (!StringUtils.is_null_or_empty (word)) {
+					Utils.trace ("build_proposal_item_list: couldn't acquire ast lock");
 				}
 				transform_result (null, null);
 			}

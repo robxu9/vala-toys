@@ -48,6 +48,13 @@ namespace Afrodite
 		START_WITH
 	}
 	
+	public enum CaseSensitiveness
+	{
+		CASE_SENSITIVE,
+		CASE_INSENSITIVE,
+		AUTO
+	}
+
 	private enum LookupMode
 	{
 		Symbol,

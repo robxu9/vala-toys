@@ -1,5 +1,18 @@
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/constants.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	implemented a quite aggressive completion mode
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbracketcompletion.vala:
 
 	allow ctrl/shift + enter even if in a string or comment

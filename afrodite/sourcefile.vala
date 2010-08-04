@@ -26,7 +26,7 @@ namespace Afrodite
 {
 	public class SourceFile
 	{
-		public Vala.List<Symbol> using_directives { get; set; }
+		public Vala.List<DataType> using_directives { get; set; }
 		public Vala.List<Symbol> symbols { get; set; }
 		
 		public string filename {
@@ -38,24 +38,24 @@ namespace Afrodite
 			this.filename = filename;
 		}
 		
-		public Symbol add_using_directive (string name)
+		public DataType add_using_directive (string name)
 		{
 			var u = lookup_using_directive (name);
 			if (u == null) {
 				if (using_directives == null) {
-					using_directives = new ArrayList<Symbol> ();
+					using_directives = new ArrayList<DataType> ();
 				}
-				u = new Symbol (name, "UsingDirective");			
+				u = new DataType (name, "UsingDirective");
 				using_directives.add (u);
 			}
 			return u;
 		}
 		
-		public Symbol? lookup_using_directive (string name)
+		public DataType? lookup_using_directive (string name)
 		{
 			if (using_directives != null) {
-				foreach (Symbol u in using_directives) {
-					if (u.fully_qualified_name == name) {
+				foreach (DataType u in using_directives) {
+					if (u.type_name == name) {
 						return u;
 					}
 				}

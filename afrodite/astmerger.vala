@@ -123,7 +123,8 @@ namespace Afrodite
 
 					if (source_ref != null) {
 						source_ref.file.add_symbol (symbol);
-						symbol.add_source_reference (source_ref);
+						if (symbol.lookup_source_reference_filename (source_ref.file.filename) == null)
+							symbol.add_source_reference (source_ref);
 					} else {
 						critical ("no valid source reference in child for orphaned symbol %s", symbol.name);
 					}
@@ -197,8 +198,10 @@ namespace Afrodite
 		private Afrodite.Symbol add_symbol (Vala.Symbol s, out Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, s.type_name);
-			source_ref = create_source_reference (s, last_line, last_column);
-			symbol.add_source_reference (source_ref);
+			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
+				source_ref = create_source_reference (s, last_line, last_column);
+				symbol.add_source_reference (source_ref);
+			}
 			symbol.access = get_vala_symbol_access (s.access);
 			_source_file.add_symbol (symbol);
 			return symbol;
@@ -207,8 +210,10 @@ namespace Afrodite
 		private Afrodite.Symbol add_codenode (string type_name, Vala.CodeNode c, out Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, type_name);
-			source_ref = create_source_reference (c, last_line, last_column);
-			symbol.add_source_reference (source_ref);
+			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
+				source_ref = create_source_reference (c, last_line, last_column);
+				symbol.add_source_reference (source_ref);
+			}
 			symbol.access = Afrodite.SymbolAccessibility.PRIVATE;
 			_source_file.add_symbol (symbol);
 			return symbol;

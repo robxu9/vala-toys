@@ -119,44 +119,46 @@ namespace Afrodite
 				parent = parent.parent;
 			}
 			
-			if (res == null) {
-				// then the using directives
-				if (symbol.has_source_references) {
-					foreach (SourceReference reference in symbol.source_references) {
-						var file = reference.file;
-						if (file.using_directives == null) {
-							//warning ("file without any using directive: %s", file.filename);
-							continue;
-						}
-						foreach (Symbol using_directive in file.using_directives) {
-							//Utils.trace ("searching %s in imported namespace: %s", type.type_name, using_directive.name);
-							var ns = _ast.lookup (using_directive.fully_qualified_name, out parent);
+			
+			// then the using directives
+			if (symbol.has_source_references) {
+				foreach (SourceReference reference in symbol.source_references) {
+					var file = reference.file;
+					if (file.using_directives == null) {
+						//warning ("file without any using directive: %s", file.filename);
+						continue;
+					}
+					foreach (DataType using_directive in file.using_directives) {
+						//Utils.trace ("searching %s in imported namespace: %s", type.type_name, using_directive.name);
+						if (using_directive.unresolved)
+							using_directive.symbol = _ast.lookup (using_directive.type_name, out parent);
+					
+						var ns = using_directive.symbol;
 						
-							if (ns != null) {
-								string[] parts = type.type_name.split (".");
-								Symbol s = ns;
-								for (int i = 0; i < parts.length; i++) {
-									//Utils.trace ("ns look: %d '%s' in %s '%s'", i, symbol.name, ns.fully_qualified_name, parts[i]);
-									s = s.lookup_child (parts[i]);
-									if (s == null) {
-										Utils.trace ("    %s not found", symbol.name);
-										break; // file.using_directives
-									}
-								}
-								res = s;
-								
-								if (res != null) {
-									break;
+						if (ns != null && res == null) {
+							string[] parts = type.type_name.split (".");
+							Symbol s = ns;
+							for (int i = 0; i < parts.length; i++) {
+								//Utils.trace ("ns look: %d '%s' in %s '%s'", i, symbol.name, ns.fully_qualified_name, parts[i]);
+								s = s.lookup_child (parts[i]);
+								if (s == null) {
+									//Utils.trace ("    %s not found", symbol.name);
+									break; // file.using_directives
 								}
 							}
-						}
-						
-						if (res != null) {
-							break; // symbol.source_references
+							res = s;
+							
+							if (res != null) {
+								break;
+							}
 						}
 					}
+					
+					if (res != null) {
+						break; // symbol.source_references
+					}
 				}
-			}	
+			}
 			
 			if (res != null) {
 				res.add_resolve_target (symbol);

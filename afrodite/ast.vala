@@ -334,12 +334,139 @@ namespace Afrodite
 			return current;
 		}
 		
-		private static bool compare_symbol_names (string? name1, string? name2, CompareMode mode)
+		private void append_visible_symbols (Vala.List<Afrodite.Symbol>? results, 
+			Symbol symbol,
+			string? name, 
+			CompareMode mode, 
+			CaseSensitiveness case_sensitiveness,
+			SymbolAccessibility access = SymbolAccessibility.ANY)
 		{
-			if (mode == CompareMode.START_WITH && name1 != null && name2 != null) {
-				return name1.has_prefix (name2);
+			Utils.trace ("scanning symbol: %s", symbol.fully_qualified_name);
+			if (symbol.has_local_variables) {
+				foreach (DataType d in symbol.local_variables) {
+					if (!d.unresolved 
+					    && ((access & SymbolAccessibility.PRIVATE) != 0)
+					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
+						Utils.trace ("append local var %s", d.name);
+						var s = new Afrodite.Symbol (d.name, d.type_name);
+						s.return_type = d;
+						results.add (s);
+					}
+				}
+			}
+			
+			if (symbol.has_parameters) {
+				// symbol parameters (eg. method parameters)
+				foreach (DataType d in symbol.parameters) {
+					if (!d.unresolved 
+					    && ((access & SymbolAccessibility.PRIVATE) != 0)
+					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
+						var s = new Afrodite.Symbol (d.name, d.type_name);
+						s.return_type = d;
+						results.add (s);
+					}
+				}
+			}
+			
+			if (symbol.has_children) {
+				// direct children
+				foreach (Symbol s in symbol.children) {
+					if ((s.access & access) != 0
+					    && (s.fully_qualified_name != symbol.fully_qualified_name)
+					    && (name == null || compare_symbol_names (s.name, name, mode, case_sensitiveness))) {
+						results.add (s);
+					}
+				}
+			}
+			
+			if (symbol.has_base_types) {
+				foreach (DataType d in symbol.base_types) {
+					if (!d.unresolved) {
+						append_visible_symbols  (results, 
+							d.symbol, 
+							name, 
+							mode,
+							case_sensitiveness,
+							SymbolAccessibility.INTERNAL | SymbolAccessibility.PROTECTED | SymbolAccessibility.PROTECTED);
+					}
+				}
+			}
+		}
+
+		private void append_all_visible_symbols (Vala.List<Afrodite.Symbol> results, 
+			Afrodite.Symbol? symbol, 
+			string? name, 
+			CompareMode mode, 
+			CaseSensitiveness case_sensitiveness)
+		{
+			append_visible_symbols (results, symbol, name, mode, case_sensitiveness);
+
+			if (symbol.parent != null) {
+				append_all_visible_symbols (results, symbol.parent, name, mode, case_sensitiveness);
+			}
+		}
+		
+		public Vala.List<Afrodite.Symbol> lookup_visible_symbols_from_symbol (Afrodite.Symbol symbol, 
+			string? name = null,
+			CompareMode mode = CompareMode.START_WITH, 
+			CaseSensitiveness case_sensitiveness = CaseSensitiveness.CASE_SENSITIVE)
+		{
+			Vala.List<Afrodite.Symbol> results = new Vala.ArrayList<Afrodite.Symbol> ();
+			append_all_visible_symbols (results, symbol, name, mode, case_sensitiveness);
+			
+			// append symbols from the imported namespaces
+			if (symbol.has_source_references) {
+				var using_done = new Vala.ArrayList<string> ();
+			
+				foreach (SourceReference s in symbol.source_references) {
+					if (s.file.has_using_directives) {
+						Utils.trace ("import symbol from symbol %s, file: %s", symbol.fully_qualified_name,  s.file.filename);
+						foreach (var u in s.file.using_directives) {
+							if (!using_done.contains (u.type_name)) {
+								using_done.add (u.type_name);
+								Utils.trace ("    import symbol from namespace: %s", u.type_name);
+								if (!u.unresolved)
+									append_visible_symbols (results, 
+										u.symbol, 
+										name, 
+										mode, 
+										case_sensitiveness, 
+										SymbolAccessibility.INTERNAL | SymbolAccessibility.PUBLIC);
+							}
+						}
+					}
+				}
+			}
+
+			return results;
+		}
+		
+		private static bool compare_symbol_names (string? name1, string? name2, CompareMode mode, CaseSensitiveness case_sensitiveness = CaseSensitiveness.CASE_SENSITIVE)
+		{
+			string a = name1;
+			string b = name2;
+			
+			switch (case_sensitiveness) {
+				case CaseSensitiveness.CASE_INSENSITIVE:
+					a = name1 != null ? name1.down () : null;
+					b = name2 != null ? name2.down () : null;
+					break;
+				case CaseSensitiveness.AUTO:
+					if (name2.down () == name2) {
+						a = name1 != null ? name1.down () : null;
+						b = name2 != null ? name2.down () : null;
+					}
+					break;
+			}
+			//Utils.trace ("comparing: %s vs %s %d %d", a, b, (int)mode, (int) case_sensitiveness);
+			
+			if (mode == CompareMode.START_WITH) {
+				if (a != null && b != null)
+					return a.has_prefix (b);
+				else
+					return false;
 			} else {
-				return name1 == name2;
+				return a == b;
 			}
 		}
 
@@ -412,10 +539,10 @@ namespace Afrodite
 					
 				// search in using directives
 				if (source.has_using_directives) {
-					foreach (Symbol u in source.using_directives) {
+					foreach (DataType u in source.using_directives) {
 						Symbol parent;
 						
-						sym = lookup (u.name, out parent);
+						sym = lookup (u.type_name, out parent);
 						if (sym != null) {
 							if (compare_symbol_names (sym.name, name, mode)) {
 								// is a reference to a namespace
@@ -439,36 +566,38 @@ namespace Afrodite
 			Symbol result = null;
 			SourceReference result_sr = null;
 			
-			// base 0
-			line++;
-			column++;
-			
-			foreach (Symbol symbol in source.symbols) {
-				var sr = symbol.lookup_source_reference_sourcefile (source);
-				if (sr == null) {
-					critical ("symbol %s doesn't belong to source %s", symbol.fully_qualified_name, source.filename);
-					continue;
-				}
-				Utils.trace ("searching %s: %d-%d %d-%d vs %d, %d", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);
-				if ((sr.first_line < line || ((line == sr.first_line && column >= sr.first_column) || sr.first_column == 0))
-				    && (line < sr.last_line || ((line == sr.last_line) || sr.last_column == 0))) {
-					// let's find the best symbol
-					if (result == null 
-					   || result_sr.first_line < sr.first_line 
-					   || (result_sr.first_line == sr.first_line && result_sr.first_column < sr.first_column && result_sr.first_column != 0 && sr.first_column != 0)
-					   || result_sr.last_line > sr.last_line
-					   || (result_sr.last_line == sr.last_line && result_sr.last_column  > sr.last_column && result_sr.last_column != 0 && sr.last_column  != 0))
-					{
-						// this symbol is better
-						Utils.trace ("   found %s", symbol.name);
-						result = symbol;
-						result_sr = sr;
+			if (source.has_symbols) {
+				// base 0
+				line++;
+				foreach (Symbol symbol in source.symbols) {
+					var sr = symbol.lookup_source_reference_sourcefile (source);
+					if (sr == null) {
+						critical ("symbol %s doesn't belong to source %s", symbol.fully_qualified_name, source.filename);
+						continue;
+					}
+					//Utils.trace ("searching %s: %d-%d %d-%d vs %d, %d", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);
+					if ((sr.first_line < line || ((line == sr.first_line && column >= sr.first_column) || sr.first_column == 0))
+					    && (line < sr.last_line || ((line == sr.last_line) || sr.last_column == 0))) {
+						// let's find the best symbol
+						if (result == null 
+						   || result_sr.first_line < sr.first_line 
+						   || (result_sr.first_line == sr.first_line && result_sr.first_column < sr.first_column && result_sr.first_column != 0 && sr.first_column != 0)
+						   || result_sr.last_line > sr.last_line
+						   || (result_sr.last_line == sr.last_line && result_sr.last_column  > sr.last_column && result_sr.last_column != 0 && sr.last_column  != 0))
+						{
+							// this symbol is better
+							
+							result = symbol;
+							result_sr = sr;
+						}
 					}
 				}
 			}
 			
 			if (result == null) {
 				Utils.trace ("no symbol found");
+			} else {
+				Utils.trace ("   found %s", result.fully_qualified_name);
 			}
 			
 			return result;

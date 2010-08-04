@@ -141,8 +141,8 @@ namespace Afrodite
 					print ("\tsource: %s\n", file.filename);
 					if (file.has_using_directives) {
 						print ("\t\tusing directives:\n");
-						foreach (Symbol symbol in file.using_directives) {
-							print ("\t\t\tusing: %s\n", symbol.fully_qualified_name);
+						foreach (DataType d in file.using_directives) {
+							print ("\t\t\tusing: %s\n", d.type_name);
 						}
 					}
 				}
