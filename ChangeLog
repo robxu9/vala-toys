@@ -1,6 +1,13 @@
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectmanagerui.vala:
+
+	implemented a quick pick dialog for all the opened projects.
+	Fixes issue #112
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
 	* vtg/vtgsourceoutliner.vala:
 	* vtg/vtgsourceoutlinerview.vala:
 

@@ -41,6 +41,8 @@ namespace Vtg
                                                         <separator />
                                                         <menuitem name="ProjectClose" action="ProjectClose"/>
                                                         <separator />
+                                                        <menuitem name="ProjectChange" action="ProjectChange"/>
+                                                        <separator />
                                                     </placeholder>
                                                     <placeholder name="FileOps_3">
                                                     	<menuitem name="ProjectSaveAll" action="ProjectSaveAll"/>
@@ -129,6 +131,7 @@ namespace Vtg
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
 			{"ProjectSaveAll", null, N_("Save All"), null, N_("Save all project files"), on_project_save_all},			
 			{"ProjectClose", null, N_("_Close Current Project"), null, N_("Close current selected project"), on_project_close},
+			{"ProjectChange", null, N_("_Change Current Project"), null, N_("Change current selected project"), on_project_change},
 			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
 			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project"), on_project_build},
 			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project"), on_project_clean},
@@ -367,7 +370,37 @@ namespace Vtg
 			//close project
 			close_project (project);
 		}
-			    
+
+		private void on_project_change (Gtk.Action action)
+		{
+			var image = new Gtk.Image();
+			TreeIter iter;
+			Gtk.TreeStore model = FilteredListDialog.create_model ();
+			TreeIter target_iter;
+			
+			foreach (ProjectManager prj in Vtg.Plugin.main_instance.projects.project_managers) {
+				model.append (out target_iter, null);
+				model.set (target_iter, 
+					FilteredListDialogColumns.NAME, prj.project.name, 
+					FilteredListDialogColumns.MARKUP, prj.project.name, 
+					FilteredListDialogColumns.VISIBILITY, true, 
+					FilteredListDialogColumns.OBJECT, prj,
+					FilteredListDialogColumns.ICON, 
+						image.render_icon (Gtk.STOCK_FILE, IconSize.BUTTON, ""),
+					FilteredListDialogColumns.SELECTABLE, true);
+			}
+			
+			var dialog = new FilteredListDialog (model);
+			dialog.set_transient_for (_plugin_instance.window);
+			if (dialog.run ()) {
+				ProjectManager prj;
+				model.get (dialog.selected_iter , FilteredListDialogColumns.OBJECT, out prj);
+				if (prj != null) {
+					_plugin_instance.project_view.current_project = prj;
+				}
+			}
+		}
+		
 		private void on_project_new (Gtk.Action action)
 		{
 			//save dialog
@@ -737,6 +770,11 @@ namespace Vtg
 			var action = _actions.get_action ("ProjectClose");
 			if (action != null)
 				action.set_sensitive (!default_project);
+				
+			action = _actions.get_action ("ProjectChange");
+			if (action != null)
+				action.set_sensitive (Vtg.Plugin.main_instance.projects.project_managers.size > 1);
+
 			action = _actions.get_action ("ProjectBuild");
 			if (action != null)
 				action.set_sensitive (!default_project);
