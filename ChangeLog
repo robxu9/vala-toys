@@ -1,5 +1,12 @@
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbuildlogview.vala:
+
+	fixed the error/warning parser so only vala releated messages
+	are added to the build log view
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/astmerger.vala:
 	* afrodite/completionengine.vala:

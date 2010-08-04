@@ -256,20 +256,35 @@ namespace Vtg
 		}
 
 		/* 
-		  Example valac output:
+		  Examples:
 
-		  vtgprojectmanagerbuilder.vala:37.3-37.16: error: missing return type in method `BuildLogView.LogView´
-		  public LogView(Vtg.Plugin plugin)
-		  ^^^^^^^^^^^^^^
-		  vtgprojectmanagerbuilder.vala:72.16-72.16: error: syntax error, expected `;'
-		  string lines[] = message.split ("\n");
-			            ^
-				    Compilation failed: 2 error(s), 0 warning(s)
+		  Vala Errors:
+		  	vtgprojectmanagerbuilder.vala:37.3-37.16: error: missing return type in method `BuildLogView.LogView´
+		  	public LogView(Vtg.Plugin plugin)
+		  	^^^^^^^^^^^^^^
+		  	vtgprojectmanagerbuilder.vala:72.16-72.16: error: syntax error, expected `;'
+		  	string lines[] = message.split ("\n");
+				            ^
+					    Compilation failed: 2 error(s), 0 warning(s)
+
+		  Vala Warnings:
+			vtgprojectmanagerui.vala:377.13-377.16: warning: local variable `iter' declared but never used
+
+		  GCC Warning:
+
+		  vtgsourceoutlinerview.c:703: warning: passing argument 2 of ‘vtg_source_outliner_view_on_show_private_symbol_toggled’ from incompatible pointer type
+		  vtgsourceoutlinerview.vala:186: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkToggleButton *’
 		 */
 		private void add_message (string file, string message)
 		{
+			if (!file.has_suffix (".vala"))
+				return;
+			
 			string[] parts = message.split (":", 3);
 			string[] src_ref = parts[0].split ("-")[0].split (".");
+			if (src_ref.length < 2)
+				return;
+			
 			int line = src_ref[0].to_int ();
 			int col = 0;
 
