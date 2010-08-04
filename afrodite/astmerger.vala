@@ -822,7 +822,16 @@ namespace Afrodite
 			}
 			
 			s.source_reference = this.create_source_reference (local);
+			if (_current.has_local_variables) {
+				 var old_var = _current.lookup_local_variable (s.name);
+				 if (old_var != null) {
+				 	Utils.trace ("replacing local var: %s", s.name);
+				 	_current.remove_local_variable (old_var);
+				 }
+			}
+			Utils.trace ("adding local var: %s to %s", s.name, _current.fully_qualified_name);
 			_current.add_local_variable (s);
+			
 			_current = prev;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
@@ -830,7 +839,8 @@ namespace Afrodite
 		public override void visit_lambda_expression (LambdaExpression expr)
 		{
 			//debug ("visit lambda called");
-			expr.accept_children (this);
+			visit_scoped_codenode ("lambda-section", expr, null);
+			//expr.accept_children (this);
 		}
 
 		public override void visit_member_access (MemberAccess expr) 

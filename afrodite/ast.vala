@@ -347,7 +347,7 @@ namespace Afrodite
 					if (!d.unresolved 
 					    && ((access & SymbolAccessibility.PRIVATE) != 0)
 					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
-						Utils.trace ("append local var %s", d.name);
+						Utils.trace ("append local var of %s: %s", symbol.fully_qualified_name,  d.name);
 						var s = new Afrodite.Symbol (d.name, d.type_name);
 						s.return_type = d;
 						results.add (s);
@@ -572,7 +572,8 @@ namespace Afrodite
 				foreach (Symbol symbol in source.symbols) {
 					var sr = symbol.lookup_source_reference_sourcefile (source);
 					if (sr == null) {
-						critical ("symbol %s doesn't belong to source %s", symbol.fully_qualified_name, source.filename);
+						// symbols imported by dependencies don't have any source associated with it
+						// critical ("symbol %s doesn't belong to source %s", symbol.fully_qualified_name, source.filename);
 						continue;
 					}
 					//Utils.trace ("searching %s: %d-%d %d-%d vs %d, %d", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);

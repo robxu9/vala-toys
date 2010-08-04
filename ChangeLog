@@ -1,6 +1,14 @@
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+
+	avoid duplicate variables in the same scope
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
 	* afrodite/astdumper.vala:
 	* afrodite/astmerger.vala:
 	* afrodite/constants.vala:
