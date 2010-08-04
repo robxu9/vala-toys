@@ -777,10 +777,10 @@ namespace Vtg
 			}
 			if (options == null) {
 				options = QueryOptions.standard ();
-				options.auto_member_binding_mode = true;
-			} else {
-				options.auto_member_binding_mode = true;
 			}
+			
+			options.access = Afrodite.SymbolAccessibility.INTERNAL | Afrodite.SymbolAccessibility.PROTECTED | Afrodite.SymbolAccessibility.PUBLIC;
+			options.auto_member_binding_mode = true;
 			options.compare_mode = CompareMode.EXACT;
 			//options.dump_settings ();
 			return options;
@@ -803,6 +803,7 @@ namespace Vtg
 				result = get_symbol_type_for_name (options, ast, word, whole_line, line, column);
 				transform_result (options, result);
 				_completion.release_ast (ast);
+				
 			} else {
 				if (!StringUtils.is_null_or_empty (word)) {
 					Utils.trace ("build_proposal_item_list: couldn't acquire ast lock");
@@ -825,7 +826,7 @@ namespace Vtg
 				mode == CompareMode.EXACT ? "exact" : "start-with",
 				word);
 			if (!StringUtils.is_null_or_empty (word) 
-			    && _completion.try_acquire_ast (out ast)) {
+			    && _completion.try_acquire_ast (out ast, 0)) {
         			Vala.List<Afrodite.Symbol> results = new Vala.ArrayList<Afrodite.Symbol> ();
         			
 				weak Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();

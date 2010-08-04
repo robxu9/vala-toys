@@ -1,5 +1,17 @@
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed automember mode & tuned the timeouts to make the editing more fluent
+	even when parsing files
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 
 	implemented a quick pick dialog for all the opened projects.

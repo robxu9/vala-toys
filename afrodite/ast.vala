@@ -173,6 +173,21 @@ namespace Afrodite
 			Symbol sym = get_symbol_for_source_and_position (source, line, column);
 			if (sym != null) {
 				string[] parts = symbol_qualified_name.split (".");
+				// change the scope of symbol search
+				if (options.auto_member_binding_mode) {
+					if (parts[0] == "this") {
+						//debug ("CHANGE REMOVE STATIC");
+						binding = binding & (~ ((int) MemberBinding.STATIC));
+						options.access = options.access | SymbolAccessibility.PRIVATE;
+					} else if (parts[0] == "base") {
+						//debug ("CHANGE REMOVE STATIC & PRIVATE");
+						binding = binding & (~ ((int) MemberBinding.STATIC));
+						options.access = options.access 
+							& (~ ((int) SymbolAccessibility.PRIVATE)) 
+							| SymbolAccessibility.PROTECTED;
+					}
+				}
+
 				sym = lookup_name_with_symbol (parts[0], sym, source, options.compare_mode);
 				if (sym != null && sym.symbol_type != null) {
 					if (mode != LookupMode.Symbol || parts.length > 1) {
@@ -181,17 +196,6 @@ namespace Afrodite
 				}
 				
 				if (parts.length > 1 && sym != null && sym.has_children) {
-					// change the scope of symbol search
-					if (options.auto_member_binding_mode) {
-						if (parts[0] == "this") {
-							//debug ("CHANGE REMOVE STATIC");
-							binding = binding & (~ ((int) MemberBinding.STATIC));
-						} else if (parts[0] == "base") {
-							//debug ("CHANGE REMOVE STATIC & PRIVATE");
-							binding = binding & (~ ((int) MemberBinding.STATIC));
-							options.access = options.access & (~ ((int) SymbolAccessibility.PRIVATE));
-						}
-					}
 					if (sym.type_name == "Namespace"
 					    || (parts[0] == sym.name && (sym.type_name == "Class" || sym.type_name == "Struct" || sym.type_name == "Interface"))) {
 					    	// namespace access or MyClass.my_static_method
@@ -341,13 +345,13 @@ namespace Afrodite
 			CaseSensitiveness case_sensitiveness,
 			SymbolAccessibility access = SymbolAccessibility.ANY)
 		{
-			Utils.trace ("scanning symbol: %s", symbol.fully_qualified_name);
+			//Utils.trace ("scanning symbol: %s", symbol.fully_qualified_name);
 			if (symbol.has_local_variables) {
 				foreach (DataType d in symbol.local_variables) {
 					if (!d.unresolved 
 					    && ((access & SymbolAccessibility.PRIVATE) != 0)
 					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
-						Utils.trace ("append local var of %s: %s", symbol.fully_qualified_name,  d.name);
+						//Utils.trace ("append local var of %s: %s", symbol.fully_qualified_name,  d.name);
 						var s = new Afrodite.Symbol (d.name, d.type_name);
 						s.return_type = d;
 						results.add (s);

@@ -179,7 +179,7 @@ namespace Vtg
 			lock (idle_id) {
 				if (idle_id == 0) {
 					Utils.trace ("Idle setup real");
-					idle_id =  Idle.add (this.on_idle_update, Priority.DEFAULT_IDLE);
+					idle_id =  Idle.add (this.on_idle_update, Priority.LOW);
 				}
 			}
 		}
@@ -209,7 +209,7 @@ namespace Vtg
 			var name = Utils.get_document_name (doc);
 			Afrodite.QueryResult result = null;
 			Afrodite.Ast ast;
-			bool res = scs.completion_engine.try_acquire_ast (out ast, 1);
+			bool res = scs.completion_engine.try_acquire_ast (out ast, 0);
 			if (res) {
 				Utils.trace ("ast acquired");
 				var options = Afrodite.QueryOptions.standard ();

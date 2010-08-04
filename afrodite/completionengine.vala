@@ -182,12 +182,13 @@ namespace Afrodite
 			queue_sources (sources);
 		}
 		
-		public bool try_acquire_ast (out Ast ast, int retry_count = 0)
+		public bool try_acquire_ast (out Ast ast, int retry_count = -1)
 		{
 			bool res = false;
 			ast = null;
 			bool first_run = true;
 			int file_count = 0;
+			int retry = 0;
 			
 			while (ast == null 
 				&& _ast_mutex != null 
@@ -195,11 +196,15 @@ namespace Afrodite
 			{
 				first_run = false;
 				res = _ast_mutex.@trylock ();
-
 				if (res) {
 					ast = _ast;
 				} else {
-					GLib.Thread.usleep (100 * 1000);
+					if (retry_count < 0 || retry < retry_count) {
+						retry++;
+						GLib.Thread.usleep (100 * 1000);
+					} else {
+						break;
+					}
 				}
 			}
 

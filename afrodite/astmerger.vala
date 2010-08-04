@@ -825,11 +825,11 @@ namespace Afrodite
 			if (_current.has_local_variables) {
 				 var old_var = _current.lookup_local_variable (s.name);
 				 if (old_var != null) {
-				 	Utils.trace ("replacing local var: %s", s.name);
+				 	//Utils.trace ("replacing local var: %s", s.name);
 				 	_current.remove_local_variable (old_var);
 				 }
 			}
-			Utils.trace ("adding local var: %s to %s", s.name, _current.fully_qualified_name);
+			//Utils.trace ("adding local var: %s to %s", s.name, _current.fully_qualified_name);
 			_current.add_local_variable (s);
 			
 			_current = prev;

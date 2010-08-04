@@ -756,6 +756,7 @@ namespace Vtg
 		private void on_project_error_previuos (Gtk.Action action)
 		{
 			_prj_builder.previous_error ();
+			
 		}
 
 		private void on_current_project_changed (GLib.Object sender, ParamSpec pspec)
