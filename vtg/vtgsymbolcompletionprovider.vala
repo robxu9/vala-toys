@@ -29,6 +29,8 @@ namespace Vtg
 {
 	internal class SymbolCompletionProvider : GLib.Object, Gtk.SourceCompletionProvider
 	{
+		public signal void completion_lock_failed ();
+		
 		private Gdk.Pixbuf _icon;
 		private int _priority = 1;
 		private List<Gtk.SourceCompletionItem> _proposals;
@@ -850,6 +852,7 @@ namespace Vtg
 			} else {
 				if (!StringUtils.is_null_or_empty (word)) {
 					Utils.trace ("build_proposal_item_list: couldn't acquire ast lock");
+					this.completion_lock_failed ();
 				}
 				transform_result (null, null);
 			}

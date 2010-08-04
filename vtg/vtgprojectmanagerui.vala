@@ -376,11 +376,10 @@ namespace Vtg
 			var image = new Gtk.Image();
 			TreeIter iter;
 			Gtk.TreeStore model = FilteredListDialog.create_model ();
-			TreeIter target_iter;
 			
 			foreach (ProjectManager prj in Vtg.Plugin.main_instance.projects.project_managers) {
-				model.append (out target_iter, null);
-				model.set (target_iter, 
+				model.append (out iter, null);
+				model.set (iter, 
 					FilteredListDialogColumns.NAME, prj.project.name, 
 					FilteredListDialogColumns.MARKUP, prj.project.name, 
 					FilteredListDialogColumns.VISIBILITY, true, 
