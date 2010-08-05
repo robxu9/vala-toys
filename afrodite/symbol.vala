@@ -542,8 +542,16 @@ namespace Afrodite
 			}
 		}
 
-		private string build_info ()
+		internal string build_info ()
 		{
+			if (type_name == "Class")
+			{
+				var s = get_default_constructor ();
+				if (s != null) {
+					return s.build_info ();
+				}
+			}
+			
 			int param_count = 0;
 			string params;
 			string generic_args;
@@ -584,10 +592,21 @@ namespace Afrodite
 				params = "";
 			}
 			
+			string return_type_descr = "";
+			string type_name_descr = type_name;
+			
+			if (return_type != null) {
+				if (type_name == "CreationMethod") {
+					type_name_descr = _("Class");
+				} else {
+					return_type_descr = return_type.description;
+				}
+			}
+			
 			sb.append_printf("%s: %s\n\n%s%s<b>%s</b> %s (%s%s)",
-				    type_name,
+				    type_name_descr,
 				    display_name,
-				    return_type != null ? return_type.description : "",
+				    return_type_descr,
 				    (param_count > 2 ? "\n" : " "),
 				    display_name, generic_args,
 				    (param_count > 2 ? "\n" : ""),
@@ -711,6 +730,19 @@ namespace Afrodite
 				}	
 				return res;
 			}
+		}
+		
+		public Symbol? get_default_constructor ()
+		{
+			if (has_children) {
+				foreach (Symbol s in _children) {
+					if (s.name == "new") {
+						return s;
+					}
+				}
+			}
+			
+			return null;
 		}
 	}
 }
