@@ -194,7 +194,7 @@ namespace Vtg
 				if (!StringUtils.is_null_or_empty (tmp[0])
 				    && !StringUtils.is_null_or_empty (tmp[1]) 
 				    && (tmp[0].has_suffix (".vala") || tmp[0].has_suffix (".vapi"))) {
-					add_message (tmp[0], tmp[1]);
+					add_vala_message (tmp[0], tmp[1]);
 				}
 				idx++;
 			}
@@ -275,11 +275,8 @@ namespace Vtg
 		  vtgsourceoutlinerview.c:703: warning: passing argument 2 of ‘vtg_source_outliner_view_on_show_private_symbol_toggled’ from incompatible pointer type
 		  vtgsourceoutlinerview.vala:186: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkToggleButton *’
 		 */
-		private void add_message (string file, string message)
+		private void add_vala_message (string file, string message)
 		{
-			if (!file.has_suffix (".vala"))
-				return;
-			
 			string[] parts = message.split (":", 3);
 			string[] src_ref = parts[0].split ("-")[0].split (".");
 			if (src_ref.length < 2)

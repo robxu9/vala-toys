@@ -1,3 +1,9 @@
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	remove redundant check
+
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsymbolcompletionprovider.vala:
