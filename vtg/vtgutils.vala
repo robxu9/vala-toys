@@ -248,7 +248,6 @@ namespace Vtg
 		private static Gtk.SourceCompletionItem[] _proposals = null;
 		private static Vala.List<Package> _available_packages = null;
 		private static Gtk.Builder _builder = null;
-		private static Regex _parse_source_line_regex = null;
 		
 		public const int prealloc_count = 500;
 
@@ -308,51 +307,17 @@ namespace Vtg
 
 			return res;
 		}
-		
-		public static void parse_source_line (string line, out string token, out bool is_assignment, out bool is_creation, out bool is_declaration)
+
+		public static bool is_vala_keyword (string word)
 		{
-			try {
-				if (_parse_source_line_regex == null) {
-					_parse_source_line_regex = new Regex ("""\s*([_a-zA-Z][\w|\.]*)\s*""", 
-						RegexCompileFlags.OPTIMIZE, 
-						RegexMatchFlags.NEWLINE_ANY);
-				}
-
-				string[] items = _parse_source_line_regex.split (line, RegexMatchFlags.NEWLINE_ANY);
-
-				token = "";
-				is_assignment = false;
-				is_creation = false;
-				is_declaration = false;
-
-				foreach (string item in items) {
-					Utils.trace ("    item: %s", item);
-					string tok = item.strip ();
-					if (StringUtils.is_null_or_empty (tok)) {
-						continue;
-					}
-
-					if (tok == "=") {
-						token = "";
-						is_assignment = true;
-						is_declaration = false;
-					} else if (tok == "new") {
-						token = "";
-						is_creation = true;
-						is_declaration = false;
-					} else {
-						if (token == "var" || token.length > 0) {
-							is_declaration = true;
-						}
-						token = tok;
-					}
-				}
-				Utils.trace ("parse line: '%s'. is_assignment: %d is_creation: %d is_declaration: %d token: '%s'", line, (int)is_assignment, (int)is_creation, (int)is_declaration, token);
-			} catch (Error err) {
-				GLib.critical ("error: %s", err.message);
+			if (word == "out" 
+			    || word == "ref") {
+				return true;
 			}
+			
+			return false;
 		}
-
+		
 		public static string get_document_name (Gedit.Document doc)
 		{
 			string name = doc.get_uri ();
@@ -576,6 +541,116 @@ namespace Vtg
 				}
 			}
 			return GLib.strcmp0 (vala.name, valb.name);
+		}
+	}
+	
+	namespace LineParser
+	{
+		public static void parse (string line, out string token, out bool is_assignment, out bool is_creation, out bool is_declaration)
+		{
+			token = "";
+			is_assignment = false;
+			is_creation = false;
+			is_declaration = false;
+
+			int i = (int)line.length - 1;
+			string tok;
+			int count = 0;
+			token = get_token (line, ref i);
+			if (token != null) {
+				count = 1;
+				string last_token = token;
+				while ((tok = get_token (line, ref i)) != null) {
+					count++;
+					if (tok == "=") {
+						//token = "";
+						is_assignment = true;
+					} else if (tok == "new") {
+						//token = "";
+						is_creation = true;
+					}
+					last_token = tok;
+				}
+			
+				if (!is_assignment && !is_creation && count == 2) {
+					if (last_token == "var" 
+					    || (!Utils.is_vala_keyword (last_token) 
+					        && !last_token.has_prefix ("\"") 
+					        && !last_token.has_prefix ("'"))) {
+						is_declaration = true;
+					}
+				}
+				if (token.has_suffix ("."))
+					token = token.substring (0, token.length - 1);
+			}
+			Utils.trace ("parse line new: '%s'. is_assignment: %d is_creation: %d is_declaration: %d token: '%s'", line, (int)is_assignment, (int)is_creation, (int)is_declaration, token);
+		}
+		
+		private static string? get_token (string line, ref int i)
+		{
+			string tok = "";
+			int skip_lev = 0;
+			bool in_string = false;
+			bool should_skip_spaces = true; // skip spaces on enter
+			
+			while (!is_eof (line, i)) {
+				if (should_skip_spaces) {
+					i = skip_spaces (line, i);
+					should_skip_spaces = false;
+				}
+				
+				if (!is_eof (line, i)) {
+					unichar ch = line[i];
+					if (skip_lev == 0) {
+						if (ch == '_' || ch.isalpha () || ch == '.') {
+							// valid identifier
+							tok = ch.to_string () + tok;
+						} else if (ch == '"' || ch == '\'') {
+							tok = ch.to_string () + tok;
+							if (!in_string) {
+								in_string = true;
+							} else {
+								in_string = false;
+							}
+						} else if ( ch == ' ' || ch == '=' || ch == '!') {
+							break;
+						}
+					}
+
+					if (ch == '(' || ch == '[' || ch == '{') {
+						if (skip_lev > 0) {
+							skip_lev--;
+							if (skip_lev == 0) {
+								should_skip_spaces = true; // skip the spaces before (
+							}
+						} else {
+							break; 
+						}
+					} else if (ch == ')' || ch == ']' || ch == '}') {
+						skip_lev++;
+					}
+					
+					i--;
+				}
+			}
+			
+			return tok == "" ? null : tok;
+		}
+		
+		private static int skip_spaces (string line, int i)
+		{
+			unichar ch = line[i];
+			while (!is_eof (line, i) && (ch == ' ' || ch == '\t' || ch.isspace ())) {
+				i--;
+				ch = line[i];
+			}
+			
+			return i;
+		}
+
+		private static bool is_eof (string line, int i)
+		{
+			return i < 0;
 		}
 	}
 }

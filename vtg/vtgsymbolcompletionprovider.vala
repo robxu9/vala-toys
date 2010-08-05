@@ -123,27 +123,25 @@ namespace Vtg
 		{
 			var src = (Gtk.SourceBuffer) _symbol_completion.view.get_buffer ();
 			weak TextMark mark = (TextMark) src.get_insert ();
-			TextIter pos;
+			TextIter start;
 
-			src.get_iter_at_mark (out pos, mark);
+			src.get_iter_at_mark (out start, mark);
+			TextIter pos = start;
 			bool result = !Utils.is_inside_comment_or_literal (src, pos);
 
-			/* 
-			unowned Gtk.TextMark mark = (Gtk.TextMark) context.completion.view.get_buffer ().get_insert ();
-			Gtk.TextIter start;
-			Gtk.TextIter end;
-			context.completion.view.get_buffer ().get_iter_at_mark (out start, mark);
-			context.completion.view.get_buffer ().get_iter_at_mark (out end, mark);
-
-			if (!start.starts_line ())
-				start.set_line_offset (0);
-
-			string text = start.get_text (end);
-			if (text.has_suffix (".")) {
-				result = true;
-				_filter = false; // do a completion
+			if (result) {
+				pos = start;
+				int line = pos.get_line ();
+				if (pos.backward_char ()) {
+					if (pos.get_line () == line) {
+						unichar ch = pos.get_char ();
+						if (ch == '(' || ch == '[' || ch == ' ' || ch == ')' || ch == ']') {
+							result = false;
+						}
+					}
+				} 
 			}
-			*/
+
 			return result;
 		}
 
@@ -179,7 +177,7 @@ namespace Vtg
 				_filter = false;
 			} else {
 				bool dummy, is_declaration;
-				Utils.parse_source_line (text, out word, out dummy, out dummy, out is_declaration);
+				LineParser.parse (text, out word, out dummy, out dummy, out is_declaration);
 				
 				if (!is_declaration && word.rstr(".") == null) {
 					symbols_in_scope_mode = true;
@@ -197,7 +195,7 @@ namespace Vtg
 				context.add_proposals (this, _proposals, true);
 			} else {
 				string[] tmp = word.split (".");
-				string last_part = tmp[tmp.length];
+				string last_part = tmp[tmp.length-1];
 				
 				Utils.trace ("filtering with: '%s' - '%s'", word, last_part);
 				if (!StringUtils.is_null_or_empty (last_part)) {
@@ -559,23 +557,24 @@ namespace Vtg
 			column = start.get_line_offset ();
 		}
 		
-		private void parse_current_line (bool skip_leading_spaces, out string symbolname, out string last_symbolname, out string line, out int lineno, out int colno)
+
+		private string get_current_line_text ()
 		{
- 			weak Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
-			weak TextMark mark = (TextMark) doc.get_insert ();
+ 			unowned Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
+			unowned TextMark mark = (TextMark) doc.get_insert ();
 			TextIter end;
 			TextIter start;
 			unichar ch;
 			
 			doc.get_iter_at_mark (out start, mark);
-			lineno = start.get_line ();
+			int line = start.get_line ();
 			
 			//go to the right word boundary
 			ch = start.get_char ();
 			while (ch.isalnum () || ch == '_') {
 				start.forward_char ();
-				int cline = start.get_line ();
-				if (lineno != cline) //changed line?
+				int curr_line = start.get_line ();
+				if (line != curr_line) //changed line?
 				{
 					start.backward_char ();
 					break;
@@ -583,133 +582,28 @@ namespace Vtg
 				ch = start.get_char ();
 			}
 
-			colno = start.get_line_offset ();
-			symbolname = "";
-			last_symbolname = "";
-			line = "";
-
 			end = start;
 			start.set_line_offset (0);
-			line = start.get_text (end);
-			
-			if (colno > 0) {
-				var tmp = new StringBuilder ();
-			
-				int bracket_lev_1 = 0;
-				int bracket_lev_2 = 0;
-				int bracket_lev_3 = 0;
-				int bracket_lev_4 = 0;
-				int string_lev = 0;
-				int status = (skip_leading_spaces ? 1 : 0);
-				unichar prev_char = end.get_char ();
-
-				while (true) {
-					if (!end.backward_char ())
-						break; // end of buffer
-						
-					if (end.get_line_offset () == 0 || end.get_line () < lineno)
-						break;
-
-					ch = end.get_char ();
-					
-					if (status == 1 && (ch != ' ' && ch != '\t')) {
-						status = 0; //back to normal
-					} if (status == 0 && (ch == ' ' || ch == '\t' || ch == '!' ||
-						(ch == '(' && bracket_lev_1 == 0) ||
-						(ch == '[' && bracket_lev_2 == 0) ||
-						(ch == '{' && bracket_lev_3 == 0) ||
-						(ch == '<' && bracket_lev_4 == 0)))
-						break; //word interruption
-
-					switch (status) {
-						case 0: //normal state
-							if (ch == ')') {
-								status = 2;
-								bracket_lev_1++;
-							} else if (ch == ']') {
-								status = 2;
-								bracket_lev_2++;
-							} else if (ch == '}') {
-								status = 2;
-								bracket_lev_3++;
-							} else if (ch != '-' && prev_char == '>') {
-								status = 2;
-								bracket_lev_4++;
-							} else if (ch == '.' || (ch == '-' && prev_char == '>')) {
-								if (last_symbolname == "")
-									last_symbolname = tmp.str.reverse ();
-								if (ch == '-' && prev_char == '>')
-									tmp.append_unichar ('.'); //all dots
-								else
-									tmp.append_unichar (ch);
-								status = 1; //skip spaces
-							} else if (ch == '=') {
-								if (last_symbolname == "")
-									last_symbolname = tmp.str.reverse ();
-									
-								tmp.truncate (0);
-								status = 1; //skip spaces
-							} else if (ch == '\"') {
-								string_lev++;
-								status = 3;
-							} else if (ch != '\n') {
-								tmp.append_unichar (ch);
-							}
-							break;
-						case 1: //skip spaces
-							break;
-						case 2: //skip to close bracket
-							if (bracket_lev_1 > 0 && ch == '(') {
-								bracket_lev_1--;
-							} else if (bracket_lev_2 > 0 && ch == '[') {
-								bracket_lev_2--;
-							} else if (bracket_lev_3 > 0 && ch == '{') {
-								bracket_lev_3--;
-							} else if (bracket_lev_4 > 0 && ch == '<') {
-								bracket_lev_4--;
-							} else if (ch == ')') {
-								bracket_lev_1++;
-							} else if (ch == ']') {
-								bracket_lev_2++;
-							} else if (ch == '{') {
-								bracket_lev_3++;
-							} else if (ch == '<') {
-								bracket_lev_4++;
-							}
-							if (bracket_lev_1 <= 0 && bracket_lev_2 <= 0 && bracket_lev_3 <= 0 && bracket_lev_4 <= 0) {
-								status = 1; //back to skip spaces
-							}
-							break;
-						case 3: //inside string literal
-							if (ch == '\"') {
-								tmp.append ("string".reverse ());
-								string_lev--;
-								if (string_lev <= 0) {
-									status = 0;
-								}
-							}
-							break;
-					}
-					prev_char = ch;
-				}
-				symbolname = tmp.str.reverse ();
-				if (symbolname.has_suffix ("."))
-					symbolname = symbolname.substring (0, symbolname.length -1);
-				if (last_symbolname == "")
-					last_symbolname = symbolname;
-			}
+			return start.get_text (end);
 		}
+
 
 		public Afrodite.Symbol? get_current_symbol_item (int retry_count = 0)
 		{
-			string line, word, last_part;
-			int lineno, colno;
+			string text = get_current_line_text ();
+			string word;
+			int line, col;
+			bool is_assignment, is_creation, is_declaration;
 
-			parse_current_line (true, out word, out last_part, out line, out lineno, out colno);
+			LineParser.parse (text, out word, out is_assignment, out is_creation, out is_declaration);
 
 			if (word == null || word == "")
 				return null;
 
+			get_current_line_and_column (out line, out col);
+
+			string[] tmp = word.split(".");
+			string last_part = tmp[tmp.length - 1];
 			string symbol_name = last_part;
 			
 			//don't try to find method signature if is a: for, foreach, if, while etc...
@@ -734,12 +628,12 @@ namespace Vtg
 			
 			if (_completion.try_acquire_ast (out ast, retry_count)) {
 				Afrodite.QueryResult? result = null;
-				Afrodite.QueryOptions options = this.get_options_for_line (line);			
+				Afrodite.QueryOptions options = this.get_options_for_line (text);
 				
 				if (word == symbol_name)
-					result = get_symbol_for_name (options, ast, first_part, null,  lineno, colno);
+					result = get_symbol_for_name (options, ast, first_part, null,  line, col);
 				else
-					result = get_symbol_type_for_name (options, ast, first_part, null,  lineno, colno);
+					result = get_symbol_type_for_name (options, ast, first_part, null,  line, col);
 					
 				if (result != null && !result.is_empty) {
 					var first = result.children.get (0);
@@ -813,19 +707,28 @@ namespace Vtg
 
 		private void complete_current_word ()
 		{
-			string whole_line, word, last_part;
-			int line, column;
+			//string whole_line, word, last_part;
+			//int line, column;
 
-			parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
+			//parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
+			string text = get_current_line_text ();
+			string word;
+			
+			bool is_assignment, is_creation, is_declaration;
+
+			LineParser.parse (text, out word, out is_assignment, out is_creation, out is_declaration);
 
 			Afrodite.Ast ast = null;
 			Utils.trace ("completing word: '%s'", word);
 			if (!StringUtils.is_null_or_empty (word) 
 			    && _completion.try_acquire_ast (out ast)) {
-			        QueryOptions options = get_options_for_line (whole_line);
-        			Afrodite.QueryResult result = null;
-        			
-				result = get_symbol_type_for_name (options, ast, word, whole_line, line, column);
+			        QueryOptions options = get_options_for_line (text);
+				Afrodite.QueryResult result = null;
+				int line, col;
+				
+				get_current_line_and_column (out line, out col);
+
+				result = get_symbol_type_for_name (options, ast, word, text, line, col);
 				transform_result (options, result);
 				_completion.release_ast (ast);
 				
