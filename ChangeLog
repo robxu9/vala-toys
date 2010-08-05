@@ -1,8 +1,15 @@
 2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ChangeLog:
 	* vtg/vtgbuildlogview.vala:
 
-	remove redundant check
+	implemented support for C errors / warnings. Fixes issue #114
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	remove a redundant check
 
 2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
 

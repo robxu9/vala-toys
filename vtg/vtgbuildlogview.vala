@@ -34,29 +34,70 @@ namespace Vtg
 		private Gtk.TreeModelFilter _model;
 		private TreeView _build_view = null;
 
-		private int current_error_row = 0;
-		private int _error_count = 0;
-		private int _warning_count = 0;
+		private int _current_error_row = 0;
+		private int _vala_error_count = 0;
+		private int _vala_warning_count = 0;
+		private int _c_error_count = 0;
+		private int _c_warning_count = 0;
+
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private unowned ProjectManager _project;
 		
-		private bool show_warnings = true;
-		private bool show_errors = true;
+		private bool _show_vala_warnings = true;
+		private bool _show_vala_errors = true;
+		private bool _show_c_warnings = false;
+		private bool _show_c_errors = true;
 
 		private ToggleToolButton _vala_warning_button = null;
 		private ToggleToolButton _vala_error_button = null;
+		private ToggleToolButton _c_warning_button = null;
+		private ToggleToolButton _c_error_button = null;
+
+		private enum Columns
+		{
+			ICON,
+			MESSAGE,
+			FILENAME,
+			LINE,
+			COLUMN,
+			IS_WARNING,
+			IS_VALA_SOURCE,
+			PROJECT,
+			COLUMNS_COUNT
+		}
 
  		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
 		
 		public int error_count {
 			get {
-				return _error_count;
+				return _vala_error_count + _c_error_count;
 			}
 		}
 
 		public int warning_count {
 			get {
-				return _warning_count;
+				return _vala_warning_count  + _c_warning_count;
+			}
+		}
+		
+		private int shown_messages {
+			get {
+				int count = 0;
+
+				if (_show_vala_warnings) {
+					count += _vala_warning_count;
+				}
+				if (_show_vala_errors) {
+					count += _vala_error_count;
+				}
+				if (_show_c_warnings) {
+					count += _c_warning_count;
+				}
+				if (_show_c_errors) {
+					count += _c_error_count;
+				} 
+
+				return count;
 			}
 		}
 		
@@ -73,8 +114,6 @@ namespace Vtg
 
 		construct 
 		{
-			
-			
 			var panel = _plugin_instance.window.get_bottom_panel ();
 			_ui = new Gtk.VBox (false, 8);
 
@@ -83,12 +122,15 @@ namespace Vtg
 			toolbar.set_style (ToolbarStyle.BOTH_HORIZ);
 			toolbar.set_icon_size (IconSize.SMALL_TOOLBAR);
 
+			/* Vala Warnings & Errors */
 			_vala_warning_button = new Gtk.ToggleToolButton ();
 			_vala_warning_button.set_label (_("Warnings"));
 			_vala_warning_button.set_is_important (true);
 			_vala_warning_button.set_icon_name (Gtk.STOCK_DIALOG_WARNING);
 			_vala_warning_button.set_active (true);
-			_vala_warning_button.toggled.connect (on_toggle_warnings_toggled);
+			
+			
+			_vala_warning_button.toggled.connect (on_toggle_vala_warnings_toggled);
 			_vala_warning_button.set_tooltip_text (_("Show or hide the warnings from the build result view"));
 			toolbar.insert (_vala_warning_button, -1);
 
@@ -96,15 +138,39 @@ namespace Vtg
 			_vala_error_button.set_label (_("Errors"));
 			_vala_error_button.set_is_important (true);
 			_vala_error_button.set_icon_name (Gtk.STOCK_DIALOG_ERROR);
-			_vala_error_button.toggled.connect (on_toggle_errors_toggled);
+			_vala_error_button.toggled.connect (on_toggle_vala_errors_toggled);
 			_vala_error_button.set_tooltip_text (_("Show or hide the errors from the build result view"));
 			_vala_error_button.set_active (true);
 			toolbar.insert (_vala_error_button, -1);
 
+			/* Separator */
+			var separator = new SeparatorToolItem ();
+			toolbar.insert (separator, -1);
+			
+			/* C Warnings & Errors */
+			_c_warning_button = new Gtk.ToggleToolButton ();
+			_c_warning_button.set_label (_("C Warnings"));
+			_c_warning_button.set_is_important (true);
+			_c_warning_button.set_icon_name (Gtk.STOCK_DIALOG_WARNING);
+			_c_warning_button.set_active (_show_c_warnings);
+			
+			_c_warning_button.toggled.connect (on_toggle_c_warnings_toggled);
+			_c_warning_button.set_tooltip_text (_("Show or hide the C warnings from the build result view"));
+			toolbar.insert (_c_warning_button, -1);
+
+			_c_error_button = new Gtk.ToggleToolButton ();
+			_c_error_button.set_label (_("C Errors"));
+			_c_error_button.set_is_important (true);
+			_c_error_button.set_icon_name (Gtk.STOCK_DIALOG_ERROR);
+			_c_error_button.toggled.connect (on_toggle_c_errors_toggled);
+			_c_error_button.set_tooltip_text (_("Show or hide the C errors from the build result view"));
+			_c_error_button.set_active (true);
+			toolbar.insert (_c_error_button, -1);
+
 			_ui.pack_start (toolbar, false, true, 0);
 			
 			//error / warning list view
-			this._child_model = new ListStore (7, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof (int), typeof(GLib.Object));
+			this._child_model = new ListStore (Columns.COLUMNS_COUNT, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof (int), typeof (bool), typeof(GLib.Object));
 			_model = new Gtk.TreeModelFilter (_child_model, null);
 			_model.set_visible_func (this.filter_model);
 			_build_view = new Gtk.TreeView.with_model (_model);
@@ -112,28 +178,28 @@ namespace Vtg
 			var column = new TreeViewColumn ();
 			column.title = _("Message");
  			column.pack_start (renderer, false);
-			column.add_attribute (renderer, "stock-id", 0);
+			column.add_attribute (renderer, "stock-id", Columns.ICON);
 			renderer = new CellRendererText ();
 			column.pack_start (renderer, true);
-			column.add_attribute (renderer, "text", 1);
+			column.add_attribute (renderer, "text", Columns.MESSAGE);
 			_build_view.append_column (column);
 			renderer = new CellRendererText ();
 			column = new TreeViewColumn ();
 			column.title = _("File");
 			column.pack_start (renderer, false);
-			column.add_attribute (renderer, "text", 2);
+			column.add_attribute (renderer, "text", Columns.FILENAME);
 			_build_view.append_column (column);
 			renderer = new CellRendererText ();
 			column = new TreeViewColumn ();
 			column.title = _("Line");
 			column.pack_start (renderer, false);
-			column.add_attribute (renderer, "text", 3);
+			column.add_attribute (renderer, "text", Columns.LINE);
 			_build_view.append_column (column);
 			renderer = new CellRendererText ();
 			column = new TreeViewColumn ();
 			column.title = _("Column");
 			column.pack_start (renderer, false);
-			column.add_attribute (renderer, "text", 4);
+			column.add_attribute (renderer, "text", Columns.COLUMN);
 			_build_view.append_column (column);
 			_build_view.row_activated.connect (this.on_build_view_row_activated);
 			_build_view.set_rules_hint (true);
@@ -151,9 +217,11 @@ namespace Vtg
 		public void initialize (ProjectManager? project = null)
 		{
 			this._project = project;
-			current_error_row = 0;
-			_error_count = 0;
-			_warning_count = 0;
+			_current_error_row = 0;
+			_vala_error_count = 0;
+			_vala_warning_count = 0;
+			_c_error_count = 0;
+			_c_warning_count = 0;
 			_child_model.clear ();
 			update_toolbar_button_status ();
 		}
@@ -168,20 +236,34 @@ namespace Vtg
 			}
 		}
 
-		private void on_toggle_warnings_toggled (Gtk.ToggleToolButton sender)
+		private void on_toggle_vala_warnings_toggled (Gtk.ToggleToolButton sender)
 		{
-			show_warnings = sender.get_active ();
+			_show_vala_warnings = sender.get_active ();
 			if (_model != null)
 				_model.refilter ();
 		}
 
-		private void on_toggle_errors_toggled (Gtk.ToggleToolButton sender)
+		private void on_toggle_vala_errors_toggled (Gtk.ToggleToolButton sender)
 		{
-			show_errors = sender.get_active ();
+			_show_vala_errors = sender.get_active ();
 			if (_model != null)
 				_model.refilter ();
 		}
-		
+
+		private void on_toggle_c_warnings_toggled (Gtk.ToggleToolButton sender)
+		{
+			_show_c_warnings = sender.get_active ();
+			if (_model != null)
+				_model.refilter ();
+		}
+
+		private void on_toggle_c_errors_toggled (Gtk.ToggleToolButton sender)
+		{
+			_show_c_errors = sender.get_active ();
+			if (_model != null)
+				_model.refilter ();
+		}
+
 		public void on_message_added (OutputView sender, OutputTypes output_type, string message)
 		{
 			if (output_type != OutputTypes.BUILD)
@@ -192,9 +274,13 @@ namespace Vtg
 			while (lines[idx] != null) {
 				string[] tmp = lines[idx].split (":",2);
 				if (!StringUtils.is_null_or_empty (tmp[0])
-				    && !StringUtils.is_null_or_empty (tmp[1]) 
-				    && (tmp[0].has_suffix (".vala") || tmp[0].has_suffix (".vapi"))) {
-					add_vala_message (tmp[0], tmp[1]);
+				    && !StringUtils.is_null_or_empty (tmp[1])) {
+				
+					if (tmp[0].has_suffix (".vala") || tmp[0].has_suffix (".vapi")) {
+						add_vala_message (tmp[0], tmp[1]);
+					} else if (tmp[0].has_suffix (".c") || tmp[0].has_suffix (".h")) {
+						add_c_message (tmp[0], tmp[1]);
+					}
 				}
 				idx++;
 			}
@@ -211,12 +297,42 @@ namespace Vtg
 			if (_child_model.get_iter (out iter, path)) {
 				string name;
 				int line, col;
+				bool is_vala_source;
 				ProjectManager? proj;
 
-				_child_model.get (iter, 2, out name, 3, out line, 4, out col, 6, out proj);
+				_child_model.get (iter,
+					Columns.FILENAME, out name,
+					Columns.LINE, out line,
+					Columns.COLUMN, out col,
+					Columns.IS_VALA_SOURCE, out is_vala_source,
+					Columns.PROJECT, out proj);
 
 				if (proj != null) {
-					string uri = proj.source_uri_for_name (name);
+					string uri = null;
+					
+					if (is_vala_source)
+						uri = proj.source_uri_for_name (name);
+					else {
+						if (name.has_prefix (Path.DIR_SEPARATOR.to_string ())) {
+							// path is rooted
+							try {
+								uri = Filename.to_uri (name);
+							} catch (Error err) {
+								GLib.critical ("error: %s", err.message);
+							}
+						} else {
+							string vala_name = name.substring (0, name.length - ".c".length) + ".vala";
+							uri = proj.source_uri_for_name (vala_name);
+							if (uri == null) {
+								// try with vapi extension
+								vala_name = name.substring (0, name.length - ".c".length) + ".vapi";
+								uri = proj.source_uri_for_name (vala_name);
+							}
+							if (uri != null)
+								uri = Path.build_filename (Path.get_dirname (uri), name);
+						}
+					}
+					
 					if (uri != null)
 						_plugin_instance.activate_uri (uri, line, col);
 					else
@@ -229,30 +345,30 @@ namespace Vtg
 
 		public void next_error ()
 		{
-			TreePath path = new TreePath.from_string (current_error_row.to_string());
+			TreePath path = new TreePath.from_string (_current_error_row.to_string());
 			if (path != null) {
 				activate_path (path);
 				_build_view.scroll_to_cell (path, null, false, 0, 0);
 				_build_view.get_selection ().select_path (path);
 			}
-			if (current_error_row < (_error_count + _warning_count) - 1)
-				current_error_row++;
+			if (_current_error_row < (this.shown_messages) - 1)
+				_current_error_row++;
 			else
-				current_error_row = 0;
+				_current_error_row = 0;
 		}
 
 		public void previous_error ()
 		{
-			TreePath path = new TreePath.from_string (current_error_row.to_string());
+			TreePath path = new TreePath.from_string (_current_error_row.to_string());
 			if (path != null) {
 				activate_path (path);
 				_build_view.scroll_to_cell (path, null, false, 0, 0);
 				_build_view.get_selection ().select_path (path);
 			}
-			if (current_error_row > 0)
-				current_error_row--;
+			if (_current_error_row > 0)
+				_current_error_row--;
 			else
-				current_error_row = (_error_count + _warning_count) - 1;
+				_current_error_row = (this.shown_messages) - 1;
 		}
 
 		/* 
@@ -270,10 +386,6 @@ namespace Vtg
 		  Vala Warnings:
 			vtgprojectmanagerui.vala:377.13-377.16: warning: local variable `iter' declared but never used
 
-		  GCC Warning:
-
-		  vtgsourceoutlinerview.c:703: warning: passing argument 2 of ‘vtg_source_outliner_view_on_show_private_symbol_toggled’ from incompatible pointer type
-		  vtgsourceoutlinerview.vala:186: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkToggleButton *’
 		 */
 		private void add_vala_message (string file, string message)
 		{
@@ -291,60 +403,151 @@ namespace Vtg
 			string stock_id = null;
 
 			if (parts[1] != null) {
-				int sort_id = 0;
-				if (parts[1].has_suffix ("error")) {
-					stock_id = Gtk.STOCK_DIALOG_ERROR;
-					_error_count++;
-					sort_id = 0; //errors come first
-				} else if (parts[1].has_suffix ("warning")) {
-					stock_id = Gtk.STOCK_DIALOG_WARNING;
-					_warning_count++;
-					sort_id = 1;
-				} else {
-					_error_count++;
-					sort_id = 0; //errors come first
-				}
-
 				if (parts[2] != null) {
+					int is_warning = 0;
+					if (parts[1].has_suffix ("error")) {
+						stock_id = Gtk.STOCK_DIALOG_ERROR;
+						_vala_error_count++;
+						is_warning = 0; //errors come first
+					} else if (parts[1].has_suffix ("warning")) {
+						stock_id = Gtk.STOCK_DIALOG_WARNING;
+						_vala_warning_count++;
+						is_warning = 1;
+					} else {
+						_vala_error_count++;
+						is_warning = 0; //errors come first
+					}
+
 					TreeIter iter;
 					_child_model.append (out iter);
-					_child_model.set (iter, 0, stock_id, 1, parts[2], 2, file, 3, line, 4, col, 5, sort_id, 6, _project);
+					_child_model.set (iter, 
+						Columns.ICON, stock_id, 
+						Columns.MESSAGE, parts[2], 
+						Columns.FILENAME , file, 
+						Columns.LINE, line, 
+						Columns.COLUMN, col, 
+						Columns.IS_WARNING, is_warning, 
+						Columns.IS_VALA_SOURCE, true, 
+						Columns.PROJECT, _project);
 					update_toolbar_button_status ();
 				}
 			}
 		}
-		
+
+		/* 
+		  Examples:
+
+		  GCC Warning:
+
+		  vtgsourceoutlinerview.c:703: warning: passing argument 2 of ‘vtg_source_outliner_view_on_show_private_symbol_toggled’ from incompatible pointer type
+		  vtgsourceoutlinerview.vala:186: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkToggleButton *’
+		 */
+
+		private void add_c_message (string file, string message)
+		{
+			string[] parts = message.split (":", 3);
+			string[] src_ref = parts[0].split ("-")[0].split (".");
+			if (src_ref.length > 1)
+				return;
+			
+			int line = src_ref[0].to_int ();
+
+			string stock_id = null;
+
+			if (parts[1] != null) {
+				if (parts[2] != null) {
+					int is_warning = 0;
+					if (parts[1].has_suffix ("error")) {
+						stock_id = Gtk.STOCK_DIALOG_ERROR;
+						_c_error_count++;
+						is_warning = 0; //errors come first
+					} else if (parts[1].has_suffix ("warning")) {
+						stock_id = Gtk.STOCK_DIALOG_WARNING;
+						_c_warning_count++;
+						is_warning = 1;
+					} else if (!parts[1].chomp().has_suffix ("note")) {
+						Utils.trace ("unrecognized message category, default to error: '%s' ---> '%s' '%s' '%s'", message, parts[0], parts[1], parts[2]);
+						_c_error_count++;
+						is_warning = 0; //errors come first
+					} else {
+						return;
+					}
+
+					TreeIter iter;
+					_child_model.append (out iter);
+					_child_model.set (iter, 
+						Columns.ICON, stock_id, 
+						Columns.MESSAGE, parts[2], 
+						Columns.FILENAME , file, 
+						Columns.LINE, line, 
+						Columns.COLUMN, 0, 
+						Columns.IS_WARNING, is_warning, 
+						Columns.IS_VALA_SOURCE, false, 
+						Columns.PROJECT, _project);
+					update_toolbar_button_status ();
+				}
+			}
+		}
+
 		private void update_toolbar_button_status ()
 		{
-			if (_warning_count == 0) {
+			if (_vala_warning_count == 0) {
 				_vala_warning_button.set_label (_("Warnings"));
 				_vala_warning_button.set_sensitive (false);
 			} else {
-				_vala_warning_button.set_label ("%s (%d)".printf (_("Warnings"), _warning_count));
+				_vala_warning_button.set_label ("%s (%d)".printf (_("Warnings"), _vala_warning_count));
 				_vala_warning_button.set_sensitive (true);
 			}
-			
-			if (_error_count == 0) {
+
+			if (_vala_error_count == 0) {
 				_vala_error_button.set_label (_("Errors"));
 				_vala_error_button.set_sensitive (false);
 			} else {
-				_vala_error_button.set_label ("%s (%d)".printf (_("Errors"), _error_count));
+				_vala_error_button.set_label ("%s (%d)".printf (_("Errors"), _vala_error_count));
 				_vala_error_button.set_sensitive (true);
 			}
+
+			if (_c_warning_count == 0) {
+				_c_warning_button.set_label (_("C Warnings"));
+				_c_warning_button.set_sensitive (false);
+			} else {
+				_c_warning_button.set_label ("%s (%d)".printf (_("C Warnings"), _c_warning_count));
+				_c_warning_button.set_sensitive (true);
+			}
+
+			if (_c_error_count == 0) {
+				_c_error_button.set_label (_("C Errors"));
+				_c_error_button.set_sensitive (false);
+			} else {
+				_c_error_button.set_label ("%s (%d)".printf (_("C Errors"), _c_error_count));
+				_c_error_button.set_sensitive (true);
+			}
 		}
-		
+
 		private bool filter_model (TreeModel model, TreeIter iter)
 		{
-			if (show_warnings && show_errors)
-				return true;
-			
+			bool is_vala_source;
 			int val;
-			model.get (iter, 5, out val);
-			if (val == 0 && show_errors)
-				return true;
-			else if (val == 1 && show_warnings)
-				return true;
-				
+			model.get (iter, Columns.IS_VALA_SOURCE, out is_vala_source, Columns.IS_WARNING, out val);
+			
+			if (is_vala_source) {
+				if (_show_vala_warnings && _show_vala_errors)
+					return true;
+			
+				if (val == 0 && _show_vala_errors)
+					return true;
+				else if (val == 1 && _show_vala_warnings)
+					return true;
+			} else {
+				if (_show_c_warnings && _show_c_errors)
+					return true;
+			
+				if (val == 0 && _show_c_errors)
+					return true;
+				else if (val == 1 && _show_c_warnings)
+					return true;
+			}
+
 			return false;
 		}
 
