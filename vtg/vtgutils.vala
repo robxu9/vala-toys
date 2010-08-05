@@ -277,6 +277,20 @@ namespace Vtg
 			return doc.language != null && doc.language.id == "vala";
 		}
 
+		public static bool is_inside_comment_or_literal (Gtk.SourceBuffer src, TextIter pos)
+		{
+			string[] context_classes = new string[] { "string", "comment" };
+
+			foreach (string context_class in context_classes) {
+				if (src.iter_has_context_class (pos, context_class)) {
+					// inside a comment or string
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
 		public static string get_document_name (Gedit.Document doc)
 		{
 			string name = doc.get_uri ();

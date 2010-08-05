@@ -1,5 +1,13 @@
 2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgutils.vala:
+
+	extracted the check if current cursor is inside a commen or a string
+	in an utility method
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* vtg/vtgbuildlogview.vala:
 

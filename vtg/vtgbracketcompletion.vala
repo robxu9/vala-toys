@@ -234,14 +234,8 @@ namespace Vtg
 				src.get_iter_at_mark (out pos, mark);
 				
 				if ((evt.state & (ModifierType.SHIFT_MASK | ModifierType.CONTROL_MASK)) == 0) {
-					string[] context_classes = new string[] { "string", "comment" };
-				
-					foreach (string context_class in context_classes) {
-						if (src.iter_has_context_class (pos, context_class)) {
-							// inside a comment or string
+					if (Utils.is_inside_comment_or_literal (src, pos))
 							return result;
-						}
-					}
 				}
  				
 				weak string indent;
