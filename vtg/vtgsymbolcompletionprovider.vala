@@ -135,7 +135,7 @@ namespace Vtg
 				if (pos.backward_char ()) {
 					if (pos.get_line () == line) {
 						unichar ch = pos.get_char ();
-						if (ch == '(' || ch == '[' || ch == ' ' || ch == ')' || ch == ']') {
+						if (ch == '(' || ch == '[' || ch == ' ' || ch == ')' || ch == ']' || ch == ';' || ch == ',') {
 							result = false;
 						}
 					}
@@ -628,7 +628,7 @@ namespace Vtg
 			
 			if (_completion.try_acquire_ast (out ast, retry_count)) {
 				Afrodite.QueryResult? result = null;
-				Afrodite.QueryOptions options = this.get_options_for_line (text);
+				Afrodite.QueryOptions options = this.get_options_for_line (text, is_assignment, is_creation);
 				
 				if (word == symbol_name)
 					result = get_symbol_for_name (options, ast, first_part, null,  line, col);
@@ -680,19 +680,17 @@ namespace Vtg
 			return null;
 		}
 		
-		private QueryOptions get_options_for_line (string line)
+		private QueryOptions get_options_for_line (string line, bool is_assignment, bool is_creation)
 		{
 			QueryOptions options = null;
 			
-			if (line != null) {
-				if (line.str ("= new ") != null || line.str ("=new ") != null) {
-					options = QueryOptions.creation_methods ();
-				} else if (line.str ("=") != null || line.str (":") != null) {
-					options = QueryOptions.standard ();
-					options.binding |= Afrodite.MemberBinding.STATIC;
-				} else if (line.str ("throws ") != null || line.str ("throw ") != null) {
-					options = QueryOptions.error_domains ();
-				}
+			if (is_creation) {
+				options = QueryOptions.creation_methods ();
+			} else if (is_assignment || (line != null && line.rstr (":") != null)) {
+				options = QueryOptions.standard ();
+				options.binding |= Afrodite.MemberBinding.STATIC;
+			} else if (line != null && (line.str ("throws ") != null || line.str ("throw ") != null)) {
+				options = QueryOptions.error_domains ();
 			}
 			if (options == null) {
 				options = QueryOptions.standard ();
@@ -722,7 +720,7 @@ namespace Vtg
 			Utils.trace ("completing word: '%s'", word);
 			if (!StringUtils.is_null_or_empty (word) 
 			    && _completion.try_acquire_ast (out ast)) {
-			        QueryOptions options = get_options_for_line (text);
+			        QueryOptions options = get_options_for_line (text, is_assignment, is_creation);
 				Afrodite.QueryResult result = null;
 				int line, col;
 				

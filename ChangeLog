@@ -1,6 +1,12 @@
 2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsymbolcompletionprovider.vala:
+
+	guess better query options with the new line parser
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
 	* vtg/vtgutils.vala:
 
 	rewrote the line parser
