@@ -1,6 +1,13 @@
 2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	disbaled the completion when not *really* inside a comment or string
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
 
 	disable completion inside comments and string literals
 

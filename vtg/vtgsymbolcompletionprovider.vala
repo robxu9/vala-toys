@@ -127,7 +127,7 @@ namespace Vtg
 
 			src.get_iter_at_mark (out pos, mark);
 			bool result = !Utils.is_inside_comment_or_literal (src, pos);
-			
+
 			/* 
 			unowned Gtk.TextMark mark = (Gtk.TextMark) context.completion.view.get_buffer ().get_insert ();
 			Gtk.TextIter start;

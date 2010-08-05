@@ -277,20 +277,37 @@ namespace Vtg
 			return doc.language != null && doc.language.id == "vala";
 		}
 
-		public static bool is_inside_comment_or_literal (Gtk.SourceBuffer src, TextIter pos)
+		public static bool is_inside_comment_or_literal (SourceBuffer src, TextIter pos)
 		{
-			string[] context_classes = new string[] { "string", "comment" };
-
-			foreach (string context_class in context_classes) {
-				if (src.iter_has_context_class (pos, context_class)) {
-					// inside a comment or string
-					return true;
+			bool res = false;
+			
+			if (src.iter_has_context_class (pos, "comment")) {
+				res = true;
+			} else {
+				// iter_has_context_class returns false even when
+				// the cursor is in the last position of a comment|
+				if (pos.is_end () || pos.get_char () == '\n') {
+					if (pos.backward_char () && src.iter_has_context_class (pos, "comment")) {
+						res = true;
+					}
 				}
 			}
-			
-			return false;
+
+			if (!res) {
+				if (src.iter_has_context_class (pos, "string")) {
+					if (!pos.is_start () && pos.get_char () == '"') {
+						// iter_has_context_class returns true even when
+						// |"the cursor is just before the string"
+						if (pos.backward_char () && src.iter_has_context_class (pos, "string")) {
+							res = true;
+						}
+					}
+				}
+			}
+
+			return res;
 		}
-		
+
 		public static string get_document_name (Gedit.Document doc)
 		{
 			string name = doc.get_uri ();
