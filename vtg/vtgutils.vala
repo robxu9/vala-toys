@@ -248,6 +248,7 @@ namespace Vtg
 		private static Gtk.SourceCompletionItem[] _proposals = null;
 		private static Vala.List<Package> _available_packages = null;
 		private static Gtk.Builder _builder = null;
+		private static Regex _parse_source_line_regex = null;
 		
 		public const int prealloc_count = 500;
 
@@ -306,6 +307,50 @@ namespace Vtg
 			}
 
 			return res;
+		}
+		
+		public static void parse_source_line (string line, out string token, out bool is_assignment, out bool is_creation, out bool is_declaration)
+		{
+			try {
+				if (_parse_source_line_regex == null) {
+					_parse_source_line_regex = new Regex ("""\s*([_a-zA-Z][\w|\.]*)\s*""", 
+						RegexCompileFlags.OPTIMIZE, 
+						RegexMatchFlags.NEWLINE_ANY);
+				}
+
+				string[] items = _parse_source_line_regex.split (line, RegexMatchFlags.NEWLINE_ANY);
+
+				token = "";
+				is_assignment = false;
+				is_creation = false;
+				is_declaration = false;
+
+				foreach (string item in items) {
+					Utils.trace ("    item: %s", item);
+					string tok = item.strip ();
+					if (StringUtils.is_null_or_empty (tok)) {
+						continue;
+					}
+
+					if (tok == "=") {
+						token = "";
+						is_assignment = true;
+						is_declaration = false;
+					} else if (tok == "new") {
+						token = "";
+						is_creation = true;
+						is_declaration = false;
+					} else {
+						if (token == "var" || token.length > 0) {
+							is_declaration = true;
+						}
+						token = tok;
+					}
+				}
+				Utils.trace ("parse line: '%s'. is_assignment: %d is_creation: %d is_declaration: %d token: '%s'", line, (int)is_assignment, (int)is_creation, (int)is_declaration, token);
+			} catch (Error err) {
+				GLib.critical ("error: %s", err.message);
+			}
 		}
 
 		public static string get_document_name (Gedit.Document doc)

@@ -151,7 +151,7 @@ namespace Vtg
 		{
 			_filter = false;
 		}
-		
+
 		public void populate (Gtk.SourceCompletionContext context)
 		{
 			Utils.trace ("populate");
@@ -165,34 +165,40 @@ namespace Vtg
 				start.set_line_offset (0);
 
 			string text = start.get_text (end);
-			unichar ch = 'a';
-			if (end.backward_char ())
-				ch = end.get_char ();
-				
-			bool symbols_in_scope_mode = false;
-			
-			if (text.has_suffix (".") || (ch != '_' && !ch.isalnum())) {
-				_filter = false;
-			} else if (text.rstr (".") == null) {
-				// TODO: this check doesn't works always. Eg. this.test = aaa should not match
-				symbols_in_scope_mode = true;
-			} else {
-				_filter = true;
+			unichar prev_ch = 'a';
+			if (end.backward_char ()) {
+				prev_ch = end.get_char ();
+				end.forward_char ();
 			}
 			
+			bool symbols_in_scope_mode = false;
+			string word = "";
+			_filter = true;
+			
+			if (text.has_suffix (".") || (prev_ch != '_' && !prev_ch.isalnum())) {
+				_filter = false;
+			} else {
+				bool dummy, is_declaration;
+				Utils.parse_source_line (text, out word, out dummy, out dummy, out is_declaration);
+				
+				if (!is_declaration && word.rstr(".") == null) {
+					symbols_in_scope_mode = true;
+					_filter = false;
+				}
+			}
+
 			if (!_filter) {
 				_proposals = new GLib.List<Gtk.SourceCompletionItem> ();
 				if (symbols_in_scope_mode)
-					this.lookup_visible_symbols_in_scope (CompareMode.START_WITH);
+					this.lookup_visible_symbols_in_scope (word, CompareMode.START_WITH);
 				else
 					this.complete_current_word ();
 				
 				context.add_proposals (this, _proposals, true);
 			} else {
-				string whole_line, word, last_part;
-				int line, column;
-
-				parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
+				string[] tmp = word.split (".");
+				string last_part = tmp[tmp.length];
+				
 				Utils.trace ("filtering with: '%s' - '%s'", word, last_part);
 				if (!StringUtils.is_null_or_empty (last_part)) {
 					var filtered_proposals = new GLib.List<Gtk.SourceCompletionItem>();
@@ -542,6 +548,17 @@ namespace Vtg
 			}
 		}
 
+		private void get_current_line_and_column (out int line, out int column)
+		{
+ 			unowned Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
+			unowned TextMark mark = (TextMark) doc.get_insert ();
+			TextIter start;
+
+			doc.get_iter_at_mark (out start, mark);
+			line = start.get_line ();
+			column = start.get_line_offset ();
+		}
+		
 		private void parse_current_line (bool skip_leading_spaces, out string symbolname, out string last_symbolname, out string line, out int lineno, out int colno)
 		{
  			weak Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
@@ -823,13 +840,8 @@ namespace Vtg
 			}
 		}
 
-		private void lookup_visible_symbols_in_scope (CompareMode mode)
+		private void lookup_visible_symbols_in_scope (string word, CompareMode mode)
 		{
-			string whole_line, word, last_part;
-			int line, column;
-
-			parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
-
 			Afrodite.Ast ast = null;
 			Utils.trace ("lookup_all_symbols_in_scope: mode: %s word:'%s' ", 
 				mode == CompareMode.EXACT ? "exact" : "start-with",
@@ -837,11 +849,14 @@ namespace Vtg
 			if (!StringUtils.is_null_or_empty (word) 
 			    && _completion.try_acquire_ast (out ast, 0)) {
         			Vala.List<Afrodite.Symbol> results = new Vala.ArrayList<Afrodite.Symbol> ();
-        			
+
 				weak Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 				var source = ast.lookup_source_file (Utils.get_document_name (doc));
 				if (source != null) {
 					// get the source node at this position
+					int line, column;
+					get_current_line_and_column (out line, out column);
+					
 					var s = ast.get_symbol_for_source_and_position (source, line, column);
 					if (s != null) {
 						results = ast.lookup_visible_symbols_from_symbol (s, word, mode, CaseSensitiveness.CASE_SENSITIVE);

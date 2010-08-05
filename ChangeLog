@@ -3,7 +3,14 @@
 	* vtg/vtgsymbolcompletionprovider.vala:
 	* vtg/vtgutils.vala:
 
-	disbaled the completion when not *really* inside a comment or string
+	rewrote the parsing line routine for the lookup_visible_symbols_in_scope "mode"
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	disabled the completion when not *really* inside a comment or string
 
 2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
 
