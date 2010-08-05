@@ -1,5 +1,11 @@
 2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+
+	fixed a bug that prevented ';' insertion most of the time
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/symbol.vala:
 
 	better calltip for class default constructors

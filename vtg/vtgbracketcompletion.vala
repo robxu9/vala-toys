@@ -275,7 +275,7 @@ namespace Vtg
 									ch = start.get_char ();
 									if (ch == ';' || ch == '{' || ch == '=' || ch == '.' || ch == ')') {
 										break;
-									} else if (ch != '\t' && ch != ' ' && ch != '\n' && ch != '\r') {
+									} else if (ch != '\t' && ch != ' ' && ch != '\n' && ch != '\r' && !ch.isalnum ()) {
 										inside_block = false;
 										break;
 									}
@@ -305,6 +305,7 @@ namespace Vtg
 						}
 					} else {
 						if (prev_char_is_parenthesis || !instance.find_char (pos, ')', '(', new unichar[] {'}', ';'} )) {
+							Utils.trace ("inside %d next %d", (int) inside_block, (int) next_char_is_semicolon);
 							if (inside_block && !next_char_is_semicolon) {
 								instance.insert_chars (src, ");");
 								instance.move_backwards (src, 2);
