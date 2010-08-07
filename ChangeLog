@@ -1,5 +1,12 @@
 2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgutils.vala:
+
+	added 'this' to the minimal list of vala keywords
+	required to recognize if I'm doing an assignment
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 
 	fix symbol orphan check

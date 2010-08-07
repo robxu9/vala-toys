@@ -321,7 +321,8 @@ namespace Vtg
 		public static bool is_vala_keyword (string word)
 		{
 			if (word == "out" 
-			    || word == "ref") {
+			    || word == "ref"
+			    || word == "this") {
 				return true;
 			}
 			
