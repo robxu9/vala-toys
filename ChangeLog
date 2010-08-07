@@ -1,5 +1,11 @@
 2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+
+	add a stop compilation menu item. Fixes issue #106
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbracketcompletion.vala:
 
 	fixed a bug that prevented ';' insertion most of the time

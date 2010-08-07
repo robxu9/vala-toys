@@ -69,6 +69,8 @@ namespace Vtg
                                                         <menuitem name="ProjectBuildConfigure" action="ProjectBuildConfigure"/>
                                                         <separator />
                                                         <menuitem name="ProjectBuildCompileFile" action="ProjectBuildCompileFile"/>
+                                                        <separator />
+                                                        <menuitem name="ProjectBuildStopCompilation" action="ProjectBuildStopCompilation"/>
                                                     </placeholder>
                                                     <placeholder name="BuildMenuOps_2">
                                                         <separator />
@@ -136,7 +138,8 @@ namespace Vtg
 			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project"), on_project_build},
 			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project"), on_project_clean},
 			{"ProjectBuildConfigure", null, N_("C_onfigure Project"), null, N_("Configure or reconfigure the current project"), on_project_configure},
-			{"ProjectBuildCompileFile", null, N_("_Compile File"), "<control>B", N_("Compile the current file with the vala compiler"), on_standalone_file_compile},			
+			{"ProjectBuildCompileFile", null, N_("_Compile File"), "<control>B", N_("Compile the current file with the vala compiler"), on_standalone_file_compile},
+			{"ProjectBuildStopCompilation", Gtk.STOCK_STOP, N_("_Stop Compilation"), "<control>B", N_("Stop the running compilation"), on_stop_compilation},
 			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
 			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
 			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute target program"), on_project_execute_process},
@@ -655,6 +658,13 @@ namespace Vtg
 			}
 		}
 		
+		private void on_stop_compilation (Gtk.Action action)
+		{
+			if (_prj_builder.is_building) {
+				_prj_builder.stop_build ();
+			}
+		}
+		
 		private void on_project_build (Gtk.Action action)
 		{
 			if (_plugin_instance.project_view.current_project != null) {
@@ -784,7 +794,10 @@ namespace Vtg
 			action = _actions.get_action ("ProjectBuildCleanStamps");
 			if (action != null)
 				action.set_sensitive (!default_project && !_prj_builder.is_building);
-			
+			action = _actions.get_action ("ProjectBuildStopCompilation");
+			if (action != null)
+				action.set_sensitive (_prj_builder.is_building);
+				
 			var doc = _plugin_instance.window.get_active_document ();
 			bool is_vala_source = (doc != null && doc.language != null && doc.language.id == "vala");
 			action = _actions.get_action ("ProjectBuildCompileFile");
