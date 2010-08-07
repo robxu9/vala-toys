@@ -622,7 +622,18 @@ namespace Vbf.Am
 						}
 						while (target_name.has_suffix ("."))
 							target_name = target_name.substring (0, target_name.length - 1);
-						target = group.get_target_for_id (target_name);
+						
+						if (target_name.has_suffix (".la"))
+							target_name = target_name.substring (0, target_name.length - 3);
+							
+						target_name = convert_to_primary_name (target_name);
+						foreach (var t in group.get_targets ()) {
+							if (target_name == convert_to_primary_name (t.name)) {
+								target = t;
+								break;
+							}
+						}
+						Utils.trace ("target for: %s is %s", target_name, target == null ? "not found!" : target.name);
 					} else {
 						rule_parts = line.split (":", 2);
 						if (rule_parts.length == 2) {

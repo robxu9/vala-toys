@@ -1,5 +1,11 @@
 2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/am/vbfamprojectmanager.vala:
+
+	normalize teh target name when searching a target in a group
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	don't align on right word boundary when doing an
