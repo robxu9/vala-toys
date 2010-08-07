@@ -1,5 +1,11 @@
 2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectview.vala:
+
+	fixed a crash
+
+2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/templates/gedit-2.20-plugin.ini:
 	* gen-project/templates/gedit-2.20-plugin.png:
 	* gen-project/templates/gedit-2.20-plugin.tar.gz:

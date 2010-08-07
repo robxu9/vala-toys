@@ -232,9 +232,11 @@ namespace Vtg
 				string name, id;
 				model.get (iter, 1, out name, 2, out id);
 				try {
-					string file = Filename.from_uri (id);
-					if (name != null && FileUtils.test (file, FileTest.EXISTS)) {
-						_plugin_instance.activate_uri (id);
+					if (id != null) {
+						string file = Filename.from_uri (id);
+						if (name != null && FileUtils.test (file, FileTest.EXISTS)) {
+							_plugin_instance.activate_uri (id);
+						}
 					}
 				} catch (Error e) {
 					GLib.warning ("on_project_view_row_activated error: %s", e.message);
