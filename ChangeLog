@@ -1,3 +1,21 @@
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/readline.vapi:
+	* ChangeLog:
+
+	not needed anymore
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gedit-2.20.vapi:
+	* vapi/packages/gedit-2.20/gedit-2.20.deps:
+	* vapi/packages/gedit-2.20/gedit-2.20.files:
+	* vapi/packages/gedit-2.20/gedit-2.20.gi:
+	* vapi/packages/gedit-2.20/gedit-2.20.metadata:
+	* vapi/packages/gedit-2.20/gedit-2.20.namespace:
+	* ChangeLog:
+
+	now gedit bindings are upstream
 
 2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
 
