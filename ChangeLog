@@ -1,5 +1,14 @@
 2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+
+	fixed // autoindentation & ';' autoinsert on methods.
+
+	This commit partially revert back the previous behaviour
+	when dealing with '(' and ';' characters.
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 
 	hide calltips when pressing '{'

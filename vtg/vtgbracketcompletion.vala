@@ -232,24 +232,42 @@ namespace Vtg
 				TextIter pos;
 
 				src.get_iter_at_mark (out pos, mark);
+				unichar ch = Gdk.keyval_to_unicode (evt.keyval);
 				
-				if ((evt.state & (ModifierType.SHIFT_MASK | ModifierType.CONTROL_MASK)) == 0) {
+				if (evt.keyval != Gdk.Key_Return
+				    && (evt.state & (ModifierType.SHIFT_MASK | ModifierType.CONTROL_MASK)) == 0) {
 					if (Utils.is_inside_comment_or_literal (src, pos))
 							return result;
 				}
  				
 				weak string indent;
 				string buffer;
-				unichar ch = Gdk.keyval_to_unicode (evt.keyval);
  				
 				if (ch == '(') {
-					// check if I'm inside a  { } block 
+					// check if I'm inside a  { } block
+					// FIXME: really here we want to know if we are inside a method
+
 					bool inside_block = false;
 					TextIter start = pos;
 					while (start.backward_char ()) {
 						ch = start.get_char ();
- 						if (ch == ';' || ch == '{' || ch == ')') {
+ 						if (ch == ';' || ch == ')') {
  							inside_block = true;
+ 							break;
+ 						} else if (ch == '{') {
+ 							// need to check if we are inside a method or a class
+							while (!inside_block && start.backward_char ()) {
+								ch = start.get_char ();
+								if (ch != ' ' && ch != '\t') {
+									if (ch == ')') {
+										inside_block = true;
+									} else {
+										// TODO: this doesn't support 'throws'
+										// eg. void a () throws Error
+										break;
+									}
+								}
+							}
  							break;
  						} else if (ch == '}' || ch == '(' || ch == '|' || ch == '&') {
  							inside_block = false;
@@ -354,20 +372,27 @@ namespace Vtg
 						}
 						result = true;
 					} else {
-						buffer = "{";
-						string line = null;
-						if (pos.forward_line ()) {
-							TextIter end = pos;
-							end.forward_to_line_end ();
-							line = pos.get_slice (end);
-							line = line.replace (" ", "").replace ("\t", "");
+						ch = ' ';
+						if (pos.backward_char ()) {
+							ch = pos.get_char ();
 						}
-						if (StringUtils.is_null_or_empty (line) || line.has_prefix ("\n") || line.has_prefix ("}")) {
-							buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);
-							instance.insert_chars (src, buffer);
-							sender.scroll_to_mark (mark, 0, false, 0, 0);
-							instance.move_backwards (src, 2 + (int) indent.length);
-							result = true;
+						
+						if (ch != '\'' && ch != '\"') {
+							buffer = "{";
+							string line = null;
+							if (pos.forward_line ()) {
+								TextIter end = pos;
+								end.forward_to_line_end ();
+								line = pos.get_slice (end);
+								line = line.replace (" ", "").replace ("\t", "");
+							}
+							if (StringUtils.is_null_or_empty (line) || line.has_prefix ("\n") || line.has_prefix ("}")) {
+								buffer = "{\n%s%s\n%s}".printf(indent, instance.tab_chars, indent);
+								instance.insert_chars (src, buffer);
+								sender.scroll_to_mark (mark, 0, false, 0, 0);
+								instance.move_backwards (src, 2 + (int) indent.length);
+								result = true;
+							}
 						}
 					}
 				} else if (evt.keyval == Gdk.Key_Return) {
