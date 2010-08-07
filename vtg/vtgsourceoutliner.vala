@@ -186,15 +186,13 @@ namespace Vtg
 		
 		private bool on_idle_update ()
 		{
-			bool success = update_source_outliner_view ();
-			if (success) {
-				lock (idle_id) {
-					idle_id = 0;
+			lock (idle_id) {
+				bool success = update_source_outliner_view ();
+				if (success) {
+						idle_id = 0;
 				}
-				Utils.trace ("removind the source");
+				return !success; // remove the idle on a sucessful update
 			}
-			
-			return !success; // remove the idle on a sucessful update
 		}
 		
 		private bool update_source_outliner_view ()

@@ -1,5 +1,11 @@
 2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourceoutliner.vala:
+
+	better fix for multithread lock issue
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgutils.vala:
 
 	added 'this' to the minimal list of vala keywords
