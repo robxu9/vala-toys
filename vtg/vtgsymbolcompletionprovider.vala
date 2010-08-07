@@ -132,10 +132,17 @@ namespace Vtg
 			if (result) {
 				pos = start;
 				int line = pos.get_line ();
+				unichar ch = 'a';
 				if (pos.backward_char ()) {
 					if (pos.get_line () == line) {
-						unichar ch = pos.get_char ();
-						if (ch == '(' || ch == '[' || ch == ' ' || ch == ')' || ch == ']' || ch == ';' || ch == ',') {
+						unichar prev_ch = pos.get_char ();
+						if (prev_ch == '(' || ch == '('
+						    || prev_ch == '[' || ch == '['
+						    || prev_ch == ' '
+						    || prev_ch == ')'
+						    || prev_ch == ']'
+						    || ch == ';' 
+						    || ch == ',') {
 							result = false;
 						}
 					}
@@ -195,7 +202,10 @@ namespace Vtg
 				context.add_proposals (this, _proposals, true);
 			} else {
 				string[] tmp = word.split (".");
-				string last_part = tmp[tmp.length-1];
+				string last_part = "";
+				
+				if (tmp.length > 0)
+					last_part = tmp[tmp.length-1];
 				
 				Utils.trace ("filtering with: '%s' - '%s'", word, last_part);
 				if (!StringUtils.is_null_or_empty (last_part)) {
@@ -726,6 +736,11 @@ namespace Vtg
 				
 				get_current_line_and_column (out line, out col);
 
+				if (word.has_prefix ("\"") && word.has_suffix ("\"")) {
+					word = "string";
+				} else if (word.has_prefix ("\'") && word.has_suffix ("\'")) {
+					word = "unichar";
+				}
 				result = get_symbol_type_for_name (options, ast, word, text, line, col);
 				transform_result (options, result);
 				_completion.release_ast (ast);

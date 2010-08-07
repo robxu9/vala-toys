@@ -1,5 +1,12 @@
 2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	don't trigger a completion while typing some more
+	special characters like ';' etc...
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgutils.vala:
 
 	expanded the is_vala_keyword routine to include more
