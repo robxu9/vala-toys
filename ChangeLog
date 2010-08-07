@@ -1,5 +1,12 @@
 2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	don't align on right word boundary when doing an
+	interactive completion
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/genprojectdialog.vala:
 	* gen-project/ui/gen-project.ui:
 

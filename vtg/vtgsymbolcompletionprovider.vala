@@ -568,7 +568,7 @@ namespace Vtg
 		}
 		
 
-		private string get_current_line_text ()
+		private string get_current_line_text (bool align_to_right_word)
 		{
  			unowned Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			unowned TextMark mark = (TextMark) doc.get_insert ();
@@ -600,7 +600,7 @@ namespace Vtg
 
 		public Afrodite.Symbol? get_current_symbol_item (int retry_count = 0)
 		{
-			string text = get_current_line_text ();
+			string text = get_current_line_text (true);
 			string word;
 			int line, col;
 			bool is_assignment, is_creation, is_declaration;
@@ -719,7 +719,7 @@ namespace Vtg
 			//int line, column;
 
 			//parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
-			string text = get_current_line_text ();
+			string text = get_current_line_text (false);
 			string word;
 			
 			bool is_assignment, is_creation, is_declaration;
