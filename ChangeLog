@@ -1,5 +1,12 @@
 2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	renamed the parse method
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 
 	add a stop compilation menu item. Fixes issue #106

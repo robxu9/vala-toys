@@ -177,7 +177,7 @@ namespace Vtg
 				_filter = false;
 			} else {
 				bool dummy, is_declaration;
-				LineParser.parse (text, out word, out dummy, out dummy, out is_declaration);
+				ParserUtils.parse_line (text, out word, out dummy, out dummy, out is_declaration);
 				
 				if (!is_declaration && word.rstr(".") == null) {
 					symbols_in_scope_mode = true;
@@ -595,7 +595,7 @@ namespace Vtg
 			int line, col;
 			bool is_assignment, is_creation, is_declaration;
 
-			LineParser.parse (text, out word, out is_assignment, out is_creation, out is_declaration);
+			ParserUtils.parse_line (text, out word, out is_assignment, out is_creation, out is_declaration);
 
 			if (word == null || word == "")
 				return null;
@@ -714,7 +714,7 @@ namespace Vtg
 			
 			bool is_assignment, is_creation, is_declaration;
 
-			LineParser.parse (text, out word, out is_assignment, out is_creation, out is_declaration);
+			ParserUtils.parse_line (text, out word, out is_assignment, out is_creation, out is_declaration);
 
 			Afrodite.Ast ast = null;
 			Utils.trace ("completing word: '%s'", word);

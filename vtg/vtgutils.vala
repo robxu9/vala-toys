@@ -287,8 +287,13 @@ namespace Vtg
 				// iter_has_context_class returns false even when
 				// the cursor is in the last position of a comment|
 				if (pos.is_end () || pos.get_char () == '\n') {
-					if (pos.backward_char () && src.iter_has_context_class (pos, "comment")) {
-						res = true;
+					if (pos.backward_char ()) {
+						if (src.iter_has_context_class (pos, "comment")) {
+							res = true;
+						} else {
+							// repos the iter
+							pos.forward_char ();
+						}
 					}
 				}
 			}
@@ -298,8 +303,13 @@ namespace Vtg
 					if (!pos.is_start () && pos.get_char () == '"') {
 						// iter_has_context_class returns true even when
 						// |"the cursor is just before the string"
-						if (pos.backward_char () && src.iter_has_context_class (pos, "string")) {
-							res = true;
+						if (pos.backward_char ()) {
+							if (src.iter_has_context_class (pos, "string")) {
+								res = true;
+							} else {
+								// repos the iter
+								pos.forward_char ();
+							}
 						}
 					}
 				}
@@ -544,9 +554,9 @@ namespace Vtg
 		}
 	}
 	
-	namespace LineParser
+	namespace ParserUtils
 	{
-		public static void parse (string line, out string token, out bool is_assignment, out bool is_creation, out bool is_declaration)
+		public static void parse_line (string line, out string token, out bool is_assignment, out bool is_creation, out bool is_declaration)
 		{
 			token = "";
 			is_assignment = false;
