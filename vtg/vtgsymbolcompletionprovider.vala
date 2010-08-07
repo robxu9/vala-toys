@@ -336,7 +336,7 @@ namespace Vtg
 			
 			if (ch == '(') {
 				this.show_calltip ();
-			} else if (evt.keyval == Gdk.Key_Escape || ch == ')' || ch == ';' ||
+			} else if (evt.keyval == Gdk.Key_Escape || ch == ')' || ch == ';' || ch == '{' ||
 					(evt.keyval == Gdk.Key_Return && (evt.state & ModifierType.SHIFT_MASK) != 0)) {
 				this.hide_calltip ();
 			}
