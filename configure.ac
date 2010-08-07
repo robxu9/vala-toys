@@ -30,6 +30,7 @@ GTK_REQUIRED=2.18.0
 GEDIT_REQUIRED=2.28.0
 GTKSOURCEVIEW_REQUIRED=2.10.3
 VALA_REQUIRED=0.9.4
+VALA_VERSION=0.10
 GCONF_REQUIRED=2.22.0
 
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
@@ -39,7 +40,7 @@ AC_ARG_WITH([vapidir], AS_HELP_STRING([--with-valavapi=PATH],[use vala installat
 	        VALA_VAPIDIR=$withval
 	],[
 		#standard vala installation
-	        VALA_VAPIDIR=/usr/share/vala/vapi
+	        VALA_VAPIDIR=/usr/share/vala-$VALA_VERSION/vapi
 	])
 
 AC_DEFINE_UNQUOTED([VALA_VAPIDIR], ["$VALA_VAPIDIR"], [Vala vapi directory])
@@ -110,7 +111,7 @@ AM_CONDITIONAL([HAVE_GENPROJECT], [test "x$HAVE_GENPROJECT" = x1])
 
 if test "x${afrodite}" != xno ; then
 	PKG_CHECK_MODULES(AFRODITE, 
-		[glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED],
+		[glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-$VALA_VERSION >= $VALA_REQUIRED],
 		HAVE_AFRODITE=1,
 		[
 			HAVE_AFRODITE=0
@@ -119,10 +120,10 @@ if test "x${afrodite}" != xno ; then
 			PKG_CHECK_EXISTS([gio-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gio-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([vala-1.0 >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-1.0 >= $VALA_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([vala-$VALA_VERSION >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-$VALA_VERSION >= $VALA_REQUIRED: not found]))
 
 			if test "x$afrodite" = xyes ; then
-				AC_MSG_ERROR([afrodite library dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED])
+				AC_MSG_ERROR([afrodite library dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-$VALA_VERSION >= $VALA_REQUIRED])
 			fi
 		])
 else
@@ -146,7 +147,7 @@ if test "x${vtgplugin}" != xno ; then
 		gtk+-2.0 >= $GTK_REQUIRED 
 		gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED 
 		gedit-2.20 >= $GEDIT_REQUIRED 
-		vala-1.0 >= $VALA_REQUIRED 
+		vala-$VALA_VERSION >= $VALA_REQUIRED 
 		gconf-2.0 >= $GCONF_REQUIRED],
 		HAVE_VTGPLUGIN=1,
 		[
@@ -158,10 +159,10 @@ if test "x${vtgplugin}" != xno ; then
 			PKG_CHECK_EXISTS([gtk+-2.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-2.0 >= $GTK_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gedit-2.20 >= $GEDIT_REQUIRED] ,, AC_MSG_RESULT([    gedit-2.20 >= $GEDIT_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gtksourceview-2.0 >= $GEDIT_REQUIRED] ,, AC_MSG_RESULT([    gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([vala-1.0 >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-1.0 >= $VALA_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([vala-$VALA_VERSION >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-$VALA_VERSION >= $VALA_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gconf-2.0 >= $GCONF_REQUIRED] ,, AC_MSG_RESULT([    gconf-2.0 >= $GCONF_REQUIRED: not found]))
 			if test "x$vtgplugin" = xyes ; then
-				AC_MSG_ERROR([vtg-plugin dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-1.0 >= $VALA_REQUIRED gtk+-2.0 >= $GTK_REQUIRED gedit-2.20 >= $GEDIT_REQUIRED gconf-2.0 >= GCONF_REQUIRED])
+				AC_MSG_ERROR([vtg-plugin dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-$VALA_VERSION >= $VALA_REQUIRED gtk+-2.0 >= $GTK_REQUIRED gedit-2.20 >= $GEDIT_REQUIRED gconf-2.0 >= GCONF_REQUIRED])
 			fi
 		])
 else

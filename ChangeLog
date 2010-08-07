@@ -1,3 +1,10 @@
+2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	Quick fix for building vtg with the new vala directory scheme
+
 2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vapi/readline.vapi:
