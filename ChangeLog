@@ -1,5 +1,12 @@
 2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/Makefile.am:
+	* vbf/am/vbfamprojectmanager.vala:
+
+	added support for variables in package names
+
+2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/Makefile.am:
 	* configure:
 	* configure.ac:

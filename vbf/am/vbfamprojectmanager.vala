@@ -102,7 +102,10 @@ namespace Vbf.Am
 				project.version = normalize_string (version);
 				project.url = normalize_string (url);
 				project.working_dir = project.id;
-					
+				
+				parse_variables (project, buffer);
+				resolve_variables (project, project.get_variables ());
+				
 				//Extract pkg-config packages
 				reg = new GLib.Regex ("PKG_CHECK_MODULES\\([\\s\\[]*([^\\,\\)\\]]+)[\\s\\]]*\\,(.+?)\\)");
 				if (reg.match (buffer, RegexMatchFlags.NEWLINE_CR, out match)) {
@@ -130,6 +133,18 @@ namespace Vbf.Am
 							int idx = 0;
 							while (pkgs[idx] != null) {
 								string pkg = pkgs[idx];
+								string variable = pkg.str ("$");
+								
+								if (variable != null) {
+									var var_name = variable.replace ("(", "").replace (")", "").substring (1);
+									Utils.trace ("Resoving variables: %s", var_name);
+									var res = this.resolve_variable (var_name, project.get_variables ());
+									if (res != null) {
+										Utils.trace ("resolved: %s", res.get_value ().to_string ());
+										pkg = pkg.replace (variable, res.get_value ().to_string ());
+									}
+								}
+
 								Package package = new Package (pkg);
 								module.add_package (package);
 								idx++;
@@ -156,8 +171,7 @@ namespace Vbf.Am
 					}
 				}
 			
-				parse_variables (project, buffer);
-				resolve_variables (project, project.get_variables ());
+
 				resolve_package_variables (project);
 			
 				//Extract AC_CONFIG_FILES
@@ -670,6 +684,14 @@ namespace Vbf.Am
 						idx++;
 					} else if (tmps[idx] == "--pkg" && (idx + 1) < count) {
 						var tmp = tmps[idx+1];
+						string variable = tmp.str ("$");
+						if (variable != null) {
+							var var_name = variable.replace ("(", "").replace (")", "").substring (1);
+							var res = this.resolve_variable (var_name, group.project.get_variables ());
+							if (res != null) {
+								tmp = tmp.replace (variable, res.get_value ().to_string ());
+							}
+						}
 						if (target != null) {
 							target.add_package (new Package (tmp));
 						} else {
