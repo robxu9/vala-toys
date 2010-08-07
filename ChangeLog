@@ -1,5 +1,11 @@
 2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vapi/gedit-2.20.vapi:
+
+	updated the gedit vapi
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vapi/gnome-build-1.0.vapi:
 	* vapi/packages/gnome-build-1.0/gnome-build-1.0-custom.vala:
 	* vapi/packages/gnome-build-1.0/gnome-build-1.0.deps:

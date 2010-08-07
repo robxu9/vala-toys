@@ -24,7 +24,9 @@ namespace Gedit {
 		public unowned Gedit.Encoding get_encoding ();
 		public unowned Gtk.SourceLanguage get_language ();
 		public unowned GLib.File get_location ();
+		public unowned string get_metadata (string key);
 		public unowned string get_mime_type ();
+		public Gedit.DocumentNewlineType get_newline_type ();
 		public bool get_readonly ();
 		public unowned string get_search_text (uint flags);
 		public unowned string get_short_name_for_display ();
@@ -43,9 +45,13 @@ namespace Gedit {
 		public void save_as (string uri, Gedit.Encoding encoding, Gedit.DocumentSaveFlags flags);
 		public bool search_backward (Gtk.TextIter start, Gtk.TextIter end, Gtk.TextIter match_start, Gtk.TextIter match_end);
 		public bool search_forward (Gtk.TextIter start, Gtk.TextIter end, Gtk.TextIter match_start, Gtk.TextIter match_end);
+		public void set_content_type (string content_type);
 		public void set_enable_search_highlighting (bool enable);
 		public void set_language (Gtk.SourceLanguage lang);
+		public void set_metadata (...);
+		public void set_newline_type (Gedit.DocumentNewlineType newline_type);
 		public void set_search_text (string text, uint flags);
+		public void set_short_name_for_display (string name);
 		public void set_uri (string uri);
 	}
 	[CCode (cheader_filename = "gedit/gedit-encodings.h")]
@@ -59,19 +65,12 @@ namespace Gedit {
 		public static unowned Gedit.Encoding get_utf8 ();
 		public unowned string to_string ();
 	}
-	[CCode (cheader_filename = "gedit/gedit-encodings-option-menu.h")]
-	public class EncodingsOptionMenu : GLib.Object {
+	[CCode (cheader_filename = "gedit-2.20.h")]
+	public class EncodingsComboBox : GLib.Object {
 		[CCode (type = "GtkWidget*", has_construct_function = false)]
-		public EncodingsOptionMenu (bool save_mode);
+		public EncodingsComboBox (bool save_mode);
 		public unowned Gedit.Encoding get_selected_encoding ();
 		public void set_selected_encoding (Gedit.Encoding encoding);
-	}
-	[CCode (cheader_filename = "gedit/gedit-file-chooser-dialog.h")]
-	public class FileChooserDialog : Gtk.FileChooserDialog {
-		[CCode (type = "GtkWidget*", has_construct_function = false)]
-		public FileChooserDialog (string title, Gtk.FileChooserAction action, Gedit.Encoding encoding, ...);
-		public unowned Gedit.Encoding get_encoding ();
-		public void set_encoding (Gedit.Encoding encoding);
 	}
 	[CCode (cheader_filename = "gedit-2.20.h")]
 	public class Message : GLib.Object {
@@ -186,6 +185,7 @@ namespace Gedit {
 		public unowned string get_item_text (Gtk.MenuItem item);
 		public unowned GLib.List get_items ();
 		public unowned string get_label ();
+		public void remove_item (Gtk.MenuItem item);
 		public void set_item (Gtk.MenuItem item);
 		public void set_item_text (Gtk.MenuItem item, string text);
 		public void set_label (string label);
@@ -211,6 +211,7 @@ namespace Gedit {
 		public unowned Gedit.View get_view ();
 		public void set_auto_save_enabled (bool enable);
 		public void set_auto_save_interval (int interval);
+		public void set_info_bar (Gtk.Widget info_bar);
 	}
 	[CCode (cheader_filename = "gedit/gedit-view.h")]
 	public class View : Gtk.SourceView {
@@ -248,11 +249,7 @@ namespace Gedit {
 		public unowned GLib.List<Gedit.View> get_views ();
 		public void set_active_tab (Gedit.Tab tab);
 	}
-	[CCode (cprefix = "GEDIT_CONVERT_ERROR_AUTO_DETECTION_", has_type_id = "0", cheader_filename = "gedit/gedit-convert.h")]
-	public enum ConvertError {
-		FAILED
-	}
-	[CCode (cprefix = "GEDIT_", has_type_id = "0", cheader_filename = "gedit/gedit-debug.h")]
+	[CCode (cprefix = "GEDIT_", has_type_id = false, cheader_filename = "gedit/gedit-debug.h")]
 	public enum DebugSection {
 		NO_DEBUG,
 		DEBUG_VIEW,
@@ -271,13 +268,19 @@ namespace Gedit {
 		DEBUG_LOADER,
 		DEBUG_SAVER
 	}
-	[CCode (cprefix = "GEDIT_DOCUMENT_SAVE_", has_type_id = "0", cheader_filename = "gedit/gedit-document.h")]
+	[CCode (cprefix = "GEDIT_DOCUMENT_NEWLINE_TYPE_", has_type_id = false, cheader_filename = "gedit-2.20.h")]
+	public enum DocumentNewlineType {
+		LF,
+		CR,
+		CR_LF
+	}
+	[CCode (cprefix = "GEDIT_DOCUMENT_SAVE_", has_type_id = false, cheader_filename = "gedit/gedit-document.h")]
 	public enum DocumentSaveFlags {
 		IGNORE_MTIME,
 		IGNORE_BACKUP,
 		PRESERVE_BACKUP
 	}
-	[CCode (cprefix = "GEDIT_LOCKDOWN_", has_type_id = "0", cheader_filename = "gedit/gedit-app.h")]
+	[CCode (cprefix = "GEDIT_LOCKDOWN_", has_type_id = false, cheader_filename = "gedit/gedit-app.h")]
 	public enum LockdownMask {
 		COMMAND_LINE,
 		PRINTING,
@@ -285,13 +288,13 @@ namespace Gedit {
 		SAVE_TO_DISK,
 		ALL
 	}
-	[CCode (cprefix = "GEDIT_SEARCH_", has_type_id = "0", cheader_filename = "gedit/gedit-document.h")]
+	[CCode (cprefix = "GEDIT_SEARCH_", has_type_id = false, cheader_filename = "gedit/gedit-document.h")]
 	public enum SearchFlags {
 		DONT_SET_FLAGS,
 		ENTIRE_WORD,
 		CASE_SENSITIVE
 	}
-	[CCode (cprefix = "GEDIT_TAB_", has_type_id = "0", cheader_filename = "gedit/gedit-tab.h")]
+	[CCode (cprefix = "GEDIT_TAB_", has_type_id = false, cheader_filename = "gedit/gedit-tab.h")]
 	public enum TabState {
 		STATE_NORMAL,
 		STATE_LOADING,
@@ -309,14 +312,14 @@ namespace Gedit {
 		STATE_EXTERNALLY_MODIFIED_NOTIFICATION,
 		NUM_OF_STATES
 	}
-	[CCode (cprefix = "GEDIT_TOOLBAR_", has_type_id = "0", cheader_filename = "gedit/gedit-prefs-manager.h")]
+	[CCode (cprefix = "GEDIT_TOOLBAR_", has_type_id = false, cheader_filename = "gedit/gedit-prefs-manager.h")]
 	public enum ToolbarSetting {
 		SYSTEM,
 		ICONS,
 		ICONS_AND_TEXT,
 		ICONS_BOTH_HORIZ
 	}
-	[CCode (cprefix = "GEDIT_WINDOW_STATE_", has_type_id = "0", cheader_filename = "gedit/gedit-window.h")]
+	[CCode (cprefix = "GEDIT_WINDOW_STATE_", has_type_id = false, cheader_filename = "gedit/gedit-window.h")]
 	public enum WindowState {
 		NORMAL,
 		SAVING,
@@ -399,6 +402,12 @@ namespace Gedit {
 	public const string GPM_LOCKDOWN_DIR;
 	[CCode (cheader_filename = "gedit/gedit-prefs-manager.h")]
 	public const string GPM_SYSTEM_FONT;
+	[CCode (cheader_filename = "gedit-2.20.h")]
+	public const string METADATA_ATTRIBUTE_ENCODING;
+	[CCode (cheader_filename = "gedit-2.20.h")]
+	public const string METADATA_ATTRIBUTE_LANGUAGE;
+	[CCode (cheader_filename = "gedit-2.20.h")]
+	public const string METADATA_ATTRIBUTE_POSITION;
 	[CCode (cheader_filename = "gedit/gedit-commands.h")]
 	public static void commands_load_uri (Gedit.Window window, string uri, Gedit.Encoding encoding, int line_pos);
 	[CCode (cheader_filename = "gedit/gedit-commands.h")]
@@ -407,12 +416,6 @@ namespace Gedit {
 	public static void commands_save_all_documents (Gedit.Window window);
 	[CCode (cheader_filename = "gedit/gedit-commands.h")]
 	public static void commands_save_document (Gedit.Window window, Gedit.Document document);
-	[CCode (cheader_filename = "gedit/gedit-convert.h")]
-	public static GLib.Quark convert_error_quark ();
-	[CCode (cheader_filename = "gedit/gedit-convert.h")]
-	public static unowned string convert_from_utf8 (string content, size_t len, Gedit.Encoding encoding, size_t new_len) throws GLib.Error;
-	[CCode (cheader_filename = "gedit/gedit-convert.h")]
-	public static unowned string convert_to_utf8 (string content, size_t len, out unowned Gedit.Encoding encoding, size_t new_len) throws GLib.Error;
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
 	public static void debug (Gedit.DebugSection section, string file, int line, string function);
 	[CCode (cheader_filename = "gedit/gedit-debug.h")]
@@ -429,12 +432,6 @@ namespace Gedit {
 	public static unowned Gtk.Widget gtk_button_new_with_stock_icon (string label, string stock_id);
 	[CCode (cheader_filename = "gedit/gedit-help.h")]
 	public static bool help_display (string name, string link_id);
-	[CCode (cheader_filename = "gedit/gedit-metadata-manager.h")]
-	public static unowned string metadata_manager_get (string uri, string key);
-	[CCode (cheader_filename = "gedit/gedit-metadata-manager.h")]
-	public static void metadata_manager_set (string uri, string key, string value);
-	[CCode (cheader_filename = "gedit/gedit-metadata-manager.h")]
-	public static void metadata_manager_shutdown ();
 	[CCode (cheader_filename = "gedit/gedit-prefs-manager.h")]
 	public static bool prefs_manager_active_file_filter_can_set ();
 	[CCode (cheader_filename = "gedit/gedit-prefs-manager.h")]
@@ -481,8 +478,6 @@ namespace Gedit {
 	public static bool prefs_manager_get_auto_save ();
 	[CCode (cheader_filename = "gedit/gedit-prefs-manager.h")]
 	public static int prefs_manager_get_auto_save_interval ();
-	[CCode (cheader_filename = "gedit/gedit-prefs-manager.h")]
-	public static unowned string prefs_manager_get_backup_extension ();
 	[CCode (cheader_filename = "gedit/gedit-prefs-manager.h")]
 	public static int prefs_manager_get_bottom_panel_active_page ();
 	[CCode (cheader_filename = "gedit/gedit-prefs-manager.h")]
