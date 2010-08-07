@@ -80,6 +80,8 @@ AC_ARG_ENABLE([vtg-plugin],
         ],
         [vtgplugin=yes])
 
+AC_SUBST(VALA_VERSION)
+
 # dummy check to initialize pkg-config. Is this a PKG_CHECK_MODULES bug?
 PKG_CHECK_MODULES(GLIB, [glib-2.0 >= $GLIB_REQUIRED],,)
 

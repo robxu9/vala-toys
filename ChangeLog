@@ -1,5 +1,16 @@
 2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/Makefile.am:
+	* configure:
+	* configure.ac:
+	* gen-project/libgen-project/Makefile.am:
+	* vbf/Makefile.am:
+	* vtg/Makefile.am:
+
+	other fixes to the build system with the new vala directort layout
+
+2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectview.vala:
 
 	fixed a crash

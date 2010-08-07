@@ -60,7 +60,7 @@ libvbf_la_SOURCES = \
 	$(NULL)
 
 libvbf.vala.stamp: $(libvbf_la_VALASOURCES)
-	$(VALAC) $(DEBUG_FLAGS) -C -H vbf.h --library vbf-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-1.0 --pkg utils --basedir $(top_srcdir)/vbf $^
+	$(VALAC) $(DEBUG_FLAGS) -C -H vbf.h --library vbf-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg vala-$(VALA_VERSION) --pkg utils --basedir $(top_srcdir)/vbf $^
 	touch $@
 
 vbftest.vala.stamp: $(vbftest_VALASOURCES)

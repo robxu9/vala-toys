@@ -65,7 +65,7 @@ libvtg_la_SOURCES = \
 	$(NULL)
 
 libvtg.vala.stamp: $(libvtg_la_VALASOURCES)
-	$(VALAC) $(DEBUG_FLAGS) -C --vapidir ../vapi --vapidir ../afrodite --vapidir ../vbf --basedir $(top_srcdir)/vtg --pkg config --pkg vbf-1.0 --pkg afrodite-1.0 --pkg vala-1.0 --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms --pkg gconf-2.0 $^
+	$(VALAC) $(DEBUG_FLAGS) -C --vapidir ../vapi --vapidir ../afrodite --vapidir ../vbf --basedir $(top_srcdir)/vtg --pkg config --pkg vbf-1.0 --pkg afrodite-1.0 --pkg vala-$(VALA_VERSION) --pkg gedit-2.20 --pkg gtk+-2.0 --pkg gtksourceview-2.0 --pkg utils --pkg gdkkeysyms --pkg gconf-2.0 $^
 	touch $@
 
 libvtg_la_LDFLAGS = \
