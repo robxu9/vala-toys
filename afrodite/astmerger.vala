@@ -88,7 +88,7 @@ namespace Afrodite
 				if (source_ref != null) {
 					symbol.remove_source_reference (source_ref);
 					// only orphan a symbol if we removed something and there isn't no more source refs
-					orphaned = symbol.has_source_references; 
+					orphaned = !symbol.has_source_references; 
 				}
 			}
 

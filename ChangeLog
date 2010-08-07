@@ -1,5 +1,11 @@
 2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+
+	fix symbol orphan check
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 	* vtg/vtgutils.vala:
 
