@@ -28,7 +28,8 @@ namespace Vtg.Vcs.Backends
 	{
 		UNTRACKED,
 		ADDED,
-		MODIFIED
+		MODIFIED,
+		DELETED
 	}
 	
 	public errordomain VcsError

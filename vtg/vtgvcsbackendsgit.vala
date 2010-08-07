@@ -44,7 +44,8 @@ namespace Vtg.Vcs.Backends
 					int idx = 0;
 					PatternSpec modp = new PatternSpec ("#\tmodified:   *");
 					PatternSpec newp = new PatternSpec ("#\tnew file:   *");
-				
+					PatternSpec delp = new PatternSpec ("#\tdeleted:    *");
+					
 					while (lines[idx] != null) {
 						string line = lines[idx];
 						if (modp.match_string (line)) {
@@ -56,7 +57,12 @@ namespace Vtg.Vcs.Backends
 							Item item = new Item ();
 							item.state = States.ADDED;
 							item.name = line.replace ("#\tnew file:   ", "");
-							results.add (item);						
+							results.add (item);
+						} else if (delp.match_string (line)) {
+							Item item = new Item ();
+							item.state = States.DELETED;
+							item.name = line.replace ("#\tdeleted:    ", "");
+							results.add (item);
 						}
 						idx++;
 					}

@@ -1,5 +1,12 @@
 2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgvcsbackendsgit.vala:
+	* vtg/vtgvcsbackendsitem.vala:
+
+	added deleted file to the change log file list of the git backend
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/am/vbfamprojectmanager.vala:
 
 	normalize teh target name when searching a target in a group
