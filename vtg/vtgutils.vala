@@ -248,7 +248,15 @@ namespace Vtg
 		private static Gtk.SourceCompletionItem[] _proposals = null;
 		private static Vala.List<Package> _available_packages = null;
 		private static Gtk.Builder _builder = null;
-		
+		private static string[] _vala_keywords = new string[] {
+				"var", "out", "ref", "const",
+				"static", "inline",
+				"public", "protected", "private", "internal",
+				"this", "base",
+				"if", "while", "do", "else", "return",
+				"try", "catch"
+		};
+
 		public const int prealloc_count = 500;
 
 		public static Gdk.Pixbuf icon_generic;
@@ -320,13 +328,14 @@ namespace Vtg
 
 		public static bool is_vala_keyword (string word)
 		{
-			if (word == "out" 
-			    || word == "ref"
-			    || word == "this") {
-				return true;
+			bool res = false;
+			foreach (string keyword in _vala_keywords) {
+				if (keyword == word) {
+					res = true;
+					break;
+				}
 			}
-			
-			return false;
+			return res;
 		}
 		
 		public static string get_document_name (Gedit.Document doc)
