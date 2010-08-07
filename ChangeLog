@@ -1,5 +1,17 @@
 2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/tagcloud.vala:
+	* gen-project/tagclouditem.vala:
+	* gen-project/Makefile.am:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/templates/gtk+-vala-template.ini:
+	* gen-project/templates/sharedlib-vala-template.ini:
+	* gen-project/ui/gen-project.ui:
+
+	added tag cloud base selection widget for the project type
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbracketcompletion.vala:
 
 	fixed // autoindentation & ';' autoinsert on methods.

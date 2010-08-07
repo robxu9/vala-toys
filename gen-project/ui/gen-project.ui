@@ -12,84 +12,221 @@
       <object class="GtkVBox" id="dialog-vbox-main">
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
+        <property name="spacing">12</property>
         <child>
-          <object class="GtkVBox" id="vbox-config">
+          <object class="GtkHBox" id="hbox-config">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">2</property>
+            <property name="spacing">12</property>
             <child>
-              <object class="GtkVBox" id="vbox-project">
+              <object class="GtkVBox" id="vbox-config">
                 <property name="visible">True</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">2</property>
+                <property name="spacing">8</property>
                 <child>
-                  <object class="GtkLabel" id="label-project-title">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Project&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
-                  </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkVBox" id="vbox-project-config">
+                  <object class="GtkVBox" id="vbox-project">
                     <property name="visible">True</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">8</property>
+                    <property name="spacing">2</property>
                     <child>
-                      <object class="GtkHBox" id="hbox-project-folder">
+                      <object class="GtkLabel" id="label-project-title">
                         <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Project&lt;/b&gt;</property>
+                        <property name="use_markup">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkVBox" id="vbox-project-config">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <property name="spacing">8</property>
+                        <property name="homogeneous">True</property>
                         <child>
-                          <object class="GtkLabel" id="label-project-folder">
+                          <object class="GtkHBox" id="hbox-project-type">
                             <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="xpad">20</property>
-                            <property name="label" translatable="yes">Project folder:</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkLabel" id="label-project-type">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="xpad">20</property>
+                                <property name="label" translatable="yes">Project type:</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkComboBox" id="combobox-project-type">
+                                <property name="visible">True</property>
+                                <property name="model">liststore-combobox-types</property>
+                              </object>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
-                            <property name="expand">False</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkFileChooserButton" id="filechooserbutton-project-folder">
+                          <object class="GtkHBox" id="hbox-project-folder">
                             <property name="visible">True</property>
-                            <property name="action">select-folder</property>
-                            <property name="title" translatable="yes">Select a project folder</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkLabel" id="label-project-folder">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="xpad">20</property>
+                                <property name="label" translatable="yes">Project folder:</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkFileChooserButton" id="filechooserbutton-project-folder">
+                                <property name="visible">True</property>
+                                <property name="action">select-folder</property>
+                                <property name="title" translatable="yes">Select a project folder</property>
+                              </object>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="position">1</property>
                           </packing>
                         </child>
+                        <child>
+                          <object class="GtkHBox" id="hbox-project-license">
+                            <property name="visible">True</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkLabel" id="label-project-license">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="xpad">20</property>
+                                <property name="label" translatable="yes">Project license:</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkComboBox" id="combobox-project-license">
+                                <property name="visible">True</property>
+                                <property name="model">liststore-combobox-licenses</property>
+                              </object>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkVBox" id="vbox-author">
+                    <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">2</property>
+                    <child>
+                      <object class="GtkLabel" id="label-author-title">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Author&lt;/b&gt;</property>
+                        <property name="use_markup">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkHBox" id="hbox-project-type">
+                      <object class="GtkVBox" id="vbox-author-config">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <property name="spacing">8</property>
+                        <property name="homogeneous">True</property>
                         <child>
-                          <object class="GtkLabel" id="label-project-type">
+                          <object class="GtkHBox" id="hbox-author-name">
                             <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="xpad">20</property>
-                            <property name="label" translatable="yes">Project type:</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkLabel" id="label-author-name">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="xpad">20</property>
+                                <property name="label" translatable="yes">Name:</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkEntry" id="entry-author-name">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="invisible_char">&#x25CF;</property>
+                              </object>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
-                            <property name="expand">False</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkComboBox" id="combobox-project-type">
+                          <object class="GtkHBox" id="hbox-author-email">
                             <property name="visible">True</property>
-                            <property name="model">liststore-combobox-types</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkLabel" id="label-author-email">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="xpad">20</property>
+                                <property name="label" translatable="yes">E-mail address:</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkEntry" id="entry-author-email">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="invisible_char">&#x25CF;</property>
+                              </object>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="position">1</property>
@@ -100,136 +237,42 @@
                         <property name="position">1</property>
                       </packing>
                     </child>
-                    <child>
-                      <object class="GtkHBox" id="hbox-project-license">
-                        <property name="visible">True</property>
-                        <property name="spacing">8</property>
-                        <child>
-                          <object class="GtkLabel" id="label-project-license">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="xpad">20</property>
-                            <property name="label" translatable="yes">Project license:</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkComboBox" id="combobox-project-license">
-                            <property name="visible">True</property>
-                            <property name="model">liststore-combobox-licenses</property>
-                          </object>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
+                <property name="expand">False</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbox-author">
+              <object class="GtkVBox" id="vbox-categories">
                 <property name="visible">True</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">2</property>
+                <property name="spacing">8</property>
                 <child>
-                  <object class="GtkLabel" id="label-author-title">
+                  <object class="GtkLabel" id="label-categories">
+                    <property name="width_request">140</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Author&lt;/b&gt;</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Available tags&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkVBox" id="vbox-author-config">
-                    <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">8</property>
-                    <child>
-                      <object class="GtkHBox" id="hbox-author-name">
-                        <property name="visible">True</property>
-                        <property name="spacing">8</property>
-                        <child>
-                          <object class="GtkLabel" id="label-author-name">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="xpad">20</property>
-                            <property name="label" translatable="yes">Name:</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="entry-author-name">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="invisible_char">&#x25CF;</property>
-                          </object>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkHBox" id="hbox-author-email">
-                        <property name="visible">True</property>
-                        <property name="spacing">8</property>
-                        <child>
-                          <object class="GtkLabel" id="label-author-email">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="xpad">20</property>
-                            <property name="label" translatable="yes">E-mail address:</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="entry-author-email">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="invisible_char">&#x25CF;</property>
-                          </object>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
+                <property name="pack_type">end</property>
                 <property name="position">1</property>
               </packing>
             </child>
@@ -286,11 +329,11 @@
   </object>
   <object class="GtkSizeGroup" id="sizegroup-labels">
     <widgets>
-      <widget name="label-project-folder"/>
-      <widget name="label-project-type"/>
-      <widget name="label-project-license"/>
-      <widget name="label-author-name"/>
       <widget name="label-author-email"/>
+      <widget name="label-author-name"/>
+      <widget name="label-project-license"/>
+      <widget name="label-project-type"/>
+      <widget name="label-project-folder"/>
     </widgets>
   </object>
   <object class="GtkListStore" id="liststore-combobox-licenses">

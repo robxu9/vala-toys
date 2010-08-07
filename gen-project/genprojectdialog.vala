@@ -32,7 +32,8 @@ class Vala.GenProjectDialog
 	private Gtk.ComboBox license_combobox;
 	private Gtk.Entry name_entry;
 	private Gtk.Entry email_entry;
-
+	private Gtk.Button button_create_project;
+	private Vala.TagCloud tag_cloud;
 	private Templates templates;
 	
 	private void initialize_ui (ProjectOptions options) 
@@ -45,6 +46,9 @@ class Vala.GenProjectDialog
 			assert (config_dialog != null);
 			config_dialog.title = _("Vala Project Generator");
 
+			button_create_project = builder.get_object ("button-create-project") as Gtk.Button;
+			assert (button_create_project != null);
+			
 			project_folder_button = builder.get_object ("filechooserbutton-project-folder") as Gtk.FileChooserButton;
 			assert (project_folder_button != null);
 
@@ -63,6 +67,27 @@ class Vala.GenProjectDialog
 			renderer = new Gtk.CellRendererText ();
 			project_type_combobox.pack_start (renderer, true);
 			project_type_combobox.add_attribute (renderer, "text", 0);
+			project_type_combobox.changed.connect ((sender) => {
+				if (project_type_combobox.get_active () >= 0) {
+					button_create_project.set_sensitive (true);
+				} else {
+					button_create_project.set_sensitive (false);
+				}
+			});
+			var vbox_cats = builder.get_object ("vbox-categories") as Gtk.VBox;
+			assert (vbox_cats != null);
+			tag_cloud = new TagCloud ();
+			tag_cloud.selected_items_changed.connect((sender) => {
+				// refilter
+				var model = project_type_combobox.get_model () as Gtk.TreeModelFilter;
+				if (model != null) {
+					model.refilter ();
+				}
+				if (project_type_combobox.get_active () < 0)
+					project_type_combobox.set_active (0);
+			});
+			tag_cloud.show_all ();
+			vbox_cats.pack_end (tag_cloud, true, true);
 			
 			/* Setup project types */
 			var model = project_type_combobox.get_model () as Gtk.ListStore;
@@ -81,8 +106,37 @@ class Vala.GenProjectDialog
 				if (options.template != null && definition.id == options.template.id) {
 					selected_id = count;
 				}
+				
+				// add a tag item for each category
+				foreach (string tag in definition.tags) {
+					var tag_item = tag_cloud.get_item_with_text (tag);
+					if (tag_item == null) {
+						// if not exists create a new tag item
+						tag_item = new TagCloudItem (tag, 0, true);
+						tag_cloud.add_item (tag_item);
+					}
+					tag_item.occourrences++;
+				}
 				count++;
 			}
+			var filtered_model = new Gtk.TreeModelFilter (model, null);
+			filtered_model.set_visible_func((model, iter) => {
+				TemplateDefinition definition;
+				bool visible = false;
+				
+				model.@get (iter, 1, out definition);
+				foreach (string tag in definition.tags) {
+					var tag_item = tag_cloud.get_item_with_text (tag);
+					if (tag_item != null && tag_item.selected) {
+						visible = true;
+						break;
+					}
+				}
+				
+				return visible;
+			});
+			
+			project_type_combobox.set_model (filtered_model);
 			project_type_combobox.active = selected_id;
 			
 			license_combobox = builder.get_object ("combobox-project-license") as Gtk.ComboBox;
