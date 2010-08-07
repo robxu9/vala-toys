@@ -1,5 +1,11 @@
 2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vapi/gtksourcecompletion-2.0.vapi:
+
+	not needed anymore
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vapi/gedit-2.20.vapi:
 
 	updated the gedit vapi
