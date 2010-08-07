@@ -28,7 +28,7 @@ class Vala.GenProjectDialog
 {
 	private Gtk.Dialog config_dialog;
 	private Gtk.FileChooserButton project_folder_button;
-	private Gtk.ComboBox project_type_combobox;
+	private Gtk.IconView project_type_iconview;
 	private Gtk.ComboBox license_combobox;
 	private Gtk.Entry name_entry;
 	private Gtk.Entry email_entry;
@@ -59,38 +59,48 @@ class Vala.GenProjectDialog
 				hbox.visible = false;
 			}
 
-			project_type_combobox = builder.get_object ("combobox-project-type") as Gtk.ComboBox; //new Gtk.ComboBox.text ();
-			assert (project_type_combobox != null);
 			Gtk.CellRenderer renderer = new Gtk.CellRendererPixbuf ();
- 			project_type_combobox.pack_start (renderer, false);
-			project_type_combobox.add_attribute (renderer, "pixbuf", 2);
+			
+			project_type_iconview = builder.get_object ("iconview-project-type") as Gtk.IconView;
+			assert (project_type_iconview != null);
+ 			project_type_iconview.pack_start (renderer, false);
+			project_type_iconview.add_attribute (renderer, "pixbuf", 2);
 			renderer = new Gtk.CellRendererText ();
-			project_type_combobox.pack_start (renderer, true);
-			project_type_combobox.add_attribute (renderer, "text", 0);
-			project_type_combobox.changed.connect ((sender) => {
-				if (project_type_combobox.get_active () >= 0) {
+			project_type_iconview.pack_start (renderer, true);
+			project_type_iconview.add_attribute (renderer, "text", 0);
+			project_type_iconview.item_activated.connect ((sender) => {
+				if (project_type_iconview.get_selected_items ().length () > 0) {
 					button_create_project.set_sensitive (true);
 				} else {
 					button_create_project.set_sensitive (false);
 				}
 			});
-			var vbox_cats = builder.get_object ("vbox-categories") as Gtk.VBox;
-			assert (vbox_cats != null);
+			
+			var tags = builder.get_object ("scrolledwindow-tags") as Gtk.ScrolledWindow;
+			assert (tags != null);
 			tag_cloud = new TagCloud ();
 			tag_cloud.selected_items_changed.connect((sender) => {
 				// refilter
-				var model = project_type_combobox.get_model () as Gtk.TreeModelFilter;
+				var model = project_type_iconview.get_model () as Gtk.TreeModelFilter;
 				if (model != null) {
 					model.refilter ();
 				}
-				if (project_type_combobox.get_active () < 0)
-					project_type_combobox.set_active (0);
+
+				if (project_type_iconview.get_selected_items ().length () <= 0) {
+					project_type_iconview.select_path (new Gtk.TreePath.from_string ("0"));
+				}
+				if (project_type_iconview.get_selected_items ().length () > 0) {
+					button_create_project.set_sensitive (true);
+				} else {
+					button_create_project.set_sensitive (false);
+				}
+
 			});
 			tag_cloud.show_all ();
-			vbox_cats.pack_end (tag_cloud, true, true);
+			tags.add_with_viewport (tag_cloud);
 			
 			/* Setup project types */
-			var model = project_type_combobox.get_model () as Gtk.ListStore;
+			var model = project_type_iconview.get_model () as Gtk.ListStore;
 			assert (model != null);
 			int selected_id = 0, count = 0;
 			foreach (TemplateDefinition definition in templates.definitions) {
@@ -136,8 +146,8 @@ class Vala.GenProjectDialog
 				return visible;
 			});
 			
-			project_type_combobox.set_model (filtered_model);
-			project_type_combobox.active = selected_id;
+			project_type_iconview.set_model (filtered_model);
+			project_type_iconview.select_path (new Gtk.TreePath.from_string (selected_id.to_string ()));
 			
 			license_combobox = builder.get_object ("combobox-project-license") as Gtk.ComboBox;
 			assert (license_combobox != null);
@@ -189,14 +199,17 @@ class Vala.GenProjectDialog
 			options.author = name_entry.text;
 			options.email = email_entry.text;
 			options.license = (ProjectLicense) license_combobox.active;
-			Gtk.TreeIter iter;
-			if (project_type_combobox.get_active_iter (out iter)) {
-				var model = project_type_combobox.get_model () as Gtk.ListStore;
-				TemplateDefinition template = null;
-				model.@get (iter, 1, out template);
-				options.template = template;
+			if (project_type_iconview.get_selected_items ().length () > 0) {
+				Gtk.TreeIter iter;
+				Gtk.TreePath path = project_type_iconview.get_selected_items ().nth_data (0);
+				var model = project_type_iconview.get_model () as Gtk.TreeModelFilter;
+				if (model.get_iter (out iter, path)) {
+
+					TemplateDefinition template = null;
+					model.@get (iter, 1, out template);
+					options.template = template;
+				}
 			}
-			
 		}
 		return response;
 	}

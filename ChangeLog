@@ -1,3 +1,10 @@
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/genprojectdialog.vala:
+	* gen-project/ui/gen-project.ui:
+
+	replaced the project combo with an icon view
+
 2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsymbolcompletionprovider.vala:
