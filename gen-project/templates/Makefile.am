@@ -14,6 +14,9 @@ dist_templates_DATA = \
 	sharedlib-vala-template.ini \
 	sharedlib-vala-template.png \
 	sharedlib-vala-template.tar.gz \
+	gedit-2.20-plugin.ini \
+	gedit-2.20-plugin.png \
+	gedit-2.20-plugin.tar.gz \
 	$(NULL)
 
 DISTCLEANFILES = \

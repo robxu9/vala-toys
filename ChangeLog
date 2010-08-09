@@ -1,3 +1,9 @@
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/templates/Makefile.am:
+
+	added gedit plugin template to the distribution
+
 2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vbf/Makefile.am:
