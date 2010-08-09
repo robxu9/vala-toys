@@ -1,4 +1,4 @@
-AC_INIT([vtg], [0.9.0], [sejerpz@tin.it], [vtg])
+AC_INIT([vtg], [0.9.1], [sejerpz@tin.it], [vtg])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_AUX_DIR([.])
@@ -189,6 +189,7 @@ AC_CONFIG_FILES([
 	gen-project/templates/Makefile
 	doc/Makefile
 	vtg/Makefile
+	vapi/Makefile
 	vbf/Makefile
 	ui/Makefile
 	images/Makefile

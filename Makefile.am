@@ -1,6 +1,6 @@
 
 #Build in these directories:
-SUBDIRS = doc
+SUBDIRS = doc vapi
 
 if HAVE_AFRODITE
 SUBDIRS += afrodite
