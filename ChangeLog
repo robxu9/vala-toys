@@ -1,5 +1,12 @@
 2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+	* vbf/vbf-1.0.vapi:
+
+	bump required vala version
+
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/templates/Makefile.am:
 
 	added gedit plugin template to the distribution
