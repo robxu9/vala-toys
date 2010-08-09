@@ -21,11 +21,6 @@
 
 using GLib;
 
-/* Not yet binded */
-
-[CCode (cname="g_logv")]
-extern static void logv (string? log_domain, LogLevelFlags log_level, string format, va_list args);
-
 namespace Vbf.Utils
 {
 	/**
@@ -42,7 +37,9 @@ namespace Vbf.Utils
 	internal static inline void trace (string format, ...)
 	{
 #if DEBUG
-		log_message ("ValaBuildFramework", format, va_list ());
+		var va = va_list ();
+		var va2 = va_list.copy (va);
+		log_message ("ValaBuildFramework", format, va2);
 #endif
 	}
 }

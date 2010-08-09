@@ -22,11 +22,6 @@
 using GLib;
 using Vala;
 
-/* Not yet binded */
-
-[CCode (cname="g_logv")]
-extern static void logv (string? log_domain, LogLevelFlags log_level, string format, va_list args);
-
 namespace Afrodite.Utils
 {
 	/**
@@ -43,7 +38,9 @@ namespace Afrodite.Utils
 	internal static inline void trace (string format, ...)
 	{
 #if DEBUG
-		log_message ("Afrodite", format, va_list ());
+		var va = va_list ();
+		var va2 = va_list.copy (va);
+		log_message ("Afrodite", format, va2);
 #endif
 	}
 
