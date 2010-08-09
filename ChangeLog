@@ -1,5 +1,13 @@
 2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+	* configure:
+	* po/POTFILES.skip:
+
+	news and distcheck fixes
+
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure.ac:
 	* vbf/vbf-1.0.vapi:
 

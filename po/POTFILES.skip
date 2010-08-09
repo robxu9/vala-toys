@@ -21,5 +21,7 @@ gen-project/libgen-project/constants.c
 gen-project/main.c
 gen-project/genprojectdialog.c
 vtg/vtgsourceoutlinerview.c
+vtg/vtgsymbolcompletion.c
 vtg/vtgsymbolcompletionprovider.c
 afrodite/afroditetest.c
+afrodite/symbol.c
