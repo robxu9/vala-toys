@@ -18,13 +18,14 @@
 *orig
 debian/files
 debian/deb-patch.patch
-debian/stamp-autotools-files
-debian/stamp-makefile-build
+debian/stamp-*
 debian/vtg.debhelper.log
 debian/vtg.substvars
 debian/vtg
 debian/tmp
-debian/vala-gen-project
+debian/vala-gen-project*
+templates
+ui/gen-project.ui
 vsc/*.gir
 vtg-*.cdbs-config_list
 Makefile

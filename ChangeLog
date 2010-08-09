@@ -1,5 +1,11 @@
 2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
 
+	* .gitignore:
+
+	added some more file to the git ignore list
+
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vapi/Makefile.am:
 
 	added missing file
