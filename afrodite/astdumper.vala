@@ -73,27 +73,6 @@ namespace Afrodite
 			var sb = new StringBuilder ();
 			
 			sb.append (pad);
-			
-			// accessibility
-			sb.append_printf ("%s ", s.access_string);
-			
-			// accessibility
-			string binding;
-			switch (s.binding) {
-				case Afrodite.MemberBinding.CLASS:
-					binding = "@class";
-					break;
-				case Afrodite.MemberBinding.STATIC:
-					binding = "static";
-					break;
-				case Afrodite.MemberBinding.INSTANCE:
-				default:
-					binding = null;
-					break;
-			}
-			if (binding != null)
-				sb.append_printf ("%s ", binding);
-			
 
 			if (s.type_name == "Namespace"
 			    || s.type_name == "Class"
@@ -131,7 +110,7 @@ namespace Afrodite
 			
 			if (ast.root.has_children) {
 				dump_symbols (ast.root.children, filter_symbol);
-				print ("Dump done. Symbols %d, Types examinated %d of which unresolved %d\n", symbols, types, unresolved_types);
+				print ("Dump done. Symbols %d, Types examinated %d of which unresolved %d\n\n", symbols, types, unresolved_types);
 			} else
 				print ("context empty!\n");
 			

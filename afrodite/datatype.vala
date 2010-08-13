@@ -157,7 +157,7 @@ namespace Afrodite
 				string res;
 				
 				if (is_ellipsis) {
-					res = "...";	
+					res = "...";
 				} else {
 					if (is_out)
 						res = "out ";

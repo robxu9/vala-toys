@@ -1,5 +1,12 @@
 2010-08-12  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astdumper.vala:
+	* afrodite/datatype.vala:
+
+	fixes some printing issue with afroditetest
+
+2010-08-12  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/utils.vala:
 	* config.h.in:
 	* configure:
