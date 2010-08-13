@@ -1,3 +1,10 @@
+2010-08-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgutils.vala:
+
+	Bracket completion: spurious ';' character insertions. Fixes issue #137
+
 2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
 
 	* .gitignore:

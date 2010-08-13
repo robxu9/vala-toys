@@ -566,6 +566,26 @@ namespace Vtg
 	
 	namespace ParserUtils
 	{
+		/**
+		 * Utility method to get the text from the start iter
+		 * to the end of line.
+		 *
+		 * @param start start iter from which start to get the text (this iter will not be modified)
+		 * @return the text from the start iter to the end of line or an empty string if the iter is already on the line end.
+		 */
+		public static string get_line_to_end (TextIter start)
+		{
+			string text = "";
+			
+			TextIter end = start;
+			end.set_line_offset (0);
+			if (end.forward_to_line_end ()) {
+				text = start.get_text (end);
+			}
+			
+			return text;
+		}
+		
 		public static void parse_line (string line, out string token, out bool is_assignment, out bool is_creation, out bool is_declaration)
 		{
 			token = "";

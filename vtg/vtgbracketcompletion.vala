@@ -170,6 +170,7 @@ namespace Vtg
 			return text;
 		}
 
+		/*
 		private void forward_skip_spaces (TextIter start)
 		{
 			if (start.get_char ().isspace ()) {
@@ -180,6 +181,7 @@ namespace Vtg
 				}
 			}
 		}
+		*/
 		
 		private void backward_skip_spaces (TextIter start)
 		{
@@ -294,6 +296,7 @@ namespace Vtg
 									if (ch == ';' || ch == '{' || ch == '=' || ch == '.' || ch == ')') {
 										break;
 									} else if (ch != '\t' && ch != ' ' && ch != '\n' && ch != '\r' && !ch.isalnum ()) {
+										Utils.trace ("not a block %u", ch);
 										inside_block = false;
 										break;
 									}
@@ -303,19 +306,17 @@ namespace Vtg
 					}
 
 					bool prev_char_is_parenthesis = false;
-					bool next_char_is_semicolon = false;
+					bool line_has_semicolon = false;
 					
 					start = pos;
 					instance.backward_skip_spaces (start);
 					prev_char_is_parenthesis = start.get_char () == '(';
 					
-					start = pos;
-					instance.forward_skip_spaces (start);
-					next_char_is_semicolon = start.get_char () == ';';
-				
+					line_has_semicolon = ParserUtils.get_line_to_end (pos).rstr (";") != null;
+
 					if (src.has_selection) {
 						if (instance.enclose_selection_with_delimiters (src, "(", ")")) {
-							if (inside_block && !next_char_is_semicolon)
+							if (inside_block && !line_has_semicolon)
 								instance.insert_chars (src, ";");
 							src.get_iter_at_mark (out pos, mark);
 							src.place_cursor (pos);
@@ -323,8 +324,8 @@ namespace Vtg
 						}
 					} else {
 						if (prev_char_is_parenthesis || !instance.find_char (pos, ')', '(', new unichar[] {'}', ';'} )) {
-							Utils.trace ("inside %d next %d", (int) inside_block, (int) next_char_is_semicolon);
-							if (inside_block && !next_char_is_semicolon) {
+							Utils.trace ("inside %d next %d", (int) inside_block, (int) line_has_semicolon);
+							if (inside_block && !line_has_semicolon) {
 								instance.insert_chars (src, ");");
 								instance.move_backwards (src, 2);
 							} else {
