@@ -1,5 +1,13 @@
 2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+
+	fixed member binding handling
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgutils.vala:
 
 	better parse of string constants

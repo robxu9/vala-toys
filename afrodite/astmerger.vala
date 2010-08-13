@@ -335,11 +335,6 @@ namespace Afrodite
 			_current = visit_symbol (c, out _current_sr, true); // class are not mergeable like namespaces
 			_current.is_abstract = c.is_abstract;
 			c.accept_children (this);
-			// TODO: add a GLib.Type base type to non compact classes
-			// this is the code but with this type the completion list is messier
-			//if (!c.is_compact && !_current.has_base_types) {
-			//	_current.add_base_type (new Afrodite.DataType("GLib.Type", "Type"));
-			//}
 
 			_current = prev;
 			_current_sr = prev_sr;
@@ -517,6 +512,7 @@ namespace Afrodite
 			set_fqn (ev.name);
 			var sym = add_symbol (ev, out _current_sr);
 			sym.access = _current.access;
+			sym.binding = _current.binding;
 			_current.add_child (sym);
 			
 			_current = prev;
@@ -622,6 +618,7 @@ namespace Afrodite
 			
 			set_fqn (c.name);
 			var s = add_symbol (c, out _current_sr);
+			s.binding = MemberBinding.STATIC;
 			s.return_type = new DataType (c.type_reference.to_string ());
 			_current.add_child (s);
 			

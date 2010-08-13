@@ -502,6 +502,9 @@ namespace Afrodite
 					return false;
 				}
 
+				if ((binding & options.binding) == 0)
+					return false;
+
 				return true;
 			}
 			//debug ("excluded symbol access %s: %s", type_name, this.fully_qualified_name);

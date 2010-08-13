@@ -176,12 +176,14 @@ namespace Afrodite
 				// change the scope of symbol search
 				if (options.auto_member_binding_mode) {
 					if (parts[0] == "this") {
-						//debug ("CHANGE REMOVE STATIC");
+						//Utils.trace ("CHANGE REMOVE STATIC");
 						binding = binding & (~ ((int) MemberBinding.STATIC));
+						options.binding = binding;
 						options.access = options.access | SymbolAccessibility.PRIVATE;
 					} else if (parts[0] == "base") {
-						//debug ("CHANGE REMOVE STATIC & PRIVATE");
+						//Utils.trace ("CHANGE REMOVE STATIC & PRIVATE");
 						binding = binding & (~ ((int) MemberBinding.STATIC));
+						options.binding = binding;
 						options.access = options.access 
 							& (~ ((int) SymbolAccessibility.PRIVATE)) 
 							| SymbolAccessibility.PROTECTED;
