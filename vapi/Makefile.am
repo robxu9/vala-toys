@@ -1,10 +1,10 @@
 NULL=
 
-VAPIS = config.vapi \
+noinst_DATA = config.vapi \
 	utils.vapi \
 	gdkkeysyms.vapi \
 	$(NULL)
 
-EXTRA_DIST = $(VAPIS) \
+EXTRA_DIST = $(noinst_DATA) \
 	$(NULL)
 
