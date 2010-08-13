@@ -72,7 +72,7 @@ public class AfroditeTest.Application : Object {
 		{
 			if (i % 10 == 0)
 				print (".");
-			Thread.usleep (1 * 500000);
+			Thread.usleep (1 * 250000);
 			i++;
 		}
 		print (": done\n\n");	
@@ -101,7 +101,7 @@ public class AfroditeTest.Application : Object {
 					print ("The type for '%s' is: ", option_symbol_name);
 					if (!sym.is_empty) {
 						foreach (ResultItem item in sym.children) {
-							print ("%s\n     Childs:\n", item.symbol.fully_qualified_name);
+							print ("%s\n     Childs:\n", Utils.unescape_xml_string (item.symbol.description));
 							if (item.symbol.has_children) {
 								int count = 0;
 								// print an excerpt of the child symbols
@@ -111,6 +111,24 @@ public class AfroditeTest.Application : Object {
 									if (count == 6) {
 										print ("          ......\n");
 										break;
+									}
+								}
+								if (count < 6 && item.symbol.has_base_types) {
+									foreach (var base_item in item.symbol.base_types) {
+										if (base_item.unresolved || !base_item.symbol.has_children)
+											continue;
+
+										foreach (var child in base_item.symbol.children) {
+											print ("          %s\n", child.description);
+											count++;
+											if (count == 6)
+												break;
+										}
+
+										if (count == 6) {
+											print ("          ......\n");
+											break;
+										}
 									}
 								}
 							}

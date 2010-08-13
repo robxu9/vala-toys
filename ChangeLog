@@ -1,3 +1,9 @@
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+
+	if we have space print also members from the base classes
+
 2010-08-12  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/astmerger.vala:
