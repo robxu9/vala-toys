@@ -92,16 +92,24 @@ namespace Vtg
 					string dirs = "";
 					foreach (Group group in project.get_groups ()) {
 						foreach (Target target in group.get_targets ()) {
+							bool group_done = false;
 							if (target.has_sources_of_type (FileTypes.VALA_SOURCE)) {
 								dirs = dirs.concat (" ", Path.build_filename (group.id, "*.vala").replace (" ", "\\ "));
+								group_done = true;
 							}
 							if (target.has_file_with_extension ("vapi")) {
 								dirs = dirs.concat (" ", Path.build_filename (group.id, "*.vapi").replace (" ", "\\ "));
+								group_done = true;
+							}
+							
+							if (group_done) {
+								break; // already incuded the group directory for vala and/or vapi files
 							}
 						}
 					}
 					cmd += " " + dirs + "'";
 				}
+				Utils.trace ("project grep: %s", cmd);
 				string[] cmds;
 				Shell.parse_argv (cmd, out cmds);				
 				var start_message = _("Searching for '%s' in project %s\n").printf (text, project.name);
