@@ -1,5 +1,11 @@
 2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgutils.vala:
+
+	better parse of string constants
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* afrodite/datatype.vala:
 	* afrodite/symbol.vala:

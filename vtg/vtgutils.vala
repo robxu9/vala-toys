@@ -642,34 +642,38 @@ namespace Vtg
 				if (!is_eof (line, i)) {
 					unichar ch = line[i];
 					if (skip_lev == 0) {
-						if (ch == '_' || ch == '.' || (tok.length == 0 && ch.isalpha ()) || (tok.length > 0 && ch.isalnum ())) {
-							// valid identifier
-							tok = ch.to_string () + tok;
-						} else if (ch == '"' || ch == '\'') {
+						if (ch == '"' || ch == '\'') {
 							tok = ch.to_string () + tok;
 							if (!in_string) {
 								in_string = true;
 							} else {
 								in_string = false;
 							}
-						} else if ( ch == ' ' || ch == '=' || ch == '!') {
-							break;
+						} else if (ch == '_' || ch == '.' || (tok.length == 0 && ch.isalpha ()) || (tok.length > 0 && ch.isalnum ())) {
+							// valid identifier
+							tok = ch.to_string () + tok;
+						} else if (ch == ' ' || ch == '=' || ch == '!') {
+							if (in_string) {
+								tok = ch.to_string () + tok;
+							} else
+								break;
 						}
 					}
 
-					if (ch == '(' || ch == '[' || ch == '{') {
-						if (skip_lev > 0) {
-							skip_lev--;
-							if (skip_lev == 0) {
-								should_skip_spaces = true; // skip the spaces before (
+					if (!in_string) {
+						if (ch == '(' || ch == '[' || ch == '{') {
+							if (skip_lev > 0) {
+								skip_lev--;
+								if (skip_lev == 0) {
+									should_skip_spaces = true; // skip the spaces before (
+								}
+							} else {
+								break;
 							}
-						} else {
-							break; 
+						} else if (ch == ')' || ch == ']' || ch == '}') {
+							skip_lev++;
 						}
-					} else if (ch == ')' || ch == ']' || ch == '}') {
-						skip_lev++;
 					}
-					
 					i--;
 				}
 			}
