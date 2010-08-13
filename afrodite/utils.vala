@@ -60,15 +60,16 @@ namespace Afrodite.Utils
 		
 		string curr;
 		string[] dirs;
-		int dir_count = 1;
+		int dir_count = 2;
 		
 		if (vapi_dirs != null)
 			dir_count += vapi_dirs.length;
 			
 		dirs = new string[dir_count];
 		dirs[0] = Config.VALA_VAPIDIR;
+		dirs[1] = Config.VALA_VAPIDIR.replace ("vala-%s".printf (Config.VALA_VERSION), "vala");
 		for (int i=0; i < vapi_dirs.length; i++) {
-			dirs[i+1] = vapi_dirs[1];
+			dirs[i+2] = vapi_dirs[i];
 		}
 		
 		try {

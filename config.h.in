@@ -85,5 +85,8 @@
 /* Vala vapi directory */
 #undef VALA_VAPIDIR
 
+/* Vala vapi directory version suffix */
+#undef VALA_VERSION
+
 /* Version number of package */
 #undef VERSION

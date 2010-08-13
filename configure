@@ -12091,6 +12091,11 @@ fi
 
 
 
+cat >>confdefs.h <<_ACEOF
+#define VALA_VERSION "$VALA_VERSION"
+_ACEOF
+
+
 # dummy check to initialize pkg-config. Is this a PKG_CHECK_MODULES bug?
 
 

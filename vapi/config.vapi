@@ -7,4 +7,5 @@ namespace Config {
 	public const string LIB_DIR;
 	public const string GETTEXT_PACKAGE;
 	public const string VALA_VAPIDIR;
+	public const string VALA_VERSION;
 }
