@@ -1,5 +1,11 @@
 2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgutils.vala:
+
+	fix line parsing where
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/afroditetest.vala:
 
 	if we have space print also members from the base classes

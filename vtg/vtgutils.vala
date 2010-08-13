@@ -642,7 +642,7 @@ namespace Vtg
 				if (!is_eof (line, i)) {
 					unichar ch = line[i];
 					if (skip_lev == 0) {
-						if (ch == '_' || ch.isalpha () || ch == '.') {
+						if (ch == '_' || ch == '.' || (tok.length == 0 && ch.isalpha ()) || (tok.length > 0 && ch.isalnum ())) {
 							// valid identifier
 							tok = ch.to_string () + tok;
 						} else if (ch == '"' || ch == '\'') {
