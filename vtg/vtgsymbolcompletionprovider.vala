@@ -132,7 +132,7 @@ namespace Vtg
 			if (result) {
 				pos = start;
 				int line = pos.get_line ();
-				unichar ch = 'a';
+				unichar ch = pos.get_char ();
 				if (pos.backward_char ()) {
 					if (pos.get_line () == line) {
 						unichar prev_ch = pos.get_char ();
@@ -141,9 +141,13 @@ namespace Vtg
 						    || prev_ch == ' '
 						    || prev_ch == ')'
 						    || prev_ch == ']'
-						    || ch == ';' 
-						    || ch == ',') {
+						    || prev_ch == ';'
+						    || prev_ch == '/' || ch == '/'
+						    || prev_ch == ',') {
 							result = false;
+							Utils.trace ("not match current char: '%s', previous: '%s'", ch.to_string (), prev_ch.to_string ());
+						} else {
+							Utils.trace ("match current char: '%s', previous: '%s'", ch.to_string (), prev_ch.to_string ());
 						}
 					}
 				} 
@@ -521,8 +525,11 @@ namespace Vtg
 			var visited_interfaces = new Vala.ArrayList<Symbol> ();
 			
 			if (result != null && !result.is_empty) {
+				options.dump_settings ();
+				
 				foreach (ResultItem item in result.children) {
 					var symbol = item.symbol;
+
 					if (options == null || symbol.check_options (options)) {
 						if (symbol.has_children) {
 							append_symbols (options, symbol.children);
@@ -539,10 +546,11 @@ namespace Vtg
 			if (symbol.has_base_types 
 			    && (symbol.type_name == "Class" || symbol.type_name == "Interface" || symbol.type_name == "Struct")) {
 				foreach (DataType type in symbol.base_types) {
+					Utils.trace ("visiting base type: %s", type.type_name);
 					if (!type.unresolved 
 					    && type.symbol.has_children
 					    && (options == null || type.symbol.check_options (options))
-					    && (type.symbol.type_name == "Class")) {
+					    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface" || type.symbol.type_name == "Struct")) {
 							// symbols of base types (classes or interfaces)
 							if (!visited_interfaces.contains (type.symbol)) {
 								visited_interfaces.add (type.symbol);
@@ -733,7 +741,7 @@ namespace Vtg
 			        QueryOptions options = get_options_for_line (text, is_assignment, is_creation);
 				Afrodite.QueryResult result = null;
 				int line, col;
-				
+
 				get_current_line_and_column (out line, out col);
 
 				if (word.has_prefix ("\"") && word.has_suffix ("\"")) {
@@ -806,6 +814,7 @@ namespace Vtg
 		{
 			Afrodite.QueryResult result = null;
 			result = ast.get_symbol_type_for_name_and_path (options, word, _sb.path, line, column);
+			Utils.trace ("symbol matched %d", result.children.size);
 			return result;
 		}
 

@@ -1,5 +1,11 @@
 2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixes when a completion is allowed
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/astmerger.vala:
 	* afrodite/symbol.vala:
