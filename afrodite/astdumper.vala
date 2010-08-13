@@ -82,7 +82,7 @@ namespace Afrodite
 			    || s.type_name == "ErrorDomain")
 				sb.append_printf ("%s ", s.type_name.down ());
 
-			sb.append_printf ("%s ", s.description);
+			sb.append_printf ("%s ", Utils.unescape_xml_string (s.description));
 			
 			if (s.has_source_references) {
 				sb.append ("   - [");
@@ -104,16 +104,16 @@ namespace Afrodite
 			symbols = 0;
 			unresolved_types = 0;
 			types = 0;
-				
+
 			var timer = new Timer ();
 			timer.start ();
-			
+
 			if (ast.root.has_children) {
 				dump_symbols (ast.root.children, filter_symbol);
 				print ("Dump done. Symbols %d, Types examinated %d of which unresolved %d\n\n", symbols, types, unresolved_types);
 			} else
 				print ("context empty!\n");
-			
+
 			if (ast.has_source_files) {
 				print ("Source files:\n");
 				foreach (SourceFile file in ast.source_files) {
@@ -129,7 +129,7 @@ namespace Afrodite
 			timer.stop ();
 			print ("Dump done in %g\n", timer.elapsed ());
 		}
-		
+
 		private void dump_symbols (Vala.List<Afrodite.Symbol> symbols, string? filter_symbol)
 		{
 			inc_pad ();
@@ -141,7 +141,12 @@ namespace Afrodite
 						print ("%slocal variables\n", pad);
 						foreach (DataType local in symbol.local_variables) {
 							var sr = local.source_reference;
-							print ("%s   %s     - [(%d - %d) %s]\n", pad, local.description, sr.first_line, sr.last_line, sr.file.filename);
+							print ("%s   %s     - [(%d - %d) %s]\n",
+								pad,
+								Utils.unescape_xml_string (local.description),
+								sr.first_line,
+								sr.last_line,
+								sr.file.filename);
 							
 						}
 						dec_pad ();

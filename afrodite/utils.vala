@@ -204,4 +204,10 @@ namespace Afrodite.Utils
 			}
 		}
 	}
+
+	public static string unescape_xml_string (string text)
+	{
+		var res = text;
+		return res.replace ("&lt;", "<").replace ("&gt;", ">");
+	}
 }

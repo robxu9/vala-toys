@@ -1,5 +1,12 @@
 2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astdumper.vala:
+	* afrodite/utils.vala:
+
+	unescape the xml entities in the afroditetest output
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgutils.vala:
 
 	fix line parsing where
