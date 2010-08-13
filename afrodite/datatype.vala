@@ -172,7 +172,7 @@ namespace Afrodite
 					if (symbol == null)
 						res += "%s!".printf (type_name);
 					else
-						res += symbol.fully_qualified_name;
+						res += symbol.fully_qualified_name ;
 						
 					if (is_pointer)
 						res += "*";
@@ -182,7 +182,7 @@ namespace Afrodite
 						var sb = new StringBuilder ();
 						sb.append ("&lt;");
 						foreach (DataType t in generic_types) {
-							sb.append_printf ("%s, ", t.type_name);
+							sb.append_printf ("%s, ", t.description);
 						}
 						sb.truncate (sb.len - 2);
 						sb.append ("&gt;");
@@ -197,6 +197,31 @@ namespace Afrodite
 				}
 				return res;
 			}
+		}
+
+		public DataType copy ()
+		{
+			var res = new DataType (type_name, name);
+			res._type_name = type_name;
+			res.name = name;
+			res.symbol = null;
+			res.is_array = is_array;
+			res.is_pointer = is_pointer;
+			res.is_generic = is_generic;
+			res.is_nullable = is_nullable;
+			res.is_out = is_out;
+			res.is_ref = is_ref;
+			res.is_dynamic = is_dynamic;
+			res.is_ellipsis = is_ellipsis;
+			res.is_iterator = is_iterator;
+			res.default_expression = default_expression;
+			if (generic_types != null) {
+				foreach (var item in generic_types) {
+					res.add_generic_type (item.copy ());
+				}
+			}
+			res.source_reference = source_reference;
+			return res;
 		}
 	}
 }

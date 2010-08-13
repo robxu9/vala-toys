@@ -45,17 +45,17 @@ namespace Afrodite
 				visit_symbols (ast.root.children);
 		}
 		
-		private unowned Symbol? resolve_type (Symbol symbol, DataType type)
+		private Symbol? resolve_type (Symbol symbol, DataType type)
 		{
 			Symbol parent;
-			unowned Symbol res = null;
+			Symbol res = null;
 			
 			// void symbol
 			if (type.type_name == "void") {
 				res = Symbol.VOID;
 			}
 			
-			// first resolve type generic types
+			// resolve type generic types
 			if (type.has_generic_types) {
 				foreach (DataType generic_type in type.generic_types) {
 					if (generic_type.unresolved)
@@ -63,7 +63,7 @@ namespace Afrodite
 				}
 			}
 					
-			// first the container types defined in the child symbols
+			// the container types defined in the child symbols
 			if (res == null && symbol.has_children) {
 				
 				var s = Ast.lookup_symbol (type.type_name, symbol.children, out parent, Afrodite.CompareMode.EXACT);
@@ -161,65 +161,119 @@ namespace Afrodite
 			}
 			
 			if (res != null) {
+				if (type.has_generic_types && res.has_generic_type_arguments
+				    && type.generic_types.size == res.generic_type_arguments.size) {
+					// test is a declaration of a specialized generic type
+					bool need_specialization = false;
+					for(int i = 0; i < type.generic_types.size; i++) {
+						string name = res.generic_type_arguments[i].fully_qualified_name ?? res.generic_type_arguments[i].name;
+						if (type.generic_types[i].type_name != name) {
+							need_specialization = true;
+							break;
+						}
+					}
+					if (need_specialization) {
+						res = specialize_generic_symbol (type, res);
+						//Utils.trace ("generic type %s resolved with type %s", type.description, res.description);
+					}
+				}
+
 				res.add_resolve_target (symbol);
 			}
 			return res;
 		}
 
-		private void resolve_symbol (Afrodite.Symbol symbol, Afrodite.DataType type)
+		private Symbol specialize_generic_symbol (DataType type, Symbol symbol)
 		{
-			type.symbol = resolve_type (symbol, type);
-			if (!type.unresolved && type.symbol.return_type != null) {
-				var dt = type.symbol.return_type;
-				type.type_name = dt.type_name;
-				if (type.is_iterator) {
-					if (dt.has_generic_types && dt.generic_types.size == 1) {
-						type.type_name = dt.generic_types[0].type_name;
-						type.symbol = dt.generic_types[0].symbol;
+			var c = symbol.copy();
+			visit_symbol (c);
+			c.specialize_generic_symbol (type.generic_types);
+			visit_symbol (c);
+			if (c.has_base_types) {
+				foreach (var item in c.base_types) {
+					if (!item.unresolved) {
+						if (item.symbol.has_generic_type_arguments) {
+							if (item.symbol == symbol) {
+								critical ("Skipping same instance reference cycle: %s %s",  symbol.description, item.type_name);
+								continue;
+							}
+							if (item.symbol.fully_qualified_name == symbol.fully_qualified_name) {
+								critical ("Skipping same name reference cycle: %s", item.symbol.description);
+								continue;
+							}
+							Utils.trace ("resolve generic type for %s: %s", symbol.fully_qualified_name, item.symbol.fully_qualified_name);
+
+							item.symbol = specialize_generic_symbol (type, item.symbol);
+						}
 					}
 				}
 			}
+			symbol.add_specialized_symbol (c);
+			return c;
+		}
+
+		private void resolve_symbol (Afrodite.Symbol symbol, Afrodite.DataType type)
+		{
+			type.symbol = resolve_type (symbol, type);
+			if (!type.unresolved) {
+				if (type.symbol.return_type != null) {
+					var dt = type.symbol.return_type;
+					type.type_name = dt.type_name;
+					if (type.is_iterator) {
+						if (dt.has_generic_types && dt.generic_types.size == 1) {
+							type.type_name = dt.generic_types[0].type_name;
+							type.symbol = dt.generic_types[0].symbol;
+						}
+					}
+				}
+
+			}
 		}
 		
+		private void visit_symbol (Symbol symbol)
+		{
+			//print_symbol (symbol);
+
+			// resolving base types
+			if (symbol.has_base_types) {
+				foreach (DataType type in symbol.base_types) {
+					if (type.unresolved) {
+						type.symbol = resolve_type (symbol, type);
+					}
+				}
+			}
+			// resolving return type
+			if (symbol.return_type != null) {
+				if (symbol.return_type.unresolved) {
+					symbol.return_type.symbol = resolve_type (symbol, symbol.return_type);
+				}
+			}
+
+			// resolving symbol parameters
+			if (symbol.has_parameters) {
+				foreach (DataType type in symbol.parameters) {
+					if (type.unresolved) {
+						type.symbol = resolve_type (symbol, type);
+					}
+				}
+			}
+			// resolving local variables
+			if (symbol.has_local_variables) {
+				foreach (DataType type in symbol.local_variables) {
+					if (type.unresolved) {
+						resolve_symbol (symbol, type);
+					}
+				}
+			}
+			if (symbol.has_children) {
+				visit_symbols (symbol.children);
+			}
+		}
+
 		private void visit_symbols (Vala.List<Afrodite.Symbol> symbols)
 		{
 			foreach (Symbol symbol in symbols) {
-				//print_symbol (symbol);
-				
-				// resolving base types
-				if (symbol.has_base_types) {
-					foreach (DataType type in symbol.base_types) {
-						if (type.unresolved) {
-							type.symbol = resolve_type (symbol, type);
-						}
-					}
-				}
-				// resolving return type
-				if (symbol.return_type != null) {
-					if (symbol.return_type.unresolved) {
-						symbol.return_type.symbol = resolve_type (symbol, symbol.return_type);
-					}
-				}
-				
-				// resolving symbol parameters
-				if (symbol.has_parameters) {
-					foreach (DataType type in symbol.parameters) {
-						if (type.unresolved) {
-							type.symbol = resolve_type (symbol, type);
-						}
-					}
-				}
-				// resolving local variables
-				if (symbol.has_local_variables) {
-					foreach (DataType type in symbol.local_variables) {
-						if (type.unresolved) {
-							resolve_symbol (symbol, type);	
-						}
-					}
-				}
-				if (symbol.has_children) {
-					visit_symbols (symbol.children);
-				}
+				visit_symbol (symbol);
 			}
 		}
 	}

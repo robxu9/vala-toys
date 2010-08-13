@@ -32,6 +32,7 @@ namespace Afrodite
 		public unowned Symbol parent { get; set; }
 		public Vala.List<unowned Symbol> children { get; set; }
 		public Vala.List<unowned Symbol> resolve_targets = null; // contains a reference to symbols of whose this symbol is a resolved reference for any target data type
+		public unowned Symbol? generic_parent { get; set; }
 		
 		public string name { get; set; }
 		public string fully_qualified_name { get; set; }
@@ -64,6 +65,8 @@ namespace Afrodite
 		
 		private DataType _symbol_type = null;
 		
+		private Vala.List<Symbol> _specialized_symbols = null;
+
 		public DataType symbol_type {
 			get {
 				if (_symbol_type == null)
@@ -72,7 +75,7 @@ namespace Afrodite
 				return _symbol_type;
 			}
 		}
-	
+
 		public Symbol (string? fully_qualified_name, string? type_name)
 		{
 			if (fully_qualified_name != null) {
@@ -90,6 +93,13 @@ namespace Afrodite
 			}
 		}
 		
+		~Symbol ()
+		{
+			if (_specialized_symbols != null) {
+				_specialized_symbols.clear ();
+				_specialized_symbols = null;
+			}
+		}
 		public int static_child_count
 		{
 			get {
@@ -453,7 +463,7 @@ namespace Afrodite
 			}
 		}
 		
-		public bool is_static			
+		public bool is_static
 		{
 			get {
 				return (binding & MemberBinding.STATIC) != 0;
@@ -561,7 +571,7 @@ namespace Afrodite
 			if (has_generic_type_arguments) {
 				sb.append ("&lt;");
 				foreach (Symbol s in generic_type_arguments) {
-					sb.append_printf ("%s, ", s.name);
+					sb.append_printf ("%s, ", s.description);
 				}
 				sb.truncate (sb.len - 2);
 				sb.append ("&gt;");
@@ -704,7 +714,7 @@ namespace Afrodite
 					default:
 						res = "unknown";
 						break;
-				}					
+				}
 				return res;
 			}
 		}
@@ -743,6 +753,148 @@ namespace Afrodite
 			}
 			
 			return null;
+		}
+
+		public Symbol copy ()
+		{
+			var res = new Symbol (_fully_qualified_name, type_name);
+			res.type_name = this.type_name;
+			res.parent = this.parent;
+
+			res.name = this.name;
+			res.fully_qualified_name = this.fully_qualified_name;
+			if (_return_type != null) {
+				res.return_type = _return_type.copy ();
+			}
+
+			res.access = this.access;
+			res.binding = this.binding;
+
+			res.is_virtual = this.is_virtual;
+			res.is_abstract = this.is_abstract;
+			res.overrides = this.overrides;
+
+			res._symbol_type = _symbol_type;
+			res._static_child_count = this._static_child_count;
+			res._creation_method_child_count = this._creation_method_child_count;
+
+			if (has_children) {
+				foreach(var item in children) {
+					var s = item.copy ();
+					res.add_child (s);
+				}
+			}
+
+			if (has_source_references) {
+				foreach (var item in source_references) {
+					res.add_source_reference (item);
+				}
+			}
+
+			if (has_parameters) {
+				foreach (var item in parameters) {
+					res.add_parameter (item.copy ());
+				}
+			}
+
+			if (has_local_variables) {
+				foreach (var item in local_variables) {
+					res.add_local_variable (item.copy ());
+				}
+			}
+
+			if (has_base_types) {
+				foreach (var item in base_types) {
+					var d = item.copy ();
+					res.add_base_type (d);
+				}
+			}
+
+			if (generic_type_arguments != null) {
+				foreach (var item in generic_type_arguments) {
+					res.add_generic_type_argument (item.copy ());
+				}
+			}
+
+			return res;
+		}
+
+		public void specialize_generic_symbol (Vala.List<DataType> types)
+		{
+			// assign the real types
+			for(int i = 0; i < types.size; i++) {
+				//Utils.trace ("resolve generic type: %s", types[i].type_name);
+				string name = this.generic_type_arguments[i].fully_qualified_name ?? this.generic_type_arguments[i].name;
+				resolve_generic_type (this, name, types[i]);
+				this.generic_type_arguments[i].fully_qualified_name = types[i].type_name;
+				this.generic_type_arguments[i].name  = types[i].type_name;
+				this.generic_type_arguments[i].return_type = types[i];
+				this._des = null;
+				this._info = null;
+				this._markup_des = null;
+			}
+		}
+
+		public void add_specialized_symbol (Symbol? item)
+		{
+			if (_specialized_symbols == null)
+				_specialized_symbols = new Vala.ArrayList<Symbol> ();
+
+			_specialized_symbols.add (item);
+			item.generic_parent = this;
+		}
+
+		private void resolve_generic_type (Symbol symbol, string generic_type_name, DataType type)
+		{
+			if (symbol.return_type != null) {
+				Utils.trace ("symbol %s return type %s generic type %s, resolved with %s", symbol.fully_qualified_name, symbol.return_type.type_name, generic_type_name, type.type_name);
+				if (symbol.return_type.type_name == generic_type_name)
+					symbol.return_type = type;
+				/*
+				else if (!symbol.return_type.unresolved) {
+					Utils.trace ("resolve generic types %s %s: %s", symbol.return_type.type_name, generic_type_name, type.type_name);
+					resolve_generic_type(symbol.return_type.symbol, generic_type_name, type);
+				}
+				*/
+			}
+
+			if (symbol.has_children) {
+				foreach (var item in symbol.children) {
+					if (item.return_type != null && item.return_type.type_name == generic_type_name) {
+						item.return_type = type;
+					}
+					if (item.has_parameters) {
+						foreach (var par in item.parameters) {
+							if (par.type_name == generic_type_name) {
+								par.type_name = type.type_name;
+								par.name = type.name;
+								par.symbol = type.symbol;
+
+							}
+						}
+					}
+					if (item.has_children) {
+						resolve_generic_type (item, generic_type_name, type);
+					}
+				}
+			}
+			if (symbol.has_local_variables) {
+				foreach (var item in symbol.local_variables) {
+					if (item.type_name == generic_type_name) {
+						item.type_name = type.type_name;
+						item.symbol = type.symbol;
+					}
+				}
+			}
+			if (symbol.has_parameters) {
+				foreach (var item in symbol.parameters) {
+					if (item.type_name == generic_type_name) {
+						item.type_name = type.type_name;
+						item.name = type.type_name;
+						item.symbol = type.symbol;
+					}
+				}
+			}
 		}
 	}
 }

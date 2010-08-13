@@ -1,5 +1,14 @@
 2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	initial support for generics completion
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/completionengine.vala:
 
 	fixed a thread issue

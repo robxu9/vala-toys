@@ -335,6 +335,12 @@ namespace Afrodite
 			_current = visit_symbol (c, out _current_sr, true); // class are not mergeable like namespaces
 			_current.is_abstract = c.is_abstract;
 			c.accept_children (this);
+			// TODO: add a GLib.Type base type to non compact classes
+			// this is the code but with this type the completion list is messier
+			//if (!c.is_compact && !_current.has_base_types) {
+			//	_current.add_base_type (new Afrodite.DataType("GLib.Type", "Type"));
+			//}
+
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -366,7 +372,7 @@ namespace Afrodite
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
-			
+
 			_current = visit_symbol (iface, out _current_sr, true); // class are not mergeable like namespaces
 			iface.accept_children (this);
 			_current = prev;
@@ -703,31 +709,6 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
-		
-		public override void visit_type_parameter (TypeParameter p) 
-		{
-		/*
-			var d = new DataType (get_datatype_typename (p), p.name);
-			switch (p.direction) {
-				case Vala.ParameterDirection.OUT:
-					d.is_out = true;
-					break;
-				case Vala.ParameterDirection.REF:
-					d.is_ref = true;
-					break;
-			}*/
-			
-			if (_current.type_name == "Class" 
-				|| _current.type_name == "Interface" 
-				|| _current.type_name == "Struct") {
-				//debug ("adding generic %s to %s", p.name, _current.fully_qualified_name);
-				var symbol = new Afrodite.Symbol (p.name, p.type_name);
-				symbol.access = SymbolAccessibility.ANY;
-				_current.add_generic_type_argument (symbol);
-			}
-			p.accept_children (this);
-		}
-		
 		public override void visit_formal_parameter (FormalParameter p) 
 		{
 			DataType d;
@@ -1019,17 +1000,49 @@ namespace Afrodite
 			visit_scoped_codenode ("switch-section", section, section); // a section is also a block
 		}
 
+		public override void visit_type_parameter (TypeParameter p)
+		{
+			/*
+			var d = new DataType (get_datatype_typename (p), p.name);
+			switch (p.direction) {
+				case Vala.ParameterDirection.OUT:
+					d.is_out = true;
+					break;
+				case Vala.ParameterDirection.REF:
+					d.is_ref = true;
+					break;
+			}*/
+
+			var symbol = new Afrodite.Symbol (p.name, p.type_name);
+			symbol.access = SymbolAccessibility.ANY;
+
+			//Utils.trace ("adding type parameter: '%s' to '%s'", p.name, _current.fully_qualified_name);
+			_current.add_generic_type_argument (symbol);
+			p.accept_children (this);
+		}
+
+
 		public override void visit_data_type (Vala.DataType type)
 		{
 			var t = new Afrodite.DataType (get_datatype_typename (type), null);
-			if (_current != null 
-				&& (_current.type_name == "Class" || _current.type_name == "Interface" || _current.type_name == "Struct")) {
-				// add this type to the base class types
-				_current.add_base_type (t);
-			} else if (_current_type != null) {
+			if (_current_type != null) {
 				//debug ("adding gen type %s %s %s", _current.name, get_datatype_typename (type), Type.from_instance (type).name ());
 				_current_type.add_generic_type (t);
 				
+			} else if (_current != null
+				&& (_current.type_name == "Class" || _current.type_name == "Interface" || _current.type_name == "Struct")) {
+				// add this type to the base class types
+				if (t.type_name.length == 1 && t.type_name.up () == t.type_name) {
+					// there's must be a better method
+					Utils.trace ("You should fix this hack: %s - %s: '%s' to '%s'",
+					type.type_name,
+					type.type_parameter != null ? type.type_parameter.to_string () : "type parameter is null",
+					t.type_name,
+					_current.fully_qualified_name);
+				} else {
+					_current.add_base_type (t);
+					visit_type_for_generics (type, t);
+				}
 			}
 		}
 		
