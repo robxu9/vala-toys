@@ -831,7 +831,8 @@ namespace Afrodite
 			}
 			//Utils.trace ("adding local var: %s to %s", s.name, _current.fully_qualified_name);
 			_current.add_local_variable (s);
-			
+			if (local.variable_type != null)
+				visit_type_for_generics (local.variable_type,s);
 			_current = prev;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
