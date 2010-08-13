@@ -64,13 +64,14 @@ namespace Afrodite
 		
 		~Completion ()
 		{
-			_ast_mutex.lock ();
-			_ast = null;
-			_ast_mutex.unlock ();
 			if (AtomicInt.@get (ref _parser_stamp) != 0)
 				_parser_thread.join ();
 
 			_parser_thread = null;
+
+			_ast_mutex.lock ();
+			_ast = null;
+			_ast_mutex.unlock ();
 		}
 
 		public bool is_parsing

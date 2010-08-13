@@ -1,5 +1,11 @@
 2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+
+	fixed a thread issue
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astdumper.vala:
 	* afrodite/utils.vala:
 
