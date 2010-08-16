@@ -36,7 +36,7 @@ GCONF_REQUIRED=2.22.0
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
 AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
 
-AC_ARG_WITH([vapidir], AS_HELP_STRING([--with-valavapi=PATH],[use vala installation at PATH]), [
+AC_ARG_WITH([vapidir], AS_HELP_STRING([--with-vapidir=PATH],[use PATH for default vala vapi directory]), [
 	        VALA_VAPIDIR=$withval
 	],[
 		#standard vala installation

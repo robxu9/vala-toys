@@ -1,5 +1,12 @@
 2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure:
+	* configure.ac:
+
+	Configure help text of the vapidir option is wrong. Fixes issue #142
+
+2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/Makefile.am:
 	* vbf/backends/vbfsmartfolder.vala:
 	* vbf/backends/vbfautotools.vala:
