@@ -1,5 +1,5 @@
 /*
- *  vbfiprojectmanager.vala - Vala Build Framework library
+ *  vbfiprojectbackend.vala - Vala Build Framework library
  *  
  *  Copyright (C) 2008 - Andrea Del Signore <sejerpz@tin.it>
  *  
@@ -21,7 +21,7 @@
 
 namespace Vbf
 {
-	public interface IProjectManager : GLib.Object
+	public interface IProjectBackend : GLib.Object
 	{
 		public abstract bool probe (string project_file);
 		public abstract Project? open (string project_file);

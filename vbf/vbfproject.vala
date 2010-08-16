@@ -40,7 +40,7 @@ namespace Vbf
 		private Vala.List<FileMonitor> file_mons = new Vala.ArrayList<FileMonitor> ();
 		private bool in_refresh = false;
 		
-		internal IProjectManager backend = null;
+		internal IProjectBackend backend = null;
 		
 		public Project (string id)
 		{

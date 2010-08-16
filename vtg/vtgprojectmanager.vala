@@ -238,7 +238,7 @@ namespace Vtg
 
 		public bool open (string project_filename) throws GLib.Error
 		{
-			IProjectManager pm = new Am.ProjectManager (); 
+			IProjectBackend pm = new Backends.Autotools (); 
 			bool res = pm.probe (project_filename);
 			if (res) {
 				_project = pm.open (project_filename);

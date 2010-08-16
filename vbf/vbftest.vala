@@ -37,7 +37,7 @@ namespace Vbf.Tests
 		
 		public bool run (string project_name)
 		{
-			IProjectManager pm = new Am.ProjectManager (); 
+			IProjectBackend pm = new Backends.Autotools (); 
 			print ("Probing directory '%s' ...", project_name);
 			bool res = pm.probe (project_name);
 			print ("%s\n", res ? "OK" : "KO");

@@ -1,5 +1,5 @@
 /*
- *  vbfamprojectmanager.vala - Vala Build Framework library
+ *  vbfautotools.vala - Vala Build Framework library
  *  
  *  Copyright (C) 2008 - Andrea Del Signore <sejerpz@tin.it>
  *  
@@ -21,9 +21,9 @@
 
 using GLib;
 
-namespace Vbf.Am
+namespace Vbf.Backends
 {
-	public class ProjectManager : IProjectManager, GLib.Object
+	public class Autotools : IProjectBackend, GLib.Object
 	{
 		/*
 		 * check if the given directory is a base source dir

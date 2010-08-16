@@ -35,14 +35,14 @@ libvbf_la_VALASOURCES = \
 	vbfpackage.vala \
 	vbfvariable.vala \
 	vbfstringliteral.vala \
-	vbfiprojectmanager.vala \
+	vbfiprojectbackend.vala \
 	vbfmanager.vala \
 	vbfconfignode.vala \
 	vbfconfignodepair.vala \
 	vbfconfignodelist.vala \
 	vbfunresolvedconfignode.vala \
 	vbfutils.vala \
-	am/vbfamprojectmanager.vala \
+	backends/vbfautotools.vala \
 	$(NULL)
 
 vbftest_SOURCES = \

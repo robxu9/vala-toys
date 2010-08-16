@@ -37,7 +37,7 @@ vbf/vbfgroup.vala
 vbf/vbfsource.vala
 vbf/vbffile.vala
 vbf/vbfproject.vala
-vbf/vbfiprojectmanager.vala
+vbf/vbfiprojectbackend.vala
 vbf/vbfmodule.vala
 vbf/vbfpackage.vala
 vbf/vbfmanager.vala
@@ -46,7 +46,7 @@ vbf/vbfunresolvedconfignode.vala
 vbf/vbfvariable.vala
 vbf/vbfconfignodelist.vala
 vbf/vbfconfignodepair.vala
-vbf/am/vbfamprojectmanager.vala
+vbf/backends/vbfautotools.vala
 #gen-project
 gen-project/libgen-project/templates.vala
 gen-project/libgen-project/projectgenerator.vala

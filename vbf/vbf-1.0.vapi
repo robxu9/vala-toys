@@ -2,11 +2,11 @@
 
 [CCode (cprefix = "Vbf", lower_case_cprefix = "vbf_")]
 namespace Vbf {
-	[CCode (cprefix = "VbfAm", lower_case_cprefix = "vbf_am_")]
-	namespace Am {
+	[CCode (cprefix = "VbfBackends", lower_case_cprefix = "vbf_backends_")]
+	namespace Backends {
 		[CCode (cheader_filename = "vbf.h")]
-		public class ProjectManager : Vbf.IProjectManager, GLib.Object {
-			public ProjectManager ();
+		public class Autotools : Vbf.IProjectBackend, GLib.Object {
+			public Autotools ();
 		}
 	}
 	[CCode (cprefix = "VbfUtils", lower_case_cprefix = "vbf_utils_")]
@@ -148,7 +148,7 @@ namespace Vbf {
 		public override string to_string ();
 	}
 	[CCode (cheader_filename = "vbf.h")]
-	public interface IProjectManager : GLib.Object {
+	public interface IProjectBackend : GLib.Object {
 		public abstract Vbf.Project? open (string project_file);
 		public abstract bool probe (string project_file);
 		public abstract void refresh (Vbf.Project project);
