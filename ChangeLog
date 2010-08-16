@@ -1,5 +1,17 @@
 2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/backends/vbfautotools.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfiprojectbackend.vala:
+	* vbf/vbfproject.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	moved the clean/build/configure commands to the backend layer
+
+2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 	* configure:
 	* configure.ac:

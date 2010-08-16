@@ -29,8 +29,6 @@ namespace Vtg
 {
 	internal class ProjectBuilder : GLib.Object
 	{
-		private const string MAKE = "make";
-
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private BuildLogView _build_view = null;
 		private uint _child_watch_id = 0;
@@ -115,7 +113,7 @@ namespace Vtg
 		
 		public bool build (ProjectManager project_manager, string? params = null)
 		{
-			if (_child_watch_id != 0)
+			if (_child_watch_id != 0 || project_manager.project.build_command == null)
 				return false;
 
 
@@ -131,9 +129,9 @@ namespace Vtg
 				log.log_message (OutputTypes.MESSAGE, "%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
 				string cmd;
 				if (params != null) {
-					cmd = "%s %s".printf (MAKE, params);
+					cmd = "%s %s".printf (project_manager.project.build_command, params);
 				} else {
-					cmd = MAKE;
+					cmd = project_manager.project.build_command;
 				}
 				string[] pars;
 				Shell.parse_argv (cmd, out pars);
@@ -160,23 +158,14 @@ namespace Vtg
 
 		public bool configure (ProjectManager project_manager, string? params = null)
 		{
-			if (_child_watch_id != 0)
+			if (_child_watch_id != 0 || project_manager.project.configure_command == null)
 				return false;
 
 			var project = project_manager.project;
 			var working_dir = project.id;
 			int stdo, stde;
-			string configure_command = null;
-			foreach (string item in new string[] { "./configure", "./autogen.sh"}) {
-				string file = Path.build_filename (working_dir, item);
-				if (FileUtils.test (file, FileTest.EXISTS)) {
-					configure_command = item;
-					break;
-				}
-			}
-			if (configure_command == null) {
-				return false;
-			}
+			string configure_command = project_manager.project.configure_command;
+
 			try {
 				var log = _plugin_instance.output_view;
 
@@ -215,7 +204,7 @@ namespace Vtg
 
 		public bool clean (ProjectManager project_manager, bool vala_stamp = false)
 		{
-			if (_child_watch_id != 0)
+			if (_child_watch_id != 0 || project_manager.project.clean_command == null)
 				return false;
 				
 			var project = project_manager.project;
@@ -238,8 +227,11 @@ namespace Vtg
 						return false;
 					}
 				}
-				log.log_message (OutputTypes.MESSAGE, "%s %s\n".printf (MAKE, "clean"));
-				Process.spawn_async_with_pipes (working_dir, new string[] { MAKE, "clean" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
+				string[] pars;
+				Shell.parse_argv (project.clean_command, out pars);
+
+				log.log_message (OutputTypes.MESSAGE, "%s\n".printf (project.clean_command));
+				Process.spawn_async_with_pipes (working_dir, pars, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out _child_pid, null, out stdo, out stde);
 				if (_child_pid != (Pid) 0) {
 					_operation = _("Project '%s': cleaning").printf (project.name);
 					_child_watch_id = ChildWatch.add (_child_pid, this.on_child_watch);
@@ -253,7 +245,7 @@ namespace Vtg
 					log.log_message (OutputTypes.ERROR, "error spawning 'make clean' process\n");
 				}
 				return true;
-			} catch (SpawnError err) {
+			} catch (Error err) {
 				GLib.warning ("Error spawning clean command: %s", err.message);
 				return false;
 			}

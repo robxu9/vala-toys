@@ -200,33 +200,33 @@ namespace Vtg
 						
 			_prj_executer.process_start.connect ((sender) => {
 				var prj = _plugin_instance.project_view.current_project;
-				update_ui (prj == null || prj.is_default);
+				update_ui (prj);
 			});
 			_prj_executer.process_exit.connect ((sender, exit_status) => {
 				var prj = _plugin_instance.project_view.current_project;
-				update_ui (prj == null || prj.is_default);
+				update_ui (prj);
 			});
 			_prj_builder.build_start.connect ((sender) => {
 				var prj = _plugin_instance.project_view.current_project;
-				update_ui (prj == null || prj.is_default);
+				update_ui (prj);
 			});
 			_prj_builder.build_exit.connect ((sender, exit_status) => {
 				var prj = _plugin_instance.project_view.current_project;
-				update_ui (prj == null || prj.is_default);
+				update_ui (prj);
 			});
 			_prj_search.search_start.connect ((sender) => {
 				var prj = _plugin_instance.project_view.current_project;
-				update_ui (prj == null || prj.is_default);
+				update_ui (prj);
 			});
 			_prj_search.search_exit.connect ((sender, exit_status) => {
 				var prj = _plugin_instance.project_view.current_project;
-				update_ui (prj == null || prj.is_default);
+				update_ui (prj);
 			});
 						
 			initialize_ui ();
 			_changelog = new ChangeLog (_plugin_instance);
 			var prj = _plugin_instance.project_view.current_project;
-			update_ui (prj == null || prj.is_default);
+			update_ui (prj);
 		}
 
 		private void initialize_ui ()
@@ -772,28 +772,32 @@ namespace Vtg
 		{
 			ProjectView view = (ProjectView) sender;
 			var prj = view.current_project;
-			update_ui (prj == null || prj.is_default);
+			update_ui (prj);
 		}
 		
-		private void update_ui (bool default_project)
+		private void update_ui (ProjectManager? pm)
 		{
+			bool default_project = pm == null || pm.is_default;
+			bool can_build = pm != null && pm.project.build_command != null;
+			bool can_clean = pm != null && pm.project.clean_command != null;
+			bool can_configure = pm != null && pm.project.configure_command != null;
+			
 			var action = _actions.get_action ("ProjectClose");
 			if (action != null)
 				action.set_sensitive (!default_project);
-				
+			
 			action = _actions.get_action ("ProjectChange");
 			if (action != null)
 				action.set_sensitive (Vtg.Plugin.main_instance.projects.project_managers.size > 1);
 
 			action = _actions.get_action ("ProjectBuild");
 			if (action != null)
-				action.set_sensitive (!default_project);
+				action.set_sensitive (!default_project && can_build);
+
 			action = _actions.get_action ("ProjectBuildClean");
 			if (action != null)
-				action.set_sensitive (!default_project && !_prj_builder.is_building);
-			action = _actions.get_action ("ProjectBuildCleanStamps");
-			if (action != null)
-				action.set_sensitive (!default_project && !_prj_builder.is_building);
+				action.set_sensitive (!default_project && !_prj_builder.is_building && can_clean);
+
 			action = _actions.get_action ("ProjectBuildStopCompilation");
 			if (action != null)
 				action.set_sensitive (_prj_builder.is_building);
@@ -813,7 +817,7 @@ namespace Vtg
 
 			action = _actions.get_action ("ProjectBuildConfigure");
 			if (action != null)
-				action.set_sensitive (!default_project && !_prj_builder.is_building);
+				action.set_sensitive (!default_project && !_prj_builder.is_building && can_configure);
 			
 			bool has_errors = (_prj_builder.error_pane.error_count + _prj_builder.error_pane.warning_count) > 0;
 			action = _actions.get_action ("ProjectBuildNextError");

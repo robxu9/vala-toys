@@ -142,6 +142,7 @@ namespace Vtg
 						    || prev_ch == ')'
 						    || prev_ch == ']'
 						    || prev_ch == ';'
+						    || prev_ch == '?'
 						    || prev_ch == '/' || ch == '/'
 						    || prev_ch == ',') {
 							result = false;

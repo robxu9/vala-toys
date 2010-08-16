@@ -96,6 +96,9 @@ namespace Vbf {
 		public Vala.List<Vbf.Variable> get_variables ();
 		public override string to_string ();
 		public void update ();
+		public string? build_command { owned get; }
+		public string? clean_command { owned get; }
+		public string? configure_command { owned get; }
 		public signal void updated ();
 	}
 	[CCode (cheader_filename = "vbf.h")]
@@ -152,6 +155,9 @@ namespace Vbf {
 		public abstract Vbf.Project? open (string project_file);
 		public abstract bool probe (string project_file);
 		public abstract void refresh (Vbf.Project project);
+		public abstract string? build_command { owned get; }
+		public abstract string? clean_command { owned get; }
+		public abstract string? configure_command { owned get; }
 	}
 	[CCode (cprefix = "VBF_FILE_TYPES_", cheader_filename = "vbf.h")]
 	public enum FileTypes {

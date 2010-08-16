@@ -26,5 +26,14 @@ namespace Vbf
 		public abstract bool probe (string project_file);
 		public abstract Project? open (string project_file);
 		public abstract void refresh (Project project);
+		public abstract string? configure_command {
+			owned get;
+		}
+		public abstract string? build_command {
+			owned get;
+		}
+		public abstract string? clean_command {
+			owned get;
+		}
 	}
 }

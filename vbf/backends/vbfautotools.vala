@@ -25,6 +25,38 @@ namespace Vbf.Backends
 {
 	public class Autotools : IProjectBackend, GLib.Object
 	{
+		private string _project_dir;
+		
+		public string? configure_command {
+			owned get {
+				string result = null;
+
+				if (_project_dir != null) {
+					foreach (string item in new string[] { "./configure", "./autogen.sh"}) {
+						string file = Path.build_filename (_project_dir, item);
+						if (FileUtils.test (file, FileTest.EXISTS)) {
+							result = item;
+							break;
+						}
+					}
+				}
+
+				return result;
+			}
+		}
+		
+		public string? build_command {
+			owned get {
+				return "make";
+			}
+		}
+		
+		public string? clean_command {
+			owned get {
+				return "make clean";
+			}
+		}
+		
 		/*
 		 * check if the given directory is a base source dir
 		 * of an autotool project.
@@ -46,14 +78,17 @@ namespace Vbf.Backends
 
 		public Project? open (string project_file)
 		{
+			_project_dir = null;
 			Project project = new Project(project_file);
 			project.backend = this;
 			refresh (project);
 			
 			if (project.name == null)
 				return null; //parse failed!
-			else
+			else {
+				_project_dir = project.id;
 				return project;
+			}
 		}
 		
 		public void refresh (Project project)

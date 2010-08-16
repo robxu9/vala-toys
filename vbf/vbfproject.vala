@@ -46,6 +46,33 @@ namespace Vbf
 		{
 			this.id = id;
 		}
+
+		public string? configure_command {
+			owned get {
+				if (backend == null)
+					return null;
+					
+				return backend.configure_command;
+			}
+		}
+		
+		public string? build_command {
+			owned get {
+				if (backend == null)
+					return null;
+					
+				return backend.build_command;
+			}
+		}
+		
+		public string? clean_command {
+			owned get {
+				if (backend == null)
+					return null;
+					
+				return backend.clean_command;
+			}
+		}
 		
 		public Vala.List<Group> get_groups ()
 		{
@@ -107,7 +134,7 @@ namespace Vbf
 			return res;
 		}
 		
-		internal void clear ()		
+		internal void clear ()
 		{
 			groups.clear ();
 			variables.clear ();
