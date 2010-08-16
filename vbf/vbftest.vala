@@ -40,6 +40,10 @@ namespace Vbf.Tests
 			IProjectBackend pm = new Backends.Autotools (); 
 			print ("Probing directory '%s' ...", project_name);
 			bool res = pm.probe (project_name);
+			if (!res) {
+				pm = new Backends.SmartFolder ();
+				res = pm.probe (project_name);
+			}
 			print ("%s\n", res ? "OK" : "KO");
 			if (res) {
 				print ("Opening project\n");

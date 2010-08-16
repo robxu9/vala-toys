@@ -63,17 +63,7 @@ namespace Vbf.Backends
 		 */
 		public bool probe (string project_file)
 		{
-			string file = Path.build_filename (project_file, "configure.ac");
-			bool res = false;
-			
-			if (GLib.FileUtils.test (file, FileTest.EXISTS)) {
-				file = Path.build_filename (project_file, "Makefile.am");
-				if (GLib.FileUtils.test (file, FileTest.EXISTS)) {
-					res = true;
-				}
-			}
-			
-			return res;
+			return Utils.is_autotools_project (project_file);
 		}
 
 		public Project? open (string project_file)

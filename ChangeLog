@@ -1,5 +1,18 @@
 2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/Makefile.am:
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/backends/vbfautotools.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbftarget.vala:
+	* vbf/vbftest.vala:
+	* vbf/vbfutils.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	first support for folder base projects
+
+2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/backends/vbfautotools.vala:
 	* vbf/vbf-1.0.vapi:
 	* vbf/vbfiprojectbackend.vala:

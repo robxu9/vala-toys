@@ -42,4 +42,55 @@ namespace Vbf.Utils
 		log_message ("ValaBuildFramework", format, va2);
 #endif
 	}
+
+	public bool is_autotools_project (string path)
+	{
+		string file = Path.build_filename (path, "configure.ac");
+		bool res = false;
+
+		if (GLib.FileUtils.test (file, FileTest.EXISTS)) {
+			file = Path.build_filename (path, "Makefile.am");
+			if (GLib.FileUtils.test (file, FileTest.EXISTS)) {
+				res = true;
+			}
+		}
+
+		return res;
+	}
+
+	public bool is_waf_project (string path)
+	{
+		string file = Path.build_filename (path, "wscript");
+		bool res = false;
+
+		if (GLib.FileUtils.test (file, FileTest.EXISTS)) {
+			res = true;
+		}
+
+		return res;
+	}
+
+	public bool is_cmake_project (string path)
+	{
+		string file = Path.build_filename (path, "CMakeLists.txt");
+		bool res = false;
+
+		if (GLib.FileUtils.test (file, FileTest.EXISTS)) {
+			res = true;
+		}
+
+		return res;
+	}
+
+	public bool is_simple_make_project (string path)
+	{
+		string file = Path.build_filename (path, "Makefile");
+		bool res = false;
+
+		if (GLib.FileUtils.test (file, FileTest.EXISTS)) {
+			res = true;
+		}
+
+		return res;
+	}
 }

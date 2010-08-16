@@ -43,6 +43,7 @@ libvbf_la_VALASOURCES = \
 	vbfunresolvedconfignode.vala \
 	vbfutils.vala \
 	backends/vbfautotools.vala \
+	backends/vbfsmartfolder.vala \
 	$(NULL)
 
 vbftest_SOURCES = \

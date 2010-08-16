@@ -150,6 +150,16 @@ namespace Vbf
 		{
 			return include_dirs;
 		}
+
+		public bool contains_include_dir (string dir)
+		{
+			foreach (string item in include_dirs) {
+				if (item == dir) {
+					return true;
+				}
+			}
+			return false;
+		}
 		
 		internal void add_include_dir (string dir)
 		{

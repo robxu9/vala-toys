@@ -8,9 +8,21 @@ namespace Vbf {
 		public class Autotools : Vbf.IProjectBackend, GLib.Object {
 			public Autotools ();
 		}
+		[CCode (cheader_filename = "vbf.h")]
+		public class SmartFolder : Vbf.IProjectBackend, GLib.Object {
+			public SmartFolder ();
+		}
 	}
 	[CCode (cprefix = "VbfUtils", lower_case_cprefix = "vbf_utils_")]
 	namespace Utils {
+		[CCode (cheader_filename = "vbf.h")]
+		public static bool is_autotools_project (string path);
+		[CCode (cheader_filename = "vbf.h")]
+		public static bool is_cmake_project (string path);
+		[CCode (cheader_filename = "vbf.h")]
+		public static bool is_simple_make_project (string path);
+		[CCode (cheader_filename = "vbf.h")]
+		public static bool is_waf_project (string path);
 	}
 	[CCode (cheader_filename = "vbf.h")]
 	public abstract class ConfigNode : GLib.Object {
@@ -122,6 +134,7 @@ namespace Vbf {
 		public Target (Vbf.Group group, Vbf.TargetTypes type, string id);
 		public void add_package (Vbf.Package package);
 		public void add_source (Vbf.Source source);
+		public bool contains_include_dir (string dir);
 		public bool contains_package (string package_id);
 		public Vala.List<string> get_built_libraries ();
 		public Vala.List<Vbf.File> get_files ();

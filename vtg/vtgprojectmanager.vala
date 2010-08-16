@@ -240,6 +240,10 @@ namespace Vtg
 		{
 			IProjectBackend pm = new Backends.Autotools (); 
 			bool res = pm.probe (project_filename);
+			if (!res) {
+				pm = new Backends.SmartFolder ();
+				res = pm.probe (project_filename);
+			}
 			if (res) {
 				_project = pm.open (project_filename);
 				if (_project == null)
