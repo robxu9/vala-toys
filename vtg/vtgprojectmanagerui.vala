@@ -424,8 +424,9 @@ namespace Vtg
 			}
 
 			if (foldername != null) {
-				create_project (foldername);
-				open_project (foldername);
+				if (create_project (foldername)) {
+					open_project (foldername);
+				}
 			}
 		}
 
@@ -926,13 +927,14 @@ namespace Vtg
 			_projects.remove (project);
 		}
 
-		private void create_project (string project_path)
+		private bool create_project (string project_path)
 		{
+			bool success = false;
 			try {
 				var log = _plugin_instance.output_view;
 				if (!is_dir_empty (project_path)) {
 					log.log_message (OutputTypes.MESSAGE, "project directory %s not empty\n".printf (project_path));
-					return;
+					return false;
 				}
 				string process_file = "vala-gen-project";
 				int status = 0;
@@ -953,6 +955,7 @@ namespace Vtg
 							ChildWatch.add (child_pid, this.on_child_watch);
 							log.start_watch (OutputTypes.CHILD_PROCESS, (uint) child_pid, stdo, stde);
 							log.activate ();
+							success = true;
 						} else {
 							log.log_message (OutputTypes.ERROR, "error spawning ./autogen.sh process\n");
 						}
@@ -963,8 +966,9 @@ namespace Vtg
 					log.log_message (OutputTypes.ERROR, "error spawning vala-gen-project process\n");
 				}
 			} catch (Error err) {
-				GLib.warning ("error creating project: %s", err.message);
+				Interaction.error_message (_("Project creation failed"), err);
 			}
+			return success;
 		}
 
 		private bool is_dir_empty (string dir_path)
