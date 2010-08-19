@@ -1,5 +1,12 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/backends/vbfsmartfolder.vala:
+
+	sniff vala sources for used packages and a lot of fixes
+	for the smartfolder backend
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectbuilder.vala:
 
 	inform the user when we cannot spawn a subprocess

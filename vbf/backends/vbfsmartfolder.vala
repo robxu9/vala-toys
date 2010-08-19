@@ -29,6 +29,7 @@ namespace Vbf.Backends
 		private string _configure_command;
 		private string _build_command;
 		private string _clean_command;
+		private GLib.Regex _regex;
 		
 		public string? configure_command {
 			owned get {
@@ -82,6 +83,7 @@ namespace Vbf.Backends
 		public void refresh (Project project)
 		{
 			try {
+				project.working_dir = project.id;
 				var file = GLib.File.new_for_path (project.id);
 				project.name = GLib.Filename.display_basename (file.get_basename ());
 				var group = new Group(project, project.id);
@@ -93,9 +95,11 @@ namespace Vbf.Backends
 				
 				// try to infer build/clean/configure command
 				if (Utils.is_waf_project (project.id)) {
-					_configure_command = "waf configure";
-					_build_command = "waf build";
-					_clean_command = "waf distclean";
+					string waf_command = Path.build_filename (project.id,"waf");
+					Utils.trace ("waf command is %s", waf_command);
+					_configure_command = "%s configure".printf (waf_command);
+					_build_command = "%s build".printf (waf_command);
+					_clean_command = "%s clean".printf (waf_command);
 				} else if (Utils.is_cmake_project (project.id)) {
 					_configure_command = "cmake";
 					_build_command = "make";
@@ -104,8 +108,9 @@ namespace Vbf.Backends
 					_build_command = "make";
 					_clean_command = "make clean";
 				}
+				_regex = new GLib.Regex ("""^\s*(using)\s+(\w\S*)\s*;.*$""");
 				scan_directory (project.id, project);
-				
+				_regex = null;
 				//project.setup_file_monitors ();
 			} catch (Error err) {
 				critical ("open: %s", err.message);
@@ -144,6 +149,33 @@ namespace Vbf.Backends
 			var source = new Vbf.Source (target, file.get_path ());
 			source.type = FileTypes.VALA_SOURCE;
 			target.add_source (source);
+			// try to infer vapi used by source
+			// open the source file and read the initial lines
+			try {
+				var input_stream = file.read ();
+				var data_stream = new GLib.DataInputStream (input_stream);
+				int count = 0;
+				string line;
+				size_t len;
+				while ((line = data_stream.read_line (out len)) != null && count < 100) {
+					count++;
+					GLib.MatchInfo match;
+					_regex.match (line, RegexMatchFlags.NEWLINE_ANY, out match);
+					while (match.matches ()) {
+						string package_name = Utils.guess_package_name (match.fetch (2));
+						Utils.trace ("guessing name for %s: %s", match.fetch (2), package_name);
+						if (package_name != null) {
+							if (!target.contains_package (package_name))
+							{
+								target.add_package (new Vbf.Package (package_name));
+							}
+						}
+						match.next ();
+					}
+				}
+			} catch (Error err) {
+				warning ("error sniffing file: %s", file.get_path ());
+			}
 		}
 		
 		private void add_vapi_source (Target target, string directory, FileInfo file_info)
