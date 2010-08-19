@@ -436,7 +436,7 @@ namespace Vtg
 					GLib.MatchInfo match;
 					regex.match (line, RegexMatchFlags.NEWLINE_ANY, out match);
 					while (match.matches ()) {
-						string package_name = Afrodite.Utils.guess_package_name (match.fetch (2));
+						string package_name = Vbf.Utils.guess_package_name (match.fetch (2));
 						Utils.trace ("guessing name for %s: %s", match.fetch (2), package_name);
 						if (package_name != null) {
 							var group = project_manager.project.get_group("Sources");

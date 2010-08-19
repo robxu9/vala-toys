@@ -1,5 +1,14 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/utils.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfutils.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	move the guess_package_name from afrodite to the vala build framework
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* debian/changelog:
 	* vbf/vbf-1.0.vapi:
 
