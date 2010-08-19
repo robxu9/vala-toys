@@ -34,6 +34,12 @@ namespace Afrodite
 			_sources = sources;
 		}
 		
+		~Parser()
+		{
+			_sources.clear ();
+			_sources = null;
+		}
+
 		public void parse ()
 		{
 			context = new Vala.CodeContext();
@@ -77,7 +83,7 @@ namespace Afrodite
 						source_file.add_using_directive (ns_ref);
 				}
 			}
-						
+
 			context.assert = false;
 			context.checking = false;
 			context.experimental = false;
@@ -86,17 +92,24 @@ namespace Afrodite
 
 			context.profile = Profile.GOBJECT;
 			context.add_define ("GOBJECT");
-			context.add_define ("VALA_0_7_6_NEW_METHODS");
-			
+
 			int glib_major = 2;
-			int glib_minor = 12;
+			int glib_minor = 14;
 			context.target_glib_major = glib_major;
 			context.target_glib_minor = glib_minor;
-			
+
+			for (int i = 2; i <= 10; i += 2) {
+				context.add_define ("VALA_0_%d".printf (i));
+			}
+
+			for (int i = 16; i <= glib_minor; i += 2) {
+				context.add_define ("GLIB_2_%d".printf (i));
+			}
+
 			var parser = new Vala.Parser ();
 			parser.parse (context);
 			
 			CodeContext.pop ();
-		}		
+		}
 	}
 }

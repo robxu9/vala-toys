@@ -1,5 +1,12 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/parser.vala:
+
+	updated the parser to better comply with the real vala
+	compiler defines
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/afroditetest.vala:
 
 	add a 'repeat' option to test the remove parts of afrodite.
