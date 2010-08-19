@@ -1,5 +1,12 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbuildlogview.vala:
+
+	fixed some missing TreePath conversions from the parent model
+	to the child one.
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectview.vala:
 
 	fix project tree view bug when updating a project.

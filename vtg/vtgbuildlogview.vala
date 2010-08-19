@@ -288,7 +288,8 @@ namespace Vtg
 
 		public void on_build_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
 		{
-			activate_path (path);
+			var child_path = _model.convert_path_to_child_path (path);
+			activate_path (child_path);
 		}
 
 		private void activate_path (TreePath path)
@@ -347,7 +348,8 @@ namespace Vtg
 		{
 			TreePath path = new TreePath.from_string (_current_error_row.to_string());
 			if (path != null) {
-				activate_path (path);
+				var child_path = _model.convert_path_to_child_path (path);
+				activate_path (child_path);
 				_build_view.scroll_to_cell (path, null, false, 0, 0);
 				_build_view.get_selection ().select_path (path);
 			}
@@ -361,7 +363,8 @@ namespace Vtg
 		{
 			TreePath path = new TreePath.from_string (_current_error_row.to_string());
 			if (path != null) {
-				activate_path (path);
+				var child_path = _model.convert_path_to_child_path (path);
+				activate_path (child_path);
 				_build_view.scroll_to_cell (path, null, false, 0, 0);
 				_build_view.get_selection ().select_path (path);
 			}
