@@ -1,3 +1,9 @@
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	C Warning are not always interpreted correctly. Fixes issue #143
+
 2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure:

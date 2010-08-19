@@ -441,6 +441,17 @@ namespace Vtg
 
 		  vtgsourceoutlinerview.c:703: warning: passing argument 2 of ‘vtg_source_outliner_view_on_show_private_symbol_toggled’ from incompatible pointer type
 		  vtgsourceoutlinerview.vala:186: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct GtkToggleButton *’
+		  
+		  
+		  we have also this message:
+		  
+		  In file included from tuntun-applet.c:39:
+		  /usr/include/glib-2.0/glib/gi18n-lib.h:33:1: warning: "Q_" redefined
+		  In file included from /usr/include/libbonobo-2.0/bonobo/bonobo-i18n.h:39,
+		                   from /usr/include/libbonobo-2.0/bonobo/bonobo-generic-factory.h:16,
+		                   from /usr/include/panel-2.0/panel-applet.h:33,
+		                   from tuntun-applet.c:32:
+		  /usr/include/glib-2.0/glib/gi18n.h:29:1: warning: this is the location of the previous definition
 		 */
 
 		private void add_c_message (string file, string message)
@@ -456,17 +467,27 @@ namespace Vtg
 
 			if (parts[1] != null) {
 				if (parts[2] != null) {
+					string message_type;
+					string message_text;
 					int is_warning = 0;
-					if (parts[1].has_suffix ("error")) {
+					if (parts[1].to_int () != 0) {
+						string[] tmp = parts[2].split(":", 2);
+						message_type = tmp[0].strip ();
+						message_text = tmp[1];
+					} else {
+						message_type = parts[1];
+						message_text = parts[2];
+					}
+					if (message_type.has_suffix ("error")) {
 						stock_id = Gtk.STOCK_DIALOG_ERROR;
 						_c_error_count++;
 						is_warning = 0; //errors come first
-					} else if (parts[1].has_suffix ("warning")) {
+					} else if (message_type.has_suffix ("warning")) {
 						stock_id = Gtk.STOCK_DIALOG_WARNING;
 						_c_warning_count++;
 						is_warning = 1;
-					} else if (!parts[1].chomp().has_suffix ("note")) {
-						Utils.trace ("unrecognized message category, default to error: '%s' ---> '%s' '%s' '%s'", message, parts[0], parts[1], parts[2]);
+					} else if (!message_type.chomp().has_suffix ("note")) {
+						Utils.trace ("unrecognized message category, default to error for %s: '%s' ---> '%s' '%s' '%s'", file, message, parts[0], message_type, message_text);
 						_c_error_count++;
 						is_warning = 0; //errors come first
 					} else {
@@ -477,7 +498,7 @@ namespace Vtg
 					_child_model.append (out iter);
 					_child_model.set (iter, 
 						Columns.ICON, stock_id, 
-						Columns.MESSAGE, parts[2], 
+						Columns.MESSAGE, message_text, 
 						Columns.FILENAME , file, 
 						Columns.LINE, line, 
 						Columns.COLUMN, 0, 
