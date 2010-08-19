@@ -1,5 +1,11 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugin.vala:
+
+	Fix GObject style constructor chainup with new vala compiler
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbuildlogview.vala:
 
 	C Warning are not always interpreted correctly. Fixes issue #143

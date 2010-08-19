@@ -60,7 +60,12 @@ namespace Vtg
 				return _config;
 			}
 		}
-		
+
+		public Plugin ()
+		{
+			GLib.Object ();
+		}
+
 		construct
 		{
 			main_instance = this;
