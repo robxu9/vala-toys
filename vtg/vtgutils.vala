@@ -74,7 +74,7 @@ namespace Vtg
 		private static Gtk.ListStore _configure_cache = null;
 		private static Gtk.ListStore _executer_cache = null;
 		
-		public static Gtk.ListStore get_build_cache ()		
+		public static Gtk.ListStore get_build_cache ()
 		{
 			if (_build_cache == null) {
 				_build_cache = new Gtk.ListStore (1, typeof (string));
@@ -83,7 +83,7 @@ namespace Vtg
 			return _build_cache;
 		}
 
-		public static Gtk.ListStore get_compile_cache ()		
+		public static Gtk.ListStore get_compile_cache ()
 		{
 			if (_compile_cache == null) {
 				_compile_cache = new Gtk.ListStore (1, typeof (string));
@@ -92,7 +92,7 @@ namespace Vtg
 			return _compile_cache;
 		}
 
-		public static Gtk.ListStore get_configure_cache ()		
+		public static Gtk.ListStore get_configure_cache ()
 		{
 			if (_configure_cache == null) {
 				_configure_cache = new Gtk.ListStore (1, typeof (string));
@@ -101,7 +101,7 @@ namespace Vtg
 			return _configure_cache;
 		}
 
-		public static Gtk.ListStore get_executer_cache ()		
+		public static Gtk.ListStore get_executer_cache ()
 		{
 			if (_executer_cache == null) {
 				_executer_cache = new Gtk.ListStore (1, typeof (string));

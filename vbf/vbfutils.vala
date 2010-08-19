@@ -45,16 +45,18 @@ namespace Vbf.Utils
 
 	public bool is_autotools_project (string path)
 	{
-		string file = Path.build_filename (path, "configure.ac");
+		string config_file = Path.build_filename (path, "configure.ac");
+		string autogen_file = Path.build_filename (path, "autogen.sh");
 		bool res = false;
 
-		if (GLib.FileUtils.test (file, FileTest.EXISTS)) {
-			file = Path.build_filename (path, "Makefile.am");
+		if (GLib.FileUtils.test (config_file, FileTest.EXISTS) || GLib.FileUtils.test (autogen_file, FileTest.EXISTS)) {
+			string file = Path.build_filename (path, "Makefile.am");
 			if (GLib.FileUtils.test (file, FileTest.EXISTS)) {
 				res = true;
 			}
 		}
 
+		Utils.trace ("project at: %s is autotools %s", path, res.to_string ());
 		return res;
 	}
 

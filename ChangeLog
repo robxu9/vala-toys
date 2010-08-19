@@ -1,5 +1,14 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbfutils.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgutils.vala:
+
+	using standard project configure routine now that we support
+	more than one project backend
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* gen-project/ui/gen-project.ui:
 
 	minor cleanup to the dialog. Fixes issue #86

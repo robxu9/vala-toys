@@ -426,6 +426,9 @@ namespace Vtg
 			if (foldername != null) {
 				if (create_project (foldername)) {
 					open_project (foldername);
+					// configure the project
+					var project = plugin_instance.project_view.current_project;
+					_prj_builder.configure (project, "");
 				}
 			}
 		}
@@ -938,27 +941,13 @@ namespace Vtg
 				}
 				string process_file = "vala-gen-project";
 				int status = 0;
-				int stdo, stde;
-				Pid child_pid;
 
 				//vala-gen-project
 				if (Process.spawn_sync (project_path, new string[] { process_file, "--projectdir", project_path }, null, 
-					SpawnFlags.SEARCH_PATH,
-					null, null, null, out status)) {
+				    SpawnFlags.SEARCH_PATH,
+				    null, null, null, out status)) {
 					if (Process.exit_status (status) == 0) {
-						//autogen
-						var start_message = _("Autogenerating project: %s\n").printf (project_path);
-						log.log_message (OutputTypes.MESSAGE, start_message);
-						log.log_message (OutputTypes.MESSAGE, "%s\n\n".printf (string.nfill (start_message.length - 1, '-')));
-						Process.spawn_async_with_pipes (project_path, new string[] { "./autogen.sh" }, null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null, out child_pid, null, out stdo, out stde);
-						if (child_pid != (Pid) null) {
-							ChildWatch.add (child_pid, this.on_child_watch);
-							log.start_watch (OutputTypes.CHILD_PROCESS, (uint) child_pid, stdo, stde);
-							log.activate ();
-							success = true;
-						} else {
-							log.log_message (OutputTypes.ERROR, "error spawning ./autogen.sh process\n");
-						}
+						success = true;
 					} else {
 						log.log_message (OutputTypes.ERROR, "error executing vala-gen-project process\n");
 					}
@@ -982,16 +971,6 @@ namespace Vtg
 			}
 		}
 
-		private void on_child_watch (Pid pid, int status)
-		{
-			var log = _plugin_instance.output_view;
-
-			Process.close_pid (pid);
-
-			log.stop_watch ((uint) pid);
-			log.log_message (OutputTypes.MESSAGE, _("\nautogeneration end with exit status %d\n").printf(status));
-		}
-		
 		public ProjectManager? find_project_for_id (string id)
 		{
 			foreach (ProjectManager project_manager in _projects) {
