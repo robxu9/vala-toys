@@ -943,7 +943,11 @@ namespace Vtg
 				int status = 0;
 
 				//vala-gen-project
-				if (Process.spawn_sync (project_path, new string[] { process_file, "--projectdir", project_path }, null, 
+				if (Process.spawn_sync (project_path, new string[] { 
+				    process_file, "--projectdir", project_path, 
+				    "--author", Plugin.main_instance.config.author,
+				    "--email", Plugin.main_instance.config.email_address},
+				    null, 
 				    SpawnFlags.SEARCH_PATH,
 				    null, null, null, out status)) {
 					if (Process.exit_status (status) == 0) {

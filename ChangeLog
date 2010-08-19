@@ -1,5 +1,11 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+
+	pass the configured author and email to vala-gen-project. Fixes issue #109
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/vbfutils.vala:
 	* vtg/vtgprojectmanagerui.vala:
 	* vtg/vtgutils.vala:
