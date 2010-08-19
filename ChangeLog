@@ -1,5 +1,11 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectbuilder.vala:
+
+	inform the user when we cannot spawn a subprocess
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/utils.vala:
 	* vbf/vbf-1.0.vapi:
 	* vbf/vbfutils.vala:

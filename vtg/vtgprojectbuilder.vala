@@ -152,6 +152,7 @@ namespace Vtg
 				return true;
 			} catch (Error err) {
 				GLib.warning ("Error spawning build process: %s", err.message);
+				Interaction.error_message (_("Build failed"), err);
 				return false;
 			}
 		}
@@ -198,6 +199,7 @@ namespace Vtg
 				return true;
 			} catch (Error err) {
 				GLib.warning ("Error spawning build process: %s", err.message);
+				Interaction.error_message (_("Configure failed"), err);
 				return false;
 			}
 		}
@@ -247,6 +249,7 @@ namespace Vtg
 				return true;
 			} catch (Error err) {
 				GLib.warning ("Error spawning clean command: %s", err.message);
+				Interaction.error_message (_("Clean failed"), err);
 				return false;
 			}
 		}
