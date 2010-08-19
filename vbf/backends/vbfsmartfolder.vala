@@ -25,11 +25,13 @@ namespace Vbf.Backends
 {
 	public class SmartFolder : IProjectBackend, GLib.Object
 	{
-		private string _project_dir;
+		private unowned Project _project;
 		private string _configure_command;
 		private string _build_command;
 		private string _clean_command;
 		private GLib.Regex _regex;
+		private Vala.List<FileMonitor> _file_mons = new Vala.ArrayList<FileMonitor> ();
+		private Vala.List<string> _visited_directory;
 		
 		public string? configure_command {
 			owned get {
@@ -48,7 +50,7 @@ namespace Vbf.Backends
 				return _clean_command;
 			}
 		}
-		
+
 		public bool probe (string project_file)
 		{
 			bool res = false;
@@ -62,7 +64,7 @@ namespace Vbf.Backends
 
 		public Project? open (string project_file)
 		{
-			_project_dir = null;
+			_project = null;
 			_configure_command = null;
 			_build_command = null;
 			_clean_command = null;
@@ -74,15 +76,25 @@ namespace Vbf.Backends
 			if (project.name == null)
 				return null; //parse failed!
 			else {
-				_project_dir = project.id;
-				
+				_project = project;
 				return project;
 			}
 		}
-		
+
+		private void cleanup_file_monitors ()
+		{
+			foreach (FileMonitor file_mon in _file_mons) {
+				file_mon.changed.disconnect(this.on_project_directory_changed);
+				file_mon.cancel ();
+			}
+			_file_mons.clear ();
+		}
+
 		public void refresh (Project project)
 		{
+			cleanup_file_monitors ();
 			try {
+				project.clear ();
 				project.working_dir = project.id;
 				var file = GLib.File.new_for_path (project.id);
 				project.name = GLib.Filename.display_basename (file.get_basename ());
@@ -109,9 +121,15 @@ namespace Vbf.Backends
 					_clean_command = "make clean";
 				}
 				_regex = new GLib.Regex ("""^\s*(using)\s+(\w\S*)\s*;.*$""");
+				_visited_directory = new Vala.ArrayList<string> ();
 				scan_directory (project.id, project);
+				
+				if (project.name != null)
+					setup_file_monitors (project);
+				
 				_regex = null;
-				//project.setup_file_monitors ();
+				_visited_directory.clear ();
+				_visited_directory = null;
 			} catch (Error err) {
 				critical ("open: %s", err.message);
 				return;
@@ -120,13 +138,15 @@ namespace Vbf.Backends
 		
 		private void scan_directory (string directory, Project project) throws Error
 		{
+			_visited_directory.add (directory);
 			var dir = GLib.File.new_for_path (directory);
 			var enm = dir.enumerate_children ("standard::*", 0, null);
 			FileInfo file_info;
 			while ((file_info = enm.next_file (null)) != null) {
 				Utils.trace ("%s %s", file_info.get_file_type () == FileType.DIRECTORY ? "directory" : "file", file_info.get_display_name ());
 				if (file_info.get_file_type () == FileType.DIRECTORY) {
-					scan_directory (Path.build_filename (directory, file_info.get_name ()), project);
+					if (!file_info.get_name ().has_prefix (".") && !file_info.get_name ().has_prefix ("_"))
+						scan_directory (Path.build_filename (directory, file_info.get_name ()), project);
 				} else {
 					Target target;
 					var name = file_info.get_display_name ();
@@ -189,5 +209,37 @@ namespace Vbf.Backends
 				target.add_include_dir (Path.get_dirname (file.get_path ()));
 			}
 		}
+
+		internal void setup_file_monitors (Project project)
+		{
+			try {
+				GLib.File file;
+				FileMonitor file_mon;
+
+				foreach (string dirname in _visited_directory) {
+					file = GLib.File.new_for_path (dirname);
+					Utils.trace ("setup_file_monitors for: %s", dirname);
+					file_mon = file.monitor_directory (FileMonitorFlags.NONE);
+					file_mon.changed.connect (this.on_project_directory_changed);
+					_file_mons.add (file_mon);
+				}
+
+			} catch (Error err) {
+				critical ("setup_file_monitors error: %s", err.message);
+			}
+		}
+
+		private void on_project_directory_changed (FileMonitor sender, GLib.File file, GLib.File? other_file, GLib.FileMonitorEvent event_type)
+		{
+			if (!sender.is_cancelled ()) {
+				if (event_type == FileMonitorEvent.CREATED || event_type == FileMonitorEvent.DELETED) {
+					if (Utils.is_vala_source (file.get_path ())) {
+						Utils.trace ("file %s: %s", event_type == FileMonitorEvent.CREATED ? "created" : "deleted", file.get_path ());
+						_project.update ();
+					}
+				}
+			}
+		}
+
 	}
 }

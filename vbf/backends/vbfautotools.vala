@@ -25,15 +25,16 @@ namespace Vbf.Backends
 {
 	public class Autotools : IProjectBackend, GLib.Object
 	{
-		private string _project_dir;
-		
+		private unowned Project _project;
+		private Vala.List<FileMonitor> file_mons = new Vala.ArrayList<FileMonitor> ();
+
 		public string? configure_command {
 			owned get {
 				string result = null;
 
-				if (_project_dir != null) {
+				if (_project != null && _project.working_dir != null) {
 					foreach (string item in new string[] { "./configure", "./autogen.sh"}) {
-						string file = Path.build_filename (_project_dir, item);
+						string file = Path.build_filename (_project.working_dir, item);
 						if (FileUtils.test (file, FileTest.EXISTS)) {
 							result = item;
 							break;
@@ -56,7 +57,7 @@ namespace Vbf.Backends
 				return "make clean";
 			}
 		}
-		
+
 		/*
 		 * check if the given directory is a base source dir
 		 * of an autotool project.
@@ -68,21 +69,21 @@ namespace Vbf.Backends
 
 		public Project? open (string project_file)
 		{
-			_project_dir = null;
 			Project project = new Project(project_file);
-			project.backend = this;
 			refresh (project);
 			
 			if (project.name == null)
 				return null; //parse failed!
 			else {
-				_project_dir = project.id;
+				_project = project;
+				project.backend = this;
 				return project;
 			}
 		}
 		
 		public void refresh (Project project)
 		{
+			cleanup_file_monitors ();
 			try {
 				string file = Path.build_filename (project.id, "configure.ac");
 				string buffer;
@@ -204,7 +205,7 @@ namespace Vbf.Backends
 				bool res = reg.match (buffer, RegexMatchFlags.NEWLINE_CR, out match);
 				if (!res) {
 					reg = new GLib.Regex ("AC_OUTPUT\\(\\[(.*)\\]\\)", RegexCompileFlags.MULTILINE);
-					res = reg.match (buffer, RegexMatchFlags.NEWLINE_CR, out match);					
+					res = reg.match (buffer, RegexMatchFlags.NEWLINE_CR, out match);
 				}
 				if (res) {
 					string tmp = normalize_string (match.fetch (1));
@@ -213,8 +214,9 @@ namespace Vbf.Backends
 						parse_makefile (project, project.id, makefile);
 					}
 				}
-			
-				project.setup_file_monitors ();
+				if (project.name != null) {
+					setup_file_monitors (project);
+				}
 			} catch (Error err) {
 				critical ("open: %s", err.message);
 				return;
@@ -764,5 +766,50 @@ namespace Vbf.Backends
 		{
 			return data.replace (".", "_").replace ("-", "_");
 		}
+		
+		private void setup_file_monitors (Project project)
+		{
+			try {
+				string fname;
+				GLib.File file;
+				FileMonitor file_mon;
+
+				foreach (Group group in project.get_groups ()) {
+					fname = Path.build_filename (group.id, "Makefile.am");
+					Utils.trace ("setup_file_monitors for: %s", fname);
+					file = GLib.File.new_for_path (fname);
+					file_mon = file.monitor_file (FileMonitorFlags.NONE);
+					file_mon.changed.connect (this.on_project_file_changed);
+					file_mons.add (file_mon);
+				}
+				fname = Path.build_filename (project.id, "configure.ac");
+				file = GLib.File.new_for_path (fname);
+				file_mon = file.monitor_file (FileMonitorFlags.NONE);
+				file_mon.changed.connect (this.on_project_file_changed);
+				file_mons.add (file_mon);
+
+			} catch (Error err) {
+				critical ("setup_file_monitors error: %s", err.message);
+			}
+		}
+
+		private void cleanup_file_monitors ()
+		{
+			foreach (FileMonitor file_mon in file_mons) {
+				file_mon.changed.disconnect(this.on_project_file_changed);
+				file_mon.cancel ();
+			}
+			file_mons.clear ();
+		}
+
+		private void on_project_file_changed (FileMonitor sender, GLib.File file, GLib.File? other_file, GLib.FileMonitorEvent event_type)
+		{
+			if (!sender.is_cancelled ()) {
+				if (event_type == FileMonitorEvent.CHANGES_DONE_HINT) {
+					_project.update ();
+				}
+			}
+		}
+
 	}
 }

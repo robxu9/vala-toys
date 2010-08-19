@@ -1,5 +1,14 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/backends/vbfautotools.vala:
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbfutils.vala:
+
+	reworked the file monitor logic to improve the smartfolder backend
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 	* vtg/vtgsymbolcompletion.vala:
 	* vtg/vtgsymbolcompletionprovider.vala:

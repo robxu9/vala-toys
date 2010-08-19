@@ -31,15 +31,14 @@ namespace Vbf
 		public string url;
 		public string version;
 		public string working_dir;
-			
+
 		public signal void updated ();
-		
+
 		private Vala.List<Group> groups = new Vala.ArrayList<Group> ();	
 		private Vala.List<Module> modules = new Vala.ArrayList<Module> ();
 		private Vala.List<Variable> variables = new Vala.ArrayList<Variable> ();
-		private Vala.List<FileMonitor> file_mons = new Vala.ArrayList<FileMonitor> ();
-		private bool in_refresh = false;
-		
+		private bool in_update = false;
+
 		internal IProjectBackend backend = null;
 		
 		public Project (string id)
@@ -133,61 +132,24 @@ namespace Vbf
 			
 			return res;
 		}
-		
+
 		internal void clear ()
 		{
 			groups.clear ();
 			variables.clear ();
 			modules.clear ();
-			cleanup_file_monitors ();
 		}
-		
-		internal void setup_file_monitors ()
-		{
-			try {
-				string fname;
-				GLib.File file;
-				foreach (Group group in groups) {
-					fname = Path.build_filename (group.id, "Makefile.am");
-					file = GLib.File.new_for_path (fname);
-					var file_mon = file.monitor (FileMonitorFlags.NONE, null);
-					file_mons.add (file_mon);
-					file_mon.changed.connect (this.on_project_file_changed);
-				}
-				fname = Path.build_filename (id, "configure.ac");
-				file = GLib.File.new_for_path (fname);
-				var file_mon = file.monitor (FileMonitorFlags.NONE, null);
-				file_mons.add (file_mon);
-				file_mon.changed.connect (this.on_project_file_changed);
-			} catch (Error err) {
-				critical ("setup_file_monitors error: %s", err.message);
-			}
-		}
-		
-		internal void cleanup_file_monitors ()
-		{
-			foreach (FileMonitor file_mon in file_mons) {
-				file_mon.changed.disconnect(this.on_project_file_changed);
-				file_mon.cancel ();
-			}
-			file_mons.clear ();
-		}
-		
-		private void on_project_file_changed (FileMonitor sender, GLib.File file, GLib.File? other_file, GLib.FileMonitorEvent event_type)
-		{
-			update ();
-		}
-		
+
 		public void update ()
 		{
-			if (in_refresh)
+			if (in_update)
 				return;
 				
-			in_refresh = true;
+			in_update = true;
 			if (backend != null)
 				backend.refresh (this);
 			this.updated ();
-			in_refresh = false;
+			in_update = false;
 		}
 	}
 }

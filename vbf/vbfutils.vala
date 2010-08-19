@@ -150,4 +150,9 @@ namespace Vbf.Utils
 
 		return null;
 	}
+	
+	private bool is_vala_source (string filename)
+	{
+		return filename.has_suffix (".vala") || filename.has_suffix (".vapi");
+	}
 }
