@@ -64,14 +64,16 @@ namespace Afrodite
 		
 		~Completion ()
 		{
-			if (AtomicInt.@get (ref _parser_stamp) != 0)
-				_parser_thread.join ();
-
-			_parser_thread = null;
-
+			// invalidate the ast so the parser thread will exit asap
 			_ast_mutex.lock ();
 			_ast = null;
 			_ast_mutex.unlock ();
+
+			if (AtomicInt.@get (ref _parser_stamp) != 0) {
+				Utils.trace ("join the parser thread before exit");
+				_parser_thread.join ();
+			}
+			_parser_thread = null;
 		}
 
 		public bool is_parsing
@@ -211,7 +213,7 @@ namespace Afrodite
 
 #if DEBUG
 			if (ast == null) {
-				Utils.trace ("can't acquire lock: %d", file_count);
+				//Utils.trace ("can't acquire lock: %d", file_count);
 			} else {
 				Utils.trace ("lock acquired: %d", file_count);
 			}
@@ -281,16 +283,16 @@ namespace Afrodite
 					else {
 						foreach (Vala.SourceFile s in source.context.get_source_files ()) {
 							if (s.filename == source.path) {
-								bool source_exists = _ast.lookup_source_file (source.path) != null;
-							
-								// if I'm parsing just one source and there are errors and the source already
-								// exists in the ast, I'll keep the previous copy
-								if (source_count == 1 && source_exists && p.context.report.get_errors () > 0)
-									break;
-								
 								// do the real merge
 								_ast_mutex.@lock ();
-								if (_ast != null) {
+								bool source_exists = _ast.lookup_source_file (source.path) != null;
+
+								// if the ast is still valid: not null
+								// and not 
+								// if I'm parsing just one source and there are errors and the source already exists in the ast: I'll keep the previous copy
+								// do the merge
+								if (_ast != null
+								   && !(source_count == 1 && source_exists && p.context.report.get_errors () > 0)) {
 									if (merger == null) {
 										// lazy init the merger, here I'm sure that _ast != null
 										merger = new AstMerger (_ast);
