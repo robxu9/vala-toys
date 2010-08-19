@@ -298,6 +298,13 @@ namespace Vtg
 		private void on_current_project_updated (ProjectManager sender)
 		{
 			update_project_treeview ();
+
+			var doc = _plugin_instance.window.get_active_document ();
+			if (doc != null && Utils.is_vala_doc (doc)) {
+				var new_project = Plugin.main_instance.projects.get_project_manager_for_document (doc);
+				if (new_project != null)
+					this.current_project = new_project;
+			}
 		}
 
 		private void on_packages_open_configure (Gtk.Action action)

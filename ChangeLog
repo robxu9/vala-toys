@@ -1,5 +1,13 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojects.vala:
+	* vtg/vtgprojectview.vala:
+
+	remove a source from the default project when it became part of another
+	opened project
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/completionengine.vala:
 
 	try to speedup parser thread destruction

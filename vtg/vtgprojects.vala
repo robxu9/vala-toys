@@ -59,11 +59,33 @@ namespace Vtg
 		internal void add (ProjectManager project_manager)
 		{
 			_project_managers.add (project_manager);
+			project_manager.updated.connect (this.on_project_updated);
 		}
 
 		internal void remove (ProjectManager project_manager)
 		{
+			project_manager.updated.disconnect (this.on_project_updated);
 			_project_managers.remove (project_manager);
+		}
+
+		private void on_project_updated (ProjectManager sender)
+		{
+			// see if vala source of a Default project is
+			// now part of the updated project
+			if (sender.is_default)
+				return; // no need to check the default project
+
+			foreach (Vbf.Source source in sender.all_vala_sources) {
+				foreach (Vbf.Source def_source in _default_project.all_vala_sources) {
+					if (source.filename == def_source.filename) {
+						var group = _default_project.project.get_group("Sources");
+						Target target = group.get_target_for_id ("Default");
+						target.remove_source (def_source);
+						_default_project.updated ();
+						break;
+					}
+				}
+			}
 		}
 
 		internal ProjectManager get_project_manager_for_document (Gedit.Document document)
