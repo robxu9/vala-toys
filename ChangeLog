@@ -1,5 +1,11 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectview.vala:
+
+	fix project tree view bug when updating a project.
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 
 	pass the configured author and email to vala-gen-project. Fixes issue #109

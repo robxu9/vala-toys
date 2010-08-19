@@ -72,39 +72,38 @@ namespace Vtg
 			get { 
 				return _current_project; 
 			} 
-			set { 
-				if (_current_project != null) {
-					_current_project.updated.disconnect (this.on_current_project_updated);
-				}
-				_current_project = value; 
-				if (_current_project != null) {
-					_current_project.updated.connect (this.on_current_project_updated);
- 					if (_current_project.model != null) {
-						_filtered_model = new Gtk.TreeModelFilter (_current_project.model, null);
-						_filtered_model.set_visible_func (this.filter_function);
-						_prj_view.set_model (_filtered_model);
-						_prj_view.expand_all ();
+			set {
+				if (_current_project != value) {
+					if (_current_project != null) {
+						_current_project.updated.disconnect (this.on_current_project_updated);
+					}
+					_current_project = value; 
+					if (_current_project != null) {
+						_current_project.updated.connect (this.on_current_project_updated);
+	 					if (_current_project.model != null) {
+	 						update_project_treeview ();
+						} else {
+							_prj_view.set_model (null);
+						}
+						//sync the project combo view
+						TreeModel model = _prjs_combo.get_model ();
+						Gtk.TreeIter iter;
+						bool valid = model.get_iter_first (out iter);
+						while (valid) {
+							string name;
+							model.@get (iter, 0, out name);
+					
+							if (name == _current_project.project.name) {
+								_prjs_combo.set_active_iter (iter);
+								break;
+							}
+							valid = model.iter_next (ref iter);
+						}
 					} else {
 						_prj_view.set_model (null);
 					}
-					//sync the project combo view
-					TreeModel model = _prjs_combo.get_model ();
-					Gtk.TreeIter iter;
-					bool valid = model.get_iter_first (out iter);
-					while (valid) {
-						string name;
-						model.@get (iter, 0, out name);
-					
-						if (name == _current_project.project.name) {
-							_prjs_combo.set_active_iter (iter);
-							break;
-						}
-						valid = model.iter_next (ref iter);
-					}
-				} else {
-					_prj_view.set_model (null);
 				}
-			} 
+			}
 		}
 		
 		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } }
@@ -175,6 +174,14 @@ namespace Vtg
 			}
 		}
 
+		private void update_project_treeview ()
+		{
+			_filtered_model = new Gtk.TreeModelFilter (_current_project.model, null);
+			_filtered_model.set_visible_func (this.filter_function);
+			_prj_view.set_model (_filtered_model);
+			_prj_view.expand_all ();
+		}
+		
 		private bool filter_function (Gtk.TreeModel sender, Gtk.TreeIter iter)
 		{
 			bool res = true;
@@ -290,8 +297,7 @@ namespace Vtg
 
 		private void on_current_project_updated (ProjectManager sender)
 		{
-			_prj_view.set_model (sender.model);
-			_prj_view.expand_all ();
+			update_project_treeview ();
 		}
 
 		private void on_packages_open_configure (Gtk.Action action)
