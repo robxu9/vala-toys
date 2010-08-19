@@ -1,5 +1,11 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* gen-project/ui/gen-project.ui:
+
+	minor cleanup to the dialog. Fixes issue #86
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* vtg/vtgprojectmanager.vala:
 
