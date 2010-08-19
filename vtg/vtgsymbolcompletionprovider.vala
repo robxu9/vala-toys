@@ -757,7 +757,7 @@ namespace Vtg
 			} else {
 				if (!StringUtils.is_null_or_empty (word)) {
 					Utils.trace ("build_proposal_item_list: couldn't acquire ast lock");
-					this.show_calltip_info (_("<i>symbol cache is still building...</i>"));
+					this.show_calltip_info (_("<i>source symbol cache is still updating...</i>"));
 					Timeout.add_seconds (2, this.on_hide_calltip_timeout);
 					this.completion_lock_failed ();
 				}

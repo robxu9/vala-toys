@@ -879,7 +879,7 @@ namespace Vtg
 			_cache_building_count++;
 			if (_sb_msg_id == 0) {
 				var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
-				_sb_msg_id = status_bar.push (_sb_context_id, _("building symbol cache..."));
+				_sb_msg_id = status_bar.push (_sb_context_id, _("updating source symbols..."));
 			}
 		}
 		

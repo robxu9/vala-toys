@@ -1,5 +1,13 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	some minor message changes
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbuildlogview.vala:
 
 	fixed some missing TreePath conversions from the parent model
