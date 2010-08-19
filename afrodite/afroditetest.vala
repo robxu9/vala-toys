@@ -28,11 +28,13 @@ int option_column;
 string option_namespace;
 [NoArrayLength ()]
 string[] option_files;
+int option_repeat;
 
 const OptionEntry[] options = {
 	{ "symbol-name", 's', 0, OptionArg.STRING, ref option_symbol_name, "Symbol to search NAME", "NAME" },
 	{ "line", 'l', 0, OptionArg.INT, ref option_line, "Line NUMBER", "NUMBER" },
 	{ "column", 'c', 0, OptionArg.INT, ref option_column, "Column NUMBER", "NUMBER" },
+	{ "repeat", 'r', 0, OptionArg.INT, ref option_repeat, "Repeat parsing NUMBER", "NUMBER" },
 	{ "dump-namespace", 'n', 0, OptionArg.STRING, ref option_namespace, "Namespace to dump NAME", "NAME" },
 	{ "", 0, 0, OptionArg.FILENAME_ARRAY, ref option_files, "Source files NAME", "NAME" },
 	{ null }
@@ -55,28 +57,33 @@ public class AfroditeTest.Application : Object {
 		
 		var engine = new Afrodite.CompletionEngine ("afrodite-test-engine");
 		
-		print ("Adding sources:\n");
-		while (option_files[i] != null) {
-			string filename = option_files[i];
-			print ("   %s\n", filename);
-			engine.queue_sourcefile (filename);
-			i++;
+		if (option_repeat == 0)
+			option_repeat = 1;
+			
+		for(int repeat = 0; repeat < option_repeat; repeat++) {
+			print ("Adding sources (%d):\n", repeat);
+			i = 0;
+			while (option_files[i] != null) {
+				string filename = option_files[i];
+				print ("   %s\n", filename);
+				engine.queue_sourcefile (filename);
+				i++;
+			}
+
+			print ("\nAfrodite engine is parsing sources (%d)", repeat);
+			// Wait for the engine to complete the parsing
+			i = 0;
+			while (engine.is_parsing)
+			{
+				if (i % 10 == 0)
+					print (".");
+				Thread.usleep (1 * 250000);
+				i++;
+			}
 		}
 		
 		Afrodite.Ast ast;
-
-		print ("\nAfrodite engine is parsing sources");
-		// Wait for the engine to complete the parsing
-		i = 0;
-		while (engine.is_parsing)
-		{
-			if (i % 10 == 0)
-				print (".");
-			Thread.usleep (1 * 250000);
-			i++;
-		}
-		print (": done\n\n");	
-		
+		print (": done\n\n");
 		print ("Looking for '%s' %d,%d\n\nDump follows:\n", option_symbol_name, option_line, option_column);
 		while (true)
 		{
@@ -97,7 +104,11 @@ public class AfroditeTest.Application : Object {
 					options.access = Afrodite.SymbolAccessibility.ANY;
 					options.binding = Afrodite.MemberBinding.ANY;
 
-					QueryResult sym = ast.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
+					QueryResult sym = null;
+					
+					for(i = 0; i < option_repeat; i++) {
+						sym = ast.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
+					}
 					print ("The type for '%s' is: ", option_symbol_name);
 					if (!sym.is_empty) {
 						foreach (ResultItem item in sym.children) {
@@ -106,7 +117,7 @@ public class AfroditeTest.Application : Object {
 								int count = 0;
 								// print an excerpt of the child symbols
 								foreach (var child in item.symbol.children) {
-									print ("          %s\n", child.description);
+									print ("          %s\n", Utils.unescape_xml_string (child.description));
 									count++;
 									if (count == 6) {
 										print ("          ......\n");
@@ -119,7 +130,7 @@ public class AfroditeTest.Application : Object {
 											continue;
 
 										foreach (var child in base_item.symbol.children) {
-											print ("          %s\n", child.description);
+											print ("          %s\n", Utils.unescape_xml_string (child.description));
 											count++;
 											if (count == 6)
 												break;

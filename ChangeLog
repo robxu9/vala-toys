@@ -1,5 +1,12 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/afroditetest.vala:
+
+	add a 'repeat' option to test the remove parts of afrodite.
+	prettify the output.
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugin.vala:
 
 	Fix GObject style constructor chainup with new vala compiler
