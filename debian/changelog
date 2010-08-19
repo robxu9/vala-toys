@@ -1,3 +1,9 @@
+vtg (0.9.1-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Andrea Del Signore <sejerpz@tin.it>  Tue, 17 Aug 2010 10:19:11 +0200
+
 vtg (0.7.0-1) unstable; urgency=low
 
   * New release

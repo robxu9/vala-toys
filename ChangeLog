@@ -1,5 +1,12 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* debian/changelog:
+	* vbf/vbf-1.0.vapi:
+
+	simple ricompilation
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/parser.vala:
 
 	updated the parser to better comply with the real vala
