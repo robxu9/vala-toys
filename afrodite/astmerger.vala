@@ -288,10 +288,21 @@ namespace Afrodite
 			return sym.source_reference.file.filename == _source_file.filename;
 		}
 
-		public override void visit_namespace (Namespace ns) 
+		private bool is_glib_core_vapis (Namespace ns)
 		{
-			if ((_merge_glib && ns.name == "GLib")
-			    || (ns.name != "GLib")) {// && is_symbol_defined_current_source (ns))) {
+			if (ns.source_reference != null && ns.source_reference.file != null) {
+				string filename = Filename.display_basename (ns.source_reference.file.filename);
+				return filename.has_prefix ("glib-") || filename.has_prefix ("gobject-");
+			} else {
+				warning ("old compatibility check executed for: %s", ns.name);
+				return ns.name == "GLib"; // this check is weak, for example GIO fails on this
+			}
+		}
+
+		public override void visit_namespace (Namespace ns)
+		{
+			if ((_merge_glib && is_glib_core_vapis (ns))
+			    || (!is_glib_core_vapis (ns))) {// && is_symbol_defined_current_source (ns))) {
 				var prev_vala_fqn = _vala_symbol_fqn;
 				var prev = _current;
 				var prev_sr = _current_sr;

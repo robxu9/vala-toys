@@ -310,6 +310,8 @@ namespace Vtg
 							//foreach (string path in paths)
 							//	GLib.debug ("     target %s, referenced package: %s -> %s", target.id, package.id, path);
 							completion.queue_sourcefiles (paths, null, true);
+						} else {
+							Utils.trace ("setup_completions: target %s, no vapi found for: %s", target.id, package.id);
 						}
 					}
 

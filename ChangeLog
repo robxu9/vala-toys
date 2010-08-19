@@ -1,5 +1,13 @@
 2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	fixed merge of standard packages that extends the GLib namespace
+	like GIO. Fixes issue #57
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanagerui.vala:
 
 	inform the user when the creation of a project fails because
