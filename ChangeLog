@@ -1,5 +1,11 @@
 2010-08-20  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+
+	Crash when using generics. Fixes issue #145
+
+2010-08-20  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure:
 	* configure.ac:
 

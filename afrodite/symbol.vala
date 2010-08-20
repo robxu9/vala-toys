@@ -827,6 +827,9 @@ namespace Afrodite
 			// assign the real types
 			for(int i = 0; i < types.size; i++) {
 				//Utils.trace ("resolve generic type: %s", types[i].type_name);
+				if (this.generic_type_arguments.size <= i) {
+					break;
+				}
 				string name = this.generic_type_arguments[i].fully_qualified_name ?? this.generic_type_arguments[i].name;
 				resolve_generic_type (this, name, types[i]);
 				this.generic_type_arguments[i].fully_qualified_name = types[i].type_name;
