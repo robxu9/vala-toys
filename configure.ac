@@ -1,4 +1,4 @@
-AC_INIT([vtg], [0.9.2], [sejerpz@tin.it], [vtg])
+AC_INIT([vtg], [0.9.3], [sejerpz@tin.it], [vtg])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_AUX_DIR([.])
