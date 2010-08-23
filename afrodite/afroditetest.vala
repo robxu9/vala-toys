@@ -25,6 +25,8 @@ using Afrodite;
 string option_symbol_name;
 int option_line;
 int option_column;
+string option_visible_symbols;
+string option_filter;
 string option_namespace;
 [NoArrayLength ()]
 string[] option_files;
@@ -32,6 +34,8 @@ int option_repeat;
 
 const OptionEntry[] options = {
 	{ "symbol-name", 's', 0, OptionArg.STRING, ref option_symbol_name, "Symbol to search NAME", "NAME" },
+	{ "visible-symbols", 'd', 0, OptionArg.FILENAME, ref option_visible_symbols, "Dump visible symbols from line / column of source FILENAME", "FILENAME" },
+	{ "filter", 'f', 0, OptionArg.STRING, ref option_filter, "Filter results showing only symbols starting with NAME", "NAME" },
 	{ "line", 'l', 0, OptionArg.INT, ref option_line, "Line NUMBER", "NUMBER" },
 	{ "column", 'c', 0, OptionArg.INT, ref option_column, "Column NUMBER", "NUMBER" },
 	{ "repeat", 'r', 0, OptionArg.INT, ref option_repeat, "Repeat parsing NUMBER", "NUMBER" },
@@ -44,7 +48,7 @@ public class AfroditeTest.Application : Object {
 	public int run (string[] args) {
 		int i = 0;
 		int result = 0;
-		
+
 		// parse options
 		var opt_context = new OptionContext ("- Afrodite Test");
 		opt_context.set_help_enabled (true);
@@ -93,10 +97,27 @@ public class AfroditeTest.Application : Object {
 				var dumper = new Afrodite.AstDumper ();
 				dumper.dump (ast, option_namespace);
 				print ("\n");
-				
-				
+
 				// Query the AST
-				if (option_symbol_name != null) {
+				if (option_visible_symbols != null) {
+					var source = ast.lookup_source_file (option_visible_symbols);
+					if (source != null) {
+						// get the source node at this position
+						var s = ast.get_symbol_for_source_and_position (source, option_line, option_column);
+						if (s != null) {
+							Vala.List<Symbol> syms = null;
+							syms = ast.lookup_visible_symbols_from_symbol (s, option_filter);
+							print ("Symbols found: %d\n", syms.size);
+							foreach (Symbol sym in syms) {
+								print ("          from %s: %s\n", sym.parent == null ? "<root>" : sym.parent.fully_qualified_name, Utils.unescape_xml_string (sym.description));
+							}
+						} else {
+							print ("no symbol found for position: %d-%d\n", option_line, option_column);
+						}
+					} else {
+						print ("source file not found: %s\n", option_visible_symbols);
+					}
+				} else if (option_symbol_name != null) {
 					// Setup query options
 					QueryOptions options = QueryOptions.standard ();
 					options.auto_member_binding_mode = true;
@@ -105,10 +126,7 @@ public class AfroditeTest.Application : Object {
 					options.binding = Afrodite.MemberBinding.ANY;
 
 					QueryResult sym = null;
-					
-					for(i = 0; i < option_repeat; i++) {
-						sym = ast.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
-					}
+					sym = ast.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
 					print ("The type for '%s' is: ", option_symbol_name);
 					if (!sym.is_empty) {
 						foreach (ResultItem item in sym.children) {
