@@ -30,8 +30,8 @@ namespace Afrodite
 		public static EllipsisType ELLIPSIS = new EllipsisType ();
 		
 		public unowned Symbol parent { get; set; }
-		public Vala.List<unowned Symbol> children { get; set; }
-		public Vala.List<unowned Symbol> resolve_targets = null; // contains a reference to symbols of whose this symbol is a resolved reference for any target data type
+		public Vala.List<Symbol> children { get; set; }
+		public Vala.List<Symbol> resolve_targets = null; // contains a reference to symbols of whose this symbol is a resolved reference for any target data type
 		public unowned Symbol? generic_parent { get; set; }
 		
 		public string name { get; set; }

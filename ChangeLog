@@ -1,5 +1,13 @@
 2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+
+	explicit declare the children symbol collection as
+	owned because that is what they are. 
+	With the previous commit this fixes issue #147
+
+2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* afrodite/symbol.vala:
 
