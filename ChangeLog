@@ -1,5 +1,13 @@
 2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+
+	safe workaround for leaks caused by vala bug:
+	https://bugzilla.gnome.org/show_bug.cgi?id=615830
+
+2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/afroditetest.vala:
 
 	added option to dump all visible items from a source positions

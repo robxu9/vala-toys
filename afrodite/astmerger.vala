@@ -71,7 +71,8 @@ namespace Afrodite
 			}
 			if (source.has_symbols) {
 				foreach (Symbol symbol in source.symbols) {
-					remove_symbol (source, symbol);
+					if (remove_symbol (source, symbol))
+						symbol.destroy ();
 				}
 				source.symbols = null;
 			}
@@ -132,32 +133,6 @@ namespace Afrodite
 					// orphaned without child, let's destroy it
 					if (!symbol.has_children && orphaned) {
 						removed = true;
-						if (symbol.has_resolve_targets) {
-							foreach (Symbol target in symbol.resolve_targets) {
-								// remove from return type
-								if (target.return_type != null && target.return_type.symbol == symbol) {
-									target.return_type.symbol = null;
-								}
-								// remove from parameters
-								if (target.has_parameters) {
-									foreach (DataType type in target.parameters) {
-										if (type.symbol == symbol) {
-											type.symbol = null;
-										}
-									}
-								}
-				
-								// remove from local_variables
-								if (target.has_local_variables) {
-									foreach (DataType type in target.local_variables) {
-										if (type.symbol == symbol) {
-											type.symbol = null;
-										}
-									}
-								}
-								symbol.resolve_targets = null;
-							}
-						}
 					}
 				}
 			}

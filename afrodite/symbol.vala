@@ -405,7 +405,7 @@ namespace Afrodite
 		public void add_source_reference (SourceReference reference)
 		{
 			if (source_references == null) {
-				source_references = new ArrayList<SourceReference> ();				
+				source_references = new ArrayList<SourceReference> ();
 			}
 			source_references.add (reference);
 		}
@@ -467,6 +467,53 @@ namespace Afrodite
 		{
 			get {
 				return (binding & MemberBinding.STATIC) != 0;
+			}
+		}
+
+		/**
+		 * This function break circular references of symbol instances
+		 *
+		 * This is a workaround for bug: https://bugzilla.gnome.org/show_bug.cgi?id=615830
+		 *
+		 * I've a better patch for this, but is seems to introduce a lot of instability
+		 * on the afrodite engine. See: 
+		 */
+		public void destroy ()
+		{
+			if (has_children) {
+				//remove_child (_children.get (0));
+				_children.clear ();
+				_children = null;
+			}
+
+			while (has_resolve_targets) {
+				var target = resolve_targets.get (0);
+				// remove from return type
+				if (target.return_type != null && target.return_type.symbol == this) {
+					target.return_type.symbol = null;
+				}
+				// remove from parameters
+				if (target.has_parameters) {
+					foreach (DataType type in target.parameters) {
+						if (type.symbol == this) {
+							type.symbol = null;
+						}
+					}
+				}
+
+				// remove from local_variables
+				if (target.has_local_variables) {
+					foreach (DataType type in target.local_variables) {
+						if (type.symbol == this) {
+							type.symbol = null;
+						}
+					}
+				}
+				remove_resolve_target (target);
+			}
+			
+			if (parent != null && parent.has_children) {
+				parent.remove_child (this);
 			}
 		}
 
