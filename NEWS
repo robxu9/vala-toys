@@ -1,3 +1,13 @@
+Vala toys for gEdit version 0.9.3
+=================================
+
+* Add the possibility to filter symbols by scope on the source code
+  outliner
+* Add support for default parameters value in the calltip
+  and i the source outliner pane
+* Fixed some ugly crash with generics support
+* Fixed a big leak when reparsing source files
+
 Vala toys for gEdit version 0.9.2
 =================================
 

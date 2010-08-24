@@ -1,5 +1,11 @@
 2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+
+	news file update
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutlinerview.vala:
 
 	implemented a shift click for quick selectign public / non public symbols
