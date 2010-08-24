@@ -1,5 +1,15 @@
 2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
 
+	* images/internal-symbols-22.png:
+	* images/private-symbols-22.png:
+	* images/protected-symbols-22.png:
+	* images/public-symbols-22.png:
+	* images/Makefile.am:
+
+	included the new pixmaps required by the source code outliner
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgconfiguration.vala:
 	* vtg/vtgsourceoutliner.vala:
 	* vtg/vtgsourceoutlinerview.vala:
