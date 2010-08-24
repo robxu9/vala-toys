@@ -125,12 +125,11 @@ namespace Vtg
 			_side_panel.pack_start (scroll, true, true, 4); // add scroll + treview
 
 			var hbox = new Gtk.HBox(false, 0);
-			_side_panel.pack_start (hbox, false, true, 4);
+			_side_panel.pack_start (hbox, false, false, 4);
 
-			var label = new Gtk.Label (_("Filter symbols by scope:"));
-			label.xpad = 4;
+			var label = new Gtk.Label (_("Filter by scope:"));
 			label.xalign = 0;
-			hbox.pack_start (label, true, true, 4);
+			hbox.pack_start (label, false, false, 4);
 
 			_check_show_public_symbols = new Gtk.ToggleButton ();
 			var image = new Gtk.Image.from_file (Utils.get_image_path ("public-symbols-22.png"));
