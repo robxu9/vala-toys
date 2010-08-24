@@ -1,5 +1,11 @@
 2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure.ac:
+
+	postrelease version bump
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
 	* NEWS:
 
 	news file update
