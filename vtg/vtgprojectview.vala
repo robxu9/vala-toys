@@ -266,10 +266,18 @@ namespace Vtg
 					model.get_iter (out iter, path);
 					model.get (iter, 2, out id, 3, out obj);
 					if (id == "project-root") {
-						_popup_modules.popup (null, null, null, event.button, event.time);
+						string file = Path.build_filename (current_project.project.id, "configure.ac");
+			
+						if (FileUtils.test (file, FileTest.EXISTS)) {
+							_popup_modules.popup (null, null, null, event.button, event.time);
+						}
 					} else if (obj is Group) {
 						_last_selected_group = (Group) obj;
-						_popup_targets.popup (null, null, null, event.button, event.time);
+						string file = Path.build_filename (_last_selected_group.id, "Makefile.am");
+			
+						if (FileUtils.test (file, FileTest.EXISTS)) {
+							_popup_targets.popup (null, null, null, event.button, event.time);
+						}
 					}
 				}
 			}

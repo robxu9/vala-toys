@@ -1,5 +1,12 @@
 2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectview.vala:
+
+	Don't show open configure / makefile for backends different from autotools.
+	Fixes issue #148
+
+2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/symbol.vala:
 
 	explicit declare the children symbol collection as
