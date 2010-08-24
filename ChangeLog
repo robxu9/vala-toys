@@ -1,5 +1,11 @@
 2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
 
+	* autogen.sh:
+
+	check for valac presence
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* afrodite/datatype.vala:
 	* afrodite/symbol.vala:
