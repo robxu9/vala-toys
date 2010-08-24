@@ -131,7 +131,7 @@ namespace Afrodite
 			if (children == null) {
 				children = new ArrayList<Symbol> ();
 			}
-			
+
 			children.add (child);
 			child.parent = this;
 			if (child.is_static || child.has_static_child) {

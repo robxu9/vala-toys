@@ -155,4 +155,122 @@ namespace Afrodite.Utils
 		var res = text;
 		return res.replace ("&lt;", "<").replace ("&gt;", ">");
 	}
+
+	public static string binary_operator_to_string (Vala.BinaryOperator op)
+	{
+		string res;
+
+		switch (op) {
+			case BinaryOperator.NONE:
+				res = "";
+				break;
+			case BinaryOperator.PLUS:
+				res = "+";
+				break;
+			case BinaryOperator.MINUS:
+				res = "-";
+				break;
+			case BinaryOperator.MUL:
+				res = "*";
+				break;
+			case BinaryOperator.DIV:
+				res = "/";
+				break;
+			case BinaryOperator.MOD:
+				res = "%";
+				break;
+			case BinaryOperator.SHIFT_LEFT:
+				res = "<<";
+				break;
+			case BinaryOperator.SHIFT_RIGHT:
+				res = ">>";
+				break;
+			case BinaryOperator.LESS_THAN:
+				res = "<";
+				break;
+			case BinaryOperator.GREATER_THAN:
+				res = ">";
+				break;
+			case BinaryOperator.LESS_THAN_OR_EQUAL:
+				res = "<=";
+				break;
+			case BinaryOperator.GREATER_THAN_OR_EQUAL:
+				res = ">=";
+				break;
+			case BinaryOperator.EQUALITY:
+				res = "==";
+				break;
+			case BinaryOperator.INEQUALITY:
+				res = "!=";
+				break;
+			case BinaryOperator.BITWISE_AND:
+				res = "&";
+				break;
+			case BinaryOperator.BITWISE_OR:
+				res = "|";
+				break;
+			case BinaryOperator.BITWISE_XOR:
+				res = "^";
+				break;
+			case BinaryOperator.AND:
+				res = "&&";
+				break;
+			case BinaryOperator.OR:
+				res = "||";
+				break;
+			case BinaryOperator.IN:
+				res = "in";
+				break;
+			case BinaryOperator.COALESCE:
+				res = "??";
+				break;
+			default:
+				EnumClass cl = (EnumClass) typeof (Vala.BinaryOperator).class_ref ();
+				res =  cl.get_value (op).value_nick;
+				break;
+		}
+
+		return res;
+	}
+
+	public static string unary_operator_to_string (Vala.UnaryOperator op)
+	{
+		string res;
+
+		switch (op) {
+			case UnaryOperator.NONE:
+				res = "";
+				break;
+			case UnaryOperator.PLUS:
+				res = "+";
+				break;
+			case UnaryOperator.MINUS:
+				res = "-";
+				break;
+			case UnaryOperator.LOGICAL_NEGATION:
+				res = "^";
+				break;
+			case UnaryOperator.BITWISE_COMPLEMENT:
+				res = "~";
+				break;
+			case UnaryOperator.INCREMENT:
+				res = "++";
+				break;
+			case UnaryOperator.DECREMENT:
+				res = "--";
+				break;
+			case UnaryOperator.REF:
+				res = "ref";
+				break;
+			case UnaryOperator.OUT:
+				res = "out";
+				break;
+			default:
+				EnumClass cl = (EnumClass) typeof (Vala.UnaryOperator).class_ref ();
+				res =  cl.get_value (op).value_nick;
+				break;
+		}
+
+		return res;
+	}
 }

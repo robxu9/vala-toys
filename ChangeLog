@@ -1,3 +1,12 @@
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/symbol.vala:
+	* afrodite/utils.vala:
+
+	Add support for default values in the calltip and sourceoutliner. Fixes issue #149
+
 2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectview.vala:

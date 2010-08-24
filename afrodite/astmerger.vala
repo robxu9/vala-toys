@@ -691,7 +691,26 @@ namespace Afrodite
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
-		
+
+		private string? expression_to_string (Vala.Expression e)
+		{
+			if (e is Vala.Literal) {
+				return e.to_string ();
+			} else if (e is Vala.MemberAccess) {
+				var ma = (Vala.MemberAccess) (e);
+				return "%s".printf (ma.member_name);
+			} else if (e is Vala.BinaryExpression) {
+				var be = (Vala.BinaryExpression) e;
+				return "%s %s %s".printf (expression_to_string (be.left), Utils.binary_operator_to_string (be.operator), expression_to_string (be.right));
+			} else if (e is Vala.UnaryExpression) {
+				var ue = (Vala.UnaryExpression) e;
+				return "%s%s".printf (Utils.unary_operator_to_string (ue.operator), expression_to_string (ue.inner));
+			} else {
+				Utils.trace ("expression_to_string, unknown expression type: %s", e.type_name);
+				return null;
+			}
+		}
+
 		public override void visit_formal_parameter (FormalParameter p) 
 		{
 			DataType d;
@@ -700,6 +719,9 @@ namespace Afrodite
 				d = Symbol.ELLIPSIS;
 			} else {
 				d = new DataType (get_datatype_typename (p.variable_type), p.name);
+				if (p.initializer != null) {
+					d.default_expression = expression_to_string (p.initializer);
+				}
 				switch (p.direction) {
 					case Vala.ParameterDirection.OUT:
 						d.is_out = true;

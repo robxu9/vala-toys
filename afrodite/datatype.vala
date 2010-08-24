@@ -194,6 +194,9 @@ namespace Afrodite
 					if (name != null && name != "") {
 						res += " %s".printf (name);
 					}
+					if (default_expression != null && default_expression != "") {
+						res += " = " + default_expression;
+					}
 				}
 				return res;
 			}
