@@ -72,7 +72,6 @@ namespace Vtg
 			_outliner_view = new SourceOutlinerView (plugin_instance);
 			_outliner_view.goto_source.connect (this.on_goto_source);
 			_outliner_view.filter_changed.connect (this.on_filter_changed);
-			
 		}
 
 		~SourceOutliner ()

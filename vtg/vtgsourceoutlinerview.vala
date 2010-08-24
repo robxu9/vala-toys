@@ -46,7 +46,10 @@ namespace Vtg
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private Gtk.TreeView _src_view;
 		private Gtk.TreeModelSort _sorted;
-		private Gtk.CheckButton _check_show_private_symbols;
+		private Gtk.ToggleButton _check_show_private_symbols;
+		private Gtk.ToggleButton _check_show_public_symbols;
+		private Gtk.ToggleButton _check_show_protected_symbols;
+		private Gtk.ToggleButton _check_show_internal_symbols;
 		private TreeStore _model = null;
 
 		private Gtk.Menu _popup_symbols;
@@ -120,12 +123,47 @@ namespace Vtg
 			var scroll = new Gtk.ScrolledWindow (null, null);
 			scroll.add (_src_view);
 			_side_panel.pack_start (scroll, true, true, 4); // add scroll + treview
-			
-			_check_show_private_symbols = new Gtk.CheckButton.with_label (_("Show also private symbols"));
+
+			var hbox = new Gtk.HBox(false, 0);
+			_side_panel.pack_start (hbox, false, true, 4);
+
+			var label = new Gtk.Label (_("Filter symbols by scope:"));
+			label.xpad = 4;
+			label.xalign = 0;
+			hbox.pack_start (label, true, true, 4);
+
+			_check_show_public_symbols = new Gtk.ToggleButton ();
+			var image = new Gtk.Image.from_file (Utils.get_image_path ("public-symbols-22.png"));
+			_check_show_public_symbols.set_image (image);
+			_check_show_public_symbols.set_tooltip_text (_("Show public symbols"));
+			_check_show_public_symbols.active = Vtg.Plugin.main_instance.config.outliner_show_public_symbols;
+			_check_show_public_symbols.toggled.connect (this.on_show_symbol_scope_toggled);
+			hbox.pack_start (_check_show_public_symbols, false, true, 4);
+
+			_check_show_internal_symbols = new Gtk.ToggleButton (); //.with_label (_("internal"));
+			image = new Gtk.Image.from_file (Utils.get_image_path ("internal-symbols-22.png"));
+			_check_show_internal_symbols.set_image (image);
+			_check_show_internal_symbols.set_tooltip_text (_("Show internal symbols"));
+			_check_show_internal_symbols.active = Vtg.Plugin.main_instance.config.outliner_show_internal_symbols;
+			_check_show_internal_symbols.toggled.connect (this.on_show_symbol_scope_toggled);
+			hbox.pack_start (_check_show_internal_symbols, false, true, 4);
+
+			_check_show_protected_symbols = new Gtk.ToggleButton ();
+			image = new Gtk.Image.from_file (Utils.get_image_path ("protected-symbols-22.png"));
+			_check_show_protected_symbols.set_image (image);
+			_check_show_protected_symbols.set_tooltip_text (_("Show protected symbols"));
+			_check_show_protected_symbols.active = Vtg.Plugin.main_instance.config.outliner_show_protected_symbols;
+			_check_show_protected_symbols.toggled.connect (this.on_show_symbol_scope_toggled);
+			hbox.pack_start (_check_show_protected_symbols, false, true, 4);
+
+			_check_show_private_symbols = new Gtk.ToggleButton ();
+			image = new Gtk.Image.from_file (Utils.get_image_path ("private-symbols-22.png"));
+			_check_show_private_symbols.set_image (image);
+			_check_show_private_symbols.set_tooltip_text (_("Show private symbols"));
 			_check_show_private_symbols.active = Vtg.Plugin.main_instance.config.outliner_show_private_symbols;
-			_check_show_private_symbols.toggled.connect (this.on_show_private_symbol_toggled);
-			_side_panel.pack_start (_check_show_private_symbols, false, true, 8);
-			
+			_check_show_private_symbols.toggled.connect (this.on_show_symbol_scope_toggled);
+			hbox.pack_start (_check_show_private_symbols, false, true, 4);
+
 			_side_panel.show_all ();
 			var icon = new Gtk.Image.from_pixbuf (Utils.get_icon_for_type_name ("Class"));
 			panel.add_item (_side_panel, _("Source"), icon);
@@ -150,8 +188,8 @@ namespace Vtg
 			
 			_sorted = new Gtk.TreeModelSort.with_model (_model);
 			_sorted.set_sort_column_id (0, SortType.ASCENDING);
-			_sorted.set_sort_func (0, this.sort_model);			
-			_src_view.set_model (_sorted);	
+			_sorted.set_sort_func (0, this.sort_model);
+			_src_view.set_model (_sorted);
 		}
 		
 		public void clear_view ()
@@ -183,9 +221,12 @@ namespace Vtg
 			}
 		}
 		
-		private void on_show_private_symbol_toggled (Widget sender)
+		private void on_show_symbol_scope_toggled (Widget sender)
 		{
 			Vtg.Plugin.main_instance.config.outliner_show_private_symbols = _check_show_private_symbols.active;
+			Vtg.Plugin.main_instance.config.outliner_show_public_symbols = _check_show_public_symbols.active;
+			Vtg.Plugin.main_instance.config.outliner_show_protected_symbols = _check_show_protected_symbols.active;
+			Vtg.Plugin.main_instance.config.outliner_show_internal_symbols = _check_show_internal_symbols.active;
 			this.filter_changed ();
 		}
 
@@ -233,18 +274,52 @@ namespace Vtg
 			}
 			return false;
 		}
-		
+
+		private Afrodite.SymbolAccessibility get_symbol_accessibility (Afrodite.Symbol symbol)
+		{
+			Afrodite.SymbolAccessibility sym_access;
+
+			if (symbol.has_children && !symbol.name.has_prefix ("!")
+			    && (symbol.type_name == "Class" || symbol.type_name == "Struct" || symbol.type_name == "Namespace")) {
+				sym_access = symbol.access;
+				
+				foreach (Afrodite.Symbol child in symbol.children) {
+					sym_access |= get_symbol_accessibility (child);
+					if (sym_access == Afrodite.SymbolAccessibility.ANY)
+						break;
+				}
+			} else {
+				sym_access = symbol.access;
+			}
+			return sym_access;
+		}
+
 		private void rebuild_model (Vala.List<ResultItem>? items, TreeIter? parentIter = null)
 		{
 			if (items == null || items.size == 0)
 				return;
-			
+
+			Afrodite.SymbolAccessibility accessibility = 0;
+			if (_check_show_private_symbols.active) {
+				accessibility = Afrodite.SymbolAccessibility.PRIVATE;
+			}
+			if (_check_show_public_symbols.active) {
+				accessibility |= Afrodite.SymbolAccessibility.PUBLIC;
+			}
+			if (_check_show_protected_symbols.active) {
+				accessibility |= Afrodite.SymbolAccessibility.PROTECTED;
+			}
+			if (_check_show_internal_symbols.active) {
+				accessibility |= Afrodite.SymbolAccessibility.INTERNAL;
+			}
+
 			foreach (ResultItem item in items) {
 				TreeIter iter;
 				var symbol = item.symbol;
-				
-				if (!symbol.name.has_prefix ("!") && _check_show_private_symbols.active
-				    || (!_check_show_private_symbols.active && symbol.access != Afrodite.SymbolAccessibility.PRIVATE)) {
+
+				Afrodite.SymbolAccessibility sym_access = get_symbol_accessibility (symbol);
+
+				if (!symbol.name.has_prefix ("!") && ((sym_access & accessibility) != 0)) {
 					string des = symbol.markup_description;
 					//remove the access qualifier
 					foreach(string qualifier in qualifiers) {

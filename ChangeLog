@@ -1,5 +1,14 @@
 2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	source code outliner: added the possibility to filter symbols by scope.
+	Fixes issue #144
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
 	* autogen.sh:
 
 	check for valac presence
