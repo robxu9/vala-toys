@@ -53,6 +53,7 @@ namespace Vtg
 		private TreeStore _model = null;
 
 		private Gtk.Menu _popup_symbols;
+		private bool _on_show_symbol_scope_toggled_flag =  false;
 		private uint _popup_symbols_ui_id;
 		private string _popup_symbols_ui_def = """
                                         <ui>
@@ -219,9 +220,30 @@ namespace Vtg
 				this.goto_source (line, start_col, end_col);
 			}
 		}
-		
+
 		private void on_show_symbol_scope_toggled (Widget sender)
 		{
+			if (_on_show_symbol_scope_toggled_flag)
+				return;
+			
+			Gdk.Event event = Gtk.get_current_event ();
+			if ((event.button.state & Gdk.ModifierType.SHIFT_MASK) != 0) {
+				bool active = ((Gtk.ToggleButton) sender).active;
+				_on_show_symbol_scope_toggled_flag =  true;
+				if (_check_show_internal_symbols != sender) {
+					_check_show_internal_symbols.active = !active;
+				}
+				if (_check_show_private_symbols != sender) {
+					_check_show_private_symbols.active = !active;
+				}
+				if (_check_show_protected_symbols != sender) {
+					_check_show_protected_symbols.active = !active;
+				}
+				if (_check_show_public_symbols != sender) {
+					_check_show_public_symbols.active = !active;
+				}
+				_on_show_symbol_scope_toggled_flag =  false;
+			}
 			Vtg.Plugin.main_instance.config.outliner_show_private_symbols = _check_show_private_symbols.active;
 			Vtg.Plugin.main_instance.config.outliner_show_public_symbols = _check_show_public_symbols.active;
 			Vtg.Plugin.main_instance.config.outliner_show_protected_symbols = _check_show_protected_symbols.active;
