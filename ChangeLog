@@ -1,5 +1,11 @@
 2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbfutils.vala:
+
+	use the thirdy party directory only if present
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure:
 	* configure.ac:
 

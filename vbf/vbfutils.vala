@@ -112,18 +112,25 @@ namespace Vbf.Utils
 		
 		string curr;
 		string[] dirs;
-		int dir_count = 2;
+		int dir_count = 1;
 		
 		if (vapi_dirs != null)
 			dir_count += vapi_dirs.length;
-			
+		
+		string thirdy_party_vapi_dir = Config.VALA_VAPIDIR.replace ("vala-%s".printf (Config.VALA_VERSION), "vala");
+		bool thirdy_party_vapi_dir_bool = FileUtils.test (thirdy_party_vapi_dir, FileTest.IS_DIR);
+		if (thirdy_party_vapi_dir_bool) {
+			dir_count++;
+		}
 		dirs = new string[dir_count];
 		dirs[0] = Config.VALA_VAPIDIR;
-		dirs[1] = Config.VALA_VAPIDIR.replace ("vala-%s".printf (Config.VALA_VERSION), "vala");
 		for (int i=0; i < vapi_dirs.length; i++) {
-			dirs[i+2] = vapi_dirs[i];
+			dirs[i+1] = vapi_dirs[i];
 		}
-		
+		if (thirdy_party_vapi_dir_bool) {
+			dirs[dirs.length-1] = thirdy_party_vapi_dir;
+		}
+
 		try {
 			foreach (string real_using_name in real_using_names) {
 				string filename = real_using_name + ".vapi";
@@ -135,7 +142,7 @@ namespace Vbf.Utils
 					var dir = GLib.Dir.open (vapi_dir);
 					while ((curr = dir.read_name ()) != null) {
 						curr = curr.locale_to_utf8 (-1, null, null, null);
-						//debug ("searching %s vs %s", real_using_name, curr);			
+						//debug ("searching %s vs %s", real_using_name, curr);
 						if (curr == filename 
 						    || curr == lowercase_filename
 						    || curr.has_prefix (lowercase_using_name)) {
