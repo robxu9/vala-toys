@@ -101,7 +101,7 @@ namespace Vbf.Utils
 		// known using names;
 		string[] real_using_names;
 		
-		if (using_name == "Gtk") {
+		if (using_name == "Gtk" || using_name == "Gtk+") {
 			real_using_names = new string[2];
 			real_using_names[0] = "gtk+-2.0";
 			real_using_names[1] = "gtk+";
@@ -136,7 +136,10 @@ namespace Vbf.Utils
 				string filename = real_using_name + ".vapi";
 				string lowercase_filename = filename.down ();
 				string lowercase_using_name = real_using_name.down ();
-
+				string lib_filename = "lib" + filename;
+				string lib_lowercase_filename = "lib" + lowercase_filename;
+				string lib_lowercase_using_name = "lib" + lowercase_using_name;
+				
 				// search in the standard package path
 				foreach (string vapi_dir in dirs) {
 					var dir = GLib.Dir.open (vapi_dir);
@@ -144,13 +147,10 @@ namespace Vbf.Utils
 					while ((curr = dir.read_name ()) != null) {
 						curr = curr.locale_to_utf8 (-1, null, null, null);
 						//debug ("searching %s vs %s", real_using_name, curr);
-						if (curr.has_prefix ("lib")) {
-							curr = curr.substring (3);
-						}
 
-						if (curr == filename 
-						    || curr == lowercase_filename
-						    || curr.has_prefix (lowercase_using_name)) {
+						if (curr == filename || curr == lib_filename
+						    || curr == lowercase_filename || curr == lib_lowercase_filename
+						    || curr.has_prefix (lowercase_using_name) || curr == lib_lowercase_using_name) {
 							return curr.substring (0, curr.length - 5); // 5 = ".vapi".length
 						}
 					}

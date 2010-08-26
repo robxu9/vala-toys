@@ -1,5 +1,11 @@
 2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbfutils.vala:
+
+	fix filename error when importing libxxx vapis
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/completionengine.vala:
 
 	fix a null reference when shutting down the completion engine
