@@ -59,7 +59,7 @@ namespace Afrodite
 			_merge_queue_mutex = new Mutex ();
 			
 			_ast = new Ast ();
-			_ast_mutex = new Mutex ();			
+			_ast_mutex = new Mutex ();
 		}
 		
 		~Completion ()
@@ -285,25 +285,27 @@ namespace Afrodite
 							if (s.filename == source.path) {
 								// do the real merge
 								_ast_mutex.@lock ();
-								bool source_exists = _ast.lookup_source_file (source.path) != null;
+								if (_ast != null) {
+									bool source_exists = _ast.lookup_source_file (source.path) != null;
 
-								// if the ast is still valid: not null
-								// and not 
-								// if I'm parsing just one source and there are errors and the source already exists in the ast: I'll keep the previous copy
-								// do the merge
-								if (_ast != null
-								   && !(source_count == 1 && source_exists && p.context.report.get_errors () > 0)) {
-									if (merger == null) {
-										// lazy init the merger, here I'm sure that _ast != null
-										merger = new AstMerger (_ast);
-									}
-									if (source_exists) {
-										//debug ("%s: removing %s", id, source.path);
-										merger.remove_source_filename (source.path);
-									}
+									// if the ast is still valid: not null
+									// and not 
+									// if I'm parsing just one source and there are errors and the source already exists in the ast: I'll keep the previous copy
+									// do the merge
+								
+									if (!(source_count == 1 && source_exists && p.context.report.get_errors () > 0)) {
+										if (merger == null) {
+											// lazy init the merger, here I'm sure that _ast != null
+											merger = new AstMerger (_ast);
+										}
+										if (source_exists) {
+											//debug ("%s: removing %s", id, source.path);
+											merger.remove_source_filename (source.path);
+										}
 							
-									//timer.start ();
-									merger.merge_vala_context (s, source.context, source.is_glib);
+										//timer.start ();
+										merger.merge_vala_context (s, source.context, source.is_glib);
+									}
 								}
 								_ast_mutex.unlock ();
 								

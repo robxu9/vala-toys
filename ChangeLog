@@ -1,5 +1,11 @@
 2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+
+	fix a null reference when shutting down the completion engine
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/vbfutils.vala:
 
 	add support for libxxx vapi file in guess_package_name
