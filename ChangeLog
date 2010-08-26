@@ -1,3 +1,11 @@
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	use pkg-config --variable=vapidir to get the system wide
+	vapi directory setting
+
 2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure.ac:

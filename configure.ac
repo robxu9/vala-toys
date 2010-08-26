@@ -40,7 +40,7 @@ AC_ARG_WITH([vapidir], AS_HELP_STRING([--with-vapidir=PATH],[use PATH for defaul
 	        VALA_VAPIDIR=$withval
 	],[
 		#standard vala installation
-	        VALA_VAPIDIR=/usr/share/vala-$VALA_VERSION/vapi
+	        VALA_VAPIDIR=$(pkg-config --variable=vapidir vala-$VALA_VERSION)
 	])
 
 AC_DEFINE_UNQUOTED([VALA_VAPIDIR], ["$VALA_VAPIDIR"], [Vala vapi directory])

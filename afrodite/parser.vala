@@ -108,7 +108,7 @@ namespace Afrodite
 
 			var parser = new Vala.Parser ();
 			parser.parse (context);
-			
+
 			CodeContext.pop ();
 		}
 	}
