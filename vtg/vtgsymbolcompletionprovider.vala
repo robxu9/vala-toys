@@ -436,8 +436,23 @@ namespace Vtg
 					GLib.MatchInfo match;
 					regex.match (line, RegexMatchFlags.NEWLINE_ANY, out match);
 					while (match.matches ()) {
-						string package_name = Vbf.Utils.guess_package_name (match.fetch (2));
-						Utils.trace ("guessing name for %s: %s", match.fetch (2), package_name);
+						string using_name = null;
+
+						if (match.fetch (2) == "GLib") {
+							// standard GLib are already merged by the completion engine
+							// I'll add gio for the default project
+							if (project_manager.is_default) {
+								using_name = "gio";
+							}
+						} else {
+							using_name = match.fetch (2);
+						}
+						string package_name = null;
+
+						if (using_name != null)
+							package_name = Vbf.Utils.guess_package_name (using_name);
+
+						Utils.trace ("guessing name of using clause %s for package %s: %s", match.fetch (2), using_name, package_name);
 						if (package_name != null) {
 							var group = project_manager.project.get_group("Sources");
 							var target = group.get_target_for_id ("Default");
@@ -477,7 +492,7 @@ namespace Vtg
 				if ((!include_private_symbols && symbol.access == Afrodite.SymbolAccessibility.PRIVATE)
 					|| symbol.name == "new"
 					|| (options != null && !symbol.check_options (options))) {
-					Utils.trace ("not append symbols: %s", symbol.name);
+					//Utils.trace ("not append symbols: %s", symbol.name);
 					continue;
 				}
 
@@ -505,7 +520,7 @@ namespace Vtg
 					} else {
 						proposal = new Gtk.SourceCompletionItem(name, name, icon, info);
 					}
-					Utils.trace ("append symbols: %s", symbol.name);
+					//Utils.trace ("append symbols: %s", symbol.name);
 					_proposals.append (proposal);
 				}
 			}

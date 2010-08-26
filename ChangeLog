@@ -1,5 +1,11 @@
 2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fix a bug that prevent GLib symbol merging in standalone file edit
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/utils.vala:
 	* vbf/vbfutils.vala:
 	* vtg/vtgsymbolcompletionprovider.vala:
