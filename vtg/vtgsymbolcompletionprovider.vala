@@ -476,9 +476,10 @@ namespace Vtg
 			foreach (Afrodite.Symbol symbol in symbols) {
 				if ((!include_private_symbols && symbol.access == Afrodite.SymbolAccessibility.PRIVATE)
 					|| symbol.name == "new"
-					|| (options != null && !symbol.check_options (options)))
+					|| (options != null && !symbol.check_options (options))) {
+					Utils.trace ("not append symbols: %s", symbol.name);
 					continue;
-
+				}
 
 				string name;
 
@@ -504,6 +505,7 @@ namespace Vtg
 					} else {
 						proposal = new Gtk.SourceCompletionItem(name, name, icon, info);
 					}
+					Utils.trace ("append symbols: %s", symbol.name);
 					_proposals.append (proposal);
 				}
 			}

@@ -97,10 +97,11 @@ namespace Afrodite.Utils
 		if (packages == null) {
 			return false;
 		}
-	
+
 		context.add_package (pkg);
-		
+
 		foreach (string package_path in packages) {
+			Utils.trace ("adding package %s: %s", pkg, package_path);
 			context.add_source_file (new Vala.SourceFile (context, package_path, true));
 		}
 		return true;

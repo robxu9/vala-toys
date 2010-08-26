@@ -150,7 +150,7 @@ namespace Vbf.Utils
 
 						if (curr == filename || curr == lib_filename
 						    || curr == lowercase_filename || curr == lib_lowercase_filename
-						    || curr.has_prefix (lowercase_using_name) || curr == lib_lowercase_using_name) {
+						    || curr.has_prefix (lowercase_using_name) || curr.has_prefix (lib_lowercase_using_name)) {
 							return curr.substring (0, curr.length - 5); // 5 = ".vapi".length
 						}
 					}
