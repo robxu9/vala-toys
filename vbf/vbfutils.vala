@@ -140,9 +140,14 @@ namespace Vbf.Utils
 				// search in the standard package path
 				foreach (string vapi_dir in dirs) {
 					var dir = GLib.Dir.open (vapi_dir);
+
 					while ((curr = dir.read_name ()) != null) {
 						curr = curr.locale_to_utf8 (-1, null, null, null);
 						//debug ("searching %s vs %s", real_using_name, curr);
+						if (curr.has_prefix ("lib")) {
+							curr = curr.substring (3);
+						}
+
 						if (curr == filename 
 						    || curr == lowercase_filename
 						    || curr.has_prefix (lowercase_using_name)) {
