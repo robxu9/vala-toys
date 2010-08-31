@@ -1,3 +1,10 @@
+2010-08-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/symbolresolver.vala:
+
+	Hierarchical presentation of classes and inner-classes in source outliner. Fixes issue #151
+
 2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsymbolcompletionprovider.vala:

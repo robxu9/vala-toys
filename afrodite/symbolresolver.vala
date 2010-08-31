@@ -47,7 +47,7 @@ namespace Afrodite
 		
 		private Symbol? resolve_type (Symbol symbol, DataType type)
 		{
-			Symbol parent;
+			Symbol parent = null;
 			Symbol res = null;
 			
 			// void symbol
@@ -66,7 +66,7 @@ namespace Afrodite
 			// the container types defined in the child symbols
 			if (res == null && symbol.has_children) {
 				
-				var s = Ast.lookup_symbol (type.type_name, symbol.children, out parent, Afrodite.CompareMode.EXACT);
+				var s = Ast.lookup_symbol (type.type_name, symbol, ref parent, Afrodite.CompareMode.EXACT);
 				if (s != null) {
 					res = s;
 				}

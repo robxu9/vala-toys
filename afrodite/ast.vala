@@ -39,26 +39,26 @@ namespace Afrodite
 		{
 			Symbol result = null;
 			
+			parent = _root;
 			if (_root.has_children) {
-				result = lookup_symbol (fully_qualified_name, _root.children, out parent, CompareMode.EXACT);
+				result = lookup_symbol (fully_qualified_name, _root, ref parent, CompareMode.EXACT);
 			}
-			
-			if (parent == null) {
-				parent = _root;
-			}
+
 			return result;
 		}
 		
-		internal static Symbol? lookup_symbol (string qualified_name, Vala.List<Symbol> symbols, 
-			out Symbol? parent,  CompareMode mode,
+		internal static Symbol? lookup_symbol (string qualified_name, Symbol parent_symbol, 
+			ref Symbol? parent,  CompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{
 			string[] tmp = qualified_name.split (".", 2);
 			string name = tmp[0];
 		
-			parent = null;
-			foreach (Symbol symbol in symbols) {
-				//print ("  Looking for %s: %s in %s\n", fully_qualified_name, name, symbol.fully_qualified_name);
+			if (!parent_symbol.has_children)
+				return null;
+
+			foreach (Symbol symbol in parent_symbol.children) {
+				//Utils.trace ("  Looking for %s: %s in %s\n", qualified_name, name, symbol.fully_qualified_name);
 				
 				if (compare_symbol_names (symbol.name, name, mode)
 				    && (symbol.access & access) != 0
@@ -66,18 +66,13 @@ namespace Afrodite
 					if (tmp.length > 1) {
 						Symbol child_sym = null;
 						
+						parent = symbol;
 						if (symbol.has_children) {
-							child_sym = lookup_symbol (tmp[1], symbol.children, out parent, mode, access, binding);
+							child_sym = lookup_symbol (tmp[1], symbol, ref parent, mode, access, binding);
 						}
-						
-						if (child_sym == null) {
-							parent = symbol; // the last valid parent
-						} else {
-							parent = child_sym.parent;
-						}
+
 						return child_sym;
 					} else {
-						parent = symbol.parent;
 						return symbol;
 					}
 				}
@@ -101,24 +96,32 @@ namespace Afrodite
 				if (source_files == null) {
 					source_files = new ArrayList<SourceFile> ();
 				}
+				Utils.trace ("add source: %s", file.filename);
 				source_files.add (file);
 			}
-			return file;			
+			return file;
 		}
 		
 		public SourceFile? lookup_source_file (string filename)
 		{
 			if (source_files != null) {
+				/*
 				foreach (SourceFile file in source_files) {
-					//debug ("lookup_source_file: searching %s vs %s", filename, file.filename);
+					Utils.trace ("dumping sources %s: %d", file.filename, file.has_symbols ? file.symbols.size : 0);
+				}
+				Utils.trace ("dump end");
+				*/
+
+				foreach (SourceFile file in source_files) {
+					Utils.trace ("lookup_source_file: searching %s vs %s", filename, file.filename);
 					
 					if (file.filename == filename) {
-						//debug ("filename found: %s", file.filename);
+						Utils.trace ("filename found: %s", file.filename);
 						return file;
 					}
 				}
-				//debug ("no source files for %s!!!", filename);
-			}		
+				Utils.trace ("no source files for %s!!!", filename);
+			}
 			return null;
 		}
 		
@@ -206,10 +209,10 @@ namespace Afrodite
 					}
 					for (int i = 1; i < parts.length; i++) {
 	 					Symbol parent = sym;
-	 					Symbol dummy;
+	 					Symbol dummy = null;
 	 					
 	 					//print ("lookup %s in %s", parts[i], sym.name);
-						sym = lookup_symbol (parts[i], sym.children, out dummy, options.compare_mode);
+						sym = lookup_symbol (parts[i], sym, ref dummy, options.compare_mode);
 						if (sym == null) {
 							// lookup on base types also
 							sym = lookup_name_in_base_types (parts[i], parent);
@@ -302,7 +305,7 @@ namespace Afrodite
 		{
 			// search in base classes / interfaces
 			if (symbol.has_base_types) {
-				Symbol parent;
+				Symbol parent = null;
 				foreach (DataType type in symbol.base_types) {
 					if (!type.unresolved) {
 						if (type.symbol.name == name
@@ -311,7 +314,7 @@ namespace Afrodite
 							return type.symbol;
 						}
 						if (type.symbol.has_children) {
-							var sym = lookup_symbol (name, type.symbol.children, out parent, CompareMode.EXACT, access, binding);
+							var sym = lookup_symbol (name, type.symbol, ref parent, CompareMode.EXACT, access, binding);
 							if (sym != null) {
 								return sym;
 							}
@@ -554,7 +557,7 @@ namespace Afrodite
 								// is a reference to a namespace
 								return sym;
 							} else if (sym.has_children) {
-								sym = lookup_symbol (name, sym.children, out parent, mode, access, binding);
+								sym = lookup_symbol (name, sym, ref parent, mode, access, binding);
 								if (sym != null) {
 									return sym;
 								}
