@@ -31,6 +31,7 @@ namespace Vtg
 	{
 		private Vtg.PluginInstance _plugin_instance = null;
 		private Gtk.ComboBox _prjs_combo;
+		private Gtk.ListStore _prjs_model;
 		private Gtk.TreeView _prj_view;
 		private int _project_count = 0;
 
@@ -85,20 +86,11 @@ namespace Vtg
 						} else {
 							_prj_view.set_model (null);
 						}
+
 						//sync the project combo view
-						TreeModel model = _prjs_combo.get_model ();
 						Gtk.TreeIter iter;
-						bool valid = model.get_iter_first (out iter);
-						while (valid) {
-							string name;
-							model.@get (iter, 0, out name);
-					
-							if (name == _current_project.project.name) {
-								_prjs_combo.set_active_iter (iter);
-								break;
-							}
-							valid = model.iter_next (ref iter);
-						}
+						if (this.lookup_iter_for_project_name (_current_project.project.name, out iter))
+							_prjs_combo.set_active_iter (iter);
 					} else {
 						_prj_view.set_model (null);
 					}
@@ -123,12 +115,18 @@ namespace Vtg
 		
 		construct
 		{
+			_prjs_model = new Gtk.ListStore(2, typeof(string), typeof(Project));
+			
 			var panel = _plugin_instance.window.get_side_panel ();
 			_side_panel = new Gtk.VBox (false, 8);
-			_prjs_combo = new Gtk.ComboBox.text ();
+			_prjs_combo = new Gtk.ComboBox.with_model (_prjs_model);
+			CellRenderer renderer = new Gtk.CellRendererText ();
+			_prjs_combo.pack_start (renderer, true);
+			_prjs_combo.add_attribute (renderer, "text", 0);
 			_prjs_combo.changed.connect (this.on_project_combobox_changed);
+			
 			_prj_view = new Gtk.TreeView ();
-			CellRenderer renderer = new CellRendererPixbuf ();
+			renderer = new CellRendererPixbuf ();
 			
 			var column = new TreeViewColumn ();
  			column.pack_start (renderer, false);
@@ -214,20 +212,51 @@ namespace Vtg
 
 		public void add_project (Project project)
 		{
-			_prjs_combo.append_text (project.name);
-			_prjs_combo.set_active (_project_count);
+			Gtk.TreeIter iter;
+			_prjs_model.append (out iter);
+			_prjs_model.set (iter, 0, project.name, 1, project);
+			_prjs_combo.set_active_iter (iter);
 			_project_count++;
 		}
 
 		public void remove_project (Project project)
 		{
-			_prjs_combo.remove_text (_project_count - 1);
+			Gtk.TreeIter iter;
+			if (this.lookup_iter_for_project_name (project.name, out iter)) {
+				_prjs_model.remove (iter);
+			}
+			
 			_project_count--;
 			if (_project_count > 0) {
-				_prjs_combo.set_active (_project_count - 1);
+				_prjs_combo.set_active (0);
+				if (_prjs_combo.get_active_iter (out iter)) {
+					Project selected_project;
+					_prjs_model.get (iter, 1, out selected_project);
+					update_view (selected_project.name);
+				}
 			} else {
 				update_view (null);
 			}
+		}
+
+		private bool lookup_iter_for_project_name (string project_name, out TreeIter combo_iter)
+		{
+			TreeModel model = _prjs_combo.get_model ();
+			Gtk.TreeIter iter;
+			
+			bool valid = model.get_iter_first (out iter);
+			while (valid) {
+				string name;
+				model.@get (iter, 0, out name);
+	
+				if (name == project_name) {
+					combo_iter = iter;
+					return true;
+				}
+				valid = model.iter_next (ref iter);
+			}
+			
+			return false;
 		}
 
 		public void on_project_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
@@ -286,8 +315,14 @@ namespace Vtg
 
 		public void on_project_combobox_changed (Widget sender)
 		{
-			var project_name = ((ComboBox) sender).get_active_text ();
-			update_view (project_name);
+			Gtk.TreeIter iter;
+			if (_prjs_combo.get_active_iter (out iter)) {
+				Project project;
+				_prjs_model.get (iter, 1, out project);
+				update_view (project.name);
+			} else {
+				update_view (null);
+			}
 		}
 
 		private void update_view (string? project_name)

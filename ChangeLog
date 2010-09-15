@@ -1,5 +1,11 @@
 2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectview.vala:
+
+	improved project combox box using a ListStore model. Fixes issue #154
+
+2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/backends/vbfsmartfolder.vala:
 	* vbf/vbf-1.0.vapi:
 	* vbf/vbfutils.vala:
