@@ -58,7 +58,7 @@ namespace Vtg
 		public signal void completion_end_parsing (ProjectManager sender, CompletionEngine completion);
 		
 		private uint _idle_id;
-		
+
 		public bool enable_completion 
 		{
 			get {
@@ -77,7 +77,7 @@ namespace Vtg
 
 		public ProjectManager (bool enable_completion)
 		{
-			_enable_completion = enable_completion;			
+			_enable_completion = enable_completion;
 		}
 		
 		~ProjectManager ()
@@ -104,7 +104,7 @@ namespace Vtg
 		public Afrodite.CompletionEngine? get_completion_for_target (Vbf.Target target)
 		{
 			if (_completions != null) {
-				foreach (Vbf.Target key in _completions.get_keys ())	{
+				foreach (Vbf.Target key in _completions.get_keys ()) {
 					if (key.id == target.id) {
 						return _completions.@get (key);
 					}
@@ -210,7 +210,7 @@ namespace Vtg
 											break;
 										}
 									}
-								
+
 									if (equals) {
 										return source.uri;
 									}
@@ -319,13 +319,15 @@ namespace Vtg
 					foreach (Vbf.Source source in target.get_sources ()) {
 						if (source.type == FileTypes.VALA_SOURCE) {
 							Utils.trace ("setup_completions: source %s", source.filename);
-							completion.queue_sourcefile (source.filename);
+							if (FileUtils.test (source.filename, FileTest.EXISTS | FileTest.IS_SYMLINK | FileTest.IS_REGULAR)) {
+								completion.queue_sourcefile (source.filename);
+							}
 						}
 					}
 					
 					/* rebind the completion engine to the open views */
 					foreach (PluginInstance instance in Vtg.Plugin.main_instance.instances) {
-						instance.bind_completion_engine_with_target (target, completion);						
+						instance.bind_completion_engine_with_target (target, completion);
 					}
 				}
 			}

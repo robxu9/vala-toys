@@ -64,7 +64,7 @@ namespace Vtg
 			_symbol_completion = symbol_completion;
 			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			string name = Utils.get_document_name (doc);
-
+			Utils.trace ("initializing provider for document: %s", name);
 			_sb = new Afrodite.SourceItem ();
 			_sb.path = name;
 			_sb.content = doc.text;
@@ -289,6 +289,9 @@ namespace Vtg
 		{
 			_doc_changed = true;
 			_all_doc = true;
+			if (_sb.path != Utils.get_document_name (doc))
+				_sb.path = Utils.get_document_name (doc);
+
 			this.schedule_reparse ();
 		}
 		
@@ -402,7 +405,7 @@ namespace Vtg
 			_calltip_window.set_transient_for (_symbol_completion.plugin_instance.window);
 			_calltip_window.set_sizing (800, 400, true, true);
 			_calltip_window_label = new Gtk.Label ("");
-			_calltip_window.set_widget (_calltip_window_label);			
+			_calltip_window.set_widget (_calltip_window_label);
 		}
 
 		private void parse (Gedit.Document doc)
@@ -415,7 +418,7 @@ namespace Vtg
 					current_project.project.update ();
 				}
 			}
-			
+
 			// schedule a parse
 			var buffer = this.get_document_text (doc, _all_doc);
 			_sb.content = buffer;
@@ -425,13 +428,12 @@ namespace Vtg
 
 		private int autoadd_packages (Gedit.Document doc, Vtg.ProjectManager project_manager)
 		{
-		
 			int added_count = 0;
-			
+
 			try {
 				var text = this.get_document_text (doc, true);
 				GLib.Regex regex = new GLib.Regex ("""^\s*(using)\s+(\w\S*)\s*;.*$""");
-			
+
 				foreach (string line in text.split ("\n")) {
 					GLib.MatchInfo match;
 					regex.match (line, RegexMatchFlags.NEWLINE_ANY, out match);
@@ -803,6 +805,8 @@ namespace Vtg
 					if (s != null) {
 						results = ast.lookup_visible_symbols_from_symbol (s, word, mode, CaseSensitiveness.CASE_SENSITIVE);
 					}
+				} else {
+					Utils.trace ("no source file for: %s", Utils.get_document_name (doc));
 				}
 				
 				if (results.size == 0) {
@@ -896,6 +900,4 @@ namespace Vtg
 			return doc_text;
 		}
 	}
-	
-
 }

@@ -350,6 +350,10 @@ namespace Vtg
 					GLib.warning ("error %s converting file %s to uri", e.message, name);
 				}
 			}
+
+			if (is_vala_doc(doc) && !name.has_suffix (".vala")) {
+				name += ".vala";
+			}
 			return name;
 		}
 

@@ -34,17 +34,24 @@ namespace Vbf
 	public class File : GLib.Object
 	{
 		public string name;
-		public string filename;	
+		public string filename;
 		public string uri;
 		public FileTypes type;
 		public unowned Target target;
-		
+
 		public File (Target target, string filename)
 		{
 			this.with_type (target, filename, FileTypes.UNKNOWN);
 		}
 		
 		public File.with_type (Target target, string filename, FileTypes type)
+		{
+			update_file_data (filename);
+			this.target = target;
+			this.type = type;
+		}
+
+		public void update_file_data (string filename)
 		{
 			string file = filename;
 			if (!Path.is_absolute (file)) {
@@ -53,13 +60,11 @@ namespace Vbf
 			}
 			this.filename = file;
 			try {
-				this.uri = Filename.to_uri (file);	
+				this.uri = Filename.to_uri (file);
 			} catch (Error e) {
 				GLib.warning ("error %s converting file %s to uri", e.message, file);
 			}
 			this.name = Filename.display_basename (file);
-			this.target = target;
-			this.type = type;
 		}
 	}
 }

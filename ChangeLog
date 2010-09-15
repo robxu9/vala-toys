@@ -1,3 +1,23 @@
+2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	add filename extension to live buffer in order to fix the parsing
+
+2010-09-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parser.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbffile.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	improved stadalone file edit support
+
 2010-08-31  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/ast.vala:

@@ -61,7 +61,7 @@ namespace Afrodite
 			foreach (SourceItem source in _sources) {
 				Vala.SourceFile source_file = null;
 				
-				if (!FileUtils.test (source.path, FileTest.EXISTS)) {
+				if (source.content == null && !FileUtils.test (source.path, FileTest.EXISTS)) {
 					warning ("file %s not exists", source.path);
 					continue;
 				}
@@ -69,6 +69,7 @@ namespace Afrodite
 					source_file = new Vala.SourceFile (context, source.path, source.is_vapi); // normal source
 				else if (source.content != "") {
 					source_file = new Vala.SourceFile (context, source.path, source.is_vapi, source.content); // live buffer
+					Utils.trace ("queue live buffer %s:\n%s\n", source.path, source.content);
 				} else {
 					warning ("sourcefile %s with empty content not queued", source.path);
 				}

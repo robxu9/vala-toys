@@ -315,7 +315,7 @@ namespace Vtg
 			return sym_access;
 		}
 
-		private void rebuild_model (Vala.List<ResultItem>? items, TreeIter? parentIter = null)
+		private void rebuild_model (Vala.List<ResultItem>? items, TreeIter? parent_iter = null)
 		{
 			if (items == null || items.size == 0)
 				return;
@@ -349,7 +349,7 @@ namespace Vtg
 							break;
 						}
 					}
-					_model.append (out iter, parentIter);
+					_model.append (out iter, parent_iter);
 					_model.set (iter, 
 						Columns.NAME, des, 
 						Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name), 

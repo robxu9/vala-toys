@@ -650,11 +650,15 @@ namespace Vtg
 						Vtg.Caches.cache_add (cache, params);
 					}
 					try {
-						file = Filename.from_uri (file);
-						if (!doc.is_untouched () && Vtg.Plugin.main_instance.config.save_before_build)
+						if (file == null || !doc.is_untouched () && Vtg.Plugin.main_instance.config.save_before_build) {
 							Gedit.commands_save_document (_plugin_instance.window, doc);
-						
-						_prj_builder.compile_file (file, params);
+							file = doc.get_uri ();
+						}
+
+						if (file != null) {
+							file = Filename.from_uri (file);
+							_prj_builder.compile_file (file, params);
+						}
 					} catch (Error e) {
 						GLib.warning ("error %s converting file %s from uri", e.message, file);
 					}

@@ -38,12 +38,14 @@ namespace Vtg
 		private SourceBookmarks _bookmarks = null;
 		private Vala.List<Vtg.SymbolCompletion> _scs = new Vala.ArrayList<Vtg.SymbolCompletion> ();
 		private Vala.List<Vtg.BracketCompletion> _bcs = new Vala.ArrayList<Vtg.BracketCompletion> ();
-		
+
 		private unowned Gedit.View _last_created_view = null; // workaround to a gedit scroll to cursor bug
-		
+
 		private ulong _tab_add_sig_id = 0;
 		private ulong _tab_removed_sig_id = 0;
-		
+
+		private Vala.HashMap<Gedit.Document, Vbf.Source> open_docs = new Vala.HashMap<Gedit.Document, Vbf.Source> ();
+
 		public OutputView output_view 
 		{ 
 			get { return _output_view; }
@@ -126,7 +128,7 @@ namespace Vtg
 			}
 		}
 
-		private static void check_vala_source_for_add (ProjectManager project_manager, Gedit.Document doc)
+		private static void check_vala_source_for_add (Vtg.PluginInstance instance, ProjectManager project_manager, Gedit.Document doc)
 		{
 			if (Utils.is_vala_doc (doc)) {
 				// check if project contains this file, if not add it
@@ -135,13 +137,20 @@ namespace Vtg
 				var source = target.get_source (Utils.get_document_name (doc));
 				if (source == null) {
 					// add the source to the project
-					target.add_source (new Vbf.Source.with_type (target, Utils.get_document_name (doc), FileTypes.VALA_SOURCE));
+					source = new Vbf.Source.with_type (target, Utils.get_document_name (doc), FileTypes.VALA_SOURCE);
+
+					if (doc.get_uri () == null) {
+						source.filename = Utils.get_document_name (doc);
+					}
+
+					target.add_source (source);
+					instance.open_docs.set (doc, source);
 					project_manager.project.update ();
 				}
 			}
 		}
 
-		private static void check_vala_source_for_remove (ProjectManager project_manager, Gedit.Document doc)
+		private static void check_vala_source_for_remove (Vtg.PluginInstance instance, ProjectManager project_manager, Gedit.Document doc)
 		{
 			// check if project contains this file, if not add it
 			var group = project_manager.project.get_group("Sources");
@@ -151,7 +160,10 @@ namespace Vtg
 				// add the source to the project
 				target.remove_source (source);
 				project_manager.project.update ();
-			}	
+			}
+
+			if (instance.open_docs.contains (doc))
+				instance.open_docs.remove (doc);
 		}
 		
 		private static void on_tab_added (Gedit.Window sender, Gedit.Tab tab, Vtg.PluginInstance instance)
@@ -160,7 +172,7 @@ namespace Vtg
 			var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 
 			if (project_manager != null && project_manager.project.id == "vtg-default-project") {
-				check_vala_source_for_add (project_manager, doc);
+				check_vala_source_for_add (instance, project_manager, doc);
 			}
 			
 			if (doc.language != null && doc.language.id == "vala") {
@@ -186,7 +198,7 @@ namespace Vtg
 			var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 
 			if (project_manager != null && project_manager.project.id == "vtg-default-project") {
-				check_vala_source_for_remove (project_manager, doc);
+				check_vala_source_for_remove (instance, project_manager, doc);
 			}
 		}
 
@@ -201,7 +213,7 @@ namespace Vtg
 			}
 			if (Vtg.Plugin.main_instance.config.sourcecode_outliner_enabled && _source_outliner == null) {
 				activate_sourcecode_outliner ();
-			}			
+			}
 		}
 
 		public void initialize_view (ProjectManager project, Gedit.View view)
@@ -218,6 +230,7 @@ namespace Vtg
 		public void initialize_document (Gedit.Document doc)
 		{
 			Signal.connect (doc, "notify::language", (GLib.Callback) on_notify_language, this);
+			Signal.connect (doc, "saved", (GLib.Callback) on_document_saved, this);
 		}
 
 		public void uninitialize_view (Gedit.View view)
@@ -236,7 +249,6 @@ namespace Vtg
 		public void activate_sourcecode_outliner ()
 		{
 			_source_outliner = new SourceOutliner (this);
-			
 		}
 		
 		public void deactivate_sourcecode_outliner ()
@@ -263,13 +275,20 @@ namespace Vtg
 			var doc = (Gedit.Document) view.get_buffer ();
 			return_if_fail (doc != null);
 
-			var uri = doc.get_uri ();
-			if (uri == null)
+			var file = Utils.get_document_name (doc);
+			if (file == null)
 				return;
 
-			var completion = project.get_completion_for_file (uri);
+			CompletionEngine completion;
+			if (project.is_default) {
+				var group = project.project.get_group("Sources");
+				var target = group.get_target_for_id ("Default");
+				completion = project.get_completion_for_target (target);
+			} else {
+				completion = project.get_completion_for_file (Filename.to_uri (file));
+			}
 			if (completion == null) {
-				GLib.warning ("No completion for file %s", uri);
+				GLib.warning ("No completion for file %s", file);
 				return;
 			}
 			var sc = new Vtg.SymbolCompletion (this, view, completion);
@@ -287,11 +306,11 @@ namespace Vtg
 			int size = 0;
 			while (_scs.size > 0 && _scs.size != size) {
 				size = _scs.size;
-				deactivate_symbol (_scs.get(0));					
+				deactivate_symbol (_scs.get(0));
 			} 
 		}
 
-		public void deactivate_brackets ()		
+		public void deactivate_brackets ()
 		{
 			int size = 0;
 			while (_bcs.size > 0 && _bcs.size != size) {
@@ -332,6 +351,7 @@ namespace Vtg
 		public void uninitialize_document (Gedit.Document doc)
 		{
 			SignalHandler.disconnect_by_func (doc, (void*) on_notify_language, this);
+			SignalHandler.disconnect_by_func (doc, (void*) on_document_saved, this);
 		}
 
 		public Gedit.Tab activate_uri (string uri, int line = 0, int col = 0)
@@ -361,7 +381,7 @@ namespace Vtg
 					tab.get_view ().scroll_to_cursor ();
 				}
 			}
-			return tab;		
+			return tab;
 		}
 
 		public bool on_idle_cursor_mode ()
@@ -394,12 +414,12 @@ namespace Vtg
 					var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (sender);
 					if (sender.language  == null || sender.language.id != "vala") {
 						if (project_manager != null && project_manager.project.id == "vtg-default-project") {
-							check_vala_source_for_remove (project_manager, sender);
+							check_vala_source_for_remove (instance, project_manager, sender);
 						}
 						instance.uninitialize_view (view);
 					} else {
 						if (project_manager != null && project_manager.project.id == "vtg-default-project") {
-							check_vala_source_for_add (project_manager, sender);
+							check_vala_source_for_add (instance, project_manager, sender);
 						}
 						instance.initialize_view (project_manager, view);
 					}
@@ -407,7 +427,7 @@ namespace Vtg
 				}
 			}
 		}
-		
+
 		public void unbind_completion_engine (Afrodite.CompletionEngine engine)
 		{
 			foreach (SymbolCompletion sc in _scs) {
@@ -439,6 +459,35 @@ namespace Vtg
 						_source_outliner.setup_completion_engine (engine);
 					}
 				}
+			}
+		}
+
+		[CCode(instance_pos=-1)]
+		private void on_document_saved (Gedit.Document doc, void *arg1)
+		{
+			Utils.trace ("document saved: %s", doc.get_uri ());
+
+			try {
+				var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
+				if (project_manager.is_default) {
+					Vbf.Source source = null;
+
+					if (open_docs.contains (doc)) {
+						source = open_docs.get (doc);
+					}
+					if (source != null) {
+						string file = doc.get_uri ();
+						if (source.uri != file) {
+							Utils.trace ("update source info for: %s", file);
+							source.update_file_data (Filename.from_uri (doc.get_uri ()));
+							_project_view.current_project.project.update ();
+						}
+					} else {
+						Utils.trace ("can't find source file for: %s", Utils.get_document_name (doc));
+					}
+				}
+			} catch (Error err) {
+				GLib.warning ("error converting file to uri: %s", doc.get_uri ());
 			}
 		}
 	}
