@@ -83,7 +83,7 @@ namespace Vtg
 				src.begin_user_action ();
 				src.delete_selection (true, true);
 				src.get_iter_at_mark (out pos, mark);
-				src.insert (pos, text, (int) text.len ());
+				src.insert (pos, text, (int) text.length);
 				src.end_user_action ();
 				return true;
 			}
@@ -98,7 +98,7 @@ namespace Vtg
 
 			src.get_iter_at_mark (out pos, mark);
 			src.begin_user_action ();
-			src.insert (pos, chars, (int) chars.len ());
+			src.insert (pos, chars, (int) chars.length);
 			src.end_user_action ();
 		}
 

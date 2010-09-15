@@ -279,13 +279,17 @@ namespace Vtg
 			if (file == null)
 				return;
 
-			CompletionEngine completion;
+			CompletionEngine completion = null;
 			if (project.is_default) {
 				var group = project.project.get_group("Sources");
 				var target = group.get_target_for_id ("Default");
 				completion = project.get_completion_for_target (target);
 			} else {
-				completion = project.get_completion_for_file (Filename.to_uri (file));
+				try {
+					completion = project.get_completion_for_file (Filename.to_uri (file));
+				} catch (ConvertError err) {
+					critical ("ConvertError: %s", err.message);
+				}
 			}
 			if (completion == null) {
 				GLib.warning ("No completion for file %s", file);

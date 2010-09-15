@@ -1,5 +1,12 @@
 2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgplugininstance.vala:
+
+	fixed some warnings
+
+2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/afroditetest.vala:
 
 	add an option to simulate live buffer parsing
