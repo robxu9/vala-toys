@@ -1,5 +1,11 @@
 2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/afroditetest.vala:
+
+	add an option to simulate live buffer parsing
+
+2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsymbolcompletionprovider.vala:
 	* vtg/vtgutils.vala:
 

@@ -31,6 +31,7 @@ string option_namespace;
 [NoArrayLength ()]
 string[] option_files;
 int option_repeat;
+bool option_live_buffers;
 
 const OptionEntry[] options = {
 	{ "symbol-name", 's', 0, OptionArg.STRING, ref option_symbol_name, "Symbol to search NAME", "NAME" },
@@ -40,6 +41,7 @@ const OptionEntry[] options = {
 	{ "column", 'c', 0, OptionArg.INT, ref option_column, "Column NUMBER", "NUMBER" },
 	{ "repeat", 'r', 0, OptionArg.INT, ref option_repeat, "Repeat parsing NUMBER", "NUMBER" },
 	{ "dump-namespace", 'n', 0, OptionArg.STRING, ref option_namespace, "Namespace to dump NAME", "NAME" },
+	{ "queue-as-live-buffer", 'e', 0, OptionArg.STRING, ref option_live_buffers, "Parse the source files as live buffers", null },
 	{ "", 0, 0, OptionArg.FILENAME_ARRAY, ref option_files, "Source files NAME", "NAME" },
 	{ null }
 };
@@ -69,8 +71,17 @@ public class AfroditeTest.Application : Object {
 			i = 0;
 			while (option_files[i] != null) {
 				string filename = option_files[i];
-				print ("   %s\n", filename);
-				engine.queue_sourcefile (filename);
+				print ("   %s%s\n", filename, option_live_buffers ? " (live buffer)" : "");
+				if (option_live_buffers) {
+					var source = new Afrodite.SourceItem ();
+					string buffer;
+					FileUtils.get_contents(filename, out buffer);
+					source.content = buffer;
+					source.path = "live-buffer.vala";
+					engine.queue_source (source);
+				} else {
+					engine.queue_sourcefile (filename);
+				}
 				i++;
 			}
 
