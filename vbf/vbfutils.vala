@@ -96,10 +96,11 @@ namespace Vbf.Utils
 		return res;
 	}
 
-	public static string? guess_package_name (string using_name, string[]? vapi_dirs = null)
+	public static string? guess_package_vapi (string using_name, string[]? vapi_dirs = null)
 	{
 		// known using names;
 		string[] real_using_names;
+		string vapi_file = null;
 		
 		if (using_name == "Gtk" || using_name == "Gtk+") {
 			real_using_names = new string[2];
@@ -141,18 +142,32 @@ namespace Vbf.Utils
 				string lib_lowercase_using_name = "lib" + lowercase_using_name;
 				
 				// search in the standard package path
+
 				foreach (string vapi_dir in dirs) {
 					var dir = GLib.Dir.open (vapi_dir);
 
 					while ((curr = dir.read_name ()) != null) {
-						curr = curr.locale_to_utf8 (-1, null, null, null);
+						var curr_file = curr.locale_to_utf8 (-1, null, null, null);
+						
 						//debug ("searching %s vs %s", real_using_name, curr);
 
-						if (curr == filename || curr == lib_filename
-						    || curr == lowercase_filename || curr == lib_lowercase_filename
-						    || curr.has_prefix (lowercase_using_name) || curr.has_prefix (lib_lowercase_using_name)) {
-							return curr.substring (0, curr.length - 5); // 5 = ".vapi".length
+						if (curr_file == filename || curr_file == lib_filename
+						    || curr_file == lowercase_filename || curr_file == lib_lowercase_filename
+						    || curr_file.has_prefix (lowercase_using_name) || curr_file.has_prefix (lib_lowercase_using_name)) {
+							if (vapi_file == null || vapi_file.length > (curr.length - 5)) {
+								vapi_file = curr.substring (0, curr.length - 5); // 5 = ".vapi".length
+							}
+						} else if (curr.contains ("-")) {
+							curr_file = curr_file.replace ("-", "");
+							if (curr_file == filename || curr_file == lib_filename
+							    || curr_file == lowercase_filename || curr_file == lib_lowercase_filename
+							    || curr_file.has_prefix (lowercase_using_name) || curr_file.has_prefix (lib_lowercase_using_name)) {
+								if (vapi_file == null || vapi_file.length > (curr.length - 5)) {
+									vapi_file = curr.substring (0, curr.length - 5); // 5 = ".vapi".length
+								}
+							}
 						}
+						
 					}
 				}
 			}
@@ -160,7 +175,7 @@ namespace Vbf.Utils
 			critical ("error: %s", err.message);
 		}
 
-		return null;
+		return vapi_file;
 	}
 	
 	private bool is_vala_source (string filename)

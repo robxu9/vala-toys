@@ -1,5 +1,14 @@
 2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfutils.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	improved guess heuristic when looking for vapi file names. Fixes issue #155
+
+2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbracketcompletion.vala:
 	* vtg/vtgplugininstance.vala:
 

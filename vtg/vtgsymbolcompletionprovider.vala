@@ -452,7 +452,7 @@ namespace Vtg
 						string package_name = null;
 
 						if (using_name != null)
-							package_name = Vbf.Utils.guess_package_name (using_name);
+							package_name = Vbf.Utils.guess_package_vapi (using_name);
 
 						Utils.trace ("guessing name of using clause %s for package %s: %s", match.fetch (2), using_name, package_name);
 						if (package_name != null) {

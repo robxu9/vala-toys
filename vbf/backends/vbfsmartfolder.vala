@@ -182,7 +182,7 @@ namespace Vbf.Backends
 					GLib.MatchInfo match;
 					_regex.match (line, RegexMatchFlags.NEWLINE_ANY, out match);
 					while (match.matches ()) {
-						string package_name = Utils.guess_package_name (match.fetch (2));
+						string package_name = Utils.guess_package_vapi (match.fetch (2));
 						Utils.trace ("guessing name for %s: %s", match.fetch (2), package_name);
 						if (package_name != null) {
 							if (!target.contains_package (package_name))

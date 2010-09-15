@@ -16,7 +16,7 @@ namespace Vbf {
 	[CCode (cprefix = "VbfUtils", lower_case_cprefix = "vbf_utils_")]
 	namespace Utils {
 		[CCode (cheader_filename = "vbf.h")]
-		public static string? guess_package_name (string using_name, string[]? vapi_dirs = null);
+		public static string? guess_package_vapi (string using_name, string[]? vapi_dirs = null);
 		[CCode (cheader_filename = "vbf.h")]
 		public static bool is_autotools_project (string path);
 		[CCode (cheader_filename = "vbf.h")]
