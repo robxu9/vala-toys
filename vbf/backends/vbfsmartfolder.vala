@@ -32,7 +32,7 @@ namespace Vbf.Backends
 			CMAKE,
 			MAKE,
 		}
-		
+
 		private unowned Project _project;
 		private string _configure_command;
 		private string _build_command;
@@ -104,7 +104,7 @@ namespace Vbf.Backends
 			cleanup_file_monitors ();
 			try {
 				string build_filename = null;
-				
+
 				project.clear ();
 				project.working_dir = project.id;
 				var file = GLib.File.new_for_path (project.id);
@@ -295,7 +295,7 @@ namespace Vbf.Backends
 					break;
 				}
 			}
-			
+
 			return start_position;
 		}
 
