@@ -61,15 +61,21 @@ namespace Vbf
 				vapi_dirs = new string[parent_target.get_include_dirs ().size];
 				int i = 0;
 				foreach (string vapi_dir in parent_target.get_include_dirs ()) {
-					vapi_dirs[i] = vapi_dir;
+					vapi_dirs[i] = vapi_dir + "/";
+					Utils.trace ("**** adding vapidir: %s", vapi_dir);
 					i++;
 				}
 			}
 			
 			try {
-				_uri = GLib.Filename.to_uri (ctx.get_package_path (id, vapi_dirs));
+				string package_filename = ctx.get_package_path (id, vapi_dirs);
+				if (package_filename == null) {
+					critical ("no vapi file for package: %s", id);
+				} else {
+					_uri = GLib.Filename.to_uri (package_filename);
+				}
 			} catch (Error err) {
-				critical ("error: %s", err.message);
+				critical ("error getting the uri for %s: %s", id, err.message);
 			}
 		}
 	}

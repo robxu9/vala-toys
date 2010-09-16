@@ -25,6 +25,14 @@ namespace Vbf.Backends
 {
 	public class SmartFolder : IProjectBackend, GLib.Object
 	{
+		private enum ProjectSubType
+		{
+			UNKNOWN,
+			WAF,
+			CMAKE,
+			MAKE,
+		}
+		
 		private unowned Project _project;
 		private string _configure_command;
 		private string _build_command;
@@ -32,6 +40,7 @@ namespace Vbf.Backends
 		private GLib.Regex _regex;
 		private Vala.List<FileMonitor> _file_mons = new Vala.ArrayList<FileMonitor> ();
 		private Vala.List<string> _visited_directory;
+		private ProjectSubType _project_subtype = ProjectSubType.UNKNOWN;
 		
 		public string? configure_command {
 			owned get {
@@ -94,6 +103,8 @@ namespace Vbf.Backends
 		{
 			cleanup_file_monitors ();
 			try {
+				string build_filename = null;
+				
 				project.clear ();
 				project.working_dir = project.id;
 				var file = GLib.File.new_for_path (project.id);
@@ -104,7 +115,7 @@ namespace Vbf.Backends
 				target.name = project.name;
 				group.add_target (target);
 				project.add_group (group);
-				
+
 				// try to infer build/clean/configure command
 				if (Utils.is_waf_project (project.id)) {
 					string waf_command = Path.build_filename (project.id,"waf");
@@ -112,17 +123,24 @@ namespace Vbf.Backends
 					_configure_command = "%s configure".printf (waf_command);
 					_build_command = "%s build".printf (waf_command);
 					_clean_command = "%s clean".printf (waf_command);
+					_project_subtype = ProjectSubType.WAF;
 				} else if (Utils.is_cmake_project (project.id)) {
 					_configure_command = "cmake";
 					_build_command = "make";
 					_clean_command = "make clean";
+					_project_subtype = ProjectSubType.CMAKE;
+					build_filename = "CMakeLists.txt";
 				} else if (Utils.is_simple_make_project (project.id)) {
 					_build_command = "make";
 					_clean_command = "make clean";
+					_project_subtype = ProjectSubType.MAKE;
+				} else {
+					_project_subtype = ProjectSubType.UNKNOWN;
 				}
+
 				_regex = new GLib.Regex ("""^\s*(using)\s+(\w\S*)\s*;.*$""");
 				_visited_directory = new Vala.ArrayList<string> ();
-				scan_directory (project.id, project);
+				scan_directory (project.id, project, build_filename);
 				
 				if (project.name != null)
 					setup_file_monitors (project);
@@ -136,17 +154,17 @@ namespace Vbf.Backends
 			}
 		}
 		
-		private void scan_directory (string directory, Project project) throws Error
+		private void scan_directory (string directory, Project project, string? build_filename = null) throws Error
 		{
 			_visited_directory.add (directory);
 			var dir = GLib.File.new_for_path (directory);
 			var enm = dir.enumerate_children ("standard::*", 0, null);
 			FileInfo file_info;
 			while ((file_info = enm.next_file (null)) != null) {
-				Utils.trace ("%s %s", file_info.get_file_type () == FileType.DIRECTORY ? "directory" : "file", file_info.get_display_name ());
+				//Utils.trace ("%s %s", file_info.get_file_type () == FileType.DIRECTORY ? "directory" : "file", file_info.get_display_name ());
 				if (file_info.get_file_type () == FileType.DIRECTORY) {
 					if (!file_info.get_name ().has_prefix (".") && !file_info.get_name ().has_prefix ("_"))
-						scan_directory (Path.build_filename (directory, file_info.get_name ()), project);
+						scan_directory (Path.build_filename (directory, file_info.get_name ()), project, build_filename);
 				} else {
 					Target target;
 					var name = file_info.get_display_name ();
@@ -156,16 +174,155 @@ namespace Vbf.Backends
 					} else if (name.has_suffix (".vapi")) {
 						target = project.get_group (project.id).get_target_for_id (project.id);
 						add_vapi_source (target, directory, file_info);
+					} else if (build_filename != null && name == build_filename) {
+						target = project.get_group (project.id).get_target_for_id (project.id);
+						parse_build_file_infos (target, Path.build_filename (directory, file_info.get_name ()));
 					}
 				}
 			}
 		}
-		
+
+		private void parse_build_file_infos (Target target, string filename)
+		{
+			switch (_project_subtype) {
+				case ProjectSubType.CMAKE:
+					parse_cmake_build_file (target, filename);
+					break;
+				case ProjectSubType.WAF:
+				case ProjectSubType.MAKE:
+				default:
+					// not implemented yet
+					break;
+			}
+		}
+
+		private void parse_cmake_build_file (Target target, string filename)
+		{
+			try {
+				Utils.trace ("parsing cmake build file: %s", filename);
+				string content = null;
+				if (FileUtils.get_contents (filename , out content) && content != null) {
+					int start_position = 0;
+					string token;
+					bool in_precompile = false;
+					bool in_package = false;
+					int par_level = 0;
+					while ( (token = get_token (content, ref start_position)) != null) {
+						//Utils.trace ("token %s", token);
+						if (token.has_prefix("#")) {
+							start_position = skip_inline_comment (content, start_position);
+						} else if (in_package) {
+							if (token.length > 1 && token == "OPTIONS" || token == "CUSTOM_VAPIS" || token.up () == token) {
+								in_package = false;
+								break; // out of package --> exit the while loop
+							} else {
+								Utils.trace ("cmake backend adding package: %s", token);
+								target.add_package (new Vbf.Package (token));
+							}
+						} else if (in_precompile) {
+							if (token == "(") {
+								par_level++; // nested parenthesis
+							} else if (token == ")") {
+								if (par_level == 0) {
+									in_precompile = false;
+									break; // out of precompile --> exit the while loop
+								} else {
+									par_level--;
+								}
+							} else if (token == "PACKAGES") {
+								in_package = true;
+							}
+						} else {
+							if (token == "vala_precompile") {
+								in_precompile = expect_token ("(", content, ref start_position);
+							}
+						}
+					}
+				}
+			} catch (Error err) {
+				critical ("Error parsing cmake build file '%s': %s", filename, err.message);
+			}
+		}
+
+		private bool expect_token (string token, string content, ref int start_position)
+		{
+			string tmp = get_token (content, ref start_position);
+			//Utils.trace ("Expect token '%s' got '%s'", token, tmp);
+			return token == tmp;
+		}
+
+		private string? get_token (string content, ref int start_position)
+		{
+			string token = null;
+
+			//Utils.trace ("parsing from: %d", start_position);
+			start_position = skip_spaces (content, start_position);
+			//Utils.trace ("    skipped spaces to: %d", start_position);
+			while (!eof(content, start_position)) {
+				unichar ch = content[start_position];
+				//Utils.trace ("    ch '%u' %d", ch, start_position);
+				if (token == null) {
+					if ((ch != '_' && ch != '$' && ch.isalnum () == false)) {
+						token = ch.to_string(); // special case one character lenght token
+						start_position++;
+						break;
+					} else {
+						token = ch.to_string();
+					}
+				} else {
+					if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == ')' || ch == '}'
+					    || (ch == '(' && token[token.length-1] != '$')
+					    || (ch == '{' && token[token.length-1] != '$')) {
+						break;
+					} else {
+						token += ch.to_string();
+					}
+				}
+				start_position++;
+			}
+
+			//Utils.trace ("get token: %s", token);
+			return token;
+		}
+
+		private int skip_inline_comment (string content, int start_position)
+		{
+			while (!eof(content, start_position)) {
+				unichar ch = content[start_position];
+				if (ch != '\n') {
+					start_position++;
+				} else {
+					break;
+				}
+			}
+			
+			return start_position;
+		}
+
+		private int skip_spaces (string content, int start_position)
+		{
+			while (!eof(content, start_position)) {
+				unichar ch = content[start_position];
+				if (ch.isspace () || ch == '\t' || ch == '\n') {
+					start_position++;
+				} else {
+					break;
+				}
+			}
+			
+			return start_position;
+		}
+
+		private bool eof (string content, int position)
+		{
+			return content.length <= position;
+		}
+
 		private void add_vala_source (Target target, string directory, FileInfo file_info)
 		{
 			string path = Path.build_filename (directory, file_info.get_name ());
 			var file = GLib.File.new_for_path (path).resolve_relative_path (path);
-			Utils.trace ("adding vala source: %s", file.get_path ());
+			//Utils.trace ("adding vala source: %s", file.get_path ());
 			var source = new Vbf.Source (target, file.get_path ());
 			source.type = FileTypes.VALA_SOURCE;
 			target.add_source (source);
@@ -197,16 +354,26 @@ namespace Vbf.Backends
 				warning ("error sniffing file: %s", file.get_path ());
 			}
 		}
-		
+
 		private void add_vapi_source (Target target, string directory, FileInfo file_info)
 		{
+			string vapifile = file_info.get_name ();
+
+			if (vapifile.has_suffix (".vapi")) {
+				vapifile = vapifile.substring (0, vapifile.length - 5); // 5 = ".vapi".length
+			}
+			Utils.trace ("adding vapi package: %s", vapifile);
+			var package = new Vbf.Package (vapifile);
+			target.add_package (package);
+
+			// adding the include path for later searching
 			string path = Path.build_filename (directory, file_info.get_name ());
 			var file = GLib.File.new_for_path (path).resolve_relative_path (path);
-			Utils.trace ("adding vapi source: %s", file.get_path ());
-			var package = new Vbf.Package (file.get_basename ());
-			target.add_package (package);
-			if (!target.contains_include_dir (file.get_path ())) {
-				target.add_include_dir (Path.get_dirname (file.get_path ()));
+			string vapidir = file.get_parent ().get_path ();
+
+			if (!target.contains_include_dir (vapidir)) {
+				Utils.trace ("adding include dir: %s", vapidir);
+				target.add_include_dir (vapidir);
 			}
 		}
 

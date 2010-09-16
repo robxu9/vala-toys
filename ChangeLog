@@ -1,3 +1,10 @@
+2010-09-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/vbfpackage.vala:
+
+	better support for packages in the cmake smartfolder backend. Fixes issue #150
+
 2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojectview.vala:
