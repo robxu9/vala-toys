@@ -2,6 +2,8 @@
 #Build in these directories:
 SUBDIRS = doc vapi
 
+ACLOCAL_AMFLAGS = -I m4
+
 if HAVE_AFRODITE
 SUBDIRS += afrodite
 endif
