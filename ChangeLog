@@ -1,5 +1,12 @@
 2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourceoutliner.vala:
+
+	changed the outliner idle function default priority to see
+	if it's related to bug #156
+
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/backends/vbfsmartfolder.vala:
 
 	avod adding the same package several times

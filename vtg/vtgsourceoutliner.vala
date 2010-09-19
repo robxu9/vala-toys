@@ -178,7 +178,7 @@ namespace Vtg
 			lock (idle_id) {
 				if (idle_id == 0) {
 					Utils.trace ("Idle setup real");
-					idle_id =  Idle.add (this.on_idle_update, Priority.LOW);
+					idle_id =  Idle.add (this.on_idle_update, Priority.DEFAULT_IDLE);
 				}
 			}
 		}
