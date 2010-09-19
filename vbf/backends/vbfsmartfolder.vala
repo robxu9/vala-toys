@@ -220,7 +220,10 @@ namespace Vbf.Backends
 								break; // out of package --> exit the while loop
 							} else {
 								Utils.trace ("cmake backend adding package: %s", token);
-								target.add_package (new Vbf.Package (token));
+								if (!target.contains_package (token))
+								{
+									target.add_package (new Vbf.Package (token));
+								}
 							}
 						} else if (in_precompile) {
 							if (token == "(") {
@@ -268,7 +271,10 @@ namespace Vbf.Backends
 								break; // out of package --> exit the while loop
 							} else {
 								Utils.trace ("waf backend adding package: %s", token);
-								target.add_package (new Vbf.Package (token));
+								if (!target.contains_package (token))
+								{
+									target.add_package (new Vbf.Package (token));
+								}
 							}
 						} else if (in_build) {
 							if (token == "(") {
