@@ -68,7 +68,7 @@ namespace Vtg
 
 		private ActionGroup _actions;
 		private VBox _side_panel;
-		
+
 		public signal void goto_source (int line, int start_column, int end_column);
 		public signal void filter_changed ();
 		
@@ -189,6 +189,7 @@ namespace Vtg
 			_sorted = new Gtk.TreeModelSort.with_model (_model);
 			_sorted.set_sort_column_id (0, SortType.ASCENDING);
 			_sorted.set_sort_func (0, this.sort_model);
+			_sorted.set_default_sort_func (this.sort_model);
 			_src_view.set_model (_sorted);
 		}
 		
@@ -205,6 +206,7 @@ namespace Vtg
 				var first = result.children.get (0);
 				rebuild_model (first.children);
 			}
+
 			_src_view.set_model (_sorted);
 			_src_view.expand_all ();
 		}
@@ -349,10 +351,12 @@ namespace Vtg
 							break;
 						}
 					}
+
 					_model.append (out iter, parent_iter);
-					_model.set (iter, 
-						Columns.NAME, des, 
-						Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name), 
+
+					_model.@set (iter,
+						Columns.NAME, des,
+						Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
 						Columns.SYMBOL, symbol);
 
 					if (item.children.size > 0) {
@@ -364,13 +368,14 @@ namespace Vtg
 
 		private int sort_model (TreeModel model, TreeIter a, TreeIter b)
 		{
-			Afrodite.Symbol vala;
-			Afrodite.Symbol valb;
+			Afrodite.Symbol vala = null;
+			Afrodite.Symbol valb = null;
 			
-			model.get (a, Columns.SYMBOL, out vala);
-			model.get (b, Columns.SYMBOL, out valb);
-			
-			return Utils.symbol_type_compare (vala, valb);
+			model.@get (a, Columns.SYMBOL, out vala);
+			model.@get (b, Columns.SYMBOL, out valb);
+
+			var result = Utils.symbol_type_compare (vala, valb);
+			return result;
 		}
 	}
 }

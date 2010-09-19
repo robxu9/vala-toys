@@ -1,5 +1,14 @@
 2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/parser.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgutils.vala:
+
+	fixed sort function for constructor and construction blocks. Fixes issue #156
+
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutliner.vala:
 
 	changed the outliner idle function default priority to see

@@ -519,7 +519,7 @@ namespace Vtg
 				} else if (vala.type_name == "Enum") {
 					return -1;
 				} else if (valb.type_name == "Enum") {
-					return 1;										
+					return 1;
 				} else if (vala.type_name == "Field") {
 					return -1;
 				} else if (valb.type_name == "Field") {
@@ -532,11 +532,13 @@ namespace Vtg
 					return -1;
 				} else if (valb.type_name == "Signal") {
 					return 1;
-				} else if (vala.type_name == "CreationMethod" 
-					|| vala.type_name == "Constructor") {
+				} else if (vala.type_name == "CreationMethod") {
 					return -1;
-				} else if (valb.type_name == "CreationMethod"  
-					|| vala.type_name == "Constructor") {
+				} else if (valb.type_name == "CreationMethod") {
+					return 1;
+				} else if (vala.type_name == "Constructor") {
+					return -1;
+				} else if (valb.type_name == "Constructor") {
 					return 1;
 				} else if (vala.type_name == "Method") {
 					return -1;
@@ -545,7 +547,7 @@ namespace Vtg
 				} else if (vala.type_name == "ErrorDomain") {
 					return -1;
 				} else if (valb.type_name == "ErrorDomain") {
-					return 1;					
+					return 1;
 				} else if (vala.type_name == "Namespace") {
 					return -1;
 				} else if (valb.type_name == "Namespace") {
@@ -553,7 +555,7 @@ namespace Vtg
 				} else if (vala.type_name == "Struct") {
 					return -1;
 				} else if (valb.type_name == "Struct") {
-					return 1;					
+					return 1;
 				} else if (vala.type_name == "Class") {
 					return -1;
 				} else if (valb.type_name == "Class") {

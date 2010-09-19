@@ -113,14 +113,11 @@ namespace Afrodite
 				*/
 
 				foreach (SourceFile file in source_files) {
-					Utils.trace ("lookup_source_file: searching %s vs %s", filename, file.filename);
 					
 					if (file.filename == filename) {
-						Utils.trace ("filename found: %s", file.filename);
 						return file;
 					}
 				}
-				Utils.trace ("no source files for %s!!!", filename);
 			}
 			return null;
 		}
