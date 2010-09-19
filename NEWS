@@ -1,3 +1,10 @@
+Vala toys for gEdit version 0.10.0
+==================================
+
+* Much improved standalone file edit
+* Improved vbf "smart folder" backend for waf and cmake projects
+* Various fixes in the source code outliner view
+
 Vala toys for gEdit version 0.9.3
 =================================
 

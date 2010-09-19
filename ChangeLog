@@ -1,5 +1,12 @@
 2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
 
+	* NEWS:
+	* configure.ac:
+
+	news file update & version bump to follows vala compiler 0.10
+
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/parser.vala:
 	* vtg/vtgsourceoutlinerview.vala:
