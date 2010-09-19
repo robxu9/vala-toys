@@ -1,3 +1,11 @@
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	add support for basic wscript parsing
+
 2010-09-16  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vbf/backends/vbfsmartfolder.vala:

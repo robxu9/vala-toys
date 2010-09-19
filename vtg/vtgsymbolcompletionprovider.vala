@@ -234,7 +234,7 @@ namespace Vtg
 			}
 		}
 
-		public unowned Gdk.Pixbuf get_icon ()
+		public unowned Gdk.Pixbuf? get_icon ()
 		{
 			if (_icon == null)
 			{

@@ -124,6 +124,7 @@ namespace Vbf.Backends
 					_build_command = "%s build".printf (waf_command);
 					_clean_command = "%s clean".printf (waf_command);
 					_project_subtype = ProjectSubType.WAF;
+					build_filename = "wscript";
 				} else if (Utils.is_cmake_project (project.id)) {
 					_configure_command = "cmake";
 					_build_command = "make";
@@ -189,6 +190,8 @@ namespace Vbf.Backends
 					parse_cmake_build_file (target, filename);
 					break;
 				case ProjectSubType.WAF:
+					parse_waf_build_file (target, filename);
+					break;
 				case ProjectSubType.MAKE:
 				default:
 					// not implemented yet
@@ -210,7 +213,7 @@ namespace Vbf.Backends
 					while ( (token = get_token (content, ref start_position)) != null) {
 						//Utils.trace ("token %s", token);
 						if (token.has_prefix("#")) {
-							start_position = skip_inline_comment (content, start_position);
+							start_position = skip_line (content, start_position);
 						} else if (in_package) {
 							if (token.length > 1 && token == "OPTIONS" || token == "CUSTOM_VAPIS" || token.up () == token) {
 								in_package = false;
@@ -244,10 +247,61 @@ namespace Vbf.Backends
 			}
 		}
 
+		private void parse_waf_build_file (Target target, string filename)
+		{
+			try {
+				Utils.trace ("parsing waf build file: %s", filename);
+				string content = null;
+				if (FileUtils.get_contents (filename , out content) && content != null) {
+					int start_position = 0;
+					string token;
+					bool in_build = false;
+					bool in_package = false;
+					int par_level = 0;
+					while ( (token = get_token (content, ref start_position)) != null) {
+						//Utils.trace ("token %s", token);
+						if (token.has_prefix("#")) {
+							start_position = skip_line (content, start_position);
+						} else if (in_package) {
+							if (token.length == 1 && (token == "\"" || token == "'")) {
+								in_package = false;
+								break; // out of package --> exit the while loop
+							} else {
+								Utils.trace ("waf backend adding package: %s", token);
+								target.add_package (new Vbf.Package (token));
+							}
+						} else if (in_build) {
+							if (token == "(") {
+								par_level++; // nested parenthesis
+							} else if (token == ")") {
+								if (par_level == 0) {
+									in_build = false;
+									break; // out of precompile --> exit the while loop
+								} else {
+									par_level--;
+								}
+							} else if (token == "prog.packages") {
+								in_package = expect_token ("=", content, ref start_position);
+								// skip the ' token
+								get_token (content, ref start_position);
+							}
+						} else {
+							if (token == "def") {
+								in_build = expect_token ("build", content, ref start_position);
+								start_position = skip_line (content, start_position);
+							}
+						}
+					}
+				}
+			} catch (Error err) {
+				critical ("Error parsing waf wscript file '%s': %s", filename, err.message);
+			}
+		}
+
 		private bool expect_token (string token, string content, ref int start_position)
 		{
 			string tmp = get_token (content, ref start_position);
-			//Utils.trace ("Expect token '%s' got '%s'", token, tmp);
+			Utils.trace ("Expect token '%s' got '%s'", token, tmp);
 			return token == tmp;
 		}
 
@@ -260,7 +314,7 @@ namespace Vbf.Backends
 			//Utils.trace ("    skipped spaces to: %d", start_position);
 			while (!eof(content, start_position)) {
 				unichar ch = content[start_position];
-				//Utils.trace ("    ch '%u' %d", ch, start_position);
+				//Utils.trace ("    ch '%s' %d", ch.to_string (), start_position);
 				if (token == null) {
 					if ((ch != '_' && ch != '$' && ch.isalnum () == false)) {
 						token = ch.to_string(); // special case one character lenght token
@@ -271,6 +325,7 @@ namespace Vbf.Backends
 					}
 				} else {
 					if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == ')' || ch == '}'
+					    || ch == '\'' || ch == '\"'
 					    || (ch == '(' && token[token.length-1] != '$')
 					    || (ch == '{' && token[token.length-1] != '$')) {
 						break;
@@ -281,11 +336,11 @@ namespace Vbf.Backends
 				start_position++;
 			}
 
-			//Utils.trace ("get token: %s", token);
+			//Utils.trace ("get token: '%s'", token);
 			return token;
 		}
 
-		private int skip_inline_comment (string content, int start_position)
+		private int skip_line (string content, int start_position)
 		{
 			while (!eof(content, start_position)) {
 				unichar ch = content[start_position];
@@ -320,7 +375,7 @@ namespace Vbf.Backends
 
 		private void add_vala_source (Target target, string directory, FileInfo file_info)
 		{
-			string path = Path.build_filename (directory, file_info.get_name ());
+			string path = Path.build_filename (directory, file_info.get_name());
 			var file = GLib.File.new_for_path (path).resolve_relative_path (path);
 			//Utils.trace ("adding vala source: %s", file.get_path ());
 			var source = new Vbf.Source (target, file.get_path ());
@@ -351,7 +406,7 @@ namespace Vbf.Backends
 					}
 				}
 			} catch (Error err) {
-				warning ("error sniffing file: %s", file.get_path ());
+				warning ("error sniffing file %s: %s", file.get_path (), err.message);
 			}
 		}
 
