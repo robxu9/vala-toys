@@ -301,7 +301,7 @@ namespace Vbf.Backends
 		private bool expect_token (string token, string content, ref int start_position)
 		{
 			string tmp = get_token (content, ref start_position);
-			Utils.trace ("Expect token '%s' got '%s'", token, tmp);
+			//Utils.trace ("Expect token '%s' got '%s'", token, tmp);
 			return token == tmp;
 		}
 
@@ -375,9 +375,8 @@ namespace Vbf.Backends
 
 		private void add_vala_source (Target target, string directory, FileInfo file_info)
 		{
-			string path = Path.build_filename (directory, file_info.get_name());
-			var file = GLib.File.new_for_path (path).resolve_relative_path (path);
-			//Utils.trace ("adding vala source: %s", file.get_path ());
+			var file = GLib.File.new_for_path (directory).resolve_relative_path (file_info.get_name());
+			Utils.trace ("adding vala source: %s", file.get_path ());
 			var source = new Vbf.Source (target, file.get_path ());
 			source.type = FileTypes.VALA_SOURCE;
 			target.add_source (source);

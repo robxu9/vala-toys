@@ -1,6 +1,12 @@
 2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vbf/backends/vbfsmartfolder.vala:
+
+	fix path resolution when adding source files
+
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
 	* vbf/vbf-1.0.vapi:
 	* vtg/vtgsymbolcompletionprovider.vala:
 
