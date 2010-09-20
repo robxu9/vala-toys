@@ -160,7 +160,7 @@ namespace Vtg
 
 		/* END UI */
 		private Vala.List<ProjectManager> _projects = new Vala.ArrayList<ProjectManager> ();
-		private ActionGroup _actions = null;
+		private Gtk.ActionGroup _actions = null;
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private ProjectBuilder _prj_builder = null;
 		private ProjectExecuter _prj_executer = null;
@@ -231,7 +231,7 @@ namespace Vtg
 
 		private void initialize_ui ()
 		{
-			_actions = new ActionGroup ("ProjectManagerActionGroup");
+			_actions = new Gtk.ActionGroup ("ProjectManagerActionGroup");
 			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
 			var recent_action = new Gtk.RecentAction ("ProjectRecent", "Open Recent Project", "", "");

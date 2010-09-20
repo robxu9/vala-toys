@@ -62,7 +62,7 @@ namespace Vtg
 		};
 
 
-		private ActionGroup _actions;
+		private Gtk.ActionGroup _actions;
 		private VBox _side_panel;
 		private ProjectManager _current_project = null;
 		private Gtk.TreeModelFilter _filtered_model;
@@ -98,23 +98,11 @@ namespace Vtg
 			}
 		}
 		
-		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } }
+		public Vtg.PluginInstance plugin_instance { private set { _plugin_instance = value; } }
 
 		public ProjectView (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
-		}
-		
-		~ProjectView ()
-		{
-			var manager = _plugin_instance.window.get_ui_manager ();
-			manager.remove_action_group (_actions);
-			var panel = _plugin_instance.window.get_side_panel ();
-			panel.remove_item (_side_panel);
-		}
-		
-		construct
-		{
+			this.plugin_instance = plugin_instance;
 			_prjs_model = new Gtk.ListStore(2, typeof(string), typeof(Project));
 			
 			var panel = _plugin_instance.window.get_side_panel ();
@@ -129,7 +117,7 @@ namespace Vtg
 			renderer = new CellRendererPixbuf ();
 			
 			var column = new TreeViewColumn ();
- 			column.pack_start (renderer, false);
+			column.pack_start (renderer, false);
 			column.add_attribute (renderer, "stock-id", 0);
 			renderer = new CellRendererText ();
 			column.pack_start (renderer, true);
@@ -155,12 +143,13 @@ namespace Vtg
 			panel.activate_item (_side_panel);
 			_project_count = 0;
 
-			_actions = new ActionGroup ("ProjectManagerActionGroup");
+			_actions = new Gtk.ActionGroup ("ProjectManagerActionGroup");
 			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
+
 			var manager = _plugin_instance.window.get_ui_manager ();
-			manager.insert_action_group (_actions, -1);
 			try {
+				manager.insert_action_group (_actions, -1);
 				_popup_modules_ui_id = manager.add_ui_from_string (_popup_modules_ui_def, -1);
 				_popup_modules = (Gtk.Menu) manager.get_widget ("/ProjectManagerPopupPackagesEdit");
 				assert (_popup_modules != null);
@@ -172,6 +161,14 @@ namespace Vtg
 			}
 		}
 
+		~ProjectView ()
+		{
+			var manager = _plugin_instance.window.get_ui_manager ();
+			manager.remove_action_group (_actions);
+			var panel = _plugin_instance.window.get_side_panel ();
+			panel.remove_item (_side_panel);
+		}
+		
 		private void update_project_treeview ()
 		{
 			_filtered_model = new Gtk.TreeModelFilter (_current_project.model, null);

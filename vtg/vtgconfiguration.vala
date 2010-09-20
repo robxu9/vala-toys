@@ -171,7 +171,7 @@ namespace Vtg
 		}
 		
 		
-		construct
+		public Configuration ()
 		{
 			try {
 				//TODO: construct the gconf client from Engine.get_default ()

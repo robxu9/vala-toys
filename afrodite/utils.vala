@@ -102,7 +102,7 @@ namespace Afrodite.Utils
 
 		foreach (string package_path in packages) {
 			Utils.trace ("adding package %s: %s", pkg, package_path);
-			context.add_source_file (new Vala.SourceFile (context, package_path, true));
+			context.add_source_file (new Vala.SourceFile (context, SourceFileType.PACKAGE, package_path));
 		}
 		return true;
 	}

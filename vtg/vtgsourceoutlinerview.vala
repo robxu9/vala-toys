@@ -66,13 +66,13 @@ namespace Vtg
 			{"source-outliner-goto", Gtk.STOCK_OPEN, N_("Goto definition..."), null, N_("Goto symbol definition"), on_source_outliner_goto}
 		};
 
-		private ActionGroup _actions;
+		private Gtk.ActionGroup _actions;
 		private VBox _side_panel;
 
 		public signal void goto_source (int line, int start_column, int end_column);
 		public signal void filter_changed ();
 		
-		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } }
+		public Vtg.PluginInstance plugin_instance { private set { _plugin_instance = value; } }
 		
 		public bool show_private_symbols {
 			get {
@@ -82,27 +82,8 @@ namespace Vtg
 		
 		public SourceOutlinerView (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
-		}
-		
-		~SourceOutlinerView ()
-		{
-			_src_view.set_model (null);
-			// this method is never called? a leak?
-			deactivate ();
+			this.plugin_instance = plugin_instance;
 
-		}
-		
-		public void deactivate ()
-		{
-			var manager = _plugin_instance.window.get_ui_manager ();
-			manager.remove_action_group (_actions);
-			var panel = _plugin_instance.window.get_side_panel ();
-			panel.remove_item (_side_panel);
-		}
-
-		construct
-		{
 			var panel = _plugin_instance.window.get_side_panel ();
 			_side_panel = new Gtk.VBox (false, 8);
 			_src_view = new Gtk.TreeView ();
@@ -169,7 +150,7 @@ namespace Vtg
 			panel.add_item (_side_panel, _("Source"), icon);
 			panel.activate_item (_side_panel);
 
-			_actions = new ActionGroup ("SourceOutlinerActionGroup");
+			_actions = new Gtk.ActionGroup ("SourceOutlinerActionGroup");
 			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
 			var manager = _plugin_instance.window.get_ui_manager ();
@@ -191,6 +172,22 @@ namespace Vtg
 			_sorted.set_sort_func (0, this.sort_model);
 			_sorted.set_default_sort_func (this.sort_model);
 			_src_view.set_model (_sorted);
+		}
+
+		~SourceOutlinerView ()
+		{
+			_src_view.set_model (null);
+			// this method is never called? a leak?
+			deactivate ();
+
+		}
+		
+		public void deactivate ()
+		{
+			var manager = _plugin_instance.window.get_ui_manager ();
+			manager.remove_action_group (_actions);
+			var panel = _plugin_instance.window.get_side_panel ();
+			panel.remove_item (_side_panel);
 		}
 		
 		public void clear_view ()

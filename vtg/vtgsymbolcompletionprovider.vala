@@ -530,12 +530,9 @@ namespace Vtg
 			_proposals.sort (this.proposal_sort);
 		}
 
-		private static int proposal_sort (void* a, void* b)
+		private static int proposal_sort (Gtk.SourceCompletionItem a, Gtk.SourceCompletionItem b)
 		{
-			Gtk.SourceCompletionItem pa = (Gtk.SourceCompletionItem) a;
-			Gtk.SourceCompletionItem pb = (Gtk.SourceCompletionItem) b;
-
-			return strcmp (pa.get_label (), pb.get_label ());
+			return strcmp (a.get_label (), b.get_label ());
 		}
 
 		private void transform_result (Afrodite.QueryOptions? options, Afrodite.QueryResult? result)

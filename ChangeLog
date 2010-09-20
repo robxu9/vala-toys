@@ -1,5 +1,18 @@
 2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/parser.vala:
+	* afrodite/utils.vala:
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	make vala toys compile with vala git-master compiler
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
 	* m4/intltool.m4:
 	* m4/libtool.m4:
 	* m4/ltoptions.m4:
