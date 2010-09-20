@@ -276,7 +276,9 @@ namespace Vtg
 		internal static inline void trace (string format, ...)
 		{
 #if DEBUG
-			Afrodite.Utils.log_message ("ValaToys", format, va_list ());
+			var va = va_list ();
+			var va2 = va_list.copy (va);
+			Afrodite.Utils.log_message ("ValaToys", format, va2);
 #endif
 		}
 	
