@@ -1,5 +1,12 @@
 2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure:
+	* configure.ac:
+
+	version bump
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgutils.vala:
 
 	backport from master: fix a compilation error on 64bit system.
