@@ -75,7 +75,11 @@ public class AfroditeTest.Application : Object {
 				if (option_live_buffers) {
 					var source = new Afrodite.SourceItem ();
 					string buffer;
-					FileUtils.get_contents(filename, out buffer);
+					try {
+						FileUtils.get_contents(filename, out buffer);
+					} catch (Error err) {
+						error (_("parsing options"));
+					}
 					source.content = buffer;
 					source.path = "live-buffer.vala";
 					engine.queue_source (source);

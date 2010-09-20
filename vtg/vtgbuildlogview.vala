@@ -126,7 +126,7 @@ namespace Vtg
 			_vala_warning_button = new Gtk.ToggleToolButton ();
 			_vala_warning_button.set_label (_("Warnings"));
 			_vala_warning_button.set_is_important (true);
-			_vala_warning_button.set_icon_name (Gtk.STOCK_DIALOG_WARNING);
+			_vala_warning_button.set_icon_name (Gtk.Stock.DIALOG_WARNING);
 			_vala_warning_button.set_active (true);
 			
 			
@@ -137,7 +137,7 @@ namespace Vtg
 			_vala_error_button = new Gtk.ToggleToolButton ();
 			_vala_error_button.set_label (_("Errors"));
 			_vala_error_button.set_is_important (true);
-			_vala_error_button.set_icon_name (Gtk.STOCK_DIALOG_ERROR);
+			_vala_error_button.set_icon_name (Gtk.Stock.DIALOG_ERROR);
 			_vala_error_button.toggled.connect (on_toggle_vala_errors_toggled);
 			_vala_error_button.set_tooltip_text (_("Show or hide the errors from the build result view"));
 			_vala_error_button.set_active (true);
@@ -151,7 +151,7 @@ namespace Vtg
 			_c_warning_button = new Gtk.ToggleToolButton ();
 			_c_warning_button.set_label (_("C Warnings"));
 			_c_warning_button.set_is_important (true);
-			_c_warning_button.set_icon_name (Gtk.STOCK_DIALOG_WARNING);
+			_c_warning_button.set_icon_name (Gtk.Stock.DIALOG_WARNING);
 			_c_warning_button.set_active (_show_c_warnings);
 			
 			_c_warning_button.toggled.connect (on_toggle_c_warnings_toggled);
@@ -161,7 +161,7 @@ namespace Vtg
 			_c_error_button = new Gtk.ToggleToolButton ();
 			_c_error_button.set_label (_("C Errors"));
 			_c_error_button.set_is_important (true);
-			_c_error_button.set_icon_name (Gtk.STOCK_DIALOG_ERROR);
+			_c_error_button.set_icon_name (Gtk.Stock.DIALOG_ERROR);
 			_c_error_button.toggled.connect (on_toggle_c_errors_toggled);
 			_c_error_button.set_tooltip_text (_("Show or hide the C errors from the build result view"));
 			_c_error_button.set_active (true);
@@ -207,7 +207,7 @@ namespace Vtg
 			scroll.add (_build_view);
 			_ui.pack_start (scroll, true, true, 0);
 			_ui.show_all ();
-			panel.add_item_with_stock_icon (_ui, _("Build results"), Gtk.STOCK_EXECUTE);
+			panel.add_item_with_stock_icon (_ui, _("Build results"), Gtk.Stock.EXECUTE);
 			_plugin_instance.output_view.message_added.connect (this.on_message_added);
 			_child_model.set_sort_column_id (5, SortType.ASCENDING);
 			
@@ -409,11 +409,11 @@ namespace Vtg
 				if (parts[2] != null) {
 					int is_warning = 0;
 					if (parts[1].has_suffix ("error")) {
-						stock_id = Gtk.STOCK_DIALOG_ERROR;
+						stock_id = Gtk.Stock.DIALOG_ERROR;
 						_vala_error_count++;
 						is_warning = 0; //errors come first
 					} else if (parts[1].has_suffix ("warning")) {
-						stock_id = Gtk.STOCK_DIALOG_WARNING;
+						stock_id = Gtk.Stock.DIALOG_WARNING;
 						_vala_warning_count++;
 						is_warning = 1;
 					} else {
@@ -482,11 +482,11 @@ namespace Vtg
 						message_text = parts[2];
 					}
 					if (message_type.has_suffix ("error")) {
-						stock_id = Gtk.STOCK_DIALOG_ERROR;
+						stock_id = Gtk.Stock.DIALOG_ERROR;
 						_c_error_count++;
 						is_warning = 0; //errors come first
 					} else if (message_type.has_suffix ("warning")) {
-						stock_id = Gtk.STOCK_DIALOG_WARNING;
+						stock_id = Gtk.Stock.DIALOG_WARNING;
 						_c_warning_count++;
 						is_warning = 1;
 					} else if (!message_type.chomp().has_suffix ("note")) {

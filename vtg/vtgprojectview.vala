@@ -57,8 +57,8 @@ namespace Vtg
 
 
 		const ActionEntry[] _action_entries = {
-			{"packages-open-configure", Gtk.STOCK_OPEN, N_("Open configure file..."), "<control><shift>C", N_("Open configure.ac file"), on_packages_open_configure},
-			{"target-open-makefile", Gtk.STOCK_OPEN, N_("Open makefile"), "<control><shift>M", N_("Open makefile.am file"), on_target_open_makefile}
+			{"packages-open-configure", Gtk.Stock.OPEN, N_("Open configure file..."), "<control><shift>C", N_("Open configure.ac file"), on_packages_open_configure},
+			{"target-open-makefile", Gtk.Stock.OPEN, N_("Open makefile"), "<control><shift>M", N_("Open makefile.am file"), on_target_open_makefile}
 		};
 
 
@@ -139,7 +139,7 @@ namespace Vtg
 			_side_panel.pack_start (scroll, true, true, 4);
 			_side_panel.pack_start (_check_button_show_sources, false, false, 4);
 			_side_panel.show_all ();
-			panel.add_item_with_stock_icon (_side_panel, _("Projects"), Gtk.STOCK_DIRECTORY);
+			panel.add_item_with_stock_icon (_side_panel, _("Projects"), Gtk.Stock.DIRECTORY);
 			panel.activate_item (_side_panel);
 			_project_count = 0;
 

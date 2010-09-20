@@ -392,13 +392,13 @@ namespace Vtg
 		{
 			try {
 				_proposals = new Gtk.SourceCompletionItem[prealloc_count];
-				var _icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
+				var _icon_generic = IconTheme.get_default().load_icon(Gtk.Stock.FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				for (int idx = 0; idx < prealloc_count; idx++) {
 					var obj = new Gtk.SourceCompletionItem ("", "", _icon_generic, "");
 					_proposals[idx] = obj;
 				}
 			
-				icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
+				icon_generic = IconTheme.get_default().load_icon(Gtk.Stock.FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));
 				icon_method = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-method-16.png"));
 				icon_class = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-class-16.png"));
@@ -489,15 +489,15 @@ namespace Vtg
 		{
 			switch (type) {
 				case TargetTypes.PROGRAM:
-					return Gtk.STOCK_EXECUTE;
+					return Gtk.Stock.EXECUTE;
 				case TargetTypes.LIBRARY:
-					return Gtk.STOCK_EXECUTE;
+					return Gtk.Stock.EXECUTE;
 				case TargetTypes.DATA:
-					return Gtk.STOCK_DIRECTORY;
+					return Gtk.Stock.DIRECTORY;
 				case TargetTypes.BUILT_SOURCES:
-					return Gtk.STOCK_EXECUTE;
+					return Gtk.Stock.EXECUTE;
 				default:
-					return Gtk.STOCK_DIRECTORY;		
+					return Gtk.Stock.DIRECTORY;		
 			}
 		}
 		

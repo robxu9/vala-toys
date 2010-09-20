@@ -1,5 +1,20 @@
 2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/afroditetest.vala:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	fixed all the deprecate / obsolete warning from the new compiler
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/parser.vala:
 	* afrodite/utils.vala:
 	* vbf/vbf-1.0.vapi:

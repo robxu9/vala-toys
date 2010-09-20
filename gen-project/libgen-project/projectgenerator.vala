@@ -48,7 +48,7 @@ namespace GenProject
 			var project_name_str = new StringBuilder ();
 			var make_name_str = new StringBuilder ();
 			var namespace_name_str = new StringBuilder ();
-			for (int i = 0; i < options.name.len (); i++) {
+			for (int i = 0; i < options.name.length; i++) {
 				unichar c = options.name[i];
 				if ((c >= 'a' && c <= 'z' ) || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
 					project_name_str.append_unichar (c);

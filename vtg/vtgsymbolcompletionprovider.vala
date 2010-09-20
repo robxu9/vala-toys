@@ -240,7 +240,7 @@ namespace Vtg
 			{
 				try {
 					Gtk.IconTheme theme = Gtk.IconTheme.get_default ();
-					_icon = theme.load_icon (Gtk.STOCK_DIALOG_INFO, 16, 0);
+					_icon = theme.load_icon (Gtk.Stock.DIALOG_INFO, 16, 0);
 				} catch (Error err) {
 					critical ("error: %s", err.message);
 				}

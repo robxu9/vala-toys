@@ -63,7 +63,7 @@ namespace Vtg
                                         </ui>""";
 
 		const ActionEntry[] _action_entries = {
-			{"source-outliner-goto", Gtk.STOCK_OPEN, N_("Goto definition..."), null, N_("Goto symbol definition"), on_source_outliner_goto}
+			{"source-outliner-goto", Gtk.Stock.OPEN, N_("Goto definition..."), null, N_("Goto symbol definition"), on_source_outliner_goto}
 		};
 
 		private Gtk.ActionGroup _actions;

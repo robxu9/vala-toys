@@ -135,21 +135,21 @@ namespace Vtg
 			{"ProjectClose", null, N_("_Close Current Project"), null, N_("Close current selected project"), on_project_close},
 			{"ProjectChange", null, N_("_Change Current Project"), null, N_("Change current selected project"), on_project_change},
 			{"ProjectBuildMenuAction", null, N_("Build"), null, N_("Build menu"), null},
-			{"ProjectBuild", Gtk.STOCK_EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project"), on_project_build},
-			{"ProjectBuildClean", Gtk.STOCK_CLEAR, N_("_Clean Project"), null, N_("Clean the current project"), on_project_clean},
+			{"ProjectBuild", Gtk.Stock.EXECUTE, N_("_Build Project"), "<control><shift>B", N_("Build the current project"), on_project_build},
+			{"ProjectBuildClean", Gtk.Stock.CLEAR, N_("_Clean Project"), null, N_("Clean the current project"), on_project_clean},
 			{"ProjectBuildConfigure", null, N_("C_onfigure Project"), null, N_("Configure or reconfigure the current project"), on_project_configure},
 			{"ProjectBuildCompileFile", null, N_("_Compile File"), "<control>B", N_("Compile the current file with the vala compiler"), on_standalone_file_compile},
-			{"ProjectBuildStopCompilation", Gtk.STOCK_STOP, N_("_Stop Compilation"), "<control>B", N_("Stop the running compilation"), on_stop_compilation},
-			{"ProjectBuildNextError", Gtk.STOCK_GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
-			{"ProjectBuildPreviousError", Gtk.STOCK_GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
-			{"ProjectBuildExecute", Gtk.STOCK_EXECUTE, N_("_Execute"), "F5", N_("Excute target program"), on_project_execute_process},
-			{"ProjectBuildKill", Gtk.STOCK_STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process},
-			{"ProjectSearch", Gtk.STOCK_FIND, N_("Find In _Project..."), "<control><shift>F", N_("Search for text in all the project files"), on_project_search},
+			{"ProjectBuildStopCompilation", Gtk.Stock.STOP, N_("_Stop Compilation"), "<control>B", N_("Stop the running compilation"), on_stop_compilation},
+			{"ProjectBuildNextError", Gtk.Stock.GO_FORWARD, N_("_Next Error"), "<control><shift>F12", N_("Go to next error source line"), on_project_error_next},
+			{"ProjectBuildPreviousError", Gtk.Stock.GO_BACK, N_("_Previuos Error"), null, N_("Go to previous error source line"), on_project_error_previuos},
+			{"ProjectBuildExecute", Gtk.Stock.EXECUTE, N_("_Execute"), "F5", N_("Excute target program"), on_project_execute_process},
+			{"ProjectBuildKill", Gtk.Stock.STOP, N_("_Stop process"), null, N_("Stop (kill) executing program"), on_project_kill_process},
+			{"ProjectSearch", Gtk.Stock.FIND, N_("Find In _Project..."), "<control><shift>F", N_("Search for text in all the project files"), on_project_search},
 			{"ProjectSearchNextResult", null, N_("Find N_ext In Project"), null, N_("Search forward for the same text in all the project files"), on_project_search_result_next},
 			{"ProjectSearchPrevResult", null, N_("Find Previ_ous In Project"), null, N_("Search backward for the same text in all the project files"), on_project_search_result_previous},
-			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
-			{"ProjectGotoNextPosition", Gtk.STOCK_GO_FORWARD, N_("_Go To Next Source Position"), null, N_("Go to the next source position"), on_project_goto_next_position},
-			{"ProjectGotoPrevPosition", Gtk.STOCK_GO_BACK, N_("_Go To Previous Source Position"), "<alt>Left", N_("Go to the previous or last saved source position"), on_project_goto_prev_position},
+			{"ProjectGotoDocument", Gtk.Stock.JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
+			{"ProjectGotoNextPosition", Gtk.Stock.GO_FORWARD, N_("_Go To Next Source Position"), null, N_("Go to the next source position"), on_project_goto_next_position},
+			{"ProjectGotoPrevPosition", Gtk.Stock.GO_BACK, N_("_Go To Previous Source Position"), "<alt>Left", N_("Go to the previous or last saved source position"), on_project_goto_prev_position},
 			{"ProjectGotoSymbol", null, N_("_Go To Symbol..."), "<control>M", N_("Goto to a specific symbol in the current source document"), on_project_goto_symbol},
 			{"ProjectGotoDefinition", null, N_("_Go To Definition"), "F12", N_("Goto to a current symbol definition"), on_project_goto_definition},
 			{"ProjectCompleteWord", null, N_("Complete _Word"), "<control>space", N_("Try to complete the word in the current source document"), on_complete_word},
@@ -328,8 +328,8 @@ namespace Vtg
 			var dialog = new Gtk.FileChooserDialog (_("Open Project"),
 				      _plugin_instance.window,
 				      Gtk.FileChooserAction.SELECT_FOLDER,
-				      Gtk.STOCK_CANCEL, ResponseType.CANCEL,
-				      Gtk.STOCK_OPEN, ResponseType.ACCEPT,
+				      Gtk.Stock.CANCEL, ResponseType.CANCEL,
+				      Gtk.Stock.OPEN, ResponseType.ACCEPT,
 				      null);
 
 			if (dialog.run () == ResponseType.ACCEPT) {
@@ -358,9 +358,9 @@ namespace Vtg
                                   Gtk.MessageType.QUESTION,
                                   ButtonsType.NONE,
 				    _("Project files need to be saved"));
-				dialog.add_buttons (Gtk.STOCK_CLOSE, ResponseType.CLOSE,
-				    Gtk.STOCK_CANCEL, ResponseType.CANCEL,
-				    Gtk.STOCK_SAVE, ResponseType.ACCEPT);
+				dialog.add_buttons (Gtk.Stock.CLOSE, ResponseType.CLOSE,
+				    Gtk.Stock.CANCEL, ResponseType.CANCEL,
+				    Gtk.Stock.SAVE, ResponseType.ACCEPT);
 				var response = dialog.run ();
 				dialog.destroy ();
 				if (response == ResponseType.CANCEL) {
@@ -388,7 +388,7 @@ namespace Vtg
 					FilteredListDialogColumns.VISIBILITY, true, 
 					FilteredListDialogColumns.OBJECT, prj,
 					FilteredListDialogColumns.ICON, 
-						image.render_icon (Gtk.STOCK_FILE, IconSize.BUTTON, ""),
+						image.render_icon (Gtk.Stock.FILE, IconSize.BUTTON, ""),
 					FilteredListDialogColumns.SELECTABLE, true);
 			}
 			
@@ -409,8 +409,8 @@ namespace Vtg
 			var dialog = new Gtk.FileChooserDialog (_("Save Project"),
 				      _plugin_instance.window,
 				      Gtk.FileChooserAction.SELECT_FOLDER,
-				      Gtk.STOCK_CANCEL, ResponseType.CANCEL,
-				      Gtk.STOCK_SAVE, ResponseType.ACCEPT,
+				      Gtk.Stock.CANCEL, ResponseType.CANCEL,
+				      Gtk.Stock.SAVE, ResponseType.ACCEPT,
 				      null);
 			string foldername = null;
 
@@ -500,7 +500,7 @@ namespace Vtg
 								FilteredListDialogColumns.MARKUP, src.name, 
 								FilteredListDialogColumns.VISIBILITY, true, 
 								FilteredListDialogColumns.OBJECT, src,
-								FilteredListDialogColumns.ICON, image.render_icon (Gtk.STOCK_FILE, IconSize.BUTTON, ""),
+								FilteredListDialogColumns.ICON, image.render_icon (Gtk.Stock.FILE, IconSize.BUTTON, ""),
 								FilteredListDialogColumns.SELECTABLE, true);
 						}
 					}
