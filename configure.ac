@@ -1,4 +1,4 @@
-AC_INIT([vtg], [0.10.0], [sejerpz@tin.it], [vtg])
+AC_INIT([vtg], [0.10.1], [sejerpz@tin.it], [vtg])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_AUX_DIR([.])
@@ -163,11 +163,11 @@ if test "x${vtgplugin}" != xno ; then
 			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gtk+-2.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-2.0 >= $GTK_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gedit-2.20 >= $GEDIT_REQUIRED] ,, AC_MSG_RESULT([    gedit-2.20 >= $GEDIT_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gtksourceview-2.0 >= $GEDIT_REQUIRED] ,, AC_MSG_RESULT([    gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED] ,, AC_MSG_RESULT([    gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([vala-$VALA_VERSION >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    vala-$VALA_VERSION >= $VALA_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gconf-2.0 >= $GCONF_REQUIRED] ,, AC_MSG_RESULT([    gconf-2.0 >= $GCONF_REQUIRED: not found]))
 			if test "x$vtgplugin" = xyes ; then
-				AC_MSG_ERROR([vtg-plugin dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-$VALA_VERSION >= $VALA_REQUIRED gtk+-2.0 >= $GTK_REQUIRED gedit-2.20 >= $GEDIT_REQUIRED gconf-2.0 >= GCONF_REQUIRED])
+				AC_MSG_ERROR([vtg-plugin dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED vala-$VALA_VERSION >= $VALA_REQUIRED gtk+-2.0 >= $GTK_REQUIRED gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED gedit-2.20 >= $GEDIT_REQUIRED gconf-2.0 >= GCONF_REQUIRED])
 			fi
 		])
 else
