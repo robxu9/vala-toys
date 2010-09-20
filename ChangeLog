@@ -1,5 +1,11 @@
 2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgutils.vala:
+
+	fix a compilation error on 64bit system. Fixes issue #157
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/afroditetest.vala:
 	* gen-project/libgen-project/projectgenerator.vala:
 	* vtg/vtgbuildlogview.vala:
