@@ -29,7 +29,8 @@ namespace Afrodite
 		public EllipsisType ()
 		{
 			base ("...");
-			base.is_ellipsis = true;	
+			base.is_ellipsis = true;
+			base.symbol = Symbol.VOID; // resolve automatically to VOID
 		}
 	}
 }

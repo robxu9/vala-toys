@@ -1,3 +1,9 @@
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ellipsistype.vala:
+
+	ellipsis type should be automatically resolved
+
 2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/symbol.vala:
