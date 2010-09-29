@@ -77,22 +77,28 @@ namespace Afrodite
 			// first try with the ast symbol index: fastest mode
 			if (res == null) {
 				var s = _ast.symbols.@get (type.type_name);
-				if (s != null) {
+				if (s != null && s != symbol) {
 					res = s;
 				} else {
 					// namespace that contains this symbol are automatically in scope
 					// from the inner one to the outmost
 					Symbol curr_symbol = symbol;
-					while (curr_symbol != null) {
-						curr_symbol = curr_symbol.parent;
-						if (curr_symbol != null) {
+					if (symbol.fully_qualified_name.has_prefix ("RhythmPnP") && symbol.type_name == "Method")
+						Utils.trace ("   resolving %s", type.type_name);
+					while (curr_symbol != null && curr_symbol != _ast.root) {
+						if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
+							if (symbol.fully_qualified_name.has_prefix ("RhythmPnP") && symbol.type_name == "Method")
+								Utils.trace ("   resolving %s (%s)- %s %s".printf (curr_symbol.fully_qualified_name, curr_symbol.type_name, type.type_name, type.is_generic ? "generic" : ""));
 							s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type.type_name));
 							if (s != null && s != symbol) {
 								res = s;
 								break;
 							}
 						}
+						curr_symbol = curr_symbol.parent;
 					}
+					if (symbol.fully_qualified_name.has_prefix ("RhythmPnP") && symbol.type_name == "Method")
+						Utils.trace ("   resolved %s: %s\n", type.type_name, res == null ? "no symbol found" : res.fully_qualified_name);
 
 					if (res == null) {
 						// try with the imported namespaces
@@ -131,6 +137,15 @@ namespace Afrodite
 									res = s;
 								}
 							}
+						}
+					}
+
+					// if not found and there is a "." may be is a fully qualified name, do a global lookup
+					if (res == null && type.type_name.contains (".")) {
+						//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
+						s = _ast.symbols.@get (type.type_name);
+						if (s != null && s != symbol) {
+							res = s;
 						}
 					}
 				}

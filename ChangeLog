@@ -1,5 +1,11 @@
 2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbolresolver.vala:
+
+	add some corner case when resolving symbols
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 
 	fixed some regression when building the visible symbol list
