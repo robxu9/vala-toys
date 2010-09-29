@@ -55,19 +55,12 @@ namespace Afrodite
 				res = Symbol.VOID;
 			}
 			
-			// resolve type generic types
-			if (type.has_generic_types) {
-				foreach (DataType generic_type in type.generic_types) {
-					if (generic_type.unresolved)
-						generic_type.symbol = resolve_type (symbol, generic_type);
-				}
-			}
-					
+
 			// the container types defined in the child symbols
 			if (res == null && symbol.has_children) {
 				
 				var s = Ast.lookup_symbol (type.type_name, symbol, ref parent, Afrodite.CompareMode.EXACT);
-				if (s != null) {
+				if (s != null && s != symbol) {
 					res = s;
 				}
 			}
@@ -82,7 +75,7 @@ namespace Afrodite
 				for (int i = 0; i < names.length; i++) {
 					string name = names[i];
 					var s = curr_parent.lookup_child (name);
-					if (s != null) {
+					if (s != null && s != symbol) {
 						if (i == names.length -1) {
 							res = s; // last name part: symbol found
 						}
@@ -95,7 +88,7 @@ namespace Afrodite
 						if (curr_parent.has_local_variables) {
 							foreach (var item in curr_parent.local_variables) {
 								//Utils.trace ("localvar %s: %s vs %s:%s unresolved %d", item.name, item.type_name, type.name, type.type_name, (int) type.unresolved);
-								if (!item.unresolved && item.name == name) {
+								if (!item.unresolved && item.name == name && item.symbol != symbol) {
 									type.type_name = item.type_name;
 									res = item.symbol;
 									break;
@@ -106,7 +99,7 @@ namespace Afrodite
 						if (curr_parent.has_parameters) {
 							foreach (var item in curr_parent.parameters) {
 								//Utils.trace ("parameter %s: %s vs %s:%s unresolved %d", item.name, item.type_name, type.name, type.type_name, (int) type.unresolved);
-								if (!item.unresolved && item.name == name) {
+								if (!item.unresolved && item.name == name && item.symbol != symbol) {
 									type.type_name = item.type_name;
 									res = item.symbol;
 									break;
@@ -146,7 +139,8 @@ namespace Afrodite
 									break; // file.using_directives
 								}
 							}
-							res = s;
+							if (s != symbol)
+								res = s;
 							
 							if (res != null) {
 								break;
@@ -161,24 +155,34 @@ namespace Afrodite
 			}
 			
 			if (res != null) {
-				if (type.has_generic_types && res.has_generic_type_arguments
-				    && type.generic_types.size == res.generic_type_arguments.size) {
-					// test is a declaration of a specialized generic type
-					bool need_specialization = false;
-					for(int i = 0; i < type.generic_types.size; i++) {
-						string name = res.generic_type_arguments[i].fully_qualified_name ?? res.generic_type_arguments[i].name;
-						if (type.generic_types[i].type_name != name) {
-							need_specialization = true;
-							break;
+				if (type.has_generic_types) {
+					if (res.has_generic_type_arguments
+					   && type.generic_types.size == res.generic_type_arguments.size) {
+						// test is a declaration of a specialized generic type
+						bool need_specialization = false;
+						for(int i = 0; i < type.generic_types.size; i++) {
+							string name = res.generic_type_arguments[i].fully_qualified_name ?? res.generic_type_arguments[i].name;
+							if (type.generic_types[i].type_name != name) {
+								need_specialization = true;
+								break;
+							}
 						}
-					}
-					if (need_specialization) {
-						res = specialize_generic_symbol (type, res);
-						//Utils.trace ("generic type %s resolved with type %s", type.description, res.description);
+						if (need_specialization) {
+							//Utils.trace ("%s generic type %s resolved with type %s", symbol.fully_qualified_name, type.type_name, res.fully_qualified_name);
+							res = specialize_generic_symbol (type, res);
+						}
+					} else {
+						// resolve type generic types
+						foreach (DataType generic_type in type.generic_types) {
+							if (generic_type.unresolved)
+								generic_type.symbol = resolve_type (res, generic_type);
+						}
 					}
 				}
 
-				res.add_resolve_target (symbol);
+				if (res != Symbol.VOID) {
+					res.add_resolved_target (symbol);
+				}
 			}
 			return res;
 		}
@@ -201,7 +205,7 @@ namespace Afrodite
 								critical ("Skipping same name reference cycle: %s", item.symbol.description);
 								continue;
 							}
-							Utils.trace ("resolve generic type for %s: %s", symbol.fully_qualified_name, item.symbol.fully_qualified_name);
+							//Utils.trace ("resolve generic type for %s: %s", symbol.fully_qualified_name, item.symbol.fully_qualified_name);
 
 							item.symbol = specialize_generic_symbol (type, item.symbol);
 						}
@@ -272,7 +276,12 @@ namespace Afrodite
 
 		private void visit_symbols (Vala.List<Afrodite.Symbol> symbols)
 		{
-			foreach (Symbol symbol in symbols) {
+			// copy this list since it can change during the parsing
+			var list = new ArrayList<Symbol>();
+			foreach (Symbol symbol in symbols)
+				list.add (symbol);
+
+			foreach (Symbol symbol in list) {
 				visit_symbol (symbol);
 			}
 		}

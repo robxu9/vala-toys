@@ -27,7 +27,10 @@ namespace Afrodite
 	public class SourceFile
 	{
 		public Vala.List<DataType> using_directives { get; set; }
-		public Vala.List<Symbol> symbols { get; set; }
+		public Vala.List<unowned Symbol> symbols { get; set; }
+		public unowned Ast parent { get; set; }
+
+		
 		
 		public string filename {
 			get; set;
@@ -37,7 +40,23 @@ namespace Afrodite
 		{
 			this.filename = filename;
 		}
-		
+
+		~SourceFile ()
+		{
+			Utils.trace ("SourceFile destroying: %s", filename);
+#if DEBUG
+			Utils.trace ("     symbol count before destroy %d", parent.leaked_symbols.size);
+#endif
+			while (symbols != null && symbols.size > 0) {
+				var symbol = symbols.get (0);
+				remove_symbol (symbol);
+			}
+#if DEBUG
+			Utils.trace ("     symbol count after destroy  %d", parent.leaked_symbols.size);
+#endif
+			Utils.trace ("SourceFile destroyed: %s", filename);
+		}
+
 		public DataType add_using_directive (string name)
 		{
 			var u = lookup_using_directive (name);
@@ -84,14 +103,35 @@ namespace Afrodite
 		public void add_symbol (Symbol symbol)
 		{
 			if (symbols == null) {
-				symbols = new ArrayList<Symbol> ();
+				symbols = new ArrayList<unowned Symbol> ();
 			}
+			assert (symbols.contains (symbol) == false);
+
 			symbols.add (symbol);
+
+#if DEBUG
+			// debug
+			if (!parent.leaked_symbols.contains (symbol)) {
+				parent.leaked_symbols.add (symbol);
+				symbol.weak_ref (this.on_symbol_destroy);
+			} else {
+				Utils.trace ("Symbol already added to the leak check: %s", symbol.fully_qualified_name);
+			}
+#endif
 		}
-		
+
 		public void remove_symbol (Symbol symbol)
 		{
-			symbols.remove (symbol);
+			var sr = symbol.lookup_source_reference_sourcefile (this);
+			assert (sr != null);
+			symbol.remove_source_reference (sr);
+
+			if (symbols.remove (symbol)) {
+				if (!symbol.has_source_references && symbol.parent != null) {
+					symbol.parent.remove_child (symbol);
+				}
+			}
+			//Utils.trace ("%s remove symbol %s: %u", filename, symbol.fully_qualified_name, symbol.ref_count);
 			if (symbols.size == 0)
 				symbols = null;
 		}
@@ -102,5 +142,13 @@ namespace Afrodite
 				return symbols != null;
 			}
 		}
+
+#if DEBUG
+		private void on_symbol_destroy (Object obj)
+		{
+			parent.leaked_symbols.remove ((Symbol)obj);
+			//Utils.trace ("symbol destroyed (%p)",  obj);
+		}
+#endif
 	}
 }

@@ -51,11 +51,10 @@ namespace Afrodite
 			_current_type = null;
 			_child_count = 0;
 			_current = _ast.root;
-			if (_ast.lookup_source_file (source.filename) != null)
-				critical ("two sources %s!", source.filename);
-			
+			assert (_ast.lookup_source_file (source.filename) == null);
+
 			//debug ("COMPLETING FILE %s", source.filename);
-			
+			Utils.trace ("merging source: %s", source.filename);
 			_source_file = _ast.add_source_file (source.filename);
 			foreach (UsingDirective u in source.current_using_directives) {
 				_source_file.add_using_directive (u.namespace_symbol.name);
@@ -66,77 +65,9 @@ namespace Afrodite
 		public void remove_source_filename (string filename)
 		{
 			var source = _ast.lookup_source_file (filename);
-			if (source == null) {
-				warning ("remove_source: file not found %s", filename);
-			}
-			if (source.has_symbols) {
-				foreach (Symbol symbol in source.symbols) {
-					if (remove_symbol (source, symbol))
-						symbol.destroy ();
-				}
-				source.symbols = null;
-			}
+			assert (source != null);
+
 			_ast.remove_source (source);
-		}
-
-		private bool remove_symbol (SourceFile source, Symbol symbol)
-		{
-			bool orphaned = false;
-			bool removed = false;
-			
-			if (symbol.has_source_references) {
-				var source_ref = symbol.lookup_source_reference_filename (source.filename);
-				if (source_ref != null) {
-					symbol.remove_source_reference (source_ref);
-					// only orphan a symbol if we removed something and there isn't no more source refs
-					orphaned = !symbol.has_source_references; 
-				}
-			}
-
-			// leave glib symbols, or symbols with references in other source files
-			if (symbol.has_children) {
-				Vala.List<Symbol> to_del = new Vala.ArrayList<Symbol> ();
-				
-				foreach (Symbol child in symbol.children) {
-					if (remove_symbol (source, child)) {
-						to_del.add (child);
-					}
-				}
-				
-				foreach (Symbol child in to_del) {
-					symbol.remove_child (child);
-				}
-			}
-			
-			if (orphaned) {
-				// the symbol should be deleted since there aren't any source ref
-				if (symbol.has_children && symbol.type_name == "Namespace") {
-					// there are still children and the symbol is "mergeable" I can't delete it
-					// I reparent the symbol to the first valid source of the first child node
-					SourceReference source_ref = null;
-
-					foreach (Symbol child in symbol.children) {
-						if (child.has_source_references) {
-							source_ref = child.source_references.get(0);
-							break;
-						}
-					}
-
-					if (source_ref != null) {
-						source_ref.file.add_symbol (symbol);
-						if (symbol.lookup_source_reference_filename (source_ref.file.filename) == null)
-							symbol.add_source_reference (source_ref);
-					} else {
-						critical ("no valid source reference in child for orphaned symbol %s", symbol.name);
-					}
-				} else {
-					// orphaned without child, let's destroy it
-					if (!symbol.has_children && orphaned) {
-						removed = true;
-					}
-				}
-			}
-			return removed;
 		}
 
 		private Afrodite.Symbol visit_symbol (Vala.Symbol s, out Afrodite.SourceReference source_reference, bool replace = false)
@@ -150,20 +81,24 @@ namespace Afrodite
 			assert (parent != null);
 			if (symbol == null) {
 				symbol = add_symbol (s, out source_reference);
+				//Utils.trace ("adding %s to source %s", symbol.fully_qualified_name, _source_file.filename);
 				parent.add_child (symbol);
-			} else if (replace) {
-				parent.remove_child (symbol);
-				symbol = add_symbol (s, out source_reference);
-				parent.add_child (symbol);
-			} else if (!replace) {
-				// add one more source reference to the symbol
-				source_reference = symbol.lookup_source_reference_filename (_source_file.filename);
-				if (source_reference == null)	{
-					source_reference = create_source_reference (s);
-					symbol.add_source_reference (source_reference);
-					_source_file.add_symbol (symbol);
+			} else {
+				if (replace) {
+					parent.remove_child (symbol);
+					symbol = add_symbol (s, out source_reference);
+					parent.add_child (symbol);
 				} else {
-					warning ("two sources with the same name were merged: %s", _source_file.filename);
+					// add one more source reference to the symbol
+					source_reference = symbol.lookup_source_reference_filename (_source_file.filename);
+					if (source_reference == null)	{
+						source_reference = create_source_reference (s);
+						symbol.add_source_reference (source_reference);
+						//Utils.trace ("adding source reference %s to source %s", symbol.fully_qualified_name, _source_file.filename);
+						_source_file.add_symbol (symbol);
+					} else {
+						warning ("two sources with the same name were merged: %s", _source_file.filename);
+					}
 				}
 			}
 
@@ -260,6 +195,7 @@ namespace Afrodite
 		
 		public bool is_symbol_defined_current_source (Vala.Symbol? sym)
 		{
+			//Utils.trace ("currentsource %s: %s vs %s", sym.name, sym.source_reference.file.filename, _source_file.filename);
 			return sym.source_reference.file.filename == _source_file.filename;
 		}
 
@@ -267,7 +203,7 @@ namespace Afrodite
 		{
 			if (ns.source_reference != null && ns.source_reference.file != null) {
 				string filename = Filename.display_basename (ns.source_reference.file.filename);
-				return filename.has_prefix ("glib-") || filename.has_prefix ("gobject-");
+				return (filename.has_prefix ("glib-") || filename.has_prefix ("gobject-") || filename.has_prefix ("gio-")) && ns.name == "GLib";
 			} else {
 				warning ("old compatibility check executed for: %s", ns.name);
 				return ns.name == "GLib"; // this check is weak, for example GIO fails on this
@@ -276,8 +212,7 @@ namespace Afrodite
 
 		public override void visit_namespace (Namespace ns)
 		{
-			if ((_merge_glib && is_glib_core_vapis (ns))
-			    || (!is_glib_core_vapis (ns))) {// && is_symbol_defined_current_source (ns))) {
+			if (is_symbol_defined_current_source (ns) || (_merge_glib && is_glib_core_vapis (ns))) {
 				var prev_vala_fqn = _vala_symbol_fqn;
 				var prev = _current;
 				var prev_sr = _current_sr;

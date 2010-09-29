@@ -245,7 +245,7 @@ namespace Vtg
 	public class Utils : GLib.Object
 	{
 		private static bool _initialized = false;
-		private static Gtk.SourceCompletionItem[] _proposals = null;
+		//private static Gtk.SourceCompletionItem[] _proposals = null;
 		private static Vala.List<Package> _available_packages = null;
 		private static Gtk.Builder _builder = null;
 		private static string[] _vala_keywords = new string[] {
@@ -257,7 +257,7 @@ namespace Vtg
 				"try", "catch"
 		};
 
-		public const int prealloc_count = 500;
+		//public const int prealloc_count = 500;
 
 		public static Gdk.Pixbuf icon_generic;
 		public static Gdk.Pixbuf icon_field;
@@ -372,13 +372,13 @@ namespace Vtg
 			return _builder;
 		}
 		
-		public static unowned Gtk.SourceCompletionItem[] get_proposal_cache ()
+		/*public static unowned Gtk.SourceCompletionItem[] get_proposal_cache ()
 		{
 			if (!_initialized) {
 				initialize ();
 			}
 			return _proposals;
-		}
+		}*/
 
 		public static string get_image_path (string id) {
 			var result = Path.build_filename (Config.PACKAGE_DATADIR, "images", id);
@@ -393,12 +393,12 @@ namespace Vtg
 		private static void initialize ()
 		{
 			try {
-				_proposals = new Gtk.SourceCompletionItem[prealloc_count];
+				/*_proposals = new Gtk.SourceCompletionItem[prealloc_count];
 				var _icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				for (int idx = 0; idx < prealloc_count; idx++) {
 					var obj = new Gtk.SourceCompletionItem ("", "", _icon_generic, "");
 					_proposals[idx] = obj;
-				}
+				}*/
 			
 				icon_generic = IconTheme.get_default().load_icon(Gtk.STOCK_FILE,16,IconLookupFlags.GENERIC_FALLBACK);
 				icon_field = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-field-16.png"));

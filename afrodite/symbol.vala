@@ -28,10 +28,23 @@ namespace Afrodite
 	{
 		public static VoidType VOID = new VoidType ();
 		public static EllipsisType ELLIPSIS = new EllipsisType ();
-		
-		public unowned Symbol parent { get; set; }
+
+		private unowned Symbol _parent;
+		public unowned Symbol parent {
+			get { return _parent; }
+			set {
+				assert (value != this);
+				_parent = value;
+			}
+		}
+
 		public Vala.List<Symbol> children { get; set; }
-		public Vala.List<Symbol> resolve_targets = null; // contains a reference to symbols of whose this symbol is a resolved reference for any target data type
+		// contains a reference to symbols of whose this symbol is a resolved reference for any target data type
+		public Vala.List<unowned Symbol> resolved_targets = null;
+
+		// contains a reference to symbols that this symbol use as resolved targets
+		public Vala.List<unowned Symbol> resolve_targets = null;
+
 		public unowned Symbol? generic_parent { get; set; }
 		
 		public string name { get; set; }
@@ -65,7 +78,7 @@ namespace Afrodite
 		
 		private DataType _symbol_type = null;
 		
-		private Vala.List<Symbol> _specialized_symbols = null;
+		private Vala.List<unowned Symbol> _specialized_symbols = null;
 
 		public DataType symbol_type {
 			get {
@@ -87,19 +100,165 @@ namespace Afrodite
 				this.type_name = type_name.substring (4);
 			else
 				this.type_name = type_name;
-					
+
 			if (this.type_name == "Signal") {
 				_symbol_type = Afrodite.Utils.Symbols.get_predefined ().signal_type;
+			}
+
+			if (_fully_qualified_name == "AfroditeTests") {
+				//breakpoint ();
 			}
 		}
 		
 		~Symbol ()
 		{
-			if (_specialized_symbols != null) {
-				_specialized_symbols.clear ();
-				_specialized_symbols = null;
+			// Utils.trace ("Symbol destroy: %s (%p)", _fully_qualified_name, this);
+			// parent and generic parent if this symbol is a specialization
+			if (parent != null && parent.has_children) {
+				parent.remove_child (this);
+			}
+
+			if (generic_parent != null && generic_parent.has_specialized_symbols) {
+				generic_parent.remove_specialized_symbol (this);
+			}
+
+			// unresolve all the targets. direction target *is resolved by* this symbol
+			if (has_resolved_targets) {
+				foreach(var symbol in resolved_targets) {
+					symbol.unresolve_symbols_of_target (this);
+					if (symbol.resolve_targets != null) {
+						symbol.resolve_targets.remove (this);
+					}
+				}
+			}
+
+			// remove this symbol from all resolving symbols
+			while (resolve_targets != null && resolve_targets.size > 0) {
+				var symbol = resolve_targets.get (0);
+				symbol.remove_resolved_target (this);
+			}
+
+			// the same for generic type arguments
+			if (has_generic_type_arguments) {
+				foreach(var symbol in generic_type_arguments) {
+					symbol.unresolve_symbols_of_target (this);
+				}
+			}
+
+			this.remove_from_targets ();
+
+			while (has_source_references) {
+				int prev_size = source_references.size;
+				var sr = source_references.get (0);
+				if (sr.file.has_symbols) {
+					sr.file.remove_symbol (this); // this will remove the source reference from the symbol
+				} else {
+					critical ("%s belong to source %p but it isn't listed in its symbol table. Leak?", this.fully_qualified_name, sr.file);
+					// if the source reference wasn't removed remove it by hand!
+					remove_source_reference (sr);
+				}
+				if (has_source_references) {
+					assert (source_references.size < prev_size);
+				}
+			}
+
+			// deallocate the children
+			if (has_children) {
+				foreach (Symbol child in children) {
+					if (child.parent == this) {
+						child.parent = null;
+					}
+				}
+				children = null;
+			}
+
+			if (has_specialized_symbols) {
+				foreach (Symbol sym in _specialized_symbols) {
+					if (sym.generic_parent == this) {
+						sym.generic_parent = null;
+					}
+				}
+			}
+
+			//Utils.trace ("Symbol destroyied: %s (%p)", _fully_qualified_name, this);
+		}
+
+		private void remove_from_targets ()
+		{
+			// remove myself from all resolve target list. direction this *is a resolution for* target
+			if (_return_type != null && !_return_type.unresolved) {
+				_return_type.symbol = null;
+			}
+
+			if (this.has_parameters) {
+				foreach (var item in parameters) {
+					if (!item.unresolved) {
+						item.symbol = null;
+					}
+				}
+			}
+
+			if (this.has_local_variables) {
+				foreach (var item in local_variables) {
+					if (!item.unresolved) {
+						item.symbol = null;
+					}
+				}
+			}
+
+			if (this.has_base_types) {
+				foreach (var item in base_types) {
+					if (!item.unresolved) {
+						item.symbol = null;
+					}
+				}
+			}
+
+			if (_symbol_type != null && !_symbol_type.unresolved) {
+				_symbol_type.symbol = null;
 			}
 		}
+
+		private void unresolve_datatype_of_target (Vala.List<DataType> items, Symbol target)
+		{
+			foreach(DataType item in items) {
+				if (item.has_generic_types) {
+					foreach (DataType generic_item in item.generic_types) {
+						if (generic_item.symbol == target) {
+							generic_item.symbol = null;
+						}
+					}
+				}
+				if (item.symbol == target) {
+					item.symbol = null;
+				}
+			}
+		}
+
+		private void unresolve_symbols_of_target (Symbol target)
+		{
+			if (_return_type != null) {
+				if (_return_type.symbol == target) {
+					_return_type.symbol = null;
+				}
+			}
+
+			if (has_parameters) {
+				unresolve_datatype_of_target (parameters, target);
+			}
+
+			if (has_local_variables) {
+				unresolve_datatype_of_target (local_variables, target);
+			}
+
+			if (has_base_types) {
+				unresolve_datatype_of_target (base_types, target);
+			}
+
+			if (_symbol_type != null && _symbol_type.symbol == target)
+				_symbol_type.symbol = null;
+		}
+
 		public int static_child_count
 		{
 			get {
@@ -128,9 +287,13 @@ namespace Afrodite
 
 		public void add_child (Symbol child)
 		{
+			assert (child != this);
 			if (children == null) {
 				children = new ArrayList<Symbol> ();
 			}
+
+			if (child.fully_qualified_name == "GLib.Signal.query")
+				Utils.trace ("adding to %s", this.fully_qualified_name);
 
 			children.add (child);
 			child.parent = this;
@@ -145,6 +308,9 @@ namespace Afrodite
 		public void remove_child (Symbol child)
 		{
 			children.remove (child);
+			if (child.parent == this)
+				child.parent = null;
+
 			if (children.size == 0)
 				children = null;
 				
@@ -166,7 +332,7 @@ namespace Afrodite
 						return s;
 					}
 				}
-			}			
+			}
 			return null;
 		}
 
@@ -262,35 +428,54 @@ namespace Afrodite
 				return children != null;
 			}
 		}
-	
-		public void add_resolve_target (Symbol resolve_target)
+
+
+		public void add_resolved_target (Symbol resolve_target)
 		{
+			assert (resolve_target != this);
+
 			// resolve target collection can be accessed from multiple threads
-			lock (resolve_targets) {
-				if (resolve_targets == null) {
-					resolve_targets = new ArrayList<Symbol> ();
+			lock (resolved_targets) {
+				if (resolved_targets == null) {
+					resolved_targets = new ArrayList<unowned Symbol> ();
 				}
-				resolve_targets.add (resolve_target);
+
+				if (!resolved_targets.contains (resolve_target))
+					resolved_targets.add (resolve_target);
+
+				if (resolve_target.resolve_targets == null) {
+					resolve_target.resolve_targets = new ArrayList<unowned Symbol> ();
+				}
+
+				if (!resolve_target.resolve_targets.contains (this))
+					resolve_target.resolve_targets.add (this);
 			}
 		}
-		
-		public void remove_resolve_target (Symbol resolve_target)
+
+		public void remove_resolved_target (Symbol resolve_target)
 		{
 			// resolve target collection can be accessed from multiple threads
-			lock (resolve_targets) {
-				resolve_targets.remove (resolve_target);
-				if (resolve_targets.size == 0)
-					resolve_targets = null;
+			lock (resolved_targets) {
+				resolved_targets.remove (resolve_target);
+				if (resolved_targets.size == 0)
+					resolved_targets = null;
+
+				if (resolve_target.resolve_targets != null) {
+					resolve_target.resolve_targets.remove (this);
+
+					if (resolve_target.resolve_targets.size == 0)
+						resolve_target.resolve_targets = null;
+				}
 			}
 		}
-		
-		public bool has_resolve_targets
+
+		public bool has_resolved_targets
 		{
 			get {
 				bool res;
 				
-				lock (resolve_targets) {
-					res = resolve_targets != null;
+				lock (resolved_targets) {
+					res = resolved_targets != null;
 				}
 				
 				return res;
@@ -322,16 +507,20 @@ namespace Afrodite
 		
 		public void add_generic_type_argument (Symbol sym)
 		{
+			assert (sym != this);
 			if (generic_type_arguments == null) {
 				generic_type_arguments = new ArrayList<Symbol> ();
 			}
-			
+
+			assert (generic_type_arguments.contains(sym) == false);
 			//debug ("added generic %s to %s", sym.name, this.fully_qualified_name);
+			//Utils.trace ("add generic type args symbol %s: %s", _fully_qualified_name, sym.fully_qualified_name);
 			generic_type_arguments.add (sym);
 		}
 		
 		public void remove_generic_type_argument (Symbol sym)
 		{
+			assert (sym != this);
 			generic_type_arguments.remove (sym);
 			if (generic_type_arguments.size == 0)
 				generic_type_arguments = null;
@@ -372,6 +561,7 @@ namespace Afrodite
 			return null;
 			
 		}
+
 		public bool has_local_variables
 		{
 			get {
@@ -401,7 +591,7 @@ namespace Afrodite
 				return base_types != null;
 			}
 		}
-		
+
 		public void add_source_reference (SourceReference reference)
 		{
 			if (source_references == null) {
@@ -467,53 +657,6 @@ namespace Afrodite
 		{
 			get {
 				return (binding & MemberBinding.STATIC) != 0;
-			}
-		}
-
-		/**
-		 * This function break circular references of symbol instances
-		 *
-		 * This is a workaround for bug: https://bugzilla.gnome.org/show_bug.cgi?id=615830
-		 *
-		 * I've a better patch for this, but is seems to introduce a lot of instability
-		 * on the afrodite engine. See: 
-		 */
-		public void destroy ()
-		{
-			if (has_children) {
-				//remove_child (_children.get (0));
-				_children.clear ();
-				_children = null;
-			}
-
-			while (has_resolve_targets) {
-				var target = resolve_targets.get (0);
-				// remove from return type
-				if (target.return_type != null && target.return_type.symbol == this) {
-					target.return_type.symbol = null;
-				}
-				// remove from parameters
-				if (target.has_parameters) {
-					foreach (DataType type in target.parameters) {
-						if (type.symbol == this) {
-							type.symbol = null;
-						}
-					}
-				}
-
-				// remove from local_variables
-				if (target.has_local_variables) {
-					foreach (DataType type in target.local_variables) {
-						if (type.symbol == this) {
-							type.symbol = null;
-						}
-					}
-				}
-				remove_resolve_target (target);
-			}
-			
-			if (parent != null && parent.has_children) {
-				parent.remove_child (this);
 			}
 		}
 
@@ -832,6 +975,7 @@ namespace Afrodite
 				foreach(var item in children) {
 					var s = item.copy ();
 					res.add_child (s);
+					res.add_specialized_symbol (s);
 				}
 			}
 
@@ -890,17 +1034,40 @@ namespace Afrodite
 
 		public void add_specialized_symbol (Symbol? item)
 		{
-			if (_specialized_symbols == null)
-				_specialized_symbols = new Vala.ArrayList<Symbol> ();
+			assert (item != this);
 
+			if (_specialized_symbols == null)
+				_specialized_symbols = new Vala.ArrayList<unowned Symbol> ();
+
+			assert (_specialized_symbols.contains (item) == false);
 			_specialized_symbols.add (item);
 			item.generic_parent = this;
+		}
+
+		public void remove_specialized_symbol (Symbol? item)
+		{
+			assert (item != this);
+			assert (_specialized_symbols.contains (item));
+
+			_specialized_symbols.remove (item);
+			if (item.generic_parent == this)
+				item.generic_parent = null;
+
+			if (_specialized_symbols.size == 0)
+				_specialized_symbols = null;
+		}
+
+		public bool has_specialized_symbols
+		{
+			get {
+				 return _specialized_symbols != null;
+			}
 		}
 
 		private void resolve_generic_type (Symbol symbol, string generic_type_name, DataType type)
 		{
 			if (symbol.return_type != null) {
-				Utils.trace ("symbol %s return type %s generic type %s, resolved with %s", symbol.fully_qualified_name, symbol.return_type.type_name, generic_type_name, type.type_name);
+				//Utils.trace ("symbol %s return type %s generic type %s, resolved with %s", symbol.fully_qualified_name, symbol.return_type.type_name, generic_type_name, type.type_name);
 				if (symbol.return_type.type_name == generic_type_name)
 					symbol.return_type = type;
 				/*

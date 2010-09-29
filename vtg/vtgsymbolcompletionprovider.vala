@@ -484,10 +484,10 @@ namespace Vtg
 			
 			return false;
 		}
-		
+
 		private void append_symbols (Afrodite.QueryOptions? options, Vala.List<Afrodite.Symbol> symbols, bool include_private_symbols = true)
 		{
-			unowned Gtk.SourceCompletionItem[] proposals = Utils.get_proposal_cache ();
+			//unowned Gtk.SourceCompletionItem[] proposals = Utils.get_proposal_cache ();
 
 			
 			foreach (Afrodite.Symbol symbol in symbols) {
@@ -511,7 +511,7 @@ namespace Vtg
 					var info = (symbol.info != null ? symbol.info : "");
 					Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.type_name);
 
-					if (_prealloc_index < Utils.prealloc_count) {
+					/*if (false && _prealloc_index < Utils.prealloc_count) {
 						proposal = proposals [_prealloc_index];
 						_prealloc_index++;
 
@@ -519,9 +519,9 @@ namespace Vtg
 						proposal.text = name;
 						proposal.info = info;
 						proposal.icon = icon;
-					} else {
+					} else {*/
 						proposal = new Gtk.SourceCompletionItem(name, name, icon, info);
-					}
+					//}
 					//Utils.trace ("append symbols: %s", symbol.name);
 					_proposals.append (proposal);
 				}

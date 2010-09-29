@@ -64,6 +64,7 @@ namespace Afrodite
 		
 		~Completion ()
 		{
+			Utils.trace ("Completion %s destroy", id);
 			// invalidate the ast so the parser thread will exit asap
 			_ast_mutex.lock ();
 			_ast = null;
@@ -74,6 +75,7 @@ namespace Afrodite
 				_parser_thread.join ();
 			}
 			_parser_thread = null;
+			Utils.trace ("Completion %s destroyed", id);
 		}
 
 		public bool is_parsing

@@ -26,8 +26,33 @@ namespace Afrodite
 {
 	public class Ast
 	{
+
+#if DEBUG
+		// debug utility to dump leaked symbols when destroying a source file
+		public static Vala.List<unowned Symbol> leaked_symbols = new Vala.ArrayList<unowned Symbol>();
+#endif
 		private Symbol _root = new Symbol (null, null);
-		
+
+		~Ast ()
+		{
+			Utils.trace ("Ast destroy");
+#if DEBUG
+			Utils.trace ("     symbol count before destroy %d", leaked_symbols.size);
+#endif
+			// destroy the root symbol
+			_root = null;
+			source_files = null;// source have to be destroyes after root symbol
+
+#if DEBUG
+			Utils.trace ("     symbol count after destroy  %d", leaked_symbols.size);
+			if (leaked_symbols.size > 0) {
+				this.dump_leaks ();
+			}
+#endif
+
+			Utils.trace ("Ast destroyed");
+		}
+
 		public Symbol root {
 			get { return _root; }
 			set { _root = value; }
@@ -96,7 +121,8 @@ namespace Afrodite
 				if (source_files == null) {
 					source_files = new ArrayList<SourceFile> ();
 				}
-				Utils.trace ("add source: %s", file.filename);
+				Utils.trace ("add source: %s (%p)", file.filename, file);
+				file.parent = this;
 				source_files.add (file);
 			}
 			return file;
@@ -380,7 +406,9 @@ namespace Afrodite
 					if ((s.access & access) != 0
 					    && (s.fully_qualified_name != symbol.fully_qualified_name)
 					    && (name == null || compare_symbol_names (s.name, name, mode, case_sensitiveness))) {
+					    	Utils.trace ("before %s: %u", s.fully_qualified_name, s.ref_count);
 						results.add (s);
+						Utils.trace ("after %s: %u", s.fully_qualified_name, s.ref_count);
 					}
 				}
 			}
@@ -609,5 +637,19 @@ namespace Afrodite
 			
 			return result;
 		}
+
+#if DEBUG
+		private void dump_leaks ()
+		{
+			foreach (Symbol s in leaked_symbols) {
+				Utils.trace ("    -- leaked symbol %s (%p), parent %s (%p), generic_parent %s (%p) childs %d, refcount %u",
+					s.fully_qualified_name, s,
+					s.parent == null ? "null" : s.parent.fully_qualified_name, s.parent,
+					s.generic_parent == null ? "null" : s.generic_parent.fully_qualified_name, s.generic_parent,
+					s.has_children ? s.children.size : 0,
+					s.ref_count);
+			}
+		}
+#endif
 	}
 }

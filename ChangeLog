@@ -1,3 +1,35 @@
+2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/resultitem.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	reversed symbol string reference from the source symbol list to the
+	symbol children list
+
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/resultitem.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	better memory management for afrodite symbols and
+	workaround to vala bug http://bugzilla.gnome.org/show_bug.cgi?id=615830
+
 2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgprojects.vala:
