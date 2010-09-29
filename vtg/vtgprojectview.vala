@@ -84,7 +84,7 @@ namespace Vtg
 	 					if (_current_project.model != null) {
 	 						update_project_treeview ();
 						} else {
-							_prj_view.set_model (null);
+							clear_project_treeview ();
 						}
 
 						//sync the project combo view
@@ -92,7 +92,7 @@ namespace Vtg
 						if (this.lookup_iter_for_project_name (_current_project.project.name, out iter))
 							_prjs_combo.set_active_iter (iter);
 					} else {
-						_prj_view.set_model (null);
+						clear_project_treeview ();
 					}
 				}
 			}
@@ -179,7 +179,13 @@ namespace Vtg
 			_prj_view.set_model (_filtered_model);
 			_prj_view.expand_all ();
 		}
-		
+
+		private void clear_project_treeview ()
+		{
+			_prj_view.set_model (null);
+			_filtered_model = null;
+		}
+
 		private bool filter_function (Gtk.TreeModel sender, Gtk.TreeIter iter)
 		{
 			bool res = true;
@@ -233,6 +239,8 @@ namespace Vtg
 					Project selected_project;
 					_prjs_model.get (iter, 1, out selected_project);
 					update_view (selected_project.name);
+				} else {
+					update_view (null);
 				}
 			} else {
 				update_view (null);

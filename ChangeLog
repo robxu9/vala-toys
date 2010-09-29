@@ -1,5 +1,13 @@
 2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojects.vala:
+	* vtg/vtgprojectview.vala:
+
+	update the project view when closing the current project.
+	This force all the resources to be release immediatly
+
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/backends/vbfautotools.vala:
 
 	fixed a null reference warning when parsing empty variables in the
