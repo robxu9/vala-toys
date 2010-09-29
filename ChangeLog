@@ -1,3 +1,9 @@
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfautotools.vala:
+
+	removed some dead code
+
 2010-09-21  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure:

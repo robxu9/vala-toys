@@ -433,86 +433,9 @@ namespace Vbf.Backends
 						project.add_variable (variable);
 					}
 				}
-				
-				/*
-				//this regex matches:
-				//(spaces)(variable_name):(list variable names or version numbers)
-				//(spaces)(variable_name)=(list variable names or version numbers)
-				//(spaces)(variable_name)+=(list variable names or version numbers)
-				Regex reg_var = new GLib.Regex ("^\s*([A-Za-z_$$\(]+[ A-Za-z_0-9\.$$\)\-]*)(=)([A-Za-z_0-9]*[ \.A-Za-z_0-9$$\(\)/\-:=]*)", RegexCompileFlags.OPTIMIZE);
-				Regex reg_rule = new GLib.Regex ("^\s*([A-Za-z_$$\(]+[ A-Za-z_0-9\.$$\)\-]*)(:)([A-Za-z_0-9]*[ \.A-Za-z_0-9$$\(\)/\-:=]*)", RegexCompileFlags.OPTIMIZE);
 
-				MatchInfo match;			
-				tmp = normalize_string (tmp);
-				tmp = tmp.replace ("= ", "="); //hack: the regular expression has a bug
-				tmp = tmp.replace (" =", "=");
-				
-				bool res = reg_var.match (tmp, 0, out match);
-				if (!res)
-					res = reg_rule.match (tmp, 0, out match);
-				if (res) {
-					debug ("found %s, values %s", match.fetch (0), match.fetch (3));
-					
-					string rule_name = normalize_string (match.fetch(1));
-					string[] names = rule_name.split (" ");
-					string values = normalize_string (match.fetch(3));
-					string[] tmps = values.split (" ");
-					debug ("FOUND VARIABLE: %s %s", rule_name, values);
-					
-					foreach (string name in names) {
-						var variable = new Variable(name, project);
-						ConfigNode data;
-					
-						if (tmps.length == 1) {
-							string val = normalize_string (tmps[0]);
-				
-							if (val.has_prefix ("$")) {
-								val = val.substring (1, val.length - 1);
-								val = val.replace ("(", "").replace (")", "");
-								data = new UnresolvedConfigNode (val);
-							} else if (val != null){
-								data = new StringLiteral (val);
-							} else {
-								data = new StringLiteral ("");
-							}						
-						} else {
-							ConfigNodeList items = new ConfigNodeList ();
-					
-							foreach (string tmp in tmps) {
-								if (tmp != null && tmp.chomp () != "") {
-									ConfigNode node;
-									string val = normalize_string (tmp);
-					
-									if (val.has_prefix ("$")) {
-										val = val.substring (1, val.length - 1);
-										val = val.replace ("(", "").replace (")", "");
-										node = new UnresolvedConfigNode (val);
-									} else if (val != null){
-										node = new StringLiteral (val);
-									} else {
-										critical ("%s is null", tmp);
-										node = new StringLiteral ("");
-									}
-								
-									items.add_value (node);
-								}
-							}
-							data = items;
-						}
-						variable.data = data;
-						if (variable.name == "BUILT_SOURCES") {
-							debug ("BS: VALUES %s", variable.data.to_string ());
-						}
-						if (group != null) {
-							group.add_variable (variable);
-						} else {
-							project.add_variable (variable);
-						}
-					}
-				}
-				*/
 				tmp = null; //restart from a new line
-			}		
+			}
 		}
 		
 		private Variable? resolve_variable (string variable_name, Vala.List<Variable> variables)
