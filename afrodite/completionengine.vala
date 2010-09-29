@@ -435,7 +435,6 @@ namespace Afrodite
 						if (_ast != null) {
 							var sf = _ast.lookup_source_file (source.path);
 							if (sf != null) {
-								TimeVal ct;
 								if (sf.update_last_modification_time ()) {
 									// no need to reparse the source since it isn't changed
 									Utils.trace ("engine %s: source file parsing optimized out since it isn't changed: %s", id, source.path);

@@ -1,5 +1,11 @@
 2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+
+	minor cleanup
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/symbolresolver.vala:
 
 	add some corner case when resolving symbols
