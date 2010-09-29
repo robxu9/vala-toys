@@ -1,5 +1,11 @@
 2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/utils.vala:
+
+	search vapi dependency also on the local vapi directories
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/symbol.vala:
 
 	removed some debugging code

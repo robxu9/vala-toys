@@ -67,7 +67,7 @@ namespace Afrodite.Utils
 				foreach (string dep in deps_content.split ("\n")) {
 					dep.strip ();
 					if (dep != "") {
-						var deps = get_package_paths (dep, ctx);
+						var deps = get_package_paths (dep, ctx, vapi_dirs);
 						if (deps == null) {
 							warning ("%s, dependency of %s, not found in specified Vala API directories".printf (dep, pkg));
 						} else {
