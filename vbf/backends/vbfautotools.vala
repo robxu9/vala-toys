@@ -379,7 +379,7 @@ namespace Vbf.Backends
 				}
 				string[] lhs = toks[0].split (" ");
 				string[] rhs = toks[1].split (" ");
-				
+
 				foreach (string lh in lhs) {
 					if (lh == null || lh == "")
 						continue;
@@ -389,44 +389,51 @@ namespace Vbf.Backends
 					var variable = new Variable(name, project);
 					ConfigNode data;
 				
-					if (rhs[1] == null) {
-						string val = rhs[0].strip ();
+					if (rhs[0] != null) {
+						if (rhs[1] == null) {
+							// single value
+							string val = rhs[0].strip ();
 			
-						if (val.has_prefix ("$")) {
-							val = val.substring (1, val.length - 1);
-							val = val.replace ("(", "").replace (")", "");
-							data = new UnresolvedConfigNode (val);
-						} else if (val != null){
-							data = new StringLiteral (val);
-						} else {
-							data = new StringLiteral ("");
-						}						
-					} else {
-						ConfigNodeList items = new ConfigNodeList ();
-				
-						foreach (string rh in rhs) {
-							if (rh != null && rh.strip () != "") {
-								ConfigNode node;
-								string val = rh.strip ();
-				
-								if (val.has_prefix ("$")) {
-									val = val.substring (1, val.length - 1);
-									val = val.replace ("(", "").replace (")", "");
-									node = new UnresolvedConfigNode (val);
-								} else if (val != null){
-									node = new StringLiteral (val);
-								} else {
-									critical ("%s is null", rh);
-									node = new StringLiteral ("");
-								}
-							
-								items.add_value (node);
+							if (val.has_prefix ("$")) {
+								val = val.substring (1, val.length - 1);
+								val = val.replace ("(", "").replace (")", "");
+								data = new UnresolvedConfigNode (val);
+							} else if (val != null){
+								data = new StringLiteral (val);
+							} else {
+								data = new StringLiteral ("");
 							}
+						} else {
+							// list of values
+							ConfigNodeList items = new ConfigNodeList ();
+				
+							foreach (string rh in rhs) {
+								if (rh != null && rh.strip () != "") {
+									ConfigNode node;
+									string val = rh.strip ();
+				
+									if (val.has_prefix ("$")) {
+										val = val.substring (1, val.length - 1);
+										val = val.replace ("(", "").replace (")", "");
+										node = new UnresolvedConfigNode (val);
+									} else if (val != null){
+										node = new StringLiteral (val);
+									} else {
+										critical ("%s is null", rh);
+										node = new StringLiteral ("");
+									}
+							
+									items.add_value (node);
+								}
+							}
+							data = items;
 						}
-						data = items;
+						variable.data = data;
+					} else {
+						// empty variable
+						variable.data = new StringLiteral ("");
 					}
-					variable.data = data;
-					
+
 					if (group != null) {
 						group.add_variable (variable);
 					} else {
