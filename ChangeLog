@@ -1,5 +1,12 @@
 2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/sourcefile.vala:
+
+	fixed symbol removal from global index when removing
+	the symbol from all its source references.
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/utils.vala:
 
 	search vapi dependency also on the local vapi directories

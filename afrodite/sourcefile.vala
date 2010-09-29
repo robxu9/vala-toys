@@ -151,11 +151,13 @@ namespace Afrodite
 		{
 			var sr = symbol.lookup_source_reference_sourcefile (this);
 			assert (sr != null);
-			symbol.remove_source_reference (sr);
 
-			if (symbols.remove (symbol)) {
-				if (!symbol.has_source_references && symbol.parent != null) {
-					parent.symbols.remove (symbol.fully_qualified_name);
+			symbol.remove_source_reference (sr);
+			symbols.remove (symbol);
+
+			if (!symbol.has_source_references) {
+				parent.symbols.remove (symbol.fully_qualified_name);
+				if (symbol.parent != null) {
 					if (symbol.is_generic_type_argument) {
 						symbol.parent.remove_generic_type_argument (symbol);
 					} else {
@@ -163,6 +165,7 @@ namespace Afrodite
 					}
 				}
 			}
+
 			//Utils.trace ("%s remove symbol %s: %u", filename, symbol.fully_qualified_name, symbol.ref_count);
 			if (symbols.size == 0)
 				symbols = null;
