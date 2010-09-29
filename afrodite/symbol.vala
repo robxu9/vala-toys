@@ -105,10 +105,6 @@ namespace Afrodite
 			if (this.type_name == "Signal") {
 				_symbol_type = Afrodite.Utils.Symbols.get_predefined ().signal_type;
 			}
-
-			if (_fully_qualified_name == "AfroditeTests") {
-				//breakpoint ();
-			}
 		}
 		
 		~Symbol ()

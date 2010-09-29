@@ -1,5 +1,11 @@
 2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+
+	removed some debugging code
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/astmerger.vala:
 	* afrodite/sourcefile.vala:
 	* afrodite/symbol.vala:
