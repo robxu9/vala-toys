@@ -233,19 +233,25 @@ namespace Vbf.Backends
 		
 		private void add_source (Group group, Target target, ConfigNode source)
 		{
-			string src_name;
+			string src_path, src_filename;
 			if (source is StringLiteral) {
-				src_name = Path.build_filename (group.id, ((StringLiteral) source).data);
-				var src = new Source.with_type (target, src_name, source_file_type (src_name));
-				target.add_source (src);
+				src_filename = ((StringLiteral) source).data;
+				if (src_filename != null && src_filename != "") {
+					src_path = Path.build_filename (group.id, src_filename);
+					var src = new Source.with_type (target, src_path, source_file_type (src_path));
+					target.add_source (src);
+				}
 			} else if (source is Variable) {
 				add_source (group, target, ((Variable) source).get_value ());
 			} else if (source is ConfigNodeList) {
 				foreach (ConfigNode item in ((ConfigNodeList) source).get_values ()) {
 					if (item is StringLiteral) {
-						src_name = Path.build_filename (group.id, ((StringLiteral) item).data);
-						var src = new Source.with_type (target, src_name, source_file_type (src_name));
-						target.add_source (src);
+						src_filename = ((StringLiteral) item).data;
+						if (src_filename != null && src_filename != "") {
+							src_path = Path.build_filename (group.id, src_filename);
+							var src = new Source.with_type (target, src_path, source_file_type (src_path));
+							target.add_source (src);
+						}
 					} else if (item is Variable) {
 						add_source (group, target, ((Variable) item).get_value ());
 					} else if (item is ConfigNodeList){
@@ -534,7 +540,7 @@ namespace Vbf.Backends
 					continue;
 				line = normalize_string (line);
 				string[] tmps = line.split (" ", 2);
-								
+
 				if (tmps[0] == "include") {
 					string filename = normalize_string (tmps[1]);
 					string include_filename = makefile.replace ("Makefile.am", filename);

@@ -1,5 +1,12 @@
 2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/backends/vbfautotools.vala:
+
+	fix the spurious file added by the $(NULL) variable to the source list.
+	Fixes issue #111
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/sourcefile.vala:
 
 	fixed symbol removal from global index when removing
