@@ -75,14 +75,19 @@ namespace Afrodite
 			Afrodite.Symbol parent;
 			
 			set_fqn (s.name);
-			symbol = _ast.lookup (_vala_symbol_fqn, out parent);
-
-			assert (parent != null);
+			//symbol = _ast.lookup (_vala_symbol_fqn, out parent);
+			//assert (parent != null);
+			symbol = _ast.symbols.@get (_vala_symbol_fqn);
+			if (_vala_symbol_fqn == "GLib" && s.type_name == "ValaNamespace") {
+				Utils.trace ("resolving GLib for source %s: %s", _source_file.filename, symbol == null ? "no" : "yes");
+			}
 			if (symbol == null) {
+				parent = _ast.root;
 				symbol = add_symbol (s, out source_reference);
 				//Utils.trace ("adding %s to source %s", symbol.fully_qualified_name, _source_file.filename);
 				parent.add_child (symbol);
 			} else {
+				parent = symbol.parent;
 				//NOTE: see if we should replace the symbol
 				// we should replace it if is not a namespace
 				// this can change whenever vala will support

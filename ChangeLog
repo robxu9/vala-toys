@@ -1,5 +1,11 @@
 2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/astmerger.vala:
+
+	use the new hashtable index to speedup symbol merging
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/symbolresolver.vala:
 
 	use the new hashtable index to speedup resolving
