@@ -99,7 +99,7 @@ namespace Afrodite
 				    && (symbol.binding & binding) != 0) {
 					if (tmp.length > 1) {
 						Symbol child_sym = null;
-							
+
 						parent = symbol;
 						if (symbol.has_children) {
 							child_sym = lookup_symbol (tmp[1], symbol, ref parent, mode, access, binding);
@@ -279,7 +279,6 @@ namespace Afrodite
 			get_child_symbols_for_path (result, options, path, first);
 			if (first.children.size > 0) {
 				result.add_result_item (first);
-				
 			}
 			//timer.stop ();
 			//debug ("get_symbols_for_path simbols found %d, time elapsed %g", result.children.size, timer.elapsed ());
@@ -388,9 +387,9 @@ namespace Afrodite
 					if (!d.unresolved 
 					    && ((access & SymbolAccessibility.PRIVATE) != 0)
 					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
-						//Utils.trace ("append local var of %s: %s", symbol.fully_qualified_name,  d.name);
 						var s = new Afrodite.Symbol (d.name, d.type_name);
-						s.return_type = d;
+						s.return_type = d.copy ();
+						s.return_type.symbol = d.symbol;
 						results.add (s);
 					}
 				}
@@ -403,9 +402,11 @@ namespace Afrodite
 					    && ((access & SymbolAccessibility.PRIVATE) != 0)
 					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
 						var s = new Afrodite.Symbol (d.name, d.type_name);
-						s.return_type = d;
+						s.return_type = d.copy ();
+						s.return_type.symbol = d.symbol;
 						results.add (s);
 					}
+
 				}
 			}
 			

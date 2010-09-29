@@ -1,3 +1,9 @@
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed some regression when building the visible symbol list
+
 2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
 	* afrodite/astmerger.vala:
