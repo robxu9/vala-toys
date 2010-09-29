@@ -1,5 +1,12 @@
 2010-09-29  Andrea Del Signore  <sejerpz@tin.it>
 
+	* configure:
+	* configure.ac:
+
+	version bump
+
+2010-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgbracketcompletion.vala:
 	* vtg/vtgbuildlogview.vala:
 	* vtg/vtgchangelog.vala:
