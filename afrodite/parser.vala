@@ -52,9 +52,9 @@ namespace Afrodite
 				return;
 			}
 			if (source.content == null) 
-				source_file = new Vala.SourceFile (context, source.path, source.is_vapi); // normal source
+				source_file = new Vala.SourceFile (context, source.is_vapi ? SourceFileType.PACKAGE : SourceFileType.SOURCE, source.path); // normal source
 			else if (source.content != "") {
-				source_file = new Vala.SourceFile (context, source.path, source.is_vapi, source.content); // live buffer
+				source_file = new Vala.SourceFile (context, source.is_vapi ? SourceFileType.PACKAGE : SourceFileType.SOURCE, source.path, source.content); // live buffer
 				//Utils.trace ("queue live buffer %s:\n%s\n", source.path, source.content);
 			} else {
 				warning ("sourcefile %s with empty content not queued", source.path);

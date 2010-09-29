@@ -1,3 +1,12 @@
+2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parser.vala:
+	* configure:
+	* configure.ac:
+	* vbf/vbf-1.0.vapi:
+
+	fix compilation against vala master
+
 2010-09-29  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure:
