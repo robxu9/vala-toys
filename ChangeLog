@@ -1,3 +1,24 @@
+2010-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearch.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletion.vala:
+
+	fixed the activation deactivation of the plugin
+
 2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vbf/backends/vbfautotools.vala:

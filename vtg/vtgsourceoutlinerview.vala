@@ -71,9 +71,7 @@ namespace Vtg
 
 		public signal void goto_source (int line, int start_column, int end_column);
 		public signal void filter_changed ();
-		
-		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } }
-		
+
 		public bool show_private_symbols {
 			get {
 				return _check_show_private_symbols.active;
@@ -82,27 +80,7 @@ namespace Vtg
 		
 		public SourceOutlinerView (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
-		}
-		
-		~SourceOutlinerView ()
-		{
-			_src_view.set_model (null);
-			// this method is never called? a leak?
-			deactivate ();
-
-		}
-		
-		public void deactivate ()
-		{
-			var manager = _plugin_instance.window.get_ui_manager ();
-			manager.remove_action_group (_actions);
-			var panel = _plugin_instance.window.get_side_panel ();
-			panel.remove_item (_side_panel);
-		}
-
-		construct
-		{
+			this._plugin_instance = plugin_instance;
 			var panel = _plugin_instance.window.get_side_panel ();
 			_side_panel = new Gtk.VBox (false, 8);
 			_src_view = new Gtk.TreeView ();
@@ -192,7 +170,25 @@ namespace Vtg
 			_sorted.set_default_sort_func (this.sort_model);
 			_src_view.set_model (_sorted);
 		}
+
+		~SourceOutlinerView ()
+		{
+			Utils.trace ("SourceOutlinerView destroying");
+			_src_view.set_model (null);
+			// this method is never called? a leak?
+			deactivate ();
+			Utils.trace ("SourceOutlinerView destroyed");
+		}
 		
+		public void deactivate ()
+		{
+			var manager = _plugin_instance.window.get_ui_manager ();
+			manager.remove_ui (_popup_symbols_ui_id);
+			manager.remove_action_group (_actions);
+			var panel = _plugin_instance.window.get_side_panel ();
+			panel.remove_item (_side_panel);
+		}
+
 		public void clear_view ()
 		{
 			_model.clear ();

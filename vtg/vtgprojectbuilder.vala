@@ -39,9 +39,7 @@ namespace Vtg
 		
 		public signal void build_start ();
 		public signal void build_exit (int exit_status);
-		
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
- 		
+
 		public BuildLogView error_pane {
 			get {
 				return _build_view;
@@ -54,17 +52,20 @@ namespace Vtg
 			}
 		}
 
-		construct
+		public ProjectBuilder (Vtg.PluginInstance plugin_instance)
 		{
+			this._plugin_instance = plugin_instance;
 			this._build_view = new BuildLogView (_plugin_instance);
 			is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
 		}
 
-		public ProjectBuilder (Vtg.PluginInstance plugin_instance)
+		~ProjectBuilder ()
 		{
-			GLib.Object (plugin_instance: plugin_instance);
+			Utils.trace ("ProjectBuilder destroying");
+			_build_view.destroy ();
+			_build_view = null;
+			Utils.trace ("ProjectBuilder destroyed");
 		}
-
 
 		public bool compile_file (string filename, string? params = null)
 		{

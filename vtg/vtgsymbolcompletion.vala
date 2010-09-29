@@ -31,22 +31,21 @@ namespace Vtg
 	{
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private unowned CompletionEngine _completion_engine = null;
-		
+
 		private Gedit.View _view = null;
 		private SymbolCompletionProvider _provider;
 		private Gtk.SourceCompletion _manager;
-		
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
-		public Gedit.View view { get { return _view; } construct { _view = value; } }
-		public CompletionEngine completion_engine { get { return _completion_engine; } construct set { _completion_engine = value; } }
-		
+
+		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } }
+		public Gedit.View view { get { return _view; } }
+		public CompletionEngine completion_engine { get { return _completion_engine; } set { _completion_engine = value; } }
+
 		public SymbolCompletion (Vtg.PluginInstance plugin_instance, Gedit.View view, CompletionEngine completion_engine)
 		{
-			GLib.Object (plugin_instance: plugin_instance, view: view, completion_engine: completion_engine);
-		}
+			this._plugin_instance = plugin_instance;
+			this._view = view;
+			this._completion_engine = completion_engine;
 
-		construct
-		{
 			if (this._view.is_realized ()) {
 				setup_gsc_completion (_view);
 			} else {

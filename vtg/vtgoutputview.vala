@@ -52,21 +52,9 @@ namespace Vtg
 			"  testing"
 		};
 		
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
-
 		public OutputView (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
-		}
-		
-		~OutputView ()
-		{
-			var panel = _plugin_instance.window.get_bottom_panel ();
-			panel.remove_item (_ui);
-		}
-		
-		construct 
-		{
+			this._plugin_instance = plugin_instance;
 			var panel = _plugin_instance.window.get_bottom_panel ();
 			_messages = new TextBuffer (null);
 			_messages.create_tag ("keyword", "weight", Pango.Weight.BOLD, null);
@@ -85,6 +73,11 @@ namespace Vtg
 			panel.add_item (_ui, _("Output"), null);
 		}
 
+		~OutputView ()
+		{
+			var panel = _plugin_instance.window.get_bottom_panel ();
+			panel.remove_item (_ui);
+		}
 
 		private bool on_textview_key_press (Gtk.Widget sender, Gdk.EventKey evt)
 		{

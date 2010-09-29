@@ -37,7 +37,7 @@ namespace Vtg
 		private ProjectView _project_view = null;
 		private SourceBookmarks _bookmarks = null;
 		private Vala.List<Vtg.SymbolCompletion> _scs = new Vala.ArrayList<Vtg.SymbolCompletion> ();
-		private Vala.List<Vtg.BracketCompletion> _bcs = new Vala.ArrayList<Vtg.BracketCompletion> ();
+		private Vala.HashMap<Gedit.View, Vtg.BracketCompletion> _bcs = new Vala.HashMap<Gedit.View, Vtg.BracketCompletion> ();
 
 		private unowned Gedit.View _last_created_view = null; // workaround to a gedit scroll to cursor bug
 
@@ -107,17 +107,20 @@ namespace Vtg
 		{
 			if (_source_outliner != null)
 				_source_outliner.active_view = null;
+			if (SignalHandler.is_connected (this._window, _tab_add_sig_id)) {
+				SignalHandler.disconnect (this._window, _tab_add_sig_id);
+				
+			}
+			if (SignalHandler.is_connected (this._window, _tab_removed_sig_id)) {
+				SignalHandler.disconnect (this._window, _tab_removed_sig_id);
+			}
+			foreach (Document doc in this._window.get_documents ()) {
+				uninitialize_document (doc);
+			}
+
 			_source_outliner = null;
 			_project_manager_ui = null;
 			_output_view = null;
-			if (SignalHandler.is_connected (this, _tab_add_sig_id)) {
-				SignalHandler.disconnect (this, _tab_add_sig_id);
-				
-			}
-			if (SignalHandler.is_connected (this, _tab_removed_sig_id)) {
-				SignalHandler.disconnect (this, _tab_removed_sig_id);
-			}
-			_window = null;
 		}
 		
 		private void on_current_bookmark_changed (SourceBookmarks sender)
@@ -240,10 +243,7 @@ namespace Vtg
 				deactivate_symbol (sc);
 			}
 
-			var bc = bcs_find_from_view (view);
-			if (bc != null) {
-				deactivate_bracket (bc);
-			}
+			deactivate_bracket (view);
 		}
 		
 		public void activate_sourcecode_outliner ()
@@ -261,13 +261,16 @@ namespace Vtg
 		public void activate_bracket (Gedit.View view)
 		{
 			var bc = new BracketCompletion (this, view);
-			_bcs.add (bc);
+			_bcs.set (view, bc);
 		}
-		
-		public void deactivate_bracket (BracketCompletion bc)
+
+		public void deactivate_bracket (Gedit.View view)
 		{
-			bc.deactivate ();
-			_bcs.remove (bc);
+			var bc = _bcs.get (view);
+			if (bc != null)
+				bc.deactivate ();
+
+			_bcs.remove (view);
 		}
 		
 		public void activate_symbol (ProjectManager project, Gedit.View view)
@@ -319,7 +322,10 @@ namespace Vtg
 			int size = 0;
 			while (_bcs.size > 0 && _bcs.size != size) {
 				size = _bcs.size;
-				deactivate_bracket (_bcs.get(0));
+				foreach (Gedit.View view in _bcs.get_keys ()) {
+					deactivate_bracket (view);
+					break; // one iteration at a time
+				}
 			}
 		}
 		
@@ -330,14 +336,12 @@ namespace Vtg
 
 		public BracketCompletion? bcs_find_from_view (Gedit.View view)
 		{
-			foreach (BracketCompletion bc in _bcs) {
-				if (bc.view == view)
-					return bc;
-			}
-
-			return null;
+			if (_bcs.contains (view))
+				return _bcs.get (view);
+			else
+				return null;
 		}
-		
+
 		public bool scs_contains (Gedit.View view)
 		{
 			return (scs_find_from_view (view) != null);

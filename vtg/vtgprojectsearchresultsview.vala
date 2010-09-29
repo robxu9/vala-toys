@@ -37,22 +37,10 @@ namespace Vtg
 		private int _match_count = 0;
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private unowned ProjectManager _project;
-				
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
-		
+
 		public ProjectSearchResultsView (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
-		}
-
-		~SearchResultsLogView ()
-		{
-			var panel = _plugin_instance.window.get_bottom_panel ();
-			panel.remove_item (_ui);
-		}
-
-		construct 
-		{
+			this._plugin_instance = plugin_instance;
 			var panel = _plugin_instance.window.get_bottom_panel ();
 			_ui = new Gtk.VBox (false, 8);
 			
@@ -86,6 +74,12 @@ namespace Vtg
 			panel.add_item_with_stock_icon (_ui, _("Search results"), Gtk.STOCK_FIND);
 			_plugin_instance.output_view.message_added.connect (this.on_message_added);
 			_model.set_sort_column_id (0, SortType.ASCENDING);
+		}
+
+		~SearchResultsLogView ()
+		{
+			var panel = _plugin_instance.window.get_bottom_panel ();
+			panel.remove_item (_ui);
 		}
 
 		public void initialize (ProjectManager? project = null)

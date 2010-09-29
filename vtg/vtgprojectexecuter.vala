@@ -30,16 +30,14 @@ namespace Vtg
 	internal class ProjectExecuter : GLib.Object
 	{
 		private unowned Vtg.PluginInstance _plugin_instance = null;
-		private BuildLogView _build_view = null;
+
 		//TODO: hashtable with Project as key
 		private uint _child_watch_id = 0;
 		private	Pid child_pid = (Pid) 0;
 		
 		public signal void process_start ();
 		public signal void process_exit (int exit_status);
-		
- 		public Vtg.PluginInstance plugin_instance { get { return plugin_instance; } construct { _plugin_instance = value; } }
- 		
+
 		public bool is_executing {
 			get {
 				return _child_watch_id != 0;
@@ -48,7 +46,7 @@ namespace Vtg
 		
 		public ProjectExecuter (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
+			this._plugin_instance = plugin_instance;
 		}
 
 		public bool execute (Project project, string command_line)
@@ -109,7 +107,6 @@ namespace Vtg
 			Process.close_pid (child_pid);
 			log.stop_watch (_child_watch_id);
 			log.log_message (OutputTypes.MESSAGE, _("\nprocess terminated with exit status %d\n").printf(status));
-			_build_view.activate ();
 			_child_watch_id = 0;
 			this.process_exit (Process.exit_status(status));
 			child_pid = (Pid) 0;

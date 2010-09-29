@@ -27,12 +27,10 @@ namespace Vtg
 	internal class ChangeLog : GLib.Object
 	{
 		private unowned Vtg.PluginInstance _plugin_instance = null;
-		
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
- 		
+
 		public ChangeLog (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
+			this._plugin_instance = plugin_instance;
 		}
 		
 		public bool prepare (string? file = null) throws GLib.Error

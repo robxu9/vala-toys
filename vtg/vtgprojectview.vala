@@ -29,7 +29,7 @@ namespace Vtg
 {
 	internal class ProjectView : GLib.Object
 	{
-		private Vtg.PluginInstance _plugin_instance = null;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private Gtk.ComboBox _prjs_combo;
 		private Gtk.ListStore _prjs_model;
 		private Gtk.TreeView _prj_view;
@@ -97,24 +97,10 @@ namespace Vtg
 				}
 			}
 		}
-		
-		public Vtg.PluginInstance plugin_instance { construct { _plugin_instance = value; } }
 
 		public ProjectView (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
-		}
-		
-		~ProjectView ()
-		{
-			var manager = _plugin_instance.window.get_ui_manager ();
-			manager.remove_action_group (_actions);
-			var panel = _plugin_instance.window.get_side_panel ();
-			panel.remove_item (_side_panel);
-		}
-		
-		construct
-		{
+			this._plugin_instance = plugin_instance;
 			_prjs_model = new Gtk.ListStore(2, typeof(string), typeof(Project));
 			
 			var panel = _plugin_instance.window.get_side_panel ();
@@ -170,6 +156,18 @@ namespace Vtg
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
 			}
+		}
+
+		~ProjectView ()
+		{
+			Utils.trace ("ProjectView destroying");
+			var manager = _plugin_instance.window.get_ui_manager ();
+			manager.remove_ui (_popup_modules_ui_id);
+			manager.remove_ui (_popup_targets_ui_id);
+			manager.remove_action_group (_actions);
+			var panel = _plugin_instance.window.get_side_panel ();
+			panel.remove_item (_side_panel);
+			Utils.trace ("ProjectView destroyed");
 		}
 
 		private void update_project_treeview ()

@@ -157,76 +157,78 @@ namespace Vtg
 			{"ProjectPrepareSingleFileChangeLog", null, N_("_Add Current File To ChangeLog"), null, N_("Add the current file to the ChangeLog"), on_prepare_single_file_changelog}
 		};
 
-
 		/* END UI */
 		private Vala.List<ProjectManager> _projects = new Vala.ArrayList<ProjectManager> ();
 		private ActionGroup _actions = null;
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private ProjectBuilder _prj_builder = null;
 		private ProjectExecuter _prj_executer = null;
-		private ProjectSearch _prj_search = null;		
+		private ProjectSearch _prj_search = null;
 		private ChangeLog _changelog = null;
-		
-		
+
 		private int _cache_building_count = 0;
 		private uint _sb_msg_id = 0;
 		private uint _sb_context_id = 0;
-
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
+		private ulong[] signal_ids = new ulong[6];
 
 		//public signal void project_loaded (Project project);
 
 		public ProjectManagerUi (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
+			this._plugin_instance = plugin_instance;
 			var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 			_sb_context_id = status_bar.get_context_id ("symbol status");
-		}
-
-
-		~ProjectManagerUi ()
-		{
-			var manager = _plugin_instance.window.get_ui_manager ();
-			manager.remove_ui (_ui_id);
-			manager.remove_action_group (_actions);
-		}
-
-		construct	
-		{
 			_plugin_instance.project_view.notify["current-project"] += this.on_current_project_changed;
 			_prj_builder = new ProjectBuilder (_plugin_instance);
 			_prj_executer = new ProjectExecuter (_plugin_instance);
 			_prj_search = new ProjectSearch (_plugin_instance);
-						
-			_prj_executer.process_start.connect ((sender) => {
+
+			signal_ids[0] = _prj_executer.process_start.connect ((sender) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj);
 			});
-			_prj_executer.process_exit.connect ((sender, exit_status) => {
+			signal_ids[1] = _prj_executer.process_exit.connect ((sender, exit_status) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj);
 			});
-			_prj_builder.build_start.connect ((sender) => {
+			signal_ids[2] = _prj_builder.build_start.connect ((sender) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj);
 			});
-			_prj_builder.build_exit.connect ((sender, exit_status) => {
+			signal_ids[3] = _prj_builder.build_exit.connect ((sender, exit_status) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj);
 			});
-			_prj_search.search_start.connect ((sender) => {
+			signal_ids[4] = _prj_search.search_start.connect ((sender) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj);
 			});
-			_prj_search.search_exit.connect ((sender, exit_status) => {
+			signal_ids[5] = _prj_search.search_exit.connect ((sender, exit_status) => {
 				var prj = _plugin_instance.project_view.current_project;
 				update_ui (prj);
 			});
-						
+
 			initialize_ui ();
 			_changelog = new ChangeLog (_plugin_instance);
 			var prj = _plugin_instance.project_view.current_project;
 			update_ui (prj);
+		}
+
+		~ProjectManagerUi ()
+		{
+			Utils.trace ("ProjectManagerUi destroying");
+			SignalHandler.disconnect (_prj_executer, signal_ids[0]);
+			SignalHandler.disconnect (_prj_executer, signal_ids[1]);
+			SignalHandler.disconnect (_prj_builder, signal_ids[2]);
+			SignalHandler.disconnect (_prj_builder, signal_ids[3]);
+			SignalHandler.disconnect (_prj_search, signal_ids[4]);
+			SignalHandler.disconnect (_prj_search, signal_ids[5]);
+
+			_prj_builder = null;
+			var manager = _plugin_instance.window.get_ui_manager ();
+			manager.remove_ui (_ui_id);
+			manager.remove_action_group (_actions);
+			Utils.trace ("ProjectManagerUi destroyed");
 		}
 
 		private void initialize_ui ()
@@ -427,7 +429,7 @@ namespace Vtg
 				if (create_project (foldername)) {
 					open_project (foldername);
 					// configure the project
-					var project = plugin_instance.project_view.current_project;
+					var project = _plugin_instance.project_view.current_project;
 					_prj_builder.configure (project, "");
 				}
 			}
