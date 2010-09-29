@@ -78,7 +78,7 @@ namespace Afrodite
 		
 		private DataType _symbol_type = null;
 		
-		private Vala.List<unowned Symbol> _specialized_symbols = null;
+		private Vala.List<Symbol> _specialized_symbols = null;
 
 		public DataType symbol_type {
 			get {
@@ -972,7 +972,6 @@ namespace Afrodite
 				foreach(var item in children) {
 					var s = item.copy ();
 					res.add_child (s);
-					res.add_specialized_symbol (s);
 				}
 			}
 
@@ -1034,7 +1033,7 @@ namespace Afrodite
 			assert (item != this);
 
 			if (_specialized_symbols == null)
-				_specialized_symbols = new Vala.ArrayList<unowned Symbol> ();
+				_specialized_symbols = new Vala.ArrayList<Symbol> ();
 
 			assert (_specialized_symbols.contains (item) == false);
 			_specialized_symbols.add (item);

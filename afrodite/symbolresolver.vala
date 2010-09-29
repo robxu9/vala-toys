@@ -276,12 +276,7 @@ namespace Afrodite
 
 		private void visit_symbols (Vala.List<Afrodite.Symbol> symbols)
 		{
-			// copy this list since it can change during the parsing
-			var list = new ArrayList<Symbol>();
-			foreach (Symbol symbol in symbols)
-				list.add (symbol);
-
-			foreach (Symbol symbol in list) {
+			foreach (Symbol symbol in symbols) {
 				visit_symbol (symbol);
 			}
 		}

@@ -1,5 +1,12 @@
 2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	avoid duplicating all the symbols (previously done for generic symbol specialization)
+
+2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
 	* ChangeLog:
 
 	fix changelog file to better rappresent the squashed changes
