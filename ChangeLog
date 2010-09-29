@@ -1,5 +1,22 @@
 2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/parser.vala:
+
+	don't create a dummy List when using single file parsing api
+
+2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/parser.vala:
+	* afrodite/symbol.vala:
+	* afrodite/utils.vala:
+
+	make afrodite parse one file at a time this simplify the astmerge process
+
+2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/astdumper.vala:
 	* afrodite/astmerger.vala:

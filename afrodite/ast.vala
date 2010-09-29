@@ -90,7 +90,7 @@ namespace Afrodite
 				    && (symbol.binding & binding) != 0) {
 					if (tmp.length > 1) {
 						Symbol child_sym = null;
-						
+							
 						parent = symbol;
 						if (symbol.has_children) {
 							child_sym = lookup_symbol (tmp[1], symbol, ref parent, mode, access, binding);
@@ -121,7 +121,7 @@ namespace Afrodite
 				if (source_files == null) {
 					source_files = new ArrayList<SourceFile> ();
 				}
-				Utils.trace ("add source: %s (%p)", file.filename, file);
+				//Utils.trace ("add source: %s (%p)", file.filename, file);
 				file.parent = this;
 				source_files.add (file);
 			}

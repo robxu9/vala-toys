@@ -85,8 +85,8 @@ namespace Afrodite.Utils
 		results.add (package_path);
 		return results;
 	}
-
-	public static bool add_package (string pkg, CodeContext context) 
+/*
+	private static bool add_package (string pkg, CodeContext context) 
 	{
 		if (context.has_package (pkg)) {
 			// ignore multiple occurences of the same package
@@ -106,7 +106,7 @@ namespace Afrodite.Utils
 		}
 		return true;
 	}
-	
+*/
 	namespace Symbols
 	{
 		private static PredefinedSymbols _predefined = null;

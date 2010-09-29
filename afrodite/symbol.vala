@@ -292,9 +292,6 @@ namespace Afrodite
 				children = new ArrayList<Symbol> ();
 			}
 
-			if (child.fully_qualified_name == "GLib.Signal.query")
-				Utils.trace ("adding to %s", this.fully_qualified_name);
-
 			children.add (child);
 			child.parent = this;
 			if (child.is_static || child.has_static_child) {

@@ -26,65 +26,54 @@ namespace Afrodite
 {	
 	public class Parser : GLib.Object
 	{
-		private Vala.List<SourceItem> _sources;
 		public CodeContext context = null;
-		
+
 		public Parser (Vala.List<SourceItem> sources)
 		{
-			_sources = sources;
+			context = new Vala.CodeContext();
+			foreach (SourceItem source in sources) {
+				add_source_item (source);
+			}
+
 		}
-		
-		~Parser()
+
+		public Parser.with_source (SourceItem source_item)
 		{
-			_sources.clear ();
-			_sources = null;
+			context = new Vala.CodeContext();
+			add_source_item (source_item);
+		}
+
+		private void add_source_item (SourceItem source)
+		{
+			Vala.SourceFile source_file = null;
+			
+			if (source.content == null && !FileUtils.test (source.path, FileTest.EXISTS)) {
+				warning ("file %s not exists", source.path);
+				return;
+			}
+			if (source.content == null) 
+				source_file = new Vala.SourceFile (context, source.path, source.is_vapi); // normal source
+			else if (source.content != "") {
+				source_file = new Vala.SourceFile (context, source.path, source.is_vapi, source.content); // live buffer
+				//Utils.trace ("queue live buffer %s:\n%s\n", source.path, source.content);
+			} else {
+				warning ("sourcefile %s with empty content not queued", source.path);
+			}
+			
+			if (source_file != null) {
+				var ns_ref = new UsingDirective (new UnresolvedSymbol (null, "GLib", null));
+				if (!source.is_glib)
+					context.root.add_using_directive (ns_ref);
+				
+				context.add_source_file (source_file);
+				if (!source.is_glib)
+					source_file.add_using_directive (ns_ref);
+			}
 		}
 
 		public void parse ()
 		{
-			context = new Vala.CodeContext();
 			CodeContext.push (context);
-			bool has_glib = false;
-			foreach (SourceItem source in _sources) {
-				if (source.is_glib) {
-					has_glib = true;
-					break;
-				}
-			}
-			if (!has_glib) {
-				if (!Utils.add_package ("glib-2.0", context))
-					GLib.error ("failed to add GLib 2.0");
-			
-				if (!Utils.add_package ("gobject-2.0", context))
-					GLib.error ("failed to add GObject 2.0");
-			}			
-			foreach (SourceItem source in _sources) {
-				Vala.SourceFile source_file = null;
-				
-				if (source.content == null && !FileUtils.test (source.path, FileTest.EXISTS)) {
-					warning ("file %s not exists", source.path);
-					continue;
-				}
-				if (source.content == null) 
-					source_file = new Vala.SourceFile (context, source.path, source.is_vapi); // normal source
-				else if (source.content != "") {
-					source_file = new Vala.SourceFile (context, source.path, source.is_vapi, source.content); // live buffer
-					//Utils.trace ("queue live buffer %s:\n%s\n", source.path, source.content);
-				} else {
-					warning ("sourcefile %s with empty content not queued", source.path);
-				}
-				
-				if (source_file != null) {
-					var ns_ref = new UsingDirective (new UnresolvedSymbol (null, "GLib", null));
-					if (!source.is_glib)
-						context.root.add_using_directive (ns_ref);
-					
-					context.add_source_file (source_file);
-					if (!source.is_glib)
-						source_file.add_using_directive (ns_ref);
-				}
-			}
-
 			context.assert = false;
 			context.checking = false;
 			context.experimental = false;

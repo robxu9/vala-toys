@@ -54,7 +54,6 @@ namespace Afrodite
 			assert (_ast.lookup_source_file (source.filename) == null);
 
 			//debug ("COMPLETING FILE %s", source.filename);
-			Utils.trace ("merging source: %s", source.filename);
 			_source_file = _ast.add_source_file (source.filename);
 			foreach (UsingDirective u in source.current_using_directives) {
 				_source_file.add_using_directive (u.namespace_symbol.name);
@@ -70,7 +69,7 @@ namespace Afrodite
 			_ast.remove_source (source);
 		}
 
-		private Afrodite.Symbol visit_symbol (Vala.Symbol s, out Afrodite.SourceReference source_reference, bool replace = false)
+		private Afrodite.Symbol visit_symbol (Vala.Symbol s, out Afrodite.SourceReference source_reference)
 		{
 			Afrodite.Symbol symbol;
 			Afrodite.Symbol parent;
@@ -84,6 +83,11 @@ namespace Afrodite
 				//Utils.trace ("adding %s to source %s", symbol.fully_qualified_name, _source_file.filename);
 				parent.add_child (symbol);
 			} else {
+				//NOTE: see if we should replace the symbol
+				// we should replace it if is not a namespace
+				// this can change whenever vala will support
+				// partial classes
+				bool replace = s.type_name != "ValaNamespace";
 				if (replace) {
 					parent.remove_child (symbol);
 					symbol = add_symbol (s, out source_reference);
@@ -192,68 +196,31 @@ namespace Afrodite
 				_vala_symbol_fqn = _vala_symbol_fqn.concat (".", name);
 			}
 		}
-		
-		public bool is_symbol_defined_current_source (Vala.Symbol? sym)
-		{
-			//Utils.trace ("currentsource %s: %s vs %s", sym.name, sym.source_reference.file.filename, _source_file.filename);
-			return sym.source_reference.file.filename == _source_file.filename;
-		}
-
-		private bool is_glib_core_vapis (Namespace ns)
-		{
-			if (ns.source_reference != null && ns.source_reference.file != null) {
-				string filename = Filename.display_basename (ns.source_reference.file.filename);
-				return (filename.has_prefix ("glib-") || filename.has_prefix ("gobject-") || filename.has_prefix ("gio-")) && ns.name == "GLib";
-			} else {
-				warning ("old compatibility check executed for: %s", ns.name);
-				return ns.name == "GLib"; // this check is weak, for example GIO fails on this
-			}
-		}
 
 		public override void visit_namespace (Namespace ns)
 		{
-			if (is_symbol_defined_current_source (ns) || (_merge_glib && is_glib_core_vapis (ns))) {
-				var prev_vala_fqn = _vala_symbol_fqn;
-				var prev = _current;
-				var prev_sr = _current_sr;
-				var prev_child_count = _child_count;
-				
-				_current = visit_symbol (ns, out _current_sr);
-				ns.accept_children (this);
-				
-				// if the symbol isn't defined in this source file
-				// and I haven't added any child from this source file
-				// remove my source reference.
-				if (!is_symbol_defined_current_source (ns) && _child_count == prev_child_count) {
-					//debug ("sourcereference removing sr: %s to %s", _current_sr.file.filename, _vala_symbol_fqn);
-					_current.remove_source_reference (_current_sr);
-					if (!_current.has_source_references) {
-						Afrodite.Symbol parent;
-						_ast.lookup (_vala_symbol_fqn, out parent);
-						parent.remove_child (_current);
-					}
-				} //else {
-					//debug ("sourcereference added: %s to %s", _current_sr.file.filename, _vala_symbol_fqn);
-				//}
-				
-				_child_count = prev_child_count;
-				_current = prev;
-				_current_sr = prev_sr;
-				_vala_symbol_fqn = prev_vala_fqn;
-			}
+			var prev_vala_fqn = _vala_symbol_fqn;
+			var prev = _current;
+			var prev_sr = _current_sr;
+			var prev_child_count = _child_count;
+			
+			_current = visit_symbol (ns, out _current_sr);
+			ns.accept_children (this);
+
+			_child_count = prev_child_count;
+			_current = prev;
+			_current_sr = prev_sr;
+			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
 		public override void visit_class (Class c)
 		{
-			if (!is_symbol_defined_current_source (c))
-				return;
-			
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
 			
-			_current = visit_symbol (c, out _current_sr, true); // class are not mergeable like namespaces
+			_current = visit_symbol (c, out _current_sr);
 			_current.is_abstract = c.is_abstract;
 			c.accept_children (this);
 
@@ -264,15 +231,12 @@ namespace Afrodite
 		
 		public override void visit_struct (Struct s)
 		{
-			if (!is_symbol_defined_current_source (s))
-				return;
-
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
 			
-			_current = visit_symbol (s, out _current_sr, true); // class are not mergeable like namespaces
+			_current = visit_symbol (s, out _current_sr);
 			s.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
@@ -281,15 +245,12 @@ namespace Afrodite
 		
 		public override void visit_interface (Interface iface)
 		{
-			if (!is_symbol_defined_current_source (iface))
-				return;
-
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			var prev_sr = _current_sr;
 
-			_current = visit_symbol (iface, out _current_sr, true); // class are not mergeable like namespaces
+			_current = visit_symbol (iface, out _current_sr);
 			iface.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
@@ -309,9 +270,6 @@ namespace Afrodite
 		
 		public override void visit_method (Method m)
 		{
-			if (!is_symbol_defined_current_source (m))
-				return;
-
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
@@ -443,9 +401,6 @@ namespace Afrodite
 		
 		public override void visit_enum (Vala.Enum e) 
 		{
-			if (!is_symbol_defined_current_source (e))
-				return;
-
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
@@ -463,9 +418,6 @@ namespace Afrodite
 		
 		public override void visit_delegate (Delegate d) 
 		{
-			if (!is_symbol_defined_current_source (d))
-				return;
-
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
@@ -483,9 +435,6 @@ namespace Afrodite
 
 	       	public override void visit_signal (Vala.Signal s) 
 		{
-			if (!is_symbol_defined_current_source (s))
-				return;
-
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
@@ -505,9 +454,6 @@ namespace Afrodite
 		
 		public override void visit_field (Field f) 
 		{
-			if (!is_symbol_defined_current_source (f))
-				return;
-
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
@@ -529,9 +475,6 @@ namespace Afrodite
 
 		public override void visit_constant (Vala.Constant c) 
 		{
-			if (!is_symbol_defined_current_source (c))
-				return;
-
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
@@ -550,9 +493,6 @@ namespace Afrodite
 	
 		public override void visit_property (Property p) 
 		{
-			if (!is_symbol_defined_current_source (p))
-				return;
-
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
@@ -591,9 +531,6 @@ namespace Afrodite
 		
 		public override void visit_error_domain (ErrorDomain ed)
 		{
-			if (!is_symbol_defined_current_source (ed))
-				return;
-
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
