@@ -156,7 +156,11 @@ namespace Afrodite
 			if (symbols.remove (symbol)) {
 				if (!symbol.has_source_references && symbol.parent != null) {
 					parent.symbols.remove (symbol.fully_qualified_name);
-					symbol.parent.remove_child (symbol);
+					if (symbol.is_generic_type_argument) {
+						symbol.parent.remove_generic_type_argument (symbol);
+					} else {
+						symbol.parent.remove_child (symbol);
+					}
 				}
 			}
 			//Utils.trace ("%s remove symbol %s: %u", filename, symbol.fully_qualified_name, symbol.ref_count);

@@ -66,7 +66,7 @@ namespace Afrodite
 		private Symbol? resolve_type (Symbol symbol, DataType type)
 		{
 			Symbol res = null;
-			
+
 			// void symbol
 			if (type.type_name == "void") {
 				res = Symbol.VOID;
@@ -80,25 +80,38 @@ namespace Afrodite
 				if (s != null && s != symbol) {
 					res = s;
 				} else {
-					// namespace that contains this symbol are automatically in scope
-					// from the inner one to the outmost
+					// test if is a generic type parameter
 					Symbol curr_symbol = symbol;
-					if (symbol.fully_qualified_name.has_prefix ("RhythmPnP") && symbol.type_name == "Method")
-						Utils.trace ("   resolving %s", type.type_name);
 					while (curr_symbol != null && curr_symbol != _ast.root) {
-						if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
-							if (symbol.fully_qualified_name.has_prefix ("RhythmPnP") && symbol.type_name == "Method")
-								Utils.trace ("   resolving %s (%s)- %s %s".printf (curr_symbol.fully_qualified_name, curr_symbol.type_name, type.type_name, type.is_generic ? "generic" : ""));
-							s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type.type_name));
-							if (s != null && s != symbol) {
-								res = s;
-								break;
+						if (curr_symbol.name.has_prefix ("!") == false && curr_symbol.has_generic_type_arguments) {
+							foreach (var arg in curr_symbol.generic_type_arguments) {
+								if (type.type_name == arg.fully_qualified_name) {
+									res = arg;
+									break;
+								}
 							}
+						}
+						if (res != null) {
+							break;
 						}
 						curr_symbol = curr_symbol.parent;
 					}
-					if (symbol.fully_qualified_name.has_prefix ("RhythmPnP") && symbol.type_name == "Method")
-						Utils.trace ("   resolved %s: %s\n", type.type_name, res == null ? "no symbol found" : res.fully_qualified_name);
+
+					// namespace that contains this symbol are automatically in scope
+					// from the inner one to the outmost
+					if (res == null) {
+						curr_symbol = symbol;
+						while (curr_symbol != null && curr_symbol != _ast.root) {
+							if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
+								s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type.type_name));
+								if (s != null && s != symbol) {
+									res = s;
+									break;
+								}
+							}
+							curr_symbol = curr_symbol.parent;
+						}
+					}
 
 					if (res == null) {
 						// try with the imported namespaces

@@ -58,7 +58,8 @@ namespace Afrodite
 		public Vala.List<DataType> local_variables { get; set; }
 		public Vala.List<DataType> base_types { get; set; }
 		public Vala.List<Symbol> generic_type_arguments { get; set; }
-		
+		public bool is_generic_type_argument { get; set; }
+
 		public SymbolAccessibility access {
 			get{ return _access; }
 			set{ _access = value; }
@@ -114,8 +115,16 @@ namespace Afrodite
 		{
 			// Utils.trace ("Symbol destroy: %s (%p)", _fully_qualified_name, this);
 			// parent and generic parent if this symbol is a specialization
-			if (parent != null && parent.has_children) {
-				parent.remove_child (this);
+			if (parent != null) {
+				if (is_generic_type_argument) {
+					if (parent.has_generic_type_arguments) {
+						parent.remove_generic_type_argument (this);
+					}
+				} else {
+					if (parent.has_children) {
+						parent.remove_child (this);
+					}
+				}
 			}
 
 			if (generic_parent != null && generic_parent.has_specialized_symbols) {
@@ -142,6 +151,7 @@ namespace Afrodite
 			if (has_generic_type_arguments) {
 				foreach(var symbol in generic_type_arguments) {
 					symbol.unresolve_symbols_of_target (this);
+					symbol.parent = null;
 				}
 			}
 
@@ -513,12 +523,17 @@ namespace Afrodite
 			//debug ("added generic %s to %s", sym.name, this.fully_qualified_name);
 			//Utils.trace ("add generic type args symbol %s: %s", _fully_qualified_name, sym.fully_qualified_name);
 			generic_type_arguments.add (sym);
+			sym.is_generic_type_argument = true;
+			sym.parent = this;
 		}
 		
 		public void remove_generic_type_argument (Symbol sym)
 		{
 			assert (sym != this);
 			generic_type_arguments.remove (sym);
+			if (sym.parent == this) {
+				sym.parent = null;
+			}
 			if (generic_type_arguments.size == 0)
 				generic_type_arguments = null;
 		}

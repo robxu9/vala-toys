@@ -56,7 +56,7 @@ namespace Afrodite
 			//debug ("COMPLETING FILE %s", source.filename);
 			_source_file = _ast.add_source_file (source.filename);
 			foreach (UsingDirective u in source.current_using_directives) {
-				_source_file.add_using_directive (u.namespace_symbol.name);
+				_source_file.add_using_directive (u.namespace_symbol.get_full_name ());
 			}
 			context.root.accept_children (this);
 		}
@@ -72,22 +72,18 @@ namespace Afrodite
 		private Afrodite.Symbol visit_symbol (Vala.Symbol s, out Afrodite.SourceReference source_reference)
 		{
 			Afrodite.Symbol symbol;
-			Afrodite.Symbol parent;
-			
+
 			set_fqn (s.name);
 			//symbol = _ast.lookup (_vala_symbol_fqn, out parent);
 			//assert (parent != null);
 			symbol = _ast.symbols.@get (_vala_symbol_fqn);
-			if (_vala_symbol_fqn == "GLib" && s.type_name == "ValaNamespace") {
-				Utils.trace ("resolving GLib for source %s: %s", _source_file.filename, symbol == null ? "no" : "yes");
-			}
+
 			if (symbol == null) {
-				parent = _ast.root;
 				symbol = add_symbol (s, out source_reference);
 				//Utils.trace ("adding %s to source %s", symbol.fully_qualified_name, _source_file.filename);
-				parent.add_child (symbol);
+				_current.add_child (symbol);
 			} else {
-				parent = symbol.parent;
+				Afrodite.Symbol parent = symbol.parent;
 				//NOTE: see if we should replace the symbol
 				// we should replace it if is not a namespace
 				// this can change whenever vala will support
@@ -100,7 +96,7 @@ namespace Afrodite
 				} else {
 					// add one more source reference to the symbol
 					source_reference = symbol.lookup_source_reference_filename (_source_file.filename);
-					if (source_reference == null)	{
+					if (source_reference == null) {
 						source_reference = create_source_reference (s);
 						symbol.add_source_reference (source_reference);
 						//Utils.trace ("adding source reference %s to source %s", symbol.fully_qualified_name, _source_file.filename);
@@ -287,6 +283,16 @@ namespace Afrodite
 				
 			var s = add_symbol (m, out _current_sr, last_line);
 			s.return_type = new DataType (m.return_type.to_string ());
+			// check if return type is generic
+			if (_current.has_generic_type_arguments) {
+				foreach (var gt in _current.generic_type_arguments) {
+					if (s.return_type.type_name == gt.fully_qualified_name) {
+						s.return_type.is_generic = true;
+						break;
+					}
+				}
+			}
+
 			s.is_abstract = m.is_abstract;
 			s.is_virtual = m.is_virtual;
 			s.overrides = m.overrides;
@@ -468,11 +474,19 @@ namespace Afrodite
 			set_fqn (f.name);
 			var s = add_symbol (f, out _current_sr);
 			s.return_type = new DataType (get_datatype_typename (f.variable_type));
-			
 			s.binding =  get_vala_member_binding (f.binding);
+			if (_current.has_generic_type_arguments) {
+				foreach (var gt in _current.generic_type_arguments) {
+					if (s.return_type.type_name == gt.fully_qualified_name) {
+						s.return_type.is_generic = true;
+						break;
+					}
+				}
+			}
+
 			_current.add_child (s);
 			_current = s;
-			visit_type_for_generics (f.variable_type, s.return_type);
+
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -506,10 +520,19 @@ namespace Afrodite
 			set_fqn (p.name);
 			var s = add_symbol (p, out _current_sr);
 			s.return_type = new DataType (p.property_type.to_string ());
+			if (_current.has_generic_type_arguments) {
+				foreach (var gt in _current.generic_type_arguments) {
+					if (s.return_type.type_name == gt.fully_qualified_name) {
+						Utils.trace ("property %s is generic: %s", p.name, _current.fully_qualified_name);
+						s.return_type.is_generic = true;
+						break;
+					}
+				}
+			}
+
 			_current.add_child (s);
 			
 			_current = s;
-			visit_type_for_generics (p.property_type, s.return_type);
 			p.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
