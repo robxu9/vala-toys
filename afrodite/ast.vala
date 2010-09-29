@@ -31,6 +31,8 @@ namespace Afrodite
 		// debug utility to dump leaked symbols when destroying a source file
 		public static Vala.List<unowned Symbol> leaked_symbols = new Vala.ArrayList<unowned Symbol>();
 #endif
+		public Vala.HashMap<string, unowned Symbol> symbols = new Vala.HashMap <string, unowned Symbol>(GLib.str_hash, GLib.str_equal);
+
 		private Symbol _root = new Symbol (null, null);
 
 		~Ast ()
@@ -51,6 +53,13 @@ namespace Afrodite
 #endif
 
 			Utils.trace ("Ast destroyed");
+		}
+
+		public void dump_symbols ()
+		{
+			foreach (var s in symbols.get_values ()) {
+				Utils.trace ("%s (%p)", s.fully_qualified_name, s);
+			}
 		}
 
 		public Symbol root {
@@ -83,7 +92,7 @@ namespace Afrodite
 				return null;
 
 			foreach (Symbol symbol in parent_symbol.children) {
-				//Utils.trace ("  Looking for %s: %s in %s\n", qualified_name, name, symbol.fully_qualified_name);
+				//Utils.trace ("  Looking for %s: %s in %s", qualified_name, name, symbol.fully_qualified_name);
 				
 				if (compare_symbol_names (symbol.name, name, mode)
 				    && (symbol.access & access) != 0
@@ -105,7 +114,7 @@ namespace Afrodite
 
 			return null;
 		}
-		
+
 		public bool has_source_files
 		{
 			get {
@@ -406,9 +415,7 @@ namespace Afrodite
 					if ((s.access & access) != 0
 					    && (s.fully_qualified_name != symbol.fully_qualified_name)
 					    && (name == null || compare_symbol_names (s.name, name, mode, case_sensitiveness))) {
-					    	Utils.trace ("before %s: %u", s.fully_qualified_name, s.ref_count);
 						results.add (s);
-						Utils.trace ("after %s: %u", s.fully_qualified_name, s.ref_count);
 					}
 				}
 			}

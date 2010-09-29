@@ -427,77 +427,91 @@ namespace Afrodite
 
 				AstMerger merger = null;
 				foreach (SourceItem source in sources) {
-#if DEBUG
-					Utils.trace ("engine %s: parsing source: %s", id, source.path);
-					timer.stop ();
-					start_time = timer.elapsed ();
-					timer.start ();
-#endif
+					bool skip_unchanged_file = false;
 
-					Parser p = new Parser.with_source (source);
-					p.parse ();
-#if DEBUG
-					Utils.trace ("engine %s: parsing source %s done %g", id, source.path, timer.elapsed () - start_time);
-#endif
-					source.context = p.context;
-				
-					if (source.context == null)
-						critical ("source %s context == null, non thread safe access to source item", source.path);
-					else {
-						foreach (Vala.SourceFile s in source.context.get_source_files ()) {
-							if (s.filename == source.path) {
-								// do the real merge
-								_ast_mutex.@lock ();
-								if (_ast != null) {
-									bool source_exists = _ast.lookup_source_file (source.path) != null;
-
-									// if the ast is still valid: not null
-									// and not 
-									// if I'm parsing just one source and there are errors and the source already exists in the ast: I'll keep the previous copy
-									// do the merge
-								
-									if (!(source_count == 1 && source_exists && p.context.report.get_errors () > 0)) {
-										if (merger == null) {
-											// lazy init the merger, here I'm sure that _ast != null
-											merger = new AstMerger (_ast);
-										}
-										if (source_exists) {
-											merger.remove_source_filename (source.path);
-										}
-#if DEBUG
-										Utils.trace ("engine %s: merging source %s", id, source.path);
-										timer.stop ();
-										start_time = timer.elapsed ();
-										timer.start ();
-#endif
-										merger.merge_vala_context (s, source.context, source.is_glib);
-#if DEBUG
-										Utils.trace ("engine %s: merging source %s done %g", id, source.path, timer.elapsed () - start_time);
-#endif
-									}
+					// test if file is really changed but only if it's not a live buffer
+					if (source.content == null) {
+						_ast_mutex.@lock ();
+						if (_ast != null) {
+							var sf = _ast.lookup_source_file (source.path);
+							if (sf != null) {
+								TimeVal ct;
+								if (sf.update_last_modification_time ()) {
+									// no need to reparse the source since it isn't changed
+									Utils.trace ("engine %s: source file parsing optimized out since it isn't changed: %s", id, source.path);
+									_ast_mutex.@unlock ();
+									skip_unchanged_file = true;
 								}
-								_ast_mutex.unlock ();
+							}
+						}
+						_ast_mutex.@unlock ();
+					}
+
+					if (!skip_unchanged_file) {
+#if DEBUG
+						Utils.trace ("engine %s: parsing source: %s", id, source.path);
+						start_time = timer.elapsed ();
+#endif
+
+						Parser p = new Parser.with_source (source);
+						p.parse ();
+#if DEBUG
+						Utils.trace ("engine %s: parsing source: %s done %g", id, source.path, timer.elapsed () - start_time);
+#endif
+						source.context = p.context;
+						if (source.context == null)
+							critical ("source %s context == null, non thread safe access to source item", source.path);
+						else {
+							foreach (Vala.SourceFile s in source.context.get_source_files ()) {
+								if (s.filename == source.path) {
+									// do the real merge
+									_ast_mutex.@lock ();
+									if (_ast != null) {
+										bool source_exists = _ast.lookup_source_file (source.path) != null;
+
+										// if the ast is still valid: not null
+										// and not 
+										// if I'm parsing just one source and there are errors and the source already exists in the ast: I'll keep the previous copy
+										// do the merge
+										if (!(source_count == 1 && source_exists && p.context.report.get_errors () > 0)) {
+											if (merger == null) {
+												// lazy init the merger, here I'm sure that _ast != null
+												merger = new AstMerger (_ast);
+											}
+											if (source_exists) {
+												merger.remove_source_filename (source.path);
+											}
+#if DEBUG
+											Utils.trace ("engine %s: merging source %s", id, source.path);
+											start_time = timer.elapsed ();
+#endif
+											merger.merge_vala_context (s, source.context, source.is_glib);
+#if DEBUG
+											Utils.trace ("engine %s: merging source %s done %g", id, source.path, timer.elapsed () - start_time);
+#endif
+										}
+									}
+									_ast_mutex.unlock ();
 								
-								//timer.stop ();
-								//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
-								break;
+									//timer.stop ();
+									//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
+									break;
+								}
 							}
 						}
 					}
 					AtomicInt.add (ref _parser_remaining_files, -1);
 				}
 #if DEBUG
-				timer.stop ();
-				parsing_time += start_parsing_time - timer.elapsed ();
+				parsing_time += (timer.elapsed () - start_parsing_time);
 #endif
 
 				_ast_mutex.@lock ();
 				if (_ast != null) {
 #if DEBUG
+					//_ast.dump_symbols ();
 					Utils.trace ("engine %s: resolving ast", id);
-					timer.stop ();
 					start_time = timer.elapsed ();
-					timer.start ();
 #endif
 					var resolver = new SymbolResolver ();
 					resolver.resolve (_ast);

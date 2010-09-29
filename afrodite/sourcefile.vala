@@ -26,19 +26,44 @@ namespace Afrodite
 {
 	public class SourceFile
 	{
+		private string _filename;
+
 		public Vala.List<DataType> using_directives { get; set; }
 		public Vala.List<unowned Symbol> symbols { get; set; }
 		public unowned Ast parent { get; set; }
 
-		
+		public TimeVal last_modification_time;
 		
 		public string filename {
-			get; set;
+			get {
+				return _filename;
+			}
+			set {
+				_filename = value;
+				update_last_modification_time ();
+			}
 		}
 		
 		public SourceFile (string filename)
 		{
 			this.filename = filename;
+		}
+
+		public bool update_last_modification_time ()
+		{
+			TimeVal new_value;
+			bool result = true;
+
+			try {
+				var info = File.new_for_path (_filename).query_info (GLib.FILE_ATTRIBUTE_TIME_MODIFIED + "," + GLib.FILE_ATTRIBUTE_TIME_MODIFIED_USEC, FileQueryInfoFlags.NONE);
+				info.get_modification_time (out new_value);
+				result = !(last_modification_time.tv_sec == new_value.tv_sec
+					   && last_modification_time.tv_usec == new_value.tv_usec);
+				last_modification_time = new_value;
+			} catch (Error err) {
+				critical ("error while updating last modification time: %s", err.message);
+			}
+			return result;
 		}
 
 		~SourceFile ()
@@ -109,10 +134,12 @@ namespace Afrodite
 
 			symbols.add (symbol);
 
+
+			parent.symbols.set (symbol.fully_qualified_name, symbol);
 #if DEBUG
 			// debug
 			if (!parent.leaked_symbols.contains (symbol)) {
-				parent.leaked_symbols.add (symbol);
+				//parent.leaked_symbols.add (symbol);
 				symbol.weak_ref (this.on_symbol_destroy);
 			} else {
 				Utils.trace ("Symbol already added to the leak check: %s", symbol.fully_qualified_name);
@@ -128,6 +155,7 @@ namespace Afrodite
 
 			if (symbols.remove (symbol)) {
 				if (!symbol.has_source_references && symbol.parent != null) {
+					parent.symbols.remove (symbol.fully_qualified_name);
 					symbol.parent.remove_child (symbol);
 				}
 			}

@@ -1,5 +1,15 @@
 2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/sourcefile.vala:
+
+	added an hashtable with all the indexed symbols to speedup
+	the resolving process and don't resolve more than one time
+	a source file if it isn't really changed.
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ellipsistype.vala:
 
 	ellipsis type should be automatically resolved
