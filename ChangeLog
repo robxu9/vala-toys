@@ -1,5 +1,11 @@
 2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbolresolver.vala:
+
+	use the new hashtable index to speedup resolving
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/ast.vala:
 	* afrodite/completionengine.vala:
 	* afrodite/sourcefile.vala:
