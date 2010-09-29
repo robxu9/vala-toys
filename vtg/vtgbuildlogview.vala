@@ -31,7 +31,7 @@ namespace Vtg
 	{
 		private Gtk.VBox _ui;
 		private ListStore _child_model = null;
-		private Gtk.TreeModelFilter _model;
+		private unowned Gtk.TreeModelFilter _model;
 		private TreeView _build_view = null;
 
 		private int _current_error_row = 0;
@@ -66,8 +66,6 @@ namespace Vtg
 			COLUMNS_COUNT
 		}
 
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
-		
 		public int error_count {
 			get {
 				return _vala_error_count + _c_error_count;
@@ -103,17 +101,7 @@ namespace Vtg
 		
 		public BuildLogView (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
-		}
-
-		~BuildLogView ()
-		{
-			var panel = _plugin_instance.window.get_bottom_panel ();
-			panel.remove_item (_ui);
-		}
-
-		construct 
-		{
+			this._plugin_instance = plugin_instance;
 			var panel = _plugin_instance.window.get_bottom_panel ();
 			_ui = new Gtk.VBox (false, 8);
 
@@ -171,7 +159,8 @@ namespace Vtg
 			
 			//error / warning list view
 			this._child_model = new ListStore (Columns.COLUMNS_COUNT, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof (int), typeof (bool), typeof(GLib.Object));
-			_model = new Gtk.TreeModelFilter (_child_model, null);
+			var model_tmp = new Gtk.TreeModelFilter (_child_model, null);
+			_model = model_tmp;
 			_model.set_visible_func (this.filter_model);
 			_build_view = new Gtk.TreeView.with_model (_model);
 			CellRenderer renderer = new CellRendererPixbuf ();
@@ -212,6 +201,24 @@ namespace Vtg
 			_child_model.set_sort_column_id (5, SortType.ASCENDING);
 			
 			update_toolbar_button_status ();
+		}
+
+		~BuildLogView ()
+		{
+			Utils.trace ("BuildLogView destroying");
+			Utils.trace ("BuildLogView destroyed");
+		}
+
+		public void destroy ()
+		{
+
+			Gedit.Panel panel = _plugin_instance.window.get_bottom_panel ();
+			panel.remove_item (_ui);
+
+			_ui = null;
+			_model = null;
+			_build_view = null;
+			_child_model = null;
 		}
 
 		public void initialize (ProjectManager? project = null)
@@ -275,7 +282,6 @@ namespace Vtg
 				string[] tmp = lines[idx].split (":",2);
 				if (!StringUtils.is_null_or_empty (tmp[0])
 				    && !StringUtils.is_null_or_empty (tmp[1])) {
-				
 					if (tmp[0].has_suffix (".vala") || tmp[0].has_suffix (".vapi")) {
 						add_vala_message (tmp[0], tmp[1]);
 					} else if (tmp[0].has_suffix (".c") || tmp[0].has_suffix (".h")) {

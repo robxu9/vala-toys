@@ -29,13 +29,11 @@ namespace Vtg
 	internal class SourceOutliner : GLib.Object
 	{
 		private unowned PluginInstance _plugin_instance = null;
- 		private Gedit.View _active_view = null; // it's not unowned because we need to cleanup later
- 		private Gedit.Document _active_doc = null; // it's not unowned because we need to cleanup later
+		private Gedit.View _active_view = null; // it's not unowned because we need to cleanup later
+		private Gedit.Document _active_doc = null; // it's not unowned because we need to cleanup later
 		private SourceOutlinerView _outliner_view = null;
 		private uint idle_id = 0;
 		private bool completion_setup = false;
- 
-	 	public PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
 
 		public View active_view {
 			get {
@@ -68,7 +66,7 @@ namespace Vtg
 		
 		public SourceOutliner (PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
+			this._plugin_instance = plugin_instance;
 			_outliner_view = new SourceOutlinerView (plugin_instance);
 			_outliner_view.goto_source.connect (this.on_goto_source);
 			_outliner_view.filter_changed.connect (this.on_filter_changed);

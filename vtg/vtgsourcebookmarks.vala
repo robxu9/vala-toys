@@ -33,22 +33,21 @@ namespace Vtg
 		private int _current_bookmark_index = -1;
 		private bool _in_move = false;
 		private Gedit.Document _idle_add_doc = null;
-		
+
 		public signal void current_bookmark_changed ();
-		public signal void move_wrapped ();		
-		
- 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } construct { _plugin_instance = value; } }
+		public signal void move_wrapped ();
 
 		public SourceBookmarks (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
-			var window = _plugin_instance.window;
-			signal_id = Signal.connect (window, "active_tab_changed", (GLib.Callback) on_tab_changed, this);
+			this._plugin_instance = plugin_instance;
+			signal_id = Signal.connect (_plugin_instance.window, "active_tab_changed", (GLib.Callback) on_tab_changed, this);
 		}
 		
-		~SourceBookmarks ()		
+		~SourceBookmarks ()
 		{
-			SignalHandler.disconnect (this, signal_id);
+			Utils.trace ("SourceBoolmarks destroying");
+			SignalHandler.disconnect (_plugin_instance.window, signal_id);
+			Utils.trace ("SourceBoolmarks destroying");
 		}
 		
 		private static void on_tab_changed (Gedit.Window sender, Gedit.Tab tab, Vtg.SourceBookmarks instance)

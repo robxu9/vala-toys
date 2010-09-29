@@ -41,144 +41,218 @@ namespace Afrodite
 		{
 			_vala_symbol_fqn = null;
 			this._ast = ast;
+
+			// first resolve the using directives
+			if (_ast.has_source_files) {
+				Symbol dummy;
+				foreach (SourceFile file in _ast.source_files) {
+					if (file.has_using_directives) {
+						foreach (DataType using_directive in file.using_directives) {
+							//
+							if (using_directive.unresolved) {
+								using_directive.symbol = _ast.lookup (using_directive.type_name, out dummy);
+								if (using_directive.unresolved)
+									message ("file %s - can't resolve using directive: %s", file.filename, using_directive.type_name);
+							}
+						}
+					}
+				}
+			}
+
 			if (ast.root.has_children)
 				visit_symbols (ast.root.children);
 		}
 		
 		private Symbol? resolve_type (Symbol symbol, DataType type)
 		{
-			Symbol parent = null;
 			Symbol res = null;
-			
+
 			// void symbol
 			if (type.type_name == "void") {
 				res = Symbol.VOID;
+			} else if (type.type_name == "...") {
+				res = Symbol.VOID;
 			}
-			
-			// resolve type generic types
-			if (type.has_generic_types) {
-				foreach (DataType generic_type in type.generic_types) {
-					if (generic_type.unresolved)
-						generic_type.symbol = resolve_type (symbol, generic_type);
-				}
-			}
-					
-			// the container types defined in the child symbols
-			if (res == null && symbol.has_children) {
-				
-				var s = Ast.lookup_symbol (type.type_name, symbol, ref parent, Afrodite.CompareMode.EXACT);
-				if (s != null) {
-					res = s;
-				}
-			}
-			
-			// search in the parent chain
-			parent = symbol;
-			while (parent != null && type.symbol == null) {
-				//Utils.trace ("searching1 %s %s", type.type_name, type.name);
-				string[] names =  type.type_name.split (".");
-				
-				var curr_parent = parent;
-				for (int i = 0; i < names.length; i++) {
-					string name = names[i];
-					var s = curr_parent.lookup_child (name);
-					if (s != null) {
-						if (i == names.length -1) {
-							res = s; // last name part: symbol found
-						}
-						else
-							curr_parent = s; // search inside symbols of the found symbol
-					} else if (i == names.length -1) {
-						// debug ("searching2 %s %s in %s", type.type_name, type.name, curr_parent.name);
-						
-						// search the last part of the name also on the local variables
-						if (curr_parent.has_local_variables) {
-							foreach (var item in curr_parent.local_variables) {
-								//Utils.trace ("localvar %s: %s vs %s:%s unresolved %d", item.name, item.type_name, type.name, type.type_name, (int) type.unresolved);
-								if (!item.unresolved && item.name == name) {
-									type.type_name = item.type_name;
-									res = item.symbol;
-									break;
-								}
-							}
-						}
-						// search the last part of the name also on the method parameters
-						if (curr_parent.has_parameters) {
-							foreach (var item in curr_parent.parameters) {
-								//Utils.trace ("parameter %s: %s vs %s:%s unresolved %d", item.name, item.type_name, type.name, type.type_name, (int) type.unresolved);
-								if (!item.unresolved && item.name == name) {
-									type.type_name = item.type_name;
-									res = item.symbol;
-									break;
-								}
-							}
-						}
 
-					}
-				}
-				parent = parent.parent;
-			}
-			
-			
-			// then the using directives
-			if (symbol.has_source_references) {
-				foreach (SourceReference reference in symbol.source_references) {
-					var file = reference.file;
-					if (file.using_directives == null) {
-						//warning ("file without any using directive: %s", file.filename);
-						continue;
-					}
-					foreach (DataType using_directive in file.using_directives) {
-						//Utils.trace ("searching %s in imported namespace: %s", type.type_name, using_directive.name);
-						if (using_directive.unresolved)
-							using_directive.symbol = _ast.lookup (using_directive.type_name, out parent);
-					
-						var ns = using_directive.symbol;
-						
-						if (ns != null && res == null) {
-							string[] parts = type.type_name.split (".");
-							Symbol s = ns;
-							for (int i = 0; i < parts.length; i++) {
-								//Utils.trace ("ns look: %d '%s' in %s '%s'", i, symbol.name, ns.fully_qualified_name, parts[i]);
-								s = s.lookup_child (parts[i]);
-								if (s == null) {
-									//Utils.trace ("    %s not found", symbol.name);
-									break; // file.using_directives
+			// first try with the ast symbol index: fastest mode
+			if (res == null) {
+				var s = _ast.symbols.@get (type.type_name);
+				if (s != null && s != symbol) {
+					res = s;
+				} else {
+					// test if is a generic type parameter
+					Symbol curr_symbol = symbol;
+					while (curr_symbol != null && curr_symbol != _ast.root) {
+						if (curr_symbol.name.has_prefix ("!") == false && curr_symbol.has_generic_type_arguments) {
+							foreach (var arg in curr_symbol.generic_type_arguments) {
+								if (type.type_name == arg.fully_qualified_name) {
+									res = arg;
+									break;
 								}
 							}
-							res = s;
-							
+						}
+						if (res != null) {
+							break;
+						}
+						curr_symbol = curr_symbol.parent;
+					}
+
+					// namespace that contains this symbol are automatically in scope
+					// from the inner one to the outmost
+					if (res == null) {
+						curr_symbol = symbol;
+						while (curr_symbol != null && curr_symbol != _ast.root) {
+							if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
+								s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type.type_name));
+								if (s != null && s != symbol) {
+									res = s;
+									break;
+								}
+							}
+							curr_symbol = curr_symbol.parent;
+						}
+					}
+
+					if (res == null) {
+						// try with the imported namespaces
+						bool has_glib_using = false;
+						foreach (SourceReference reference in symbol.source_references) {
+							var file = reference.file;
+							if (!file.has_using_directives) {
+								continue;
+							}
+
+							foreach (DataType using_directive in file.using_directives) {
+								if (using_directive.unresolved)
+									continue;
+
+								if (using_directive.name == "GLib") {
+									has_glib_using = true;
+								}
+
+								//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
+								s = _ast.symbols.@get ("%s.%s".printf (using_directive.type_name, type.type_name));
+								if (s != null && s != symbol) {
+									res = s;
+									break;
+								}
+							}
+
 							if (res != null) {
 								break;
 							}
 						}
+						if (res == null) {
+							if (!has_glib_using) {
+								// GLib namespace is automatically imported
+								s = _ast.symbols.@get ("GLib.%s".printf (type.type_name));
+								if (s != null && s != symbol) {
+									res = s;
+								}
+							}
+						}
 					}
-					
-					if (res != null) {
-						break; // symbol.source_references
+
+					// if not found and there is a "." may be is a fully qualified name, do a global lookup
+					if (res == null && type.type_name.contains (".")) {
+						//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
+						s = _ast.symbols.@get (type.type_name);
+						if (s != null && s != symbol) {
+							res = s;
+						}
 					}
 				}
 			}
-			
-			if (res != null) {
-				if (type.has_generic_types && res.has_generic_type_arguments
-				    && type.generic_types.size == res.generic_type_arguments.size) {
-					// test is a declaration of a specialized generic type
-					bool need_specialization = false;
-					for(int i = 0; i < type.generic_types.size; i++) {
-						string name = res.generic_type_arguments[i].fully_qualified_name ?? res.generic_type_arguments[i].name;
-						if (type.generic_types[i].type_name != name) {
-							need_specialization = true;
-							break;
+
+			/*
+			// optimization: first resolve in a direct lookup (just for simple types)
+			if (res == null) {
+				string[] tmp = type.type_name.split (".", 2);
+				var s = _ast.root.lookup_child (tmp[0]);
+				if (s != null) {
+					if (tmp.length > 1) {
+						// search for the remaining part
+						s = Ast.lookup_symbol (tmp[1], s, ref parent, Afrodite.CompareMode.EXACT);
+						if (s != null && s != symbol) {
+							res = s;
+						}
+					} else {
+						res = s;
+					}
+				}
+			}
+
+			// resolve symbol
+			//    first lookup: child symbols eg. MyInnerClass.MyEnum.VALUE
+			//    after lookup: in parent symbols
+			var curr_parent = symbol;
+			while (res == null && curr_parent != null) {
+				if (curr_parent.has_children) {
+					var s = Ast.lookup_symbol (type.type_name, curr_parent, ref parent, Afrodite.CompareMode.EXACT);
+					if (s != null && s != symbol) {
+						res = s;
+					}
+				}
+				curr_parent = curr_parent.parent;
+			}
+
+			if (res == null) {
+				// lookup in using directives
+				if (symbol.has_source_references) {
+					foreach (SourceReference reference in symbol.source_references) {
+						var file = reference.file;
+						if (!file.has_using_directives) {
+							continue;
+						}
+					
+						foreach (DataType using_directive in file.using_directives) {
+							if (using_directive.unresolved)
+								continue;
+
+							var s = Ast.lookup_symbol (type.type_name, using_directive.symbol, ref parent, Afrodite.CompareMode.EXACT);
+							if (s != null && s != symbol) {
+								res = s;
+								break;
+							}
+						}
+					
+						if (res != null) {
+							break; // symbol.source_references
 						}
 					}
-					if (need_specialization) {
-						res = specialize_generic_symbol (type, res);
-						//Utils.trace ("generic type %s resolved with type %s", type.description, res.description);
+				}
+			}
+			*/
+
+			if (res != null) {
+				if (type.has_generic_types) {
+					if (res.has_generic_type_arguments
+					   && type.generic_types.size == res.generic_type_arguments.size) {
+						// test is a declaration of a specialized generic type
+						bool need_specialization = false;
+						for(int i = 0; i < type.generic_types.size; i++) {
+							string name = res.generic_type_arguments[i].fully_qualified_name ?? res.generic_type_arguments[i].name;
+							if (type.generic_types[i].type_name != name) {
+								need_specialization = true;
+								break;
+							}
+						}
+						if (need_specialization) {
+							//Utils.trace ("%s generic type %s resolved with type %s", symbol.fully_qualified_name, type.type_name, res.fully_qualified_name);
+							res = specialize_generic_symbol (type, res);
+						}
+					} else {
+						// resolve type generic types
+						foreach (DataType generic_type in type.generic_types) {
+							if (generic_type.unresolved)
+								generic_type.symbol = resolve_type (res, generic_type);
+						}
 					}
 				}
 
-				res.add_resolve_target (symbol);
+				if (res != Symbol.VOID) {
+					res.add_resolved_target (symbol);
+				}
 			}
 			return res;
 		}
@@ -201,7 +275,7 @@ namespace Afrodite
 								critical ("Skipping same name reference cycle: %s", item.symbol.description);
 								continue;
 							}
-							Utils.trace ("resolve generic type for %s: %s", symbol.fully_qualified_name, item.symbol.fully_qualified_name);
+							//Utils.trace ("resolve generic type for %s: %s", symbol.fully_qualified_name, item.symbol.fully_qualified_name);
 
 							item.symbol = specialize_generic_symbol (type, item.symbol);
 						}

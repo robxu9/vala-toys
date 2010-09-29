@@ -41,24 +41,18 @@ namespace Vtg
 		
 		public signal void search_start ();
 		public signal void search_exit (int exit_status);
-		
- 		public Vtg.PluginInstance plugin_instance { get { return plugin_instance; } construct { _plugin_instance = value; } }
- 		
+
 		public bool is_searching {
 			get {
 				return _child_watch_id != 0;
 			}
 		}
-		
-		construct
-		{
-			this._results_view = new ProjectSearchResultsView (_plugin_instance);
-			is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
-		}
-		
+
 		public ProjectSearch (Vtg.PluginInstance plugin_instance)
 		{
-			GLib.Object (plugin_instance: plugin_instance);
+			this._plugin_instance = plugin_instance;
+			this._results_view = new ProjectSearchResultsView (_plugin_instance);
+			is_bottom_pane_visible = _plugin_instance.window.get_bottom_panel ().visible;
 		}
 
 		public void next_match ()

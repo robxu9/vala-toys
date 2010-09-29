@@ -1,3 +1,179 @@
+2010-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	version bump
+
+2010-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearch.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletion.vala:
+
+	fixed the activation deactivation of the plugin
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfautotools.vala:
+
+	fix the spurious file added by the $(NULL) variable to the source list.
+	Fixes issue #111
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/sourcefile.vala:
+
+	fixed symbol removal from global index when removing
+	the symbol from all its source references.
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/utils.vala:
+
+	search vapi dependency also on the local vapi directories
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	removed some debugging code
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	fixed some generic types regressions in the resolve process
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	minor cleanup
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbolresolver.vala:
+
+	add some corner case when resolving symbols
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed some regression when building the visible symbol list
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	use the new hashtable index to speedup symbol merging
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbolresolver.vala:
+
+	use the new hashtable index to speedup resolving
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/sourcefile.vala:
+
+	added an hashtable with all the indexed symbols to speedup
+	the resolving process and don't resolve more than one time
+	a source file if it isn't really changed.
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ellipsistype.vala:
+
+	ellipsis type should be automatically resolved
+
+2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	avoid duplicating all the symbols (previously done for generic symbol specialization)
+
+2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+
+	fix changelog file to better rappresent the squashed changes
+
+2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/parser.vala:
+	* afrodite/symbol.vala:
+	* afrodite/utils.vala:
+
+	make afrodite parse one file at a time this simplify the astmerge process
+
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/resultitem.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	better memory management for afrodite symbols
+
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojects.vala:
+	* vtg/vtgprojectview.vala:
+
+	update the project view when closing the current project.
+	This force all the resources to be release immediatly
+
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfautotools.vala:
+
+	fixed a null reference warning when parsing empty variables in the
+	automake backend
+
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfautotools.vala:
+
+	removed some dead code
+
+2010-09-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	post release version bump
+
 2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgutils.vala:
@@ -44,6 +220,27 @@
 	* configure.ac:
 
 	post release version bump, fix the gtk sourceview version bug and switched to valac master
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	version bump
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgutils.vala:
+
+	backport from master: fix a compilation error on 64bit system.
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	fixed Gtk SourceView check
+>>>>>>> vtg_0_10_x
 
 2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
 

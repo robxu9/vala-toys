@@ -35,7 +35,7 @@ namespace Vtg
 		private Vala.List<PluginInstance> _instances = new Vala.ArrayList<PluginInstance> ();
 		private Configuration _config = null;
 		private Vtg.Projects _projects = null;
-		
+
 		private enum DeactivateModuleOptions
 		{
 			ALL,
@@ -100,7 +100,7 @@ namespace Vtg
 			deactivate_modules ();
 			_instances.clear ();
 		}
-	  
+
 		public override bool is_configurable ()
 		{
 			return true;
@@ -137,7 +137,7 @@ namespace Vtg
 		private void on_configuration_property_changed (GLib.Object sender, ParamSpec param)
 		{
 			var name = param.get_name ();
-			
+
 			if (name == "bracket-enabled") {
 				if (_config.bracket_enabled) {
 					activate_modules (DeactivateModuleOptions.BRACKET);

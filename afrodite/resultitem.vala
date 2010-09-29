@@ -31,6 +31,7 @@ namespace Afrodite
 
 		public unowned Symbol symbol { get; set; }
 		public unowned ResultItem parent { get; set; }
+
 		public Vala.List<ResultItem> children {
 			get{ return _children; }
 			set{ _children = value; }

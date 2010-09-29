@@ -233,19 +233,25 @@ namespace Vbf.Backends
 		
 		private void add_source (Group group, Target target, ConfigNode source)
 		{
-			string src_name;
+			string src_path, src_filename;
 			if (source is StringLiteral) {
-				src_name = Path.build_filename (group.id, ((StringLiteral) source).data);
-				var src = new Source.with_type (target, src_name, source_file_type (src_name));
-				target.add_source (src);
+				src_filename = ((StringLiteral) source).data;
+				if (src_filename != null && src_filename != "") {
+					src_path = Path.build_filename (group.id, src_filename);
+					var src = new Source.with_type (target, src_path, source_file_type (src_path));
+					target.add_source (src);
+				}
 			} else if (source is Variable) {
 				add_source (group, target, ((Variable) source).get_value ());
 			} else if (source is ConfigNodeList) {
 				foreach (ConfigNode item in ((ConfigNodeList) source).get_values ()) {
 					if (item is StringLiteral) {
-						src_name = Path.build_filename (group.id, ((StringLiteral) item).data);
-						var src = new Source.with_type (target, src_name, source_file_type (src_name));
-						target.add_source (src);
+						src_filename = ((StringLiteral) item).data;
+						if (src_filename != null && src_filename != "") {
+							src_path = Path.build_filename (group.id, src_filename);
+							var src = new Source.with_type (target, src_path, source_file_type (src_path));
+							target.add_source (src);
+						}
 					} else if (item is Variable) {
 						add_source (group, target, ((Variable) item).get_value ());
 					} else if (item is ConfigNodeList){
@@ -379,7 +385,7 @@ namespace Vbf.Backends
 				}
 				string[] lhs = toks[0].split (" ");
 				string[] rhs = toks[1].split (" ");
-				
+
 				foreach (string lh in lhs) {
 					if (lh == null || lh == "")
 						continue;
@@ -389,83 +395,11 @@ namespace Vbf.Backends
 					var variable = new Variable(name, project);
 					ConfigNode data;
 				
-					if (rhs[1] == null) {
-						string val = rhs[0].strip ();
+					if (rhs[0] != null) {
+						if (rhs[1] == null) {
+							// single value
+							string val = rhs[0].strip ();
 			
-						if (val.has_prefix ("$")) {
-							val = val.substring (1, val.length - 1);
-							val = val.replace ("(", "").replace (")", "");
-							data = new UnresolvedConfigNode (val);
-						} else if (val != null){
-							data = new StringLiteral (val);
-						} else {
-							data = new StringLiteral ("");
-						}						
-					} else {
-						ConfigNodeList items = new ConfigNodeList ();
-				
-						foreach (string rh in rhs) {
-							if (rh != null && rh.strip () != "") {
-								ConfigNode node;
-								string val = rh.strip ();
-				
-								if (val.has_prefix ("$")) {
-									val = val.substring (1, val.length - 1);
-									val = val.replace ("(", "").replace (")", "");
-									node = new UnresolvedConfigNode (val);
-								} else if (val != null){
-									node = new StringLiteral (val);
-								} else {
-									critical ("%s is null", rh);
-									node = new StringLiteral ("");
-								}
-							
-								items.add_value (node);
-							}
-						}
-						data = items;
-					}
-					variable.data = data;
-					
-					if (group != null) {
-						group.add_variable (variable);
-					} else {
-						project.add_variable (variable);
-					}
-				}
-				
-				/*
-				//this regex matches:
-				//(spaces)(variable_name):(list variable names or version numbers)
-				//(spaces)(variable_name)=(list variable names or version numbers)
-				//(spaces)(variable_name)+=(list variable names or version numbers)
-				Regex reg_var = new GLib.Regex ("^\s*([A-Za-z_$$\(]+[ A-Za-z_0-9\.$$\)\-]*)(=)([A-Za-z_0-9]*[ \.A-Za-z_0-9$$\(\)/\-:=]*)", RegexCompileFlags.OPTIMIZE);
-				Regex reg_rule = new GLib.Regex ("^\s*([A-Za-z_$$\(]+[ A-Za-z_0-9\.$$\)\-]*)(:)([A-Za-z_0-9]*[ \.A-Za-z_0-9$$\(\)/\-:=]*)", RegexCompileFlags.OPTIMIZE);
-
-				MatchInfo match;			
-				tmp = normalize_string (tmp);
-				tmp = tmp.replace ("= ", "="); //hack: the regular expression has a bug
-				tmp = tmp.replace (" =", "=");
-				
-				bool res = reg_var.match (tmp, 0, out match);
-				if (!res)
-					res = reg_rule.match (tmp, 0, out match);
-				if (res) {
-					debug ("found %s, values %s", match.fetch (0), match.fetch (3));
-					
-					string rule_name = normalize_string (match.fetch(1));
-					string[] names = rule_name.split (" ");
-					string values = normalize_string (match.fetch(3));
-					string[] tmps = values.split (" ");
-					debug ("FOUND VARIABLE: %s %s", rule_name, values);
-					
-					foreach (string name in names) {
-						var variable = new Variable(name, project);
-						ConfigNode data;
-					
-						if (tmps.length == 1) {
-							string val = normalize_string (tmps[0]);
-				
 							if (val.has_prefix ("$")) {
 								val = val.substring (1, val.length - 1);
 								val = val.replace ("(", "").replace (")", "");
@@ -474,15 +408,16 @@ namespace Vbf.Backends
 								data = new StringLiteral (val);
 							} else {
 								data = new StringLiteral ("");
-							}						
+							}
 						} else {
+							// list of values
 							ConfigNodeList items = new ConfigNodeList ();
-					
-							foreach (string tmp in tmps) {
-								if (tmp != null && tmp.chomp () != "") {
+				
+							foreach (string rh in rhs) {
+								if (rh != null && rh.strip () != "") {
 									ConfigNode node;
-									string val = normalize_string (tmp);
-					
+									string val = rh.strip ();
+				
 									if (val.has_prefix ("$")) {
 										val = val.substring (1, val.length - 1);
 										val = val.replace ("(", "").replace (")", "");
@@ -490,29 +425,30 @@ namespace Vbf.Backends
 									} else if (val != null){
 										node = new StringLiteral (val);
 									} else {
-										critical ("%s is null", tmp);
+										critical ("%s is null", rh);
 										node = new StringLiteral ("");
 									}
-								
+							
 									items.add_value (node);
 								}
 							}
 							data = items;
 						}
 						variable.data = data;
-						if (variable.name == "BUILT_SOURCES") {
-							debug ("BS: VALUES %s", variable.data.to_string ());
-						}
-						if (group != null) {
-							group.add_variable (variable);
-						} else {
-							project.add_variable (variable);
-						}
+					} else {
+						// empty variable
+						variable.data = new StringLiteral ("");
+					}
+
+					if (group != null) {
+						group.add_variable (variable);
+					} else {
+						project.add_variable (variable);
 					}
 				}
-				*/
+
 				tmp = null; //restart from a new line
-			}		
+			}
 		}
 		
 		private Variable? resolve_variable (string variable_name, Vala.List<Variable> variables)
@@ -604,7 +540,7 @@ namespace Vbf.Backends
 					continue;
 				line = normalize_string (line);
 				string[] tmps = line.split (" ", 2);
-								
+
 				if (tmps[0] == "include") {
 					string filename = normalize_string (tmps[1]);
 					string include_filename = makefile.replace ("Makefile.am", filename);

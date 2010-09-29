@@ -26,8 +26,42 @@ namespace Afrodite
 {
 	public class Ast
 	{
+
+#if DEBUG
+		// debug utility to dump leaked symbols when destroying a source file
+		public static Vala.List<unowned Symbol> leaked_symbols = new Vala.ArrayList<unowned Symbol>();
+#endif
+		public Vala.HashMap<string, unowned Symbol> symbols = new Vala.HashMap <string, unowned Symbol>(GLib.str_hash, GLib.str_equal);
+
 		private Symbol _root = new Symbol (null, null);
-		
+
+		~Ast ()
+		{
+			Utils.trace ("Ast destroy");
+#if DEBUG
+			Utils.trace ("     symbol count before destroy %d", leaked_symbols.size);
+#endif
+			// destroy the root symbol
+			_root = null;
+			source_files = null;// source have to be destroyes after root symbol
+
+#if DEBUG
+			Utils.trace ("     symbol count after destroy  %d", leaked_symbols.size);
+			if (leaked_symbols.size > 0) {
+				this.dump_leaks ();
+			}
+#endif
+
+			Utils.trace ("Ast destroyed");
+		}
+
+		public void dump_symbols ()
+		{
+			foreach (var s in symbols.get_values ()) {
+				Utils.trace ("%s (%p)", s.fully_qualified_name, s);
+			}
+		}
+
 		public Symbol root {
 			get { return _root; }
 			set { _root = value; }
@@ -58,14 +92,14 @@ namespace Afrodite
 				return null;
 
 			foreach (Symbol symbol in parent_symbol.children) {
-				//Utils.trace ("  Looking for %s: %s in %s\n", qualified_name, name, symbol.fully_qualified_name);
+				//Utils.trace ("  Looking for %s: %s in %s", qualified_name, name, symbol.fully_qualified_name);
 				
 				if (compare_symbol_names (symbol.name, name, mode)
 				    && (symbol.access & access) != 0
 				    && (symbol.binding & binding) != 0) {
 					if (tmp.length > 1) {
 						Symbol child_sym = null;
-						
+
 						parent = symbol;
 						if (symbol.has_children) {
 							child_sym = lookup_symbol (tmp[1], symbol, ref parent, mode, access, binding);
@@ -80,7 +114,7 @@ namespace Afrodite
 
 			return null;
 		}
-		
+
 		public bool has_source_files
 		{
 			get {
@@ -96,7 +130,8 @@ namespace Afrodite
 				if (source_files == null) {
 					source_files = new ArrayList<SourceFile> ();
 				}
-				Utils.trace ("add source: %s", file.filename);
+				//Utils.trace ("add source: %s (%p)", file.filename, file);
+				file.parent = this;
 				source_files.add (file);
 			}
 			return file;
@@ -244,7 +279,6 @@ namespace Afrodite
 			get_child_symbols_for_path (result, options, path, first);
 			if (first.children.size > 0) {
 				result.add_result_item (first);
-				
 			}
 			//timer.stop ();
 			//debug ("get_symbols_for_path simbols found %d, time elapsed %g", result.children.size, timer.elapsed ());
@@ -353,9 +387,9 @@ namespace Afrodite
 					if (!d.unresolved 
 					    && ((access & SymbolAccessibility.PRIVATE) != 0)
 					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
-						//Utils.trace ("append local var of %s: %s", symbol.fully_qualified_name,  d.name);
 						var s = new Afrodite.Symbol (d.name, d.type_name);
-						s.return_type = d;
+						s.return_type = d.copy ();
+						s.return_type.symbol = d.symbol;
 						results.add (s);
 					}
 				}
@@ -368,9 +402,11 @@ namespace Afrodite
 					    && ((access & SymbolAccessibility.PRIVATE) != 0)
 					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
 						var s = new Afrodite.Symbol (d.name, d.type_name);
-						s.return_type = d;
+						s.return_type = d.copy ();
+						s.return_type.symbol = d.symbol;
 						results.add (s);
 					}
+
 				}
 			}
 			
@@ -609,5 +645,19 @@ namespace Afrodite
 			
 			return result;
 		}
+
+#if DEBUG
+		private void dump_leaks ()
+		{
+			foreach (Symbol s in leaked_symbols) {
+				Utils.trace ("    -- leaked symbol %s (%p), parent %s (%p), generic_parent %s (%p) childs %d, refcount %u",
+					s.fully_qualified_name, s,
+					s.parent == null ? "null" : s.parent.fully_qualified_name, s.parent,
+					s.generic_parent == null ? "null" : s.generic_parent.fully_qualified_name, s.generic_parent,
+					s.has_children ? s.children.size : 0,
+					s.ref_count);
+			}
+		}
+#endif
 	}
 }

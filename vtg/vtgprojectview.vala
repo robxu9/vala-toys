@@ -29,7 +29,7 @@ namespace Vtg
 {
 	internal class ProjectView : GLib.Object
 	{
-		private Vtg.PluginInstance _plugin_instance = null;
+		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private Gtk.ComboBox _prjs_combo;
 		private Gtk.ListStore _prjs_model;
 		private Gtk.TreeView _prj_view;
@@ -84,7 +84,7 @@ namespace Vtg
 	 					if (_current_project.model != null) {
 	 						update_project_treeview ();
 						} else {
-							_prj_view.set_model (null);
+							clear_project_treeview ();
 						}
 
 						//sync the project combo view
@@ -92,17 +92,15 @@ namespace Vtg
 						if (this.lookup_iter_for_project_name (_current_project.project.name, out iter))
 							_prjs_combo.set_active_iter (iter);
 					} else {
-						_prj_view.set_model (null);
+						clear_project_treeview ();
 					}
 				}
 			}
 		}
-		
-		public Vtg.PluginInstance plugin_instance { private set { _plugin_instance = value; } }
 
 		public ProjectView (Vtg.PluginInstance plugin_instance)
 		{
-			this.plugin_instance = plugin_instance;
+			this._plugin_instance = plugin_instance;
 			_prjs_model = new Gtk.ListStore(2, typeof(string), typeof(Project));
 			
 			var panel = _plugin_instance.window.get_side_panel ();
@@ -163,12 +161,16 @@ namespace Vtg
 
 		~ProjectView ()
 		{
+			Utils.trace ("ProjectView destroying");
 			var manager = _plugin_instance.window.get_ui_manager ();
+			manager.remove_ui (_popup_modules_ui_id);
+			manager.remove_ui (_popup_targets_ui_id);
 			manager.remove_action_group (_actions);
 			var panel = _plugin_instance.window.get_side_panel ();
 			panel.remove_item (_side_panel);
+			Utils.trace ("ProjectView destroyed");
 		}
-		
+
 		private void update_project_treeview ()
 		{
 			_filtered_model = new Gtk.TreeModelFilter (_current_project.model, null);
@@ -176,7 +178,13 @@ namespace Vtg
 			_prj_view.set_model (_filtered_model);
 			_prj_view.expand_all ();
 		}
-		
+
+		private void clear_project_treeview ()
+		{
+			_prj_view.set_model (null);
+			_filtered_model = null;
+		}
+
 		private bool filter_function (Gtk.TreeModel sender, Gtk.TreeIter iter)
 		{
 			bool res = true;
@@ -230,6 +238,8 @@ namespace Vtg
 					Project selected_project;
 					_prjs_model.get (iter, 1, out selected_project);
 					update_view (selected_project.name);
+				} else {
+					update_view (null);
 				}
 			} else {
 				update_view (null);

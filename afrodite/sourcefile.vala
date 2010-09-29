@@ -26,18 +26,62 @@ namespace Afrodite
 {
 	public class SourceFile
 	{
+		private string _filename;
+
 		public Vala.List<DataType> using_directives { get; set; }
-		public Vala.List<Symbol> symbols { get; set; }
+		public Vala.List<unowned Symbol> symbols { get; set; }
+		public unowned Ast parent { get; set; }
+
+		public TimeVal last_modification_time;
 		
 		public string filename {
-			get; set;
+			get {
+				return _filename;
+			}
+			set {
+				_filename = value;
+				update_last_modification_time ();
+			}
 		}
 		
 		public SourceFile (string filename)
 		{
 			this.filename = filename;
 		}
-		
+
+		public bool update_last_modification_time ()
+		{
+			TimeVal new_value;
+			bool result = true;
+
+			try {
+				var info = File.new_for_path (_filename).query_info (GLib.FILE_ATTRIBUTE_TIME_MODIFIED + "," + GLib.FILE_ATTRIBUTE_TIME_MODIFIED_USEC, FileQueryInfoFlags.NONE);
+				info.get_modification_time (out new_value);
+				result = !(last_modification_time.tv_sec == new_value.tv_sec
+					   && last_modification_time.tv_usec == new_value.tv_usec);
+				last_modification_time = new_value;
+			} catch (Error err) {
+				critical ("error while updating last modification time: %s", err.message);
+			}
+			return result;
+		}
+
+		~SourceFile ()
+		{
+			Utils.trace ("SourceFile destroying: %s", filename);
+#if DEBUG
+			Utils.trace ("     symbol count before destroy %d", parent.leaked_symbols.size);
+#endif
+			while (symbols != null && symbols.size > 0) {
+				var symbol = symbols.get (0);
+				remove_symbol (symbol);
+			}
+#if DEBUG
+			Utils.trace ("     symbol count after destroy  %d", parent.leaked_symbols.size);
+#endif
+			Utils.trace ("SourceFile destroyed: %s", filename);
+		}
+
 		public DataType add_using_directive (string name)
 		{
 			var u = lookup_using_directive (name);
@@ -84,14 +128,45 @@ namespace Afrodite
 		public void add_symbol (Symbol symbol)
 		{
 			if (symbols == null) {
-				symbols = new ArrayList<Symbol> ();
+				symbols = new ArrayList<unowned Symbol> ();
 			}
+			assert (symbols.contains (symbol) == false);
+
 			symbols.add (symbol);
+
+
+			parent.symbols.set (symbol.fully_qualified_name, symbol);
+#if DEBUG
+			// debug
+			if (!parent.leaked_symbols.contains (symbol)) {
+				//parent.leaked_symbols.add (symbol);
+				symbol.weak_ref (this.on_symbol_destroy);
+			} else {
+				Utils.trace ("Symbol already added to the leak check: %s", symbol.fully_qualified_name);
+			}
+#endif
 		}
-		
+
 		public void remove_symbol (Symbol symbol)
 		{
+			var sr = symbol.lookup_source_reference_sourcefile (this);
+			assert (sr != null);
+
+			symbol.remove_source_reference (sr);
 			symbols.remove (symbol);
+
+			if (!symbol.has_source_references) {
+				parent.symbols.remove (symbol.fully_qualified_name);
+				if (symbol.parent != null) {
+					if (symbol.is_generic_type_argument) {
+						symbol.parent.remove_generic_type_argument (symbol);
+					} else {
+						symbol.parent.remove_child (symbol);
+					}
+				}
+			}
+
+			//Utils.trace ("%s remove symbol %s: %u", filename, symbol.fully_qualified_name, symbol.ref_count);
 			if (symbols.size == 0)
 				symbols = null;
 		}
@@ -102,5 +177,13 @@ namespace Afrodite
 				return symbols != null;
 			}
 		}
+
+#if DEBUG
+		private void on_symbol_destroy (Object obj)
+		{
+			parent.leaked_symbols.remove ((Symbol)obj);
+			//Utils.trace ("symbol destroyed (%p)",  obj);
+		}
+#endif
 	}
 }

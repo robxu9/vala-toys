@@ -28,7 +28,7 @@ using Vbf;
 
 namespace Vtg
 {
-	public class Projects : GLib.Object	
+	public class Projects : GLib.Object
 	{
 		private unowned Plugin _plugin;
 		
