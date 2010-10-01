@@ -1,5 +1,12 @@
 2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/ast.vala:
+	* afrodite/sourcereference.vala:
+
+	moved the contains method to the sourcereference where it belongs
+
+2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutlinerview.vala:
 
 	make the source outliner view flicker less

@@ -23,12 +23,34 @@ using GLib;
 
 namespace Afrodite
 {
-	public class SourceReference
+	public class SourceReference : Object
 	{
 		public unowned SourceFile file { get; set; }
 		public int first_line { get; set; }
 		public int last_line { get; set; }
 		public int first_column { get; set; }
 		public int last_column { get; set; }
+		
+		public bool contains_position (int line, int column)
+		{
+			if ((this.first_line < line || ((line == this.first_line && column >= this.first_column) || this.first_column == 0))
+			    && (line < this.last_line || ((line == this.last_line) || this.last_column == 0))) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		public bool contains_source_reference (SourceReference child)
+		{
+			if (this.first_line < child.first_line
+			   || (this.first_line == child.first_line && this.first_column < child.first_column && this.first_column != 0 && child.first_column != 0)
+			   || this.last_line > child.last_line
+			   || (this.last_line == child.last_line && this.last_column  > child.last_column && this.last_column != 0 && child.last_column  != 0)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 }
