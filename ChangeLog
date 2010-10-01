@@ -1,5 +1,11 @@
 2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourceoutlinerview.vala:
+
+	make the source outliner view flicker less
+
+2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/parser.vala:
 	* configure:
 	* configure.ac:

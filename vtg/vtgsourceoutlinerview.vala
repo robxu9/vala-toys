@@ -162,12 +162,8 @@ namespace Vtg
 			}
 			
 			/* initializing the model */
-			_model = new Gtk.TreeStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object));
-			
-			_sorted = new Gtk.TreeModelSort.with_model (_model);
-			_sorted.set_sort_column_id (0, SortType.ASCENDING);
-			_sorted.set_sort_func (0, this.sort_model);
-			_sorted.set_default_sort_func (this.sort_model);
+			_model = build_model ();
+			_sorted = build_sort_model (_model);
 			_src_view.set_model (_sorted);
 		}
 
@@ -189,6 +185,21 @@ namespace Vtg
 			panel.remove_item (_side_panel);
 		}
 
+		private TreeStore build_model ()
+		{
+			return new Gtk.TreeStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object));
+		}
+
+		private TreeModelSort build_sort_model (TreeStore child_model)
+		{
+			var sorted = new Gtk.TreeModelSort.with_model (child_model);
+			sorted.set_sort_column_id (0, SortType.ASCENDING);
+			sorted.set_sort_func (0, this.sort_model);
+			sorted.set_default_sort_func (this.sort_model);
+
+			return sorted;
+		}
+
 		public void clear_view ()
 		{
 			_model.clear ();
@@ -196,13 +207,15 @@ namespace Vtg
 
 		public void update_view (Afrodite.QueryResult? result = null)
 		{
-			_src_view.set_model (null);
-			clear_view ();
+			var model = build_model ();
+			var sorted = build_sort_model (model);
 			if (result != null && !result.is_empty) {
 				var first = result.children.get (0);
-				rebuild_model (first.children);
+				rebuild_model (model, first.children);
 			}
 
+			_model = model;
+			_sorted = sorted;
 			_src_view.set_model (_sorted);
 			_src_view.expand_all ();
 		}
@@ -313,7 +326,7 @@ namespace Vtg
 			return sym_access;
 		}
 
-		private void rebuild_model (Vala.List<ResultItem>? items, TreeIter? parent_iter = null)
+		private void rebuild_model (TreeStore model, Vala.List<ResultItem>? items, TreeIter? parent_iter = null)
 		{
 			if (items == null || items.size == 0)
 				return;
@@ -348,15 +361,15 @@ namespace Vtg
 						}
 					}
 
-					_model.append (out iter, parent_iter);
+					model.append (out iter, parent_iter);
 
-					_model.@set (iter,
+					model.@set (iter,
 						Columns.NAME, des,
 						Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
 						Columns.SYMBOL, symbol);
 
 					if (item.children.size > 0) {
-						rebuild_model (item.children, iter);
+						rebuild_model (model, item.children, iter);
 					}
 				}
 			}
