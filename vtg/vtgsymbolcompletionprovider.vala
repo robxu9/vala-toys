@@ -310,7 +310,7 @@ namespace Vtg
 			unowned TextMark mark = (TextMark) doc.get_insert ();
 			TextIter start;
 			doc.get_iter_at_mark (out start, mark);
-			return start.get_line ();	
+			return start.get_line ();
 		}
 		
 		private void schedule_reparse ()
