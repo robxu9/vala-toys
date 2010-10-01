@@ -622,7 +622,23 @@ namespace Vtg
 			return start.get_text (end);
 		}
 
+		public Afrodite.Symbol? get_symbol_containing_cursor (int retry_count = 0)
+		{
+			int line, col;
+			Afrodite.Ast ast;
+			Afrodite.Symbol? symbol = null;
+			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
+			string name = Utils.get_document_name (doc);
 
+			get_current_line_and_column (out line, out col);
+			if (_completion.try_acquire_ast (out ast, retry_count)) {
+				symbol = ast.lookup_symbol_at (name, line, col);
+				_completion.release_ast (ast);
+			}
+
+			return symbol;
+		}
+	
 		public Afrodite.Symbol? get_current_symbol_item (int retry_count = 0)
 		{
 			string text = get_current_line_text (true);

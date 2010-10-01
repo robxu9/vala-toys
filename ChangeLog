@@ -1,5 +1,13 @@
 2010-10-01  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added goto outer scope command
+
+2010-10-01  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutliner.vala:
 	* vtg/vtgsourceoutlinerview.vala:
 

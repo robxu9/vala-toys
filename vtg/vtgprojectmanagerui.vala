@@ -111,6 +111,7 @@ namespace Vtg
                                                         <menuitem name="GotoSymbol" action="ProjectGotoSymbol"/>
                                                     	<separator />
                                                         <menuitem name="GotoDefinition" action="ProjectGotoDefinition"/>
+                                                        <menuitem name="GotoOuterScope" action="ProjectGotoOuterScope"/>
                                                     </placeholder>
                                                 </menu>
                                             </menubar>
@@ -152,6 +153,7 @@ namespace Vtg
 			{"ProjectGotoPrevPosition", Gtk.Stock.GO_BACK, N_("_Go To Previous Source Position"), "<alt>Left", N_("Go to the previous or last saved source position"), on_project_goto_prev_position},
 			{"ProjectGotoSymbol", null, N_("_Go To Symbol..."), "<control>M", N_("Goto to a specific symbol in the current source document"), on_project_goto_symbol},
 			{"ProjectGotoDefinition", null, N_("_Go To Definition"), "F12", N_("Goto to a current symbol definition"), on_project_goto_definition},
+			{"ProjectGotoOuterScope", null, N_("_Go To Outer Scope"), "<control>F12", N_("Goto to the method or class containing the cursor"), on_project_goto_outerscope},
 			{"ProjectCompleteWord", null, N_("Complete _Word"), "<control>space", N_("Try to complete the word in the current source document"), on_complete_word},
 			{"ProjectPrepareChangeLog", null, N_("_Prepare ChangeLog"), null, N_("Add an entry to the ChangeLog with all added/modified files"), on_prepare_changelog},
 			{"ProjectPrepareSingleFileChangeLog", null, N_("_Add Current File To ChangeLog"), null, N_("Add the current file to the ChangeLog"), on_prepare_single_file_changelog}
@@ -324,7 +326,23 @@ namespace Vtg
 				
 			sch.goto_definition ();
 		}
-		
+
+		private void on_project_goto_outerscope (Gtk.Action action)
+		{
+			var project = _plugin_instance.project_view.current_project;
+			return_if_fail (project != null);
+
+			var view = _plugin_instance.window.get_active_view ();
+			if (view == null)
+				return;
+						
+			var sch = _plugin_instance.scs_find_from_view (view);
+			if (sch == null)
+				return;
+				
+			sch.goto_outerscope ();
+		}
+
 		private void on_project_open (Gtk.Action action)
 		{
 			var dialog = new Gtk.FileChooserDialog (_("Open Project"),
