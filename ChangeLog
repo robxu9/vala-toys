@@ -15,15 +15,6 @@
 
 2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
 
-	* vtg/vtgsourceoutliner.vala:
-	* vtg/vtgsourceoutlinerview.vala:
-	* vtg/vtgsymbolcompletionprovider.vala:
-
-	highlight the symbol in the current cursor position
-	on the source outliner view
-
-2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
-
 	* afrodite/ast.vala:
 	* afrodite/sourcereference.vala:
 
