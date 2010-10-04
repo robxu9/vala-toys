@@ -124,7 +124,9 @@ namespace Vtg
 
 			// check if we can automatically open a project in its root folder
 			string root = null;
-			if (Utils.is_vala_doc (document) && find_project_root_folder (file, out root)) {
+			if (Vtg.Plugin.main_instance.config.project_find_root_folder
+			    && Utils.is_vala_doc (document)
+			    && find_project_root_folder (file, out root)) {
 				// open this project instead
 				return this.open_project (root);
 			}

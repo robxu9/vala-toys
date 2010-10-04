@@ -1,5 +1,13 @@
 2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
 
+	* ui/vtg.ui:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgprojects.vala:
+
+	added an user option to enable / disable finding project root folder
+
+2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vbf/backends/vbfsmartfolder.vala:
 	* vbf/vbfutils.vala:
 	* vtg/vtgplugin.vala:

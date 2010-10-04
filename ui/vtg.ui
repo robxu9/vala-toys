@@ -235,59 +235,52 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <child>
-                  <object class="GtkVBox" id="vbox-settings-modules">
+                  <object class="GtkVBox" id="vbox-page-modules">
                     <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="homogeneous">True</property>
                     <child>
-                      <object class="GtkVBox" id="vbox-settings-page-modules">
+                      <object class="GtkCheckButton" id="checkbutton-settings-bracket-completion">
+                        <property name="label" translatable="yes">Enable bracket completion</property>
                         <property name="visible">True</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton-settings-bracket-completion">
-                            <property name="label" translatable="yes">Enable bracket completion</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="border_width">12</property>
-                            <property name="draw_indicator">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton-settings-symbol-completion">
-                            <property name="label" translatable="yes">Enable symbol completion</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="border_width">12</property>
-                            <property name="resize_mode">immediate</property>
-                            <property name="draw_indicator">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton-settings-sourcecode-outliner">
-                            <property name="label" translatable="yes">Enable source code outliner</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="border_width">12</property>
-                            <property name="resize_mode">immediate</property>
-                            <property name="draw_indicator">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">12</property>
+                        <property name="draw_indicator">True</property>
                       </object>
                       <packing>
+                        <property name="expand">False</property>
                         <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="checkbutton-settings-symbol-completion">
+                        <property name="label" translatable="yes">Enable symbol completion</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">12</property>
+                        <property name="resize_mode">immediate</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="checkbutton-settings-sourcecode-outliner">
+                        <property name="label" translatable="yes">Enable source code outliner</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">12</property>
+                        <property name="resize_mode">immediate</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                   </object>
@@ -303,7 +296,48 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkVBox" id="vbox-changelog">
+                  <object class="GtkVBox" id="vbox-page-options">
+                    <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkAlignment" id="alignment-settings-project-find-root">
+                        <property name="visible">True</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkCheckButton" id="checkbutton-settings-project-find-root">
+                            <property name="label" translatable="yes">Automatically find project folder
+when opening s source file</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="draw_indicator">True</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="padding">12</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel" id="label-page-options">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Options</property>
+                  </object>
+                  <packing>
+                    <property name="position">2</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkVBox" id="vbox-page-changelog">
                     <property name="visible">True</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
@@ -329,6 +363,7 @@
                           <object class="GtkEntry" id="entry-settings-author">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
                           </object>
                           <packing>
                             <property name="padding">8</property>
@@ -365,6 +400,7 @@
                           <object class="GtkEntry" id="entry-settings-email">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
                           </object>
                           <packing>
                             <property name="padding">8</property>
@@ -381,8 +417,7 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="position">1</property>
-                    <property name="tab_fill">False</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child type="tab">
@@ -391,7 +426,7 @@
                     <property name="label" translatable="yes">ChangeLog Support</property>
                   </object>
                   <packing>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
