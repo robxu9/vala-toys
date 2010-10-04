@@ -69,6 +69,7 @@ namespace Vbf.Utils
 			res = true;
 		}
 
+		Utils.trace ("project at: %s is waf %s", path, res.to_string ());
 		return res;
 	}
 
@@ -81,6 +82,7 @@ namespace Vbf.Utils
 			res = true;
 		}
 
+		Utils.trace ("project at: %s is cmake %s", path, res.to_string ());
 		return res;
 	}
 
@@ -93,6 +95,7 @@ namespace Vbf.Utils
 			res = true;
 		}
 
+		Utils.trace ("project at: %s is simple make %s", path, res.to_string ());
 		return res;
 	}
 

@@ -122,12 +122,16 @@ namespace Vtg
 				doc =  (Gedit.Document) view.get_buffer ();
 			
 				if (doc != null) {
-					var prj = _projects.get_project_manager_for_document (doc);
-					if (prj != null && Utils.is_vala_doc (doc)) {
-						instance.project_view.current_project = prj;
+					try {
+						var prj = _projects.get_project_manager_for_document (doc);
+						if (prj != null && Utils.is_vala_doc (doc)) {
+							instance.project_view.current_project = prj;
+						}
+						if (instance.source_outliner != null)
+							instance.source_outliner.active_view = view;
+					} catch (Error err) {
+						critical ("error: %s", err.message);
 					}
-					if (instance.source_outliner != null)
-						instance.source_outliner.active_view = view;
 				}
 			}
 

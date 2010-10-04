@@ -111,7 +111,7 @@ namespace Vtg
 			this.remove (project);
 		}
 
-		internal ProjectManager get_project_manager_for_document (Gedit.Document document)
+		internal ProjectManager get_project_manager_for_document (Gedit.Document document) throws GLib.Error
 		{
 			var file = Utils.get_document_name (document);
 			if (file != null) {
@@ -122,8 +122,36 @@ namespace Vtg
 				}
 			}
 
+			// check if we can automatically open a project in its root folder
+			string root = null;
+			if (Utils.is_vala_doc (document) && find_project_root_folder (file, out root)) {
+				// open this project instead
+				return this.open_project (root);
+			}
+
 			// if not found always return default project
 			return _default_project;
+		}
+
+		private bool find_project_root_folder (string file, out string? root)
+		{
+			var dir = GLib.File.new_for_path (Path.get_dirname (file));
+			root = null;
+
+			do {
+				Utils.trace ("testing directory: %s", dir.get_path ());
+				Vbf.IProjectBackend dummy;
+				if (Vbf.probe (dir.get_path (), out dummy)) {
+					root = dir.get_path ();
+				} else {
+					if (root != null) {
+						break; // we return the best root we found until now
+					}
+				}
+				dir = dir.get_parent ();
+			} while (dir != null);
+
+			return root != null;
 		}
 
 		internal ProjectManager? get_project_manager_for_project_id (string? project_id)

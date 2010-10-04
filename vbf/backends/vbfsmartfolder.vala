@@ -65,7 +65,9 @@ namespace Vbf.Backends
 			bool res = false;
 			
 			if (GLib.FileUtils.test (project_file, FileTest.EXISTS | FileTest.IS_DIR)) {
-				res = true;
+				res = Utils.is_waf_project (project_file)
+				      || Utils.is_cmake_project (project_file)
+				      || Utils.is_simple_make_project (project_file);
 			}
 			
 			return res;
