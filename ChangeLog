@@ -1,5 +1,16 @@
 2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfiprojectbackend.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojects.vala:
+
+	cleanup project open & close
+
+2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/utils.vala:
 	* vbf/vbfpackage.vala:
 

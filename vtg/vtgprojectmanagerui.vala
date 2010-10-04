@@ -160,7 +160,6 @@ namespace Vtg
 		};
 
 		/* END UI */
-		private Vala.List<ProjectManager> _projects = new Vala.ArrayList<ProjectManager> ();
 		private Gtk.ActionGroup _actions = null;
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private ProjectBuilder _prj_builder = null;
@@ -178,6 +177,8 @@ namespace Vtg
 		public ProjectManagerUi (Vtg.PluginInstance plugin_instance)
 		{
 			this._plugin_instance = plugin_instance;
+			Vtg.Plugin.main_instance.projects.project_opened.connect (this.on_project_opened);
+			Vtg.Plugin.main_instance.projects.project_closed.connect (this.on_project_closed);
 			var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 			_sb_context_id = status_bar.get_context_id ("symbol status");
 			_plugin_instance.project_view.notify["current-project"] += this.on_current_project_changed;
@@ -219,6 +220,8 @@ namespace Vtg
 		~ProjectManagerUi ()
 		{
 			Utils.trace ("ProjectManagerUi destroying");
+			Vtg.Plugin.main_instance.projects.project_opened.disconnect (this.on_project_opened);
+			Vtg.Plugin.main_instance.projects.project_closed.disconnect (this.on_project_closed);
 			SignalHandler.disconnect (_prj_executer, signal_ids[0]);
 			SignalHandler.disconnect (_prj_executer, signal_ids[1]);
 			SignalHandler.disconnect (_prj_builder, signal_ids[2]);
@@ -392,6 +395,20 @@ namespace Vtg
 
 			//close project
 			close_project (project);
+		}
+
+		private void on_project_opened (Vtg.Projects sender, GLib.Object l)
+		{
+			var project = (Vtg.ProjectManager)l;
+			project.symbol_cache_building.connect (this.on_symbol_cache_building);
+			project.symbol_cache_builded.connect (this.on_symbol_cache_builded);
+		}
+
+		private void on_project_closed (Vtg.Projects sender, GLib.Object l)
+		{
+			var project = (Vtg.ProjectManager)l;
+			project.symbol_cache_building.disconnect (this.on_symbol_cache_building);
+			project.symbol_cache_builded.disconnect (this.on_symbol_cache_builded);
 		}
 
 		private void on_project_change (Gtk.Action action)
@@ -920,24 +937,13 @@ namespace Vtg
 		private void open_project (string name)
 		{
 			try {
-				var project = find_project_for_id (name);
+				var project = Vtg.Plugin.main_instance.projects.get_project_manager_for_project_id (name);
 				
 				if (project != null) {
 					// activate project
 					_plugin_instance.project_view.current_project = project;
 				} else {
-					// open project
-					project = new ProjectManager (Vtg.Plugin.main_instance.config.symbol_enabled);
-					project.symbol_cache_building.connect (this.on_symbol_cache_building);
-					project.symbol_cache_builded.connect (this.on_symbol_cache_builded);
-					
-					if (project.open (name)) {
-						_projects.add (project);
-						//HACK: why the signal isn't working?!?!
-						//this.project_loaded (project);
-						Vtg.Plugin.main_instance.on_project_loaded (this, project);
-						_plugin_instance.project_view.add_project (project.project);
-					}
+					Vtg.Plugin.main_instance.projects.open_project (name);
 				}
 			} catch (Error err) {
 				Vtg.Interaction.error_message (_("Error opening project %s").printf (name), err);
@@ -946,12 +952,7 @@ namespace Vtg
 
 		internal void close_project (ProjectManager project)
 		{
-			project.symbol_cache_building.disconnect (this.on_symbol_cache_building);
-			project.symbol_cache_builded.disconnect (this.on_symbol_cache_builded);
-			_plugin_instance.project_view.remove_project (project.project);
-			Vtg.Plugin.main_instance.on_project_closed (this, project);
-			project.close ();
-			_projects.remove (project);
+			Vtg.Plugin.main_instance.projects.close_project (project);
 		}
 
 		private bool create_project (string project_path)
@@ -997,17 +998,6 @@ namespace Vtg
 				GLib.warning ("cannot open directort %s", dir_path);
 				return false;
 			}
-		}
-
-		public ProjectManager? find_project_for_id (string id)
-		{
-			foreach (ProjectManager project_manager in _projects) {
-				if (project_manager.project.id == id) {
-					return project_manager;
-				}
-			}
-			
-			return null;
 		}
 	}
 }

@@ -21,6 +21,23 @@
 
 namespace Vbf
 {
+	public static bool probe (string path, out IProjectBackend backend)
+	{
+		IProjectBackend pb = new Backends.Autotools ();
+		bool res = pb.probe (path);
+		if (!res) {
+			pb = new Backends.SmartFolder ();
+			res = pb.probe (path);
+		}
+
+		if (res) {
+			backend = pb;
+		} else {
+			backend = null;
+		}
+		return res;
+	}
+
 	public interface IProjectBackend : GLib.Object
 	{
 		public abstract bool probe (string project_file);

@@ -73,7 +73,8 @@ namespace Vtg
 			_config.notify.connect (this.on_configuration_property_changed);
 			GLib.Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
 			_projects = new Vtg.Projects (this);
-			
+			_projects.project_opened.connect (this.on_project_opened);
+			_projects.project_closed.connect (this.on_project_closed);
 		}
 
 		private PluginInstance? get_plugin_instance_for_window (Gedit.Window window)
@@ -184,27 +185,6 @@ namespace Vtg
 				instance.initialize_views ();
 			}
 		}
-
-
-		internal void on_project_closed (ProjectManagerUi sender, ProjectManager project)
-		{
-			return_if_fail (project.project.name != "vtg-default-project");
-
-			foreach (PluginInstance instance in _instances) {
-				foreach (Gedit.Document doc in instance.window.get_documents ()) {
-					if (project.contains_filename (Utils.get_document_name (doc))) {
-						//close tab
-						var tab = Tab.get_from_document (doc);
-						instance.window.close_tab (tab);
-					}
-				}
-				if (instance.project_manager_ui != sender) {
-					instance.project_view.remove_project (project.project);
-				} 
-			}
-
-			_projects.remove (project);
-		}
 		
 		internal bool project_need_save (ProjectManager project)
 		{
@@ -251,19 +231,32 @@ namespace Vtg
 			}
 		}	
 
-		internal void on_project_loaded (ProjectManagerUi sender, ProjectManager project_manager)
+		private void on_project_closed (Vtg.Projects sender, GLib.Object pm)
 		{
+			var project = (ProjectManager)pm;
+			return_if_fail (!project.is_default);
+
+			foreach (PluginInstance instance in _instances) {
+				foreach (Gedit.Document doc in instance.window.get_documents ()) {
+					if (project.contains_filename (Utils.get_document_name (doc))) {
+						//close tab
+						var tab = Tab.get_from_document (doc);
+						instance.window.close_tab (tab);
+					}
+				}
+				instance.project_view.remove_project (project.project);
+			}
+		}
+
+		private void on_project_opened (Projects sender, GLib.Object pm)
+		{
+			var project_manager = (Vtg.ProjectManager)pm;
 			var project = project_manager.project;
 			
-			/* update the other project manager views */
 			foreach (PluginInstance instance in _instances) {
-				if (instance.project_manager_ui != sender) {
-					instance.project_view.add_project (project);
-				}
+				instance.project_view.add_project (project);
 			}
 
-			_projects.add (project_manager);
-			
 			weak Gtk.RecentManager recent = Gtk.RecentManager.get_default ();
 			Gtk.RecentData recent_data = Gtk.RecentData ();
 			string name = project.name;
@@ -286,6 +279,8 @@ namespace Vtg
 
 		~Plugin ()
 		{
+			_projects.project_opened.connect (this.on_project_opened);
+			_projects.project_closed.connect (this.on_project_closed);
 			deactivate_modules ();
 			main_instance = null;
 		}

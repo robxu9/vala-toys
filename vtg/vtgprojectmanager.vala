@@ -238,14 +238,12 @@ namespace Vtg
 
 		public bool open (string project_filename) throws GLib.Error
 		{
-			IProjectBackend pm = new Backends.Autotools (); 
-			bool res = pm.probe (project_filename);
-			if (!res) {
-				pm = new Backends.SmartFolder ();
-				res = pm.probe (project_filename);
-			}
-			if (res) {
-				_project = pm.open (project_filename);
+			if (!FileUtils.test (project_filename, FileTest.IS_DIR | FileTest.IS_REGULAR | FileTest.EXISTS))
+				throw new FileError.FAILED (_("Can't load project, file not found"));
+
+			IProjectBackend backend;
+			if (Vbf.probe (project_filename, out backend)) {
+				_project = backend.open (project_filename);
 				if (_project == null)
 					return false;
 					
