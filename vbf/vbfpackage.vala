@@ -68,7 +68,8 @@ namespace Vbf
 			}
 			
 			try {
-				string package_filename = ctx.get_package_path (id, vapi_dirs);
+				ctx.vapi_directories = vapi_dirs;
+				string package_filename = ctx.get_vapi_path (id);
 				if (package_filename == null) {
 					critical ("no vapi file for package: %s", id);
 				} else {

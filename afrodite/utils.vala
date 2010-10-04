@@ -50,8 +50,9 @@ namespace Afrodite.Utils
 		if (ctx == null) {
 			ctx = new Vala.CodeContext();
 		}
-		
-		var package_path = ctx.get_package_path (pkg, vapi_dirs);
+
+		ctx.vapi_directories = vapi_dirs;
+		var package_path = ctx.get_vapi_path (pkg);
 		if (package_path == null) {
 			return null;
 		}
