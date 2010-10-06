@@ -1,5 +1,11 @@
 2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+
+	debug code removal
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/parseresult.vala:
 	* afrodite/Makefile.am:
 	* afrodite/parser.vala:

@@ -429,10 +429,6 @@ namespace Afrodite
 				}
 			}
 			if (result != null) {
-				Utils.trace ("dump errors: %s (%d)", filename, result.errors.size);
-				foreach (var err in result.errors) {
-					Utils.trace ("    error: %s", err);
-				}
 				this.file_parsed (this, filename, result);
 			}
 			return more_results;
