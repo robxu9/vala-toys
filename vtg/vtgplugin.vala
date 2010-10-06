@@ -283,8 +283,8 @@ namespace Vtg
 
 		~Plugin ()
 		{
-			_projects.project_opened.connect (this.on_project_opened);
-			_projects.project_closed.connect (this.on_project_closed);
+			_projects.project_opened.disconnect (this.on_project_opened);
+			_projects.project_closed.disconnect (this.on_project_closed);
 			deactivate_modules ();
 			main_instance = null;
 		}
