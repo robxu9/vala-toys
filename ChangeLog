@@ -1,5 +1,11 @@
 2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+
+	dead code removal
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgplugin.vala:
 
 	fixed signal disconnection on exit
