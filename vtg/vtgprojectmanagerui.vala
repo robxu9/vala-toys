@@ -105,6 +105,8 @@ namespace Vtg
                                                         <menuitem name="ProjectSearch" action="ProjectSearch"/>
 							<menuitem name="ProjectSearchPrevReult" action="ProjectSearchPrevResult"/>
 							<menuitem name="ProjectSearchNextResult" action="ProjectSearchNextResult"/>
+							<separator />
+							<menuitem name="ProjectSearchSymbol" action="ProjectSearchSymbol"/>
                                                     </placeholder>
                                                     <placeholder name="SearchOps_8">
                                                     	<separator />
@@ -148,6 +150,7 @@ namespace Vtg
 			{"ProjectSearch", Gtk.Stock.FIND, N_("Find In _Project..."), "<control><shift>F", N_("Search for text in all the project files"), on_project_search},
 			{"ProjectSearchNextResult", null, N_("Find N_ext In Project"), null, N_("Search forward for the same text in all the project files"), on_project_search_result_next},
 			{"ProjectSearchPrevResult", null, N_("Find Previ_ous In Project"), null, N_("Search backward for the same text in all the project files"), on_project_search_result_previous},
+			{"ProjectSearchSymbol", null, N_("Find Symbol In Project..."), "<control><alt>M", N_("Search a symbol in all the project files"), on_project_search_symbol},
 			{"ProjectGotoDocument", Gtk.Stock.JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
 			{"ProjectGotoNextPosition", Gtk.Stock.GO_FORWARD, N_("_Go To Next Source Position"), null, N_("Go to the next source position"), on_project_goto_next_position},
 			{"ProjectGotoPrevPosition", Gtk.Stock.GO_BACK, N_("_Go To Previous Source Position"), "<alt>Left", N_("Go to the previous or last saved source position"), on_project_goto_prev_position},
@@ -498,7 +501,48 @@ namespace Vtg
 				}
 			}
 		}
-		
+
+		private void on_project_search_symbol (Gtk.Action action)
+		{
+			if (_plugin_instance.project_view.current_project == null)
+				return;
+
+			try {
+				ProjectManager pm = _plugin_instance.project_view.current_project;
+				Gtk.TreeStore model = FilteredListDialog.create_model ();
+				bool show = true;
+
+				/* getting the symbols */
+				Afrodite.Ast ast;
+				foreach (Afrodite.CompletionEngine engine in pm.completions.get_values ()) {
+					bool res = engine.try_acquire_ast (out ast, 1000);
+					if (res) {
+						build_search_symbol_model (pm.project.id, model, ast.root);
+						engine.release_ast (ast);
+					} else {
+						show = false;
+						break;
+					}
+				}
+				if (!show)
+					return;
+
+				var dialog = new FilteredListDialog (model, this.sort_symbol_model);
+				dialog.set_transient_for (_plugin_instance.window);
+				if (dialog.run ()) {
+					Afrodite.Symbol symbol;
+					model.get (dialog.selected_iter , FilteredListDialogColumns.OBJECT, out symbol);
+					Afrodite.SourceReference sr;
+					if (symbol.has_source_references) {
+						sr = symbol.source_references.get (0);
+						_plugin_instance.activate_uri (Filename.to_uri (sr.file.filename), sr.first_line, sr.first_column);
+					}
+				}
+			} catch (Error e) {
+				GLib.warning ("error: %s", e.message);
+			}
+		}
+
 		private void on_project_goto_next_position (Gtk.Action action)
 		{
 			_plugin_instance.bookmarks.move_next ();
@@ -571,6 +615,43 @@ namespace Vtg
 
 				if (item.children.size > 0) {
 					build_goto_symbol_model (model, item, iter);
+				}
+			}
+		}
+
+		private void build_search_symbol_model (string project_path, TreeStore model, Afrodite.Symbol parent, TreeIter? parent_iter = null)
+		{
+			if (!parent.has_children)
+				return;
+
+			foreach (Afrodite.Symbol symbol in parent.children) {
+				bool add = false;
+
+				if (!symbol.name.has_prefix ("!")) {
+					// test if symbol belongs to current projetc files
+					foreach (Afrodite.SourceReference sr in symbol.source_references) {
+						if (sr.file.filename.has_prefix (project_path) && !sr.file.filename.has_suffix (".vapi")) {
+							add = true;
+							break;
+						}
+					}
+				}
+
+				if (add) {
+					TreeIter iter;
+
+					model.append (out iter, parent_iter);
+					model.set (iter,
+						FilteredListDialogColumns.NAME , symbol.display_name,
+						FilteredListDialogColumns.MARKUP, symbol.display_name,
+						FilteredListDialogColumns.VISIBILITY, true,
+						FilteredListDialogColumns.OBJECT, symbol,
+						FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
+						FilteredListDialogColumns.SELECTABLE, true);
+
+					if (symbol.has_children) {
+						build_search_symbol_model (project_path, model, symbol, iter);
+					}
 				}
 			}
 		}

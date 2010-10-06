@@ -75,6 +75,13 @@ namespace Vtg
 			}
 		}
 
+		public Vala.HashMap<Vbf.Target, Afrodite.CompletionEngine> completions
+		{
+			get {
+				 return _completions;
+			}
+		}
+
 		public ProjectManager (bool enable_completion)
 		{
 			_enable_completion = enable_completion;
