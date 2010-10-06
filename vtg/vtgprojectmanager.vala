@@ -289,6 +289,7 @@ namespace Vtg
 					var completion = new CompletionEngine (target.name);
 					completion.begin_parsing.connect (this.on_completion_engine_begin_parse);
 					completion.end_parsing.connect (this.on_completion_engine_end_parse);
+					completion.file_parsed.connect (this.on_completion_engine_file_parsed);
 					_completions.@set (target, completion);
 
 					foreach(string path in target.get_include_dirs ()) {
@@ -344,8 +345,9 @@ namespace Vtg
 				foreach (CompletionEngine completion in _completions.get_values ()) {
 					completion.begin_parsing.disconnect (this.on_completion_engine_begin_parse);
 					completion.end_parsing.disconnect (this.on_completion_engine_end_parse);
+					completion.file_parsed.disconnect (this.on_completion_engine_file_parsed);
 					foreach (PluginInstance instance in Vtg.Plugin.main_instance.instances) {
-						instance.unbind_completion_engine (completion);						
+						instance.unbind_completion_engine (completion);
 					}
 				}
 				_completions.clear ();
@@ -369,6 +371,15 @@ namespace Vtg
 			if (AtomicInt.dec_and_test (ref parser_thread_count))
 				if (_idle_id == 0)
 					_idle_id = Idle.add (this.on_idle);
+		}
+
+		private void on_completion_engine_file_parsed (CompletionEngine sender, string filename, ParseResult parse_result)
+		{
+			foreach (PluginInstance instance in Plugin.main_instance.instances) {
+				var view = instance.project_manager_ui.project_builder.error_pane;
+				view.clear_messages_for_source (filename);
+				view.update_parse_result (filename, parse_result);
+			}
 		}
 
 		private bool on_idle ()

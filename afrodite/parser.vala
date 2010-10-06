@@ -71,15 +71,16 @@ namespace Afrodite
 			}
 		}
 
-		public void parse ()
+		public ParseResult parse ()
 		{
+			var parse_result = new ParseResult ();
 			CodeContext.push (context);
 			context.assert = false;
 			context.checking = false;
 			context.experimental = false;
 			context.experimental_non_null = false;
 			context.compile_only = true;
-
+			context.report = parse_result;
 			context.profile = Profile.GOBJECT;
 			context.add_define ("GOBJECT");
 
@@ -88,7 +89,7 @@ namespace Afrodite
 			context.target_glib_major = glib_major;
 			context.target_glib_minor = glib_minor;
 
-			for (int i = 2; i <= 10; i += 2) {
+			for (int i = 2; i <= 12; i += 2) {
 				context.add_define ("VALA_0_%d".printf (i));
 			}
 
@@ -100,6 +101,35 @@ namespace Afrodite
 			parser.parse (context);
 
 			CodeContext.pop ();
+			return parse_result;
+		}
+	}
+	
+	public class ParseResult : Vala.Report
+	{
+		public Vala.List<string> warnings = new Vala.ArrayList<string> ();
+		public Vala.List<string> errors = new Vala.ArrayList<string> ();
+		public Vala.List<string> notes = new Vala.ArrayList<string> ();
+
+		public override void warn (Vala.SourceReference? source, string message)
+		{
+			base.warn (source, message);
+			if (source != null)
+				warnings.add ("%s: warning: %s\n".printf (source.to_string (), message));
+		}
+
+		public override void err (Vala.SourceReference? source, string message)
+		{
+			base.err (source, message);
+			if (source != null)
+				errors.add ("%s: error: %s\n".printf (source.to_string (), message));
+		}
+
+		public override void note (Vala.SourceReference? source, string message)
+		{
+			base.note (source, message);
+			if (source != null)
+				notes.add ("%s: note: %s\n".printf (source.to_string (), message));
 		}
 	}
 }

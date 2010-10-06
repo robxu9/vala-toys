@@ -1,5 +1,15 @@
 2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/completionengine.vala:
+	* afrodite/parser.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	added live compile results in the build log view
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutlinerview.vala:
 
 	track cursor position in a idle to be more responsive

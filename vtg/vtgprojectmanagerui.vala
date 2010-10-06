@@ -177,6 +177,13 @@ namespace Vtg
 
 		//public signal void project_loaded (Project project);
 
+		public ProjectBuilder project_builder
+		{
+			get {
+				return _prj_builder;
+			}
+		}
+
 		public ProjectManagerUi (Vtg.PluginInstance plugin_instance)
 		{
 			this._plugin_instance = plugin_instance;

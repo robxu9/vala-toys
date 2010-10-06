@@ -29,7 +29,8 @@ namespace Afrodite
 		public string id;
 		public signal void begin_parsing (CompletionEngine sender);
 		public signal void end_parsing (CompletionEngine sender);
-		
+		public signal void file_parsed (CompletionEngine sender, string filename, ParseResult parse_result);
+
 		private Vala.List<string> _vapidirs;
 		private Vala.List<SourceItem> _source_queue;
 		private Vala.List<SourceItem> _merge_queue;
@@ -45,7 +46,9 @@ namespace Afrodite
 		private bool _glib_init = false;
 		
 		private Ast _ast;
-		
+		private Vala.HashMap<string, ParseResult> _parse_result_list = new Vala.HashMap<string, ParseResult> (GLib.str_hash, GLib.str_equal, GLib.direct_equal);
+		private uint _idle_id = 0;
+
 		public CompletionEngine (string? id = null)
 		{
 			if (id == null)
@@ -75,6 +78,10 @@ namespace Afrodite
 				_parser_thread.join ();
 			}
 			_parser_thread = null;
+			if (_idle_id != 0) {
+				Source.remove (_idle_id);
+				_idle_id = 0;
+			}
 			Utils.trace ("Completion %s destroyed", id);
 		}
 
@@ -453,7 +460,12 @@ namespace Afrodite
 #endif
 
 						Parser p = new Parser.with_source (source);
-						p.parse ();
+						var parse_results = p.parse ();
+						lock (_parse_result_list) {
+							_parse_result_list.set (source.path, parse_results);
+							if (_idle_id == 0)
+								_idle_id = Idle.add_full (Priority.LOW, on_parse_results);
+						}
 #if DEBUG
 						Utils.trace ("engine %s: parsing source: %s done %g", id, source.path, timer.elapsed () - start_time);
 #endif
@@ -539,6 +551,36 @@ namespace Afrodite
 #endif
 			end_parsing (this);
 			return null;
+		}
+		
+		private bool on_parse_results ()
+		{
+			bool more_results = true;
+			string filename = null;
+			ParseResult result = null;
+
+			lock (_parse_result_list) {
+				if (_parse_result_list.size > 0) {
+					foreach (string key in _parse_result_list.get_keys ()) {
+						result = _parse_result_list.get (key);
+						_parse_result_list.remove (key);
+						filename = key;
+						break; // one iteration
+					}
+				}
+				if (_parse_result_list.size == 0) {
+					_idle_id = 0;
+					more_results = false;
+				}
+			}
+			if (result != null) {
+				Utils.trace ("dump errors: %s (%d)", filename, result.errors.size);
+				foreach (var err in result.errors) {
+					Utils.trace ("    error: %s", err);
+				}
+				this.file_parsed (this, filename, result);
+			}
+			return more_results;
 		}
 	}
 }
