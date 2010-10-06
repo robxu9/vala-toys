@@ -23,7 +23,7 @@ using GLib;
 using Vala;
 
 namespace Afrodite
-{	
+{
 	public class Parser : GLib.Object
 	{
 		public CodeContext context = null;
@@ -102,34 +102,6 @@ namespace Afrodite
 
 			CodeContext.pop ();
 			return parse_result;
-		}
-	}
-	
-	public class ParseResult : Vala.Report
-	{
-		public Vala.List<string> warnings = new Vala.ArrayList<string> ();
-		public Vala.List<string> errors = new Vala.ArrayList<string> ();
-		public Vala.List<string> notes = new Vala.ArrayList<string> ();
-
-		public override void warn (Vala.SourceReference? source, string message)
-		{
-			base.warn (source, message);
-			if (source != null)
-				warnings.add ("%s: warning: %s\n".printf (source.to_string (), message));
-		}
-
-		public override void err (Vala.SourceReference? source, string message)
-		{
-			base.err (source, message);
-			if (source != null)
-				errors.add ("%s: error: %s\n".printf (source.to_string (), message));
-		}
-
-		public override void note (Vala.SourceReference? source, string message)
-		{
-			base.note (source, message);
-			if (source != null)
-				notes.add ("%s: note: %s\n".printf (source.to_string (), message));
 		}
 	}
 }

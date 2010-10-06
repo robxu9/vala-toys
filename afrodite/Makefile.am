@@ -25,6 +25,7 @@ libafrodite_la_VALASOURCES = \
 	astmerger.vala \
 	astdumper.vala \
 	parser.vala \
+	parseresult.vala \
 	symbol.vala \
 	symbolresolver.vala \
 	datatype.vala \
