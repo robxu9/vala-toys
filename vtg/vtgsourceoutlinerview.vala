@@ -71,6 +71,7 @@ namespace Vtg
 		private VBox _side_panel;
 		private int _current_line = -1;
 		private int _current_column = -1;
+		private uint _idle_id = 0;
 
 		public signal void goto_source (int line, int start_column, int end_column);
 		public signal void filter_changed ();
@@ -113,7 +114,7 @@ namespace Vtg
 		{
 			_current_line = line;
 			_current_column = column;
-			highlight_current_position ();
+			idle_highlight_current_position ();
 		}
 
 		public SourceOutlinerView (Vtg.PluginInstance plugin_instance)
@@ -254,6 +255,10 @@ namespace Vtg
 			var panel = _plugin_instance.window.get_side_panel ();
 			panel.remove_item (_side_panel);
 			cleanup_view_ui ();
+			if (_idle_id != 0) {
+				GLib.Source.remove (_idle_id);
+				_idle_id = 0;
+			}
 			_combo_groups = null;
 			_combo_items = null;
 			_top_ui = null;
@@ -363,7 +368,7 @@ namespace Vtg
 			_updating_combos = false;
 			_combo_groups.queue_draw ();
 			_combo_items.queue_draw ();
-			highlight_current_position ();
+			idle_highlight_current_position ();
 		}
 
 		private void populate_combo_items_model ()
@@ -611,7 +616,13 @@ namespace Vtg
 			return result;
 		}
 
-		private void highlight_current_position ()
+		private void idle_highlight_current_position ()
+		{
+			if (_idle_id == 0)
+				_idle_id = Idle.add_full (Priority.LOW, this.highlight_current_position);
+		}
+
+		private bool highlight_current_position ()
 		{
 			Afrodite.Symbol symbol = null;
 			var model = _combo_groups.get_model ();
@@ -624,6 +635,9 @@ namespace Vtg
 					model.get (iter, Columns.SYMBOL, out s);
 					if (s.has_children) {
 						foreach (Afrodite.Symbol child in s.children) {
+							if (s.name.has_prefix ("!")) {
+								Utils.trace ("internal symbol: %s", s.fully_qualified_name);
+							}
 							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
 							if (sr != null && sr.contains_position (_current_line + 1, _current_column)) {
 								symbol = child;
@@ -648,6 +662,9 @@ namespace Vtg
 				}
 			}
 			_updating_combos = false;
+
+			_idle_id = 0;
+			return false;
 		}
 	}
 }

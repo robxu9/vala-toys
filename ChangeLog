@@ -1,5 +1,11 @@
 2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourceoutlinerview.vala:
+
+	track cursor position in a idle to be more responsive
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgprojectmanager.vala:
 	* vtg/vtgprojectmanagerui.vala:
 
