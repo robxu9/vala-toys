@@ -128,7 +128,9 @@ namespace Vtg
 			    && Utils.is_vala_doc (document)
 			    && find_project_root_folder (file, out root)) {
 				// open this project instead
-				return this.open_project (root);
+				var project = this.open_project (root);
+				project.automanaged = true;
+				return project;
 			}
 
 			// if not found always return default project

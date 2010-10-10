@@ -47,7 +47,10 @@ namespace Vtg
 		
 		public Gtk.TreeModel model { get { return _model; } }
 		public Vbf.Project project { get { return _project; } }
-				
+
+		// this project was opened automatically by vala toys
+		public bool automanaged { get; set; }
+
 		public VcsTypes vcs_type = VcsTypes.NONE;
 		public string changelog_uri = null;
 

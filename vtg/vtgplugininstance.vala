@@ -205,8 +205,25 @@ namespace Vtg
 			
 				var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 
-				if (project_manager != null && project_manager.project.id == "vtg-default-project") {
-					check_vala_source_for_remove (instance, project_manager, doc);
+				if (project_manager != null) {
+					if (project_manager.is_default) {
+						check_vala_source_for_remove (instance, project_manager, doc);
+					} else if (project_manager.automanaged) {
+						bool other_docs_opened = false;
+
+						// see if we can close this project
+						foreach (var document in Gedit.App.get_default ().get_documents ()) {
+							if (document != doc) {
+								if (Vtg.Plugin.main_instance.projects.get_project_manager_for_document (document) == project_manager) {
+									// we still have some document open that belongs to this same project
+									other_docs_opened = true;
+								}
+							}
+						}
+						if (!other_docs_opened) {
+							Vtg.Plugin.main_instance.projects.close_project (project_manager);
+						}
+					}
 				}
 			} catch (Error err) {
 				critical ("error: %s", err.message);

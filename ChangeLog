@@ -1,5 +1,14 @@
 2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojects.vala:
+
+	close automatically a project that was opened automatically
+	by vala toys when all its edit views were closed
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* afrodite/symbol.vala:
 	* vtg/vtgsourceoutlinerview.vala:
 
