@@ -352,6 +352,7 @@ namespace Vtg
 
 			_current_source_path = source_path;
 			_updating_combos = true;
+			_combo_groups.set_model (null);
 			combo_model.clear ();
 
 			if (result != null && !result.is_empty) {
@@ -366,6 +367,7 @@ namespace Vtg
 			_src_view.set_model (_sorted);
 			_src_view.expand_all ();
 			_updating_combos = false;
+			_combo_groups.set_model (combo_model);
 			_combo_groups.queue_draw ();
 			_combo_items.queue_draw ();
 			idle_highlight_current_position ();
@@ -373,17 +375,19 @@ namespace Vtg
 
 		private void populate_combo_items_model ()
 		{
+			int count = 0;
 			TreeIter iter;
 			Afrodite.Symbol symbol;
 
 			var model = (ListStore) _combo_items.get_model ();
 
 			model.clear ();
+			_combo_items.set_model (null);
 			if (_combo_groups.get_active_iter (out iter)) {
 				_combo_groups.get_model ().get (iter, Columns.SYMBOL, out symbol);
 				if (symbol != null && symbol.has_children) {
 					foreach (Afrodite.Symbol child in symbol.children) {
-						if (!child.fully_qualified_name.has_prefix ("!")) {
+						if (!child.name.has_prefix ("!")) {
 							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
 							/*
 							string des = child.description;
@@ -409,10 +413,12 @@ namespace Vtg
 									Columns.SYMBOL, child,
 									Columns.SOURCE_REFERENCE, sr);
 							}
+							count++;
 						}
 					}
 				}
 			}
+			_combo_items.set_model (model);
 		}
 
 		private void goto_line (Afrodite.Symbol symbol)
@@ -624,11 +630,13 @@ namespace Vtg
 
 		private bool highlight_current_position ()
 		{
+			Timer timer = new Timer ();
 			Afrodite.Symbol symbol = null;
 			var model = _combo_groups.get_model ();
 			TreeIter iter;
 
 			_updating_combos = true;
+			timer.start ();
 			if (model.get_iter_first (out iter)) {
 				do {
 					Afrodite.Symbol s;
@@ -644,7 +652,10 @@ namespace Vtg
 						}
 					}
 				} while (symbol == null && model.iter_next (ref iter));
+				Utils.trace ("select group: %g", timer.elapsed ());
 			}
+			
+			timer.reset ();
 			if (symbol != null) {
 				model = _combo_items.get_model ();
 				if (model.get_iter_first (out iter)) {
@@ -657,6 +668,7 @@ namespace Vtg
 						}
 					} while (model.iter_next (ref iter));
 				}
+				Utils.trace ("select iter: %g", timer.elapsed ());
 			}
 			_updating_combos = false;
 

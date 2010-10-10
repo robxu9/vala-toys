@@ -1,5 +1,11 @@
 2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgsourceoutlinerview.vala:
+
+	smoother update for the symbol browser combos
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgutils.vala:
 
 	don't add vala extension to vapi files
