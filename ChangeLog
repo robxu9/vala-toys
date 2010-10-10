@@ -1,5 +1,12 @@
 2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
 
+	* afrodite/symbol.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	include symbols from the root namespace in the combos
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
 	* vtg/vtgsourceoutlinerview.vala:
 
 	reset current combo index when no symbol is found

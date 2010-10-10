@@ -81,6 +81,13 @@ namespace Afrodite
 		
 		private Vala.List<Symbol> _specialized_symbols = null;
 
+		public bool is_root
+		{
+			get {
+				return fully_qualified_name == null;
+			}
+		}
+
 		public DataType symbol_type {
 			get {
 				if (_symbol_type == null)

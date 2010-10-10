@@ -310,6 +310,10 @@ namespace Vtg
 			// add two combo on the top of the edit view
 			var tab = Gedit.Tab.get_from_document (doc);
 			if (tab != null) {
+				var combo_model = (ListStore) _combo_groups.get_model ();
+				combo_model.clear ();
+				combo_model = (ListStore) _combo_items.get_model ();
+				combo_model.clear ();
 				tab.remove (_top_ui);
 			}
 		}
@@ -529,15 +533,16 @@ namespace Vtg
 
 		private void populate_combo_groups_model (ListStore combo_model, Vala.List<ResultItem>? items)
 		{
+			bool root_namespace_added = false;
 			foreach (ResultItem item in items) {
 				var symbol = item.symbol;
+				TreeIter iter_group;
 
 				if (symbol.type_name == "Namespace"
 				    || symbol.type_name == "Class"
 				    || symbol.type_name == "Interface"
 				    || symbol.type_name == "Struct"
 				    || symbol.type_name == "Enum") {
-					TreeIter iter_group;
 					Afrodite.SourceReference sr = symbol.lookup_source_reference_filename (_current_source_path);
 
 					if (sr != null) {
@@ -552,6 +557,15 @@ namespace Vtg
 					if (item.children.size > 0) {
 						populate_combo_groups_model (combo_model, item.children);
 					}
+				} else if (root_namespace_added == false && symbol.parent != null && symbol.parent.is_root) {
+					// add a special root symbols
+					combo_model.append (out iter_group);
+					combo_model.set (iter_group,
+						Columns.NAME, _("(none)"),
+						Columns.ICON, Utils.get_icon_for_type_name ("Namespace"),
+						Columns.SYMBOL, symbol.parent,
+						Columns.SOURCE_REFERENCE, null);
+					root_namespace_added = true;
 				}
 			}
 		}
