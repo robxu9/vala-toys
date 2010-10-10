@@ -56,8 +56,6 @@ namespace Afrodite
 			else if (source.content != "") {
 				source_file = new Vala.SourceFile (context, source.is_vapi ? SourceFileType.PACKAGE : SourceFileType.SOURCE, source.path, source.content); // live buffer
 				//Utils.trace ("queue live buffer %s:\n%s\n", source.path, source.content);
-			} else {
-				warning ("sourcefile %s with empty content not queued", source.path);
 			}
 			
 			if (source_file != null) {
