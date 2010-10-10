@@ -630,14 +630,13 @@ namespace Vtg
 
 		private bool highlight_current_position ()
 		{
-			Timer timer = new Timer ();
 			Afrodite.Symbol symbol = null;
 			var model = _combo_groups.get_model ();
 			TreeIter iter;
 
 			_updating_combos = true;
-			timer.start ();
 			if (model.get_iter_first (out iter)) {
+				TreeIter? found = null;
 				do {
 					Afrodite.Symbol s;
 					model.get (iter, Columns.SYMBOL, out s);
@@ -646,16 +645,19 @@ namespace Vtg
 							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
 							if (sr != null && sr.contains_position (_current_line + 1, _current_column)) {
 								symbol = child;
-								_combo_groups.set_active_iter (iter);
+								found = iter;
 								break;
 							}
 						}
 					}
 				} while (symbol == null && model.iter_next (ref iter));
-				Utils.trace ("select group: %g", timer.elapsed ());
+				if (found == null) {
+					_combo_groups.set_active (-1);
+				} else {
+					_combo_groups.set_active_iter (found);
+				}
 			}
 			
-			timer.reset ();
 			if (symbol != null) {
 				model = _combo_items.get_model ();
 				if (model.get_iter_first (out iter)) {
@@ -668,7 +670,6 @@ namespace Vtg
 						}
 					} while (model.iter_next (ref iter));
 				}
-				Utils.trace ("select iter: %g", timer.elapsed ());
 			}
 			_updating_combos = false;
 
