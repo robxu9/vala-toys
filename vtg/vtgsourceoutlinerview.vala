@@ -635,9 +635,6 @@ namespace Vtg
 					model.get (iter, Columns.SYMBOL, out s);
 					if (s.has_children) {
 						foreach (Afrodite.Symbol child in s.children) {
-							if (s.name.has_prefix ("!")) {
-								Utils.trace ("internal symbol: %s", s.fully_qualified_name);
-							}
 							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
 							if (sr != null && sr.contains_position (_current_line + 1, _current_column)) {
 								symbol = child;
