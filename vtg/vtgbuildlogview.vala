@@ -273,23 +273,7 @@ namespace Vtg
 
 		public void on_message_added (OutputView sender, OutputTypes output_type, string message)
 		{
-			if (output_type != OutputTypes.BUILD)
-				return;
-				
-			string[] lines = message.split ("\n");
-			int idx = 0;
-			while (lines[idx] != null) {
-				string[] tmp = lines[idx].split (":",2);
-				if (!StringUtils.is_null_or_empty (tmp[0])
-				    && !StringUtils.is_null_or_empty (tmp[1])) {
-					if (tmp[0].has_suffix (".vala") || tmp[0].has_suffix (".vapi")) {
-						add_vala_message (tmp[0], tmp[1]);
-					} else if (tmp[0].has_suffix (".c") || tmp[0].has_suffix (".h")) {
-						add_c_message (tmp[0], tmp[1]);
-					}
-				}
-				idx++;
-			}
+			add_message (output_type, message);
 		}
 
 		public void on_build_view_row_activated (Widget sender, TreePath path, TreeViewColumn column)
@@ -378,6 +362,64 @@ namespace Vtg
 				_current_error_row--;
 			else
 				_current_error_row = (this.shown_messages) - 1;
+		}
+
+		public void clear_messages_for_source (string filename)
+		{
+			TreeIter iter;
+			if (_child_model.get_iter_first (out iter)) {
+				Vala.List<TreeIter?> to_del = new Vala.ArrayList<TreeIter?> ();
+				var basename = Path.get_basename (filename);
+				do {
+					string file;
+					bool is_warning;
+					_child_model.get (iter, Columns.FILENAME, out file, Columns.IS_WARNING, out is_warning);
+					if (file == basename) {
+						TreeIter copy = iter;
+						to_del.add (copy);
+						if (is_warning)
+							_vala_warning_count--;
+						else
+							_vala_error_count--;
+					}
+				} while (_child_model.iter_next (ref iter));
+				foreach (TreeIter item in to_del) {
+					_child_model.remove (item);
+				}
+				update_toolbar_button_status ();
+			}
+		}
+
+		public void update_parse_result (string filename, Afrodite.ParseResult parse_result)
+		{
+			foreach (string message in parse_result.errors) {
+				add_message (OutputTypes.BUILD, message);
+			}
+			foreach (string message in parse_result.warnings) {
+				add_message (OutputTypes.BUILD, message);
+			}
+			update_toolbar_button_status ();
+		}
+
+		private void add_message (OutputTypes output_type, string message)
+		{
+			if (output_type != OutputTypes.BUILD)
+				return;
+
+			string[] lines = message.split ("\n");
+			int idx = 0;
+			while (lines[idx] != null) {
+				string[] tmp = lines[idx].split (":",2);
+				if (!StringUtils.is_null_or_empty (tmp[0])
+				    && !StringUtils.is_null_or_empty (tmp[1])) {
+					if (tmp[0].has_suffix (".vala") || tmp[0].has_suffix (".vapi")) {
+						add_vala_message (tmp[0], tmp[1]);
+					} else if (tmp[0].has_suffix (".c") || tmp[0].has_suffix (".h")) {
+						add_c_message (tmp[0], tmp[1]);
+					}
+				}
+				idx++;
+			}
 		}
 
 		/* 

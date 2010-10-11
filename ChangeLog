@@ -1,3 +1,172 @@
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojects.vala:
+
+	close automatically a project that was opened automatically
+	by vala toys when all its edit views were closed
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	include symbols from the root namespace in the combos
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	reset current combo index when no symbol is found
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parser.vala:
+
+	don't warning on empty source
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	smoother update for the symbol browser combos
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgutils.vala:
+
+	don't add vala extension to vapi files
+
+2010-10-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	removing debug code
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	debug code removal
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parseresult.vala:
+	* afrodite/Makefile.am:
+	* afrodite/parser.vala:
+
+	minor source rationalization
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	dead code removal
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+
+	fixed signal disconnection on exit
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+	* afrodite/parser.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	added live compile results in the build log view
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	track cursor position in a idle to be more responsive
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	added find symbol in all project files command
+
+2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/vtg.ui:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgprojects.vala:
+
+	added an user option to enable / disable finding project root folder
+
+2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/vbfutils.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojects.vala:
+	* vtg/vtgprojectview.vala:
+
+	find the project root automatically when opening a source file
+
+2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfiprojectbackend.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojects.vala:
+
+	cleanup project open & close
+
+2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/utils.vala:
+	* vbf/vbfpackage.vala:
+
+	fixes to compile with libvala 0.11.0
+
+2010-10-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added goto outer scope command
+
+2010-10-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	added combox box symbol browser
+
+2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/sourcereference.vala:
+
+	moved the contains method to the sourcereference where it belongs
+
+2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	make the source outliner view flicker less
+
+2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parser.vala:
+	* configure:
+	* configure.ac:
+	* vbf/vbf-1.0.vapi:
+
+	fix compilation against vala master
+
 2010-09-29  Andrea Del Signore  <sejerpz@tin.it>
 
 	* configure:
@@ -176,6 +345,53 @@
 
 2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
 
+	* vtg/vtgutils.vala:
+
+	fix a compilation error on 64bit system. Fixes issue #157
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	fixed all the deprecate / obsolete warning from the new compiler
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parser.vala:
+	* afrodite/utils.vala:
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	make vala toys compile with vala git-master compiler
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* m4/intltool.m4:
+	* m4/libtool.m4:
+	* m4/ltoptions.m4:
+	* m4/ltsugar.m4:
+	* m4/ltversion.m4:
+	* m4/lt~obsolete.m4:
+	* configure:
+	* configure.ac:
+
+	post release version bump, fix the gtk sourceview version bug and switched to valac master
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
 	* configure:
 	* configure.ac:
 
@@ -193,6 +409,7 @@
 	* configure.ac:
 
 	fixed Gtk SourceView check
+>>>>>>> vtg_0_10_x
 
 2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
 

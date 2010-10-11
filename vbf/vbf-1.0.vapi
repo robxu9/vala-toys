@@ -189,4 +189,6 @@ namespace Vbf {
 		DATA,
 		BUILT_SOURCES
 	}
+	[CCode (cheader_filename = "vbf.h")]
+	public static bool probe (string path, out Vbf.IProjectBackend backend);
 }

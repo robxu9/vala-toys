@@ -23,7 +23,7 @@ using GLib;
 using Vala;
 
 namespace Afrodite
-{	
+{
 	public class Parser : GLib.Object
 	{
 		public CodeContext context = null;
@@ -56,8 +56,6 @@ namespace Afrodite
 			else if (source.content != "") {
 				source_file = new Vala.SourceFile (context, source.path, source.is_vapi, source.content); // live buffer
 				//Utils.trace ("queue live buffer %s:\n%s\n", source.path, source.content);
-			} else {
-				warning ("sourcefile %s with empty content not queued", source.path);
 			}
 			
 			if (source_file != null) {
@@ -71,15 +69,16 @@ namespace Afrodite
 			}
 		}
 
-		public void parse ()
+		public ParseResult parse ()
 		{
+			var parse_result = new ParseResult ();
 			CodeContext.push (context);
 			context.assert = false;
 			context.checking = false;
 			context.experimental = false;
 			context.experimental_non_null = false;
 			context.compile_only = true;
-
+			context.report = parse_result;
 			context.profile = Profile.GOBJECT;
 			context.add_define ("GOBJECT");
 
@@ -88,7 +87,7 @@ namespace Afrodite
 			context.target_glib_major = glib_major;
 			context.target_glib_minor = glib_minor;
 
-			for (int i = 2; i <= 10; i += 2) {
+			for (int i = 2; i <= 12; i += 2) {
 				context.add_define ("VALA_0_%d".printf (i));
 			}
 
@@ -100,6 +99,7 @@ namespace Afrodite
 			parser.parse (context);
 
 			CodeContext.pop ();
+			return parse_result;
 		}
 	}
 }

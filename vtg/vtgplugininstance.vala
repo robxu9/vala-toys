@@ -172,36 +172,61 @@ namespace Vtg
 		private static void on_tab_added (Gedit.Window sender, Gedit.Tab tab, Vtg.PluginInstance instance)
 		{
 			var doc = tab.get_document ();
-			var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
+			try {
+				var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 
-			if (project_manager != null && project_manager.project.id == "vtg-default-project") {
-				check_vala_source_for_add (instance, project_manager, doc);
-			}
-			
-			if (doc.language != null && doc.language.id == "vala") {
-				var view = tab.get_view ();
-				instance.initialize_view (project_manager, view);
-				if (instance.source_outliner != null) {
-					Utils.trace ("setup outliner for %s", Utils.get_document_name (doc));
-					instance.source_outliner.active_view = view;
+				if (project_manager != null && project_manager.project.id == "vtg-default-project") {
+					check_vala_source_for_add (instance, project_manager, doc);
 				}
+			
+				if (doc.language != null && doc.language.id == "vala") {
+					var view = tab.get_view ();
+					instance.initialize_view (project_manager, view);
+					if (instance.source_outliner != null) {
+						Utils.trace ("setup outliner for %s", Utils.get_document_name (doc));
+						instance.source_outliner.active_view = view;
+					}
 
+				}
+				instance.initialize_document (doc);
+			} catch (Error err) {
+				critical ("error: %s", err.message);
 			}
-			instance.initialize_document (doc);
 		}
 
 		private static void on_tab_removed (Gedit.Window sender, Gedit.Tab tab, Vtg.PluginInstance instance)
 		{
-			var view = tab.get_view ();
-			var doc = tab.get_document ();
+			try {
+				var view = tab.get_view ();
+				var doc = tab.get_document ();
 
-			instance.uninitialize_view (view);
-			instance.uninitialize_document (doc);
+				instance.uninitialize_view (view);
+				instance.uninitialize_document (doc);
 			
-			var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
+				var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 
-			if (project_manager != null && project_manager.project.id == "vtg-default-project") {
-				check_vala_source_for_remove (instance, project_manager, doc);
+				if (project_manager != null) {
+					if (project_manager.is_default) {
+						check_vala_source_for_remove (instance, project_manager, doc);
+					} else if (project_manager.automanaged) {
+						bool other_docs_opened = false;
+
+						// see if we can close this project
+						foreach (var document in Gedit.App.get_default ().get_documents ()) {
+							if (document != doc) {
+								if (Vtg.Plugin.main_instance.projects.get_project_manager_for_document (document) == project_manager) {
+									// we still have some document open that belongs to this same project
+									other_docs_opened = true;
+								}
+							}
+						}
+						if (!other_docs_opened) {
+							Vtg.Plugin.main_instance.projects.close_project (project_manager);
+						}
+					}
+				}
+			} catch (Error err) {
+				critical ("error: %s", err.message);
 			}
 		}
 
@@ -210,8 +235,13 @@ namespace Vtg
 			foreach (Gedit.View view in _window.get_views ()) {
 				var doc = (Gedit.Document) (view.get_buffer ());
 				if (doc.language != null && doc.language.id == "vala") {
-					var project = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
-					initialize_view (project, view);
+					try {
+						var project = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
+						initialize_view (project, view);
+					} catch (Error err) {
+						critical ("error: %s", err.message);
+					}
+
 				}
 			}
 			if (Vtg.Plugin.main_instance.config.sourcecode_outliner_enabled && _source_outliner == null) {
@@ -419,18 +449,23 @@ namespace Vtg
 			var app = App.get_default ();
 			foreach (Gedit.View view in app.get_views ()) {
 				if (view.get_buffer () == sender) {
-					var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (sender);
-					if (sender.language  == null || sender.language.id != "vala") {
-						if (project_manager != null && project_manager.project.id == "vtg-default-project") {
-							check_vala_source_for_remove (instance, project_manager, sender);
+					try {
+						var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (sender);
+						if (sender.language  == null || sender.language.id != "vala") {
+							if (project_manager != null && project_manager.project.id == "vtg-default-project") {
+								check_vala_source_for_remove (instance, project_manager, sender);
+							}
+							instance.uninitialize_view (view);
+						} else {
+							if (project_manager != null && project_manager.project.id == "vtg-default-project") {
+								check_vala_source_for_add (instance, project_manager, sender);
+							}
+							instance.initialize_view (project_manager, view);
 						}
-						instance.uninitialize_view (view);
-					} else {
-						if (project_manager != null && project_manager.project.id == "vtg-default-project") {
-							check_vala_source_for_add (instance, project_manager, sender);
-						}
-						instance.initialize_view (project_manager, view);
+					} catch (Error err) {
+						critical ("error: %s", err.message);
 					}
+
 					break;
 				}
 			}

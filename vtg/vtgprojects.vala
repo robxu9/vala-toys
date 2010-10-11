@@ -35,6 +35,9 @@ namespace Vtg
 		private Vala.List<Vtg.ProjectManager> _project_managers = new Vala.ArrayList<Vtg.ProjectManager> ();
 		private Vtg.ProjectManager _default_project = null;
 		
+		public signal void project_opened (GLib.Object project);
+		public signal void project_closed (GLib.Object project);
+
 		public Projects (Plugin plugin)
 		{
 			_plugin = plugin;
@@ -56,13 +59,13 @@ namespace Vtg
 			}
 		}
 
-		internal void add (ProjectManager project_manager)
+		private void add (ProjectManager project_manager)
 		{
 			_project_managers.add (project_manager);
 			project_manager.updated.connect (this.on_project_updated);
 		}
 
-		internal void remove (ProjectManager project_manager)
+		private void remove (ProjectManager project_manager)
 		{
 			project_manager.updated.disconnect (this.on_project_updated);
 			_project_managers.remove (project_manager);
@@ -88,7 +91,27 @@ namespace Vtg
 			}
 		}
 
-		internal ProjectManager get_project_manager_for_document (Gedit.Document document)
+		internal ProjectManager? open_project (string path) throws GLib.Error
+		{
+			// open project
+			var project = new ProjectManager (Vtg.Plugin.main_instance.config.symbol_enabled);
+
+			if (project.open (path)) {
+				this.add (project);
+				this.project_opened (project);
+			}
+
+			return project;
+		}
+
+		internal void close_project (ProjectManager project)
+		{
+			this.project_closed (project);
+			project.close ();
+			this.remove (project);
+		}
+
+		internal ProjectManager get_project_manager_for_document (Gedit.Document document) throws GLib.Error
 		{
 			var file = Utils.get_document_name (document);
 			if (file != null) {
@@ -99,10 +122,53 @@ namespace Vtg
 				}
 			}
 
+			// check if we can automatically open a project in its root folder
+			string root = null;
+			if (Vtg.Plugin.main_instance.config.project_find_root_folder
+			    && Utils.is_vala_doc (document)
+			    && find_project_root_folder (file, out root)) {
+				// open this project instead
+				var project = this.open_project (root);
+				project.automanaged = true;
+				return project;
+			}
+
 			// if not found always return default project
 			return _default_project;
 		}
-		
+
+		private bool find_project_root_folder (string file, out string? root)
+		{
+			var dir = GLib.File.new_for_path (Path.get_dirname (file));
+			root = null;
+
+			do {
+				Utils.trace ("testing directory: %s", dir.get_path ());
+				Vbf.IProjectBackend dummy;
+				if (Vbf.probe (dir.get_path (), out dummy)) {
+					root = dir.get_path ();
+				} else {
+					if (root != null) {
+						break; // we return the best root we found until now
+					}
+				}
+				dir = dir.get_parent ();
+			} while (dir != null);
+
+			return root != null;
+		}
+
+		internal ProjectManager? get_project_manager_for_project_id (string? project_id)
+		{
+			foreach (ProjectManager item in _project_managers) {
+				if (item.project.id == project_id) {
+					return item;
+				}
+			}
+
+			return null;
+		}
+
 		internal ProjectManager? get_project_manager_for_project_name (string? project_name)
 		{
 			if (project_name != null) {
@@ -112,10 +178,10 @@ namespace Vtg
 					}
 				}
 			}
-			
+
 			return null;
 		}
-		
+
 		internal Vbf.Target? get_target_for_document (Gedit.Document? document)
 		{
 			if (document != null) {

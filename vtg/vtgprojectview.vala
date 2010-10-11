@@ -350,9 +350,13 @@ namespace Vtg
 
 			var doc = _plugin_instance.window.get_active_document ();
 			if (doc != null && Utils.is_vala_doc (doc)) {
-				var new_project = Plugin.main_instance.projects.get_project_manager_for_document (doc);
-				if (new_project != null)
-					this.current_project = new_project;
+				try {
+					var new_project = Plugin.main_instance.projects.get_project_manager_for_document (doc);
+					if (new_project != null)
+						this.current_project = new_project;
+				} catch (Error err) {
+					critical ("error: %s", err.message);
+				}
 			}
 		}
 

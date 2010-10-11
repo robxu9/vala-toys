@@ -34,6 +34,7 @@ namespace Vtg
 		NAME = 0,
 		ICON,
 		SYMBOL,
+		SOURCE_REFERENCE,
 		COLUMNS_COUNT
 	}
 	
@@ -66,18 +67,56 @@ namespace Vtg
 			{"source-outliner-goto", Gtk.STOCK_OPEN, N_("Goto definition..."), null, N_("Goto symbol definition"), on_source_outliner_goto}
 		};
 
-		private ActionGroup _actions;
+		private Gtk.ActionGroup _actions;
 		private VBox _side_panel;
+		private int _current_line = -1;
+		private int _current_column = -1;
+		private uint _idle_id = 0;
 
 		public signal void goto_source (int line, int start_column, int end_column);
 		public signal void filter_changed ();
+
+		private Gedit.View _active_view = null; // it's not unowned because we need to cleanup later
+		private Gtk.HBox _top_ui;
+		private Gtk.ComboBox _combo_groups;
+		private Gtk.ComboBox _combo_items;
+		private string _current_source_path;
+		private bool _updating_combos = false;
+
+		public View active_view {
+			get {
+				return _active_view;
+			}
+			set {
+				if (_active_view != value) {
+					cleanup_view_ui ();
+					_active_view = value;
+					initialize_view_ui ();
+				}
+			}
+		}
 
 		public bool show_private_symbols {
 			get {
 				return _check_show_private_symbols.active;
 			}
 		}
-		
+
+		public int current_line {
+			get { return _current_line; }
+		}
+
+		public int current_column {
+			get { return _current_column; }
+		}
+
+		public void set_current_position (int line, int column)
+		{
+			_current_line = line;
+			_current_column = column;
+			idle_highlight_current_position ();
+		}
+
 		public SourceOutlinerView (Vtg.PluginInstance plugin_instance)
 		{
 			this._plugin_instance = plugin_instance;
@@ -147,7 +186,7 @@ namespace Vtg
 			panel.add_item (_side_panel, _("Source"), icon);
 			panel.activate_item (_side_panel);
 
-			_actions = new ActionGroup ("SourceOutlinerActionGroup");
+			_actions = new Gtk.ActionGroup ("SourceOutlinerActionGroup");
 			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
 			var manager = _plugin_instance.window.get_ui_manager ();
@@ -160,15 +199,43 @@ namespace Vtg
 			} catch (Error err) {
 				GLib.warning ("Error %s", err.message);
 			}
-			
+
 			/* initializing the model */
-			_model = new Gtk.TreeStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object));
-			
-			_sorted = new Gtk.TreeModelSort.with_model (_model);
-			_sorted.set_sort_column_id (0, SortType.ASCENDING);
-			_sorted.set_sort_func (0, this.sort_model);
-			_sorted.set_default_sort_func (this.sort_model);
+			_model = build_tree_model ();
+			_sorted = build_sort_model (_model);
 			_src_view.set_model (_sorted);
+
+			_top_ui = new Gtk.HBox (true, 0);
+			_combo_groups = new Gtk.ComboBox ();
+			var model = build_combo_model ();
+			model.sort_column_id = Columns.NAME;
+			_combo_groups.set_model (model);
+
+			renderer = new CellRendererPixbuf ();
+ 			_combo_groups.pack_start (renderer, false);
+			_combo_groups.add_attribute (renderer, "pixbuf", Columns.ICON);
+			
+			renderer = new CellRendererText ();
+			_combo_groups.pack_start (renderer, true);
+			_combo_groups.add_attribute (renderer, "markup", Columns.NAME);
+			_combo_groups.changed.connect (this.on_combo_groups_changed);
+
+			_combo_items = new Gtk.ComboBox ();
+			model = build_combo_model ();
+			model.sort_column_id = Columns.NAME;
+			_combo_items.set_model (model);
+
+			renderer = new CellRendererPixbuf ();
+			_combo_items.pack_start (renderer, false);
+			_combo_items.add_attribute (renderer, "pixbuf", Columns.ICON);
+
+			renderer = new CellRendererText ();
+			_combo_items.pack_start (renderer, true);
+			_combo_items.add_attribute (renderer, "markup", Columns.NAME);
+			_combo_items.changed.connect (this.on_combo_items_changed);
+
+			_top_ui.pack_start (_combo_groups, false, true, 2);
+			_top_ui.pack_end (_combo_items, false, true, 2);
 		}
 
 		~SourceOutlinerView ()
@@ -179,7 +246,7 @@ namespace Vtg
 			deactivate ();
 			Utils.trace ("SourceOutlinerView destroyed");
 		}
-		
+
 		public void deactivate ()
 		{
 			var manager = _plugin_instance.window.get_ui_manager ();
@@ -187,6 +254,92 @@ namespace Vtg
 			manager.remove_action_group (_actions);
 			var panel = _plugin_instance.window.get_side_panel ();
 			panel.remove_item (_side_panel);
+			cleanup_view_ui ();
+			if (_idle_id != 0) {
+				GLib.Source.remove (_idle_id);
+				_idle_id = 0;
+			}
+			_combo_groups = null;
+			_combo_items = null;
+			_top_ui = null;
+		}
+
+		private void on_combo_groups_changed (Gtk.Widget sender)
+		{
+			populate_combo_items_model ();
+		}
+
+		private void on_combo_items_changed (Gtk.Widget sender)
+		{
+			if (_updating_combos)
+				return;
+
+			TreeIter iter;
+			if (_combo_items.get_active_iter (out iter)) {
+				Afrodite.SourceReference sr;
+				_combo_items.get_model ().get (iter, Columns.SOURCE_REFERENCE, out sr);
+				this.goto_source (sr.first_line, sr.first_column, sr.last_column);
+			}
+		}
+
+		private void initialize_view_ui ()
+		{
+			if (_active_view == null)
+				return;
+
+			var doc = (Document) _active_view.get_buffer ();
+			if (!Utils.is_vala_doc (doc))
+				return;
+
+			// add two combo on the top of the edit view
+			var tab = Gedit.Tab.get_from_document (doc);
+
+			_top_ui.show_all ();
+			tab.pack_start (_top_ui, false, false, 2);
+		}
+
+		private void cleanup_view_ui ()
+		{
+			if (_active_view == null)
+				return;
+
+			var doc = (Document) _active_view.get_buffer ();
+			if (!Utils.is_vala_doc (doc))
+				return;
+
+			// add two combo on the top of the edit view
+			var tab = Gedit.Tab.get_from_document (doc);
+			if (tab != null) {
+				var combo_model = (ListStore) _combo_groups.get_model ();
+				combo_model.clear ();
+				combo_model = (ListStore) _combo_items.get_model ();
+				combo_model.clear ();
+				tab.remove (_top_ui);
+			}
+		}
+
+		private TreeStore build_tree_model ()
+		{
+			return new Gtk.TreeStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object), typeof(Afrodite.SourceReference));
+		}
+
+		private ListStore build_combo_model ()
+		{
+			var model = new Gtk.ListStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object), typeof(Afrodite.SourceReference));
+			model.set_sort_column_id (0, SortType.ASCENDING);
+			model.set_sort_func (0, this.sort_model);
+			model.set_default_sort_func (this.sort_model);
+			return model;
+		}
+		
+		private TreeModelSort build_sort_model (TreeStore child_model)
+		{
+			var sorted = new Gtk.TreeModelSort.with_model (child_model);
+			sorted.set_sort_column_id (0, SortType.ASCENDING);
+			sorted.set_sort_func (0, this.sort_model);
+			sorted.set_default_sort_func (this.sort_model);
+
+			return sorted;
 		}
 
 		public void clear_view ()
@@ -194,17 +347,82 @@ namespace Vtg
 			_model.clear ();
 		}
 
-		public void update_view (Afrodite.QueryResult? result = null)
+		public void update_view (string source_path, Afrodite.QueryResult? result = null)
 		{
-			_src_view.set_model (null);
-			clear_view ();
+			var model = build_tree_model ();
+			var sorted = build_sort_model (model);
+			var combo_model = (ListStore) _combo_groups.get_model ();
+
+
+			_current_source_path = source_path;
+			_updating_combos = true;
+			_combo_groups.set_model (null);
+			combo_model.clear ();
+
 			if (result != null && !result.is_empty) {
 				var first = result.children.get (0);
-				rebuild_model (first.children);
+				populate_treeview_model (model, source_path, first.children);
+				populate_combo_groups_model (combo_model, first.children);
 			}
 
+			// build combos
+			_model = model;
+			_sorted = sorted;
 			_src_view.set_model (_sorted);
 			_src_view.expand_all ();
+			_updating_combos = false;
+			_combo_groups.set_model (combo_model);
+			_combo_groups.queue_draw ();
+			_combo_items.queue_draw ();
+			idle_highlight_current_position ();
+		}
+
+		private void populate_combo_items_model ()
+		{
+			int count = 0;
+			TreeIter iter;
+			Afrodite.Symbol symbol;
+
+			var model = (ListStore) _combo_items.get_model ();
+
+			model.clear ();
+			_combo_items.set_model (null);
+			if (_combo_groups.get_active_iter (out iter)) {
+				_combo_groups.get_model ().get (iter, Columns.SYMBOL, out symbol);
+				if (symbol != null && symbol.has_children) {
+					foreach (Afrodite.Symbol child in symbol.children) {
+						if (!child.name.has_prefix ("!")) {
+							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
+							/*
+							string des = child.description;
+							//remove the access qualifier and the return type
+							foreach(string qualifier in qualifiers) {
+								if (des.has_prefix (qualifier)) {
+									des = des.substring (qualifier.length);
+									break;
+								}
+							}
+
+							string[] tmp = des.split (" ", 2);
+							if (tmp.length == 2) {
+								des = tmp[1];
+							}
+							*/
+
+							if (sr != null) {
+								model.append (out iter);
+								model.set (iter,
+									Columns.NAME, child.name,
+									Columns.ICON, Utils.get_icon_for_type_name (child.type_name),
+									Columns.SYMBOL, child,
+									Columns.SOURCE_REFERENCE, sr);
+							}
+							count++;
+						}
+					}
+				}
+			}
+			_combo_items.set_model (model);
 		}
 
 		private void goto_line (Afrodite.Symbol symbol)
@@ -313,7 +531,46 @@ namespace Vtg
 			return sym_access;
 		}
 
-		private void rebuild_model (Vala.List<ResultItem>? items, TreeIter? parent_iter = null)
+		private void populate_combo_groups_model (ListStore combo_model, Vala.List<ResultItem>? items)
+		{
+			bool root_namespace_added = false;
+			foreach (ResultItem item in items) {
+				var symbol = item.symbol;
+				TreeIter iter_group;
+
+				if (symbol.type_name == "Namespace"
+				    || symbol.type_name == "Class"
+				    || symbol.type_name == "Interface"
+				    || symbol.type_name == "Struct"
+				    || symbol.type_name == "Enum") {
+					Afrodite.SourceReference sr = symbol.lookup_source_reference_filename (_current_source_path);
+
+					if (sr != null) {
+						combo_model.append (out iter_group);
+						combo_model.set (iter_group,
+							Columns.NAME, symbol.fully_qualified_name, 
+							Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
+							Columns.SYMBOL, symbol,
+							Columns.SOURCE_REFERENCE, sr);
+					}
+
+					if (item.children.size > 0) {
+						populate_combo_groups_model (combo_model, item.children);
+					}
+				} else if (root_namespace_added == false && symbol.parent != null && symbol.parent.is_root) {
+					// add a special root symbols
+					combo_model.append (out iter_group);
+					combo_model.set (iter_group,
+						Columns.NAME, _("(none)"),
+						Columns.ICON, Utils.get_icon_for_type_name ("Namespace"),
+						Columns.SYMBOL, symbol.parent,
+						Columns.SOURCE_REFERENCE, null);
+					root_namespace_added = true;
+				}
+			}
+		}
+
+		private void populate_treeview_model (TreeStore model, string source_path, Vala.List<ResultItem>? items, TreeIter? parent_iter = null)
 		{
 			if (items == null || items.size == 0)
 				return;
@@ -338,25 +595,30 @@ namespace Vtg
 
 				Afrodite.SymbolAccessibility sym_access = get_symbol_accessibility (symbol);
 
-				if (!symbol.name.has_prefix ("!") && ((sym_access & accessibility) != 0)) {
-					string des = symbol.markup_description;
-					//remove the access qualifier
-					foreach(string qualifier in qualifiers) {
-						if (des.has_prefix (qualifier)) {
-							des = des.substring (qualifier.length);
-							break;
+				if (!symbol.name.has_prefix ("!")) {
+					if ((sym_access & accessibility) != 0) {
+						string des = symbol.markup_description;
+						//remove the access qualifier
+						foreach(string qualifier in qualifiers) {
+							if (des.has_prefix (qualifier)) {
+								des = des.substring (qualifier.length);
+								break;
+							}
 						}
-					}
 
-					_model.append (out iter, parent_iter);
+						model.append (out iter, parent_iter);
 
-					_model.@set (iter,
-						Columns.NAME, des,
-						Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
-						Columns.SYMBOL, symbol);
+						var sr = symbol.lookup_source_reference_filename (source_path);
+					
+						model.@set (iter,
+							Columns.NAME, des,
+							Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
+							Columns.SYMBOL, symbol,
+							Columns.SOURCE_REFERENCE, sr);
 
-					if (item.children.size > 0) {
-						rebuild_model (item.children, iter);
+						if (item.children.size > 0) {
+							populate_treeview_model (model, source_path, item.children, iter);
+						}
 					}
 				}
 			}
@@ -372,6 +634,61 @@ namespace Vtg
 
 			var result = Utils.symbol_type_compare (vala, valb);
 			return result;
+		}
+
+		private void idle_highlight_current_position ()
+		{
+			if (_idle_id == 0)
+				_idle_id = Idle.add_full (Priority.LOW, this.highlight_current_position);
+		}
+
+		private bool highlight_current_position ()
+		{
+			Afrodite.Symbol symbol = null;
+			var model = _combo_groups.get_model ();
+			TreeIter iter;
+
+			_updating_combos = true;
+			if (model.get_iter_first (out iter)) {
+				TreeIter? found = null;
+				do {
+					Afrodite.Symbol s;
+					model.get (iter, Columns.SYMBOL, out s);
+					if (s.has_children) {
+						foreach (Afrodite.Symbol child in s.children) {
+							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
+							if (sr != null && sr.contains_position (_current_line + 1, _current_column)) {
+								symbol = child;
+								found = iter;
+								break;
+							}
+						}
+					}
+				} while (symbol == null && model.iter_next (ref iter));
+				if (found == null) {
+					_combo_groups.set_active (-1);
+				} else {
+					_combo_groups.set_active_iter (found);
+				}
+			}
+			
+			if (symbol != null) {
+				model = _combo_items.get_model ();
+				if (model.get_iter_first (out iter)) {
+					do {
+						Afrodite.Symbol s;
+						model.get (iter, Columns.SYMBOL, out s);
+						if (s == symbol) {
+							_combo_items.set_active_iter (iter);
+							break;
+						}
+					} while (model.iter_next (ref iter));
+				}
+			}
+			_updating_combos = false;
+
+			_idle_id = 0;
+			return false;
 		}
 	}
 }

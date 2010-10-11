@@ -27,7 +27,7 @@ using Gtk;
 namespace Vtg
 {
 	public class Configuration : GLib.Object
-	{		
+	{
 		private const string VTG_BASE_KEY = "/apps/gedit-2/plugins/vtg";
 		private const string VTG_ENABLE_SYMBOL_COMPLETION_KEY = VTG_BASE_KEY + "/bracket_completion_enabled";
 		private const string VTG_ENABLE_BRACKET_COMPLETION_KEY = VTG_BASE_KEY + "/symbol_completion_enabled";
@@ -40,7 +40,8 @@ namespace Vtg
 		private const string VTG_OUTLINER_SHOW_PROTECTED_SYMBOLS = VTG_BASE_KEY + "/outliner_show_protected_symbols";
 		private const string VTG_OUTLINER_SHOW_INTERNAL_SYMBOLS = VTG_BASE_KEY + "/outliner_show_internal_symbols";
 		private const string VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES = VTG_BASE_KEY + "/project_view_only_show_sources";
-		
+		private const string VTG_PROJECT_FIND_ROOT_FOLDER = VTG_BASE_KEY + "/project_find_root_folder";
+
 		private GConf.Client _gconf;
 		private Gtk.Dialog _dialog;
 		
@@ -50,7 +51,8 @@ namespace Vtg
 		private bool _outliner_show_protected_symbols = false;
 		private bool _outliner_show_internal_symbols = false;
 		private bool _project_only_show_sources = true;
-		
+		private bool _project_find_root_folder = true;
+
 		public bool bracket_enabled { get; set; }
 
 		public bool symbol_enabled { get; set; }
@@ -162,7 +164,24 @@ namespace Vtg
 				}
 			}
 		}
-		
+
+		public bool project_find_root_folder
+		{ 
+			get {
+				return _project_find_root_folder;
+			}
+			set {
+				if (_project_find_root_folder != value) {
+					_project_find_root_folder = value;
+					try {
+						_gconf.set_bool (VTG_PROJECT_FIND_ROOT_FOLDER, _project_find_root_folder);
+					} catch (Error e) {
+						GLib.warning ("Error settings project_find_root_folder: %s", e.message);
+					}
+				}
+			}
+		}
+
 		public bool save_before_build 
 		{ 
 			get {
@@ -289,7 +308,19 @@ namespace Vtg
 					schema.set_default_value (def_value);
 					_gconf.set_schema("/schemas" + VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES, schema);
 					_gconf.set_bool (VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES, true);
-				}				
+				}
+
+				if (!exists_base || _gconf.get_schema ("/schemas" + VTG_PROJECT_FIND_ROOT_FOLDER) == null) {
+					var schema = new GConf.Schema ();
+					schema.set_short_desc (_("Enable the search of the project root folder when opening a source file"));
+					schema.set_type (GConf.ValueType.BOOL);
+					var def_value = new GConf.Value (GConf.ValueType.BOOL);
+					def_value.set_bool (true);
+					schema.set_default_value (def_value);
+					_gconf.set_schema("/schemas" + VTG_PROJECT_FIND_ROOT_FOLDER, schema);
+					_gconf.set_bool (VTG_PROJECT_FIND_ROOT_FOLDER, true);
+				}
+
 				_gconf.engine.associate_schema (VTG_ENABLE_SYMBOL_COMPLETION_KEY, "/schemas" + VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_gconf.engine.associate_schema (VTG_ENABLE_BRACKET_COMPLETION_KEY, "/schemas" + VTG_ENABLE_BRACKET_COMPLETION_KEY);
 				_gconf.engine.associate_schema (VTG_ENABLE_SOURCECODE_OUTLINER_KEY, "/schemas" + VTG_ENABLE_SOURCECODE_OUTLINER_KEY);
@@ -301,6 +332,7 @@ namespace Vtg
 				_gconf.engine.associate_schema (VTG_OUTLINER_SHOW_PROTECTED_SYMBOLS, "/schemas" + VTG_OUTLINER_SHOW_PROTECTED_SYMBOLS);
 				_gconf.engine.associate_schema (VTG_OUTLINER_SHOW_INTERNAL_SYMBOLS, "/schemas" + VTG_OUTLINER_SHOW_INTERNAL_SYMBOLS);
 				_gconf.engine.associate_schema (VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES, "/schemas" + VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES);
+				_gconf.engine.associate_schema (VTG_PROJECT_FIND_ROOT_FOLDER, "/schemas" + VTG_PROJECT_FIND_ROOT_FOLDER);
 				_symbol_enabled = _gconf.get_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY);
 				_bracket_enabled = _gconf.get_bool (VTG_ENABLE_BRACKET_COMPLETION_KEY);
 				_sourcecode_outliner_enabled = _gconf.get_bool (VTG_ENABLE_SOURCECODE_OUTLINER_KEY);
@@ -312,13 +344,13 @@ namespace Vtg
 				_outliner_show_protected_symbols = _gconf.get_bool (VTG_OUTLINER_SHOW_PROTECTED_SYMBOLS);
 				_outliner_show_internal_symbols = _gconf.get_bool (VTG_OUTLINER_SHOW_INTERNAL_SYMBOLS);
 				_project_only_show_sources = _gconf.get_bool (VTG_PROJECT_VIEW_ONLY_SHOW_SOURCES);
+				_project_find_root_folder = _gconf.get_bool (VTG_PROJECT_FIND_ROOT_FOLDER);
 				_gconf.add_dir (VTG_BASE_KEY, GConf.ClientPreloadType.ONELEVEL);
 				_gconf.value_changed.connect (this.on_conf_value_changed);
 			} catch (Error err) {
 				GLib.warning ("(configuration): %s", err.message);
 			}
 		}
-
 
 		~Configuration ()
 		{
@@ -350,14 +382,18 @@ namespace Vtg
 				assert (check != null);
 				check.set_active (_sourcecode_outliner_enabled);
 				check.toggled.connect (this.on_checkbutton_toggled);
+				check = (Gtk.CheckButton) builder.get_object ("checkbutton-settings-project-find-root");
+				assert (check != null);
+				check.set_active (_project_find_root_folder);
+				check.toggled.connect (this.on_checkbutton_toggled);
 				var text = (Gtk.Entry) builder.get_object ("entry-settings-author");
 				assert (text != null);
 				text.set_text (_author);
-				text.notify["text"] += this.on_text_changed;
+				text.notify["text"].connect (this.on_text_changed);
 				text = (Gtk.Entry) builder.get_object ("entry-settings-email");
 				assert (text != null);
 				text.set_text (_email_address);
-				text.notify["text"] += this.on_text_changed;
+				text.notify["text"].connect (this.on_text_changed);
 				return _dialog;
 			} catch (Error err) {
 				GLib.warning ("(get_configuration_dialog): %s", err.message);
@@ -424,6 +460,11 @@ namespace Vtg
 					if (_project_only_show_sources != new_val) {
 						project_only_show_sources = new_val;
 					}
+				} else if (key == VTG_PROJECT_FIND_ROOT_FOLDER) {
+					var new_val = _gconf.get_bool (VTG_PROJECT_FIND_ROOT_FOLDER);
+					if (_project_find_root_folder != new_val) {
+						project_find_root_folder = new_val;
+					}
 				}
 			} catch (Error err) {
 				GLib.warning ("(on_conf_value_changed): %s", err.message);
@@ -442,6 +483,8 @@ namespace Vtg
 					_gconf.set_bool (VTG_ENABLE_SYMBOL_COMPLETION_KEY, new_val);
 				} else if (name == "checkbutton-settings-sourcecode-outliner") {
 					_gconf.set_bool (VTG_ENABLE_SOURCECODE_OUTLINER_KEY, new_val);
+				} else if (name == "checkbutton-settings-project-find-root") {
+					_gconf.set_bool (VTG_PROJECT_FIND_ROOT_FOLDER, new_val);
 				}
 			} catch (Error err) {
 				GLib.warning ("(on_checkbutton_toggled): %s", err.message);

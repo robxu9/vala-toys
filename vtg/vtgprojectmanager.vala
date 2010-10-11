@@ -47,7 +47,10 @@ namespace Vtg
 		
 		public Gtk.TreeModel model { get { return _model; } }
 		public Vbf.Project project { get { return _project; } }
-				
+
+		// this project was opened automatically by vala toys
+		public bool automanaged { get; set; }
+
 		public VcsTypes vcs_type = VcsTypes.NONE;
 		public string changelog_uri = null;
 
@@ -72,6 +75,13 @@ namespace Vtg
 					else
 						cleanup_completions ();
 				}
+			}
+		}
+
+		public Vala.HashMap<Vbf.Target, Afrodite.CompletionEngine> completions
+		{
+			get {
+				 return _completions;
 			}
 		}
 
@@ -238,14 +248,12 @@ namespace Vtg
 
 		public bool open (string project_filename) throws GLib.Error
 		{
-			IProjectBackend pm = new Backends.Autotools (); 
-			bool res = pm.probe (project_filename);
-			if (!res) {
-				pm = new Backends.SmartFolder ();
-				res = pm.probe (project_filename);
-			}
-			if (res) {
-				_project = pm.open (project_filename);
+			if (!FileUtils.test (project_filename, FileTest.IS_DIR | FileTest.IS_REGULAR | FileTest.EXISTS))
+				throw new FileError.FAILED (_("Can't load project, file not found"));
+
+			IProjectBackend backend;
+			if (Vbf.probe (project_filename, out backend)) {
+				_project = backend.open (project_filename);
 				if (_project == null)
 					return false;
 					
@@ -284,6 +292,7 @@ namespace Vtg
 					var completion = new CompletionEngine (target.name);
 					completion.begin_parsing.connect (this.on_completion_engine_begin_parse);
 					completion.end_parsing.connect (this.on_completion_engine_end_parse);
+					completion.file_parsed.connect (this.on_completion_engine_file_parsed);
 					_completions.@set (target, completion);
 
 					foreach(string path in target.get_include_dirs ()) {
@@ -339,8 +348,9 @@ namespace Vtg
 				foreach (CompletionEngine completion in _completions.get_values ()) {
 					completion.begin_parsing.disconnect (this.on_completion_engine_begin_parse);
 					completion.end_parsing.disconnect (this.on_completion_engine_end_parse);
+					completion.file_parsed.disconnect (this.on_completion_engine_file_parsed);
 					foreach (PluginInstance instance in Vtg.Plugin.main_instance.instances) {
-						instance.unbind_completion_engine (completion);						
+						instance.unbind_completion_engine (completion);
 					}
 				}
 				_completions.clear ();
@@ -364,6 +374,15 @@ namespace Vtg
 			if (AtomicInt.dec_and_test (ref parser_thread_count))
 				if (_idle_id == 0)
 					_idle_id = Idle.add (this.on_idle);
+		}
+
+		private void on_completion_engine_file_parsed (CompletionEngine sender, string filename, ParseResult parse_result)
+		{
+			foreach (PluginInstance instance in Plugin.main_instance.instances) {
+				var view = instance.project_manager_ui.project_builder.error_pane;
+				view.clear_messages_for_source (filename);
+				view.update_parse_result (filename, parse_result);
+			}
 		}
 
 		private bool on_idle ()

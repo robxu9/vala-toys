@@ -49,6 +49,7 @@ namespace Vtg
 						_outliner_view.clear_view ();
 					}
 					_active_view = value;
+					_outliner_view.active_view = _active_view;
 					if (_active_view != null) {
 						var doc = (Document) _active_view.get_buffer ();
 						setup_document (doc);
@@ -112,17 +113,19 @@ namespace Vtg
 		private void setup_document (Gedit.Document doc)
 		{
 			_active_doc = doc;
-			doc.notify["language"] += this.on_notify_language;
+			doc.notify["language"].connect (this.on_notify_language);
+			doc.notify["cursor-position"].connect (this.on_notify_cursor_position);
 		}
-	
+
 		public void cleanup_document ()
 		{
 			if (_active_doc != null) {
-				_active_doc.notify["language"] -= this.on_notify_language;
+				_active_doc.notify["language"].disconnect (this.on_notify_language);
+				_active_doc.notify["cursor-position"].disconnect (this.on_notify_cursor_position);
 				_active_doc = null;
 			}
 		}
-		
+
 		private void setup_completion_with_view (View view)
 		{
 			var scs = _plugin_instance.scs_find_from_view (view);
@@ -155,21 +158,41 @@ namespace Vtg
 			completion_setup = false;
 		}
 		
-		private void on_notify_language (Gedit.Document sender, ParamSpec pspec)
+		private void on_notify_language (GLib.Object sender, ParamSpec pspec)
 		{
-			if (Utils.is_vala_doc (sender)) {
+			var doc = (Gedit.Document)sender;
+			if (Utils.is_vala_doc (doc)) {
 				update_source_outliner_view ();
 				setup_completion_with_view (_active_view);
 			}
 		}
-		
+
+		private void on_notify_cursor_position (GLib.Object sender, ParamSpec pspec)
+		{
+			var doc = (Gedit.Document)sender;
+			update_cursor_position (doc);
+		}
+
+		private void update_cursor_position (Gedit.Document doc)
+		{
+			if (Utils.is_vala_doc (doc)) {
+				// get current line
+				unowned TextMark mark = (TextMark) doc.get_insert ();
+				TextIter start;
+				doc.get_iter_at_mark (out start, mark);
+				var line = start.get_line ();
+				var column = start.get_line_index ();
+				_outliner_view.set_current_position (line, column);
+			}
+		}
+
 		// this method is called from another thread context
 		// for this reason the update is done in the idle handler
 		private void on_end_parsing (Afrodite.CompletionEngine sender)
 		{
 			setup_idle ();
 		}
-		
+
 		private void setup_idle ()
 		{
 			Utils.trace ("Idle setup");
@@ -186,7 +209,7 @@ namespace Vtg
 			lock (idle_id) {
 				bool success = update_source_outliner_view ();
 				if (success) {
-						idle_id = 0;
+					idle_id = 0;
 				}
 				return !success; // remove the idle on a sucessful update
 			}
@@ -210,13 +233,13 @@ namespace Vtg
 				var options = Afrodite.QueryOptions.standard ();
 				options.all_symbols = true;
 				result = ast.get_symbols_for_path (options, name);
-				_outliner_view.update_view (result);
+				update_cursor_position (doc);
+				_outliner_view.update_view (name, result);
 				scs.completion_engine.release_ast (ast);
-			}			
+			}
 			if (result == null || result.is_empty) {
 				_outliner_view.clear_view ();
 			}
-			
 			return res;
 		}
 	}

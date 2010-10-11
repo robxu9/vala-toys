@@ -105,12 +105,15 @@ namespace Vtg
                                                         <menuitem name="ProjectSearch" action="ProjectSearch"/>
 							<menuitem name="ProjectSearchPrevReult" action="ProjectSearchPrevResult"/>
 							<menuitem name="ProjectSearchNextResult" action="ProjectSearchNextResult"/>
+							<separator />
+							<menuitem name="ProjectSearchSymbol" action="ProjectSearchSymbol"/>
                                                     </placeholder>
                                                     <placeholder name="SearchOps_8">
                                                     	<separator />
                                                         <menuitem name="GotoSymbol" action="ProjectGotoSymbol"/>
                                                     	<separator />
                                                         <menuitem name="GotoDefinition" action="ProjectGotoDefinition"/>
+                                                        <menuitem name="GotoOuterScope" action="ProjectGotoOuterScope"/>
                                                     </placeholder>
                                                 </menu>
                                             </menubar>
@@ -147,19 +150,20 @@ namespace Vtg
 			{"ProjectSearch", Gtk.STOCK_FIND, N_("Find In _Project..."), "<control><shift>F", N_("Search for text in all the project files"), on_project_search},
 			{"ProjectSearchNextResult", null, N_("Find N_ext In Project"), null, N_("Search forward for the same text in all the project files"), on_project_search_result_next},
 			{"ProjectSearchPrevResult", null, N_("Find Previ_ous In Project"), null, N_("Search backward for the same text in all the project files"), on_project_search_result_previous},
+			{"ProjectSearchSymbol", null, N_("Find Symbol In Project..."), "<control><alt>M", N_("Search a symbol in all the project files"), on_project_search_symbol},
 			{"ProjectGotoDocument", Gtk.STOCK_JUMP_TO, N_("_Go To Document..."), "<control>J", N_("Open a document that belong to this project"), on_project_goto_document},
 			{"ProjectGotoNextPosition", Gtk.STOCK_GO_FORWARD, N_("_Go To Next Source Position"), null, N_("Go to the next source position"), on_project_goto_next_position},
 			{"ProjectGotoPrevPosition", Gtk.STOCK_GO_BACK, N_("_Go To Previous Source Position"), "<alt>Left", N_("Go to the previous or last saved source position"), on_project_goto_prev_position},
 			{"ProjectGotoSymbol", null, N_("_Go To Symbol..."), "<control>M", N_("Goto to a specific symbol in the current source document"), on_project_goto_symbol},
 			{"ProjectGotoDefinition", null, N_("_Go To Definition"), "F12", N_("Goto to a current symbol definition"), on_project_goto_definition},
+			{"ProjectGotoOuterScope", null, N_("_Go To Outer Scope"), "<control>F12", N_("Goto to the method or class containing the cursor"), on_project_goto_outerscope},
 			{"ProjectCompleteWord", null, N_("Complete _Word"), "<control>space", N_("Try to complete the word in the current source document"), on_complete_word},
 			{"ProjectPrepareChangeLog", null, N_("_Prepare ChangeLog"), null, N_("Add an entry to the ChangeLog with all added/modified files"), on_prepare_changelog},
 			{"ProjectPrepareSingleFileChangeLog", null, N_("_Add Current File To ChangeLog"), null, N_("Add the current file to the ChangeLog"), on_prepare_single_file_changelog}
 		};
 
 		/* END UI */
-		private Vala.List<ProjectManager> _projects = new Vala.ArrayList<ProjectManager> ();
-		private ActionGroup _actions = null;
+		private Gtk.ActionGroup _actions = null;
 		private unowned Vtg.PluginInstance _plugin_instance = null;
 		private ProjectBuilder _prj_builder = null;
 		private ProjectExecuter _prj_executer = null;
@@ -173,9 +177,18 @@ namespace Vtg
 
 		//public signal void project_loaded (Project project);
 
+		public ProjectBuilder project_builder
+		{
+			get {
+				return _prj_builder;
+			}
+		}
+
 		public ProjectManagerUi (Vtg.PluginInstance plugin_instance)
 		{
 			this._plugin_instance = plugin_instance;
+			Vtg.Plugin.main_instance.projects.project_opened.connect (this.on_project_opened);
+			Vtg.Plugin.main_instance.projects.project_closed.connect (this.on_project_closed);
 			var status_bar = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
 			_sb_context_id = status_bar.get_context_id ("symbol status");
 			_plugin_instance.project_view.notify["current-project"] += this.on_current_project_changed;
@@ -217,6 +230,8 @@ namespace Vtg
 		~ProjectManagerUi ()
 		{
 			Utils.trace ("ProjectManagerUi destroying");
+			Vtg.Plugin.main_instance.projects.project_opened.disconnect (this.on_project_opened);
+			Vtg.Plugin.main_instance.projects.project_closed.disconnect (this.on_project_closed);
 			SignalHandler.disconnect (_prj_executer, signal_ids[0]);
 			SignalHandler.disconnect (_prj_executer, signal_ids[1]);
 			SignalHandler.disconnect (_prj_builder, signal_ids[2]);
@@ -233,7 +248,7 @@ namespace Vtg
 
 		private void initialize_ui ()
 		{
-			_actions = new ActionGroup ("ProjectManagerActionGroup");
+			_actions = new Gtk.ActionGroup ("ProjectManagerActionGroup");
 			_actions.set_translation_domain (Config.GETTEXT_PACKAGE);
 			_actions.add_actions (_action_entries, this);
 			var recent_action = new Gtk.RecentAction ("ProjectRecent", "Open Recent Project", "", "");
@@ -324,7 +339,23 @@ namespace Vtg
 				
 			sch.goto_definition ();
 		}
-		
+
+		private void on_project_goto_outerscope (Gtk.Action action)
+		{
+			var project = _plugin_instance.project_view.current_project;
+			return_if_fail (project != null);
+
+			var view = _plugin_instance.window.get_active_view ();
+			if (view == null)
+				return;
+						
+			var sch = _plugin_instance.scs_find_from_view (view);
+			if (sch == null)
+				return;
+				
+			sch.goto_outerscope ();
+		}
+
 		private void on_project_open (Gtk.Action action)
 		{
 			var dialog = new Gtk.FileChooserDialog (_("Open Project"),
@@ -374,6 +405,20 @@ namespace Vtg
 
 			//close project
 			close_project (project);
+		}
+
+		private void on_project_opened (Vtg.Projects sender, GLib.Object l)
+		{
+			var project = (Vtg.ProjectManager)l;
+			project.symbol_cache_building.connect (this.on_symbol_cache_building);
+			project.symbol_cache_builded.connect (this.on_symbol_cache_builded);
+		}
+
+		private void on_project_closed (Vtg.Projects sender, GLib.Object l)
+		{
+			var project = (Vtg.ProjectManager)l;
+			project.symbol_cache_building.disconnect (this.on_symbol_cache_building);
+			project.symbol_cache_builded.disconnect (this.on_symbol_cache_builded);
 		}
 
 		private void on_project_change (Gtk.Action action)
@@ -463,7 +508,48 @@ namespace Vtg
 				}
 			}
 		}
-		
+
+		private void on_project_search_symbol (Gtk.Action action)
+		{
+			if (_plugin_instance.project_view.current_project == null)
+				return;
+
+			try {
+				ProjectManager pm = _plugin_instance.project_view.current_project;
+				Gtk.TreeStore model = FilteredListDialog.create_model ();
+				bool show = true;
+
+				/* getting the symbols */
+				Afrodite.Ast ast;
+				foreach (Afrodite.CompletionEngine engine in pm.completions.get_values ()) {
+					bool res = engine.try_acquire_ast (out ast, 1000);
+					if (res) {
+						build_search_symbol_model (pm.project.id, model, ast.root);
+						engine.release_ast (ast);
+					} else {
+						show = false;
+						break;
+					}
+				}
+				if (!show)
+					return;
+
+				var dialog = new FilteredListDialog (model, this.sort_symbol_model);
+				dialog.set_transient_for (_plugin_instance.window);
+				if (dialog.run ()) {
+					Afrodite.Symbol symbol;
+					model.get (dialog.selected_iter , FilteredListDialogColumns.OBJECT, out symbol);
+					Afrodite.SourceReference sr;
+					if (symbol.has_source_references) {
+						sr = symbol.source_references.get (0);
+						_plugin_instance.activate_uri (Filename.to_uri (sr.file.filename), sr.first_line, sr.first_column);
+					}
+				}
+			} catch (Error e) {
+				GLib.warning ("error: %s", e.message);
+			}
+		}
+
 		private void on_project_goto_next_position (Gtk.Action action)
 		{
 			_plugin_instance.bookmarks.move_next ();
@@ -536,6 +622,43 @@ namespace Vtg
 
 				if (item.children.size > 0) {
 					build_goto_symbol_model (model, item, iter);
+				}
+			}
+		}
+
+		private void build_search_symbol_model (string project_path, TreeStore model, Afrodite.Symbol parent, TreeIter? parent_iter = null)
+		{
+			if (!parent.has_children)
+				return;
+
+			foreach (Afrodite.Symbol symbol in parent.children) {
+				bool add = false;
+
+				if (!symbol.name.has_prefix ("!")) {
+					// test if symbol belongs to current projetc files
+					foreach (Afrodite.SourceReference sr in symbol.source_references) {
+						if (sr.file.filename.has_prefix (project_path) && !sr.file.filename.has_suffix (".vapi")) {
+							add = true;
+							break;
+						}
+					}
+				}
+
+				if (add) {
+					TreeIter iter;
+
+					model.append (out iter, parent_iter);
+					model.set (iter,
+						FilteredListDialogColumns.NAME , symbol.display_name,
+						FilteredListDialogColumns.MARKUP, symbol.display_name,
+						FilteredListDialogColumns.VISIBILITY, true,
+						FilteredListDialogColumns.OBJECT, symbol,
+						FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
+						FilteredListDialogColumns.SELECTABLE, true);
+
+					if (symbol.has_children) {
+						build_search_symbol_model (project_path, model, symbol, iter);
+					}
 				}
 			}
 		}
@@ -902,24 +1025,13 @@ namespace Vtg
 		private void open_project (string name)
 		{
 			try {
-				var project = find_project_for_id (name);
+				var project = Vtg.Plugin.main_instance.projects.get_project_manager_for_project_id (name);
 				
 				if (project != null) {
 					// activate project
 					_plugin_instance.project_view.current_project = project;
 				} else {
-					// open project
-					project = new ProjectManager (Vtg.Plugin.main_instance.config.symbol_enabled);
-					project.symbol_cache_building.connect (this.on_symbol_cache_building);
-					project.symbol_cache_builded.connect (this.on_symbol_cache_builded);
-					
-					if (project.open (name)) {
-						_projects.add (project);
-						//HACK: why the signal isn't working?!?!
-						//this.project_loaded (project);
-						Vtg.Plugin.main_instance.on_project_loaded (this, project);
-						_plugin_instance.project_view.add_project (project.project);
-					}
+					Vtg.Plugin.main_instance.projects.open_project (name);
 				}
 			} catch (Error err) {
 				Vtg.Interaction.error_message (_("Error opening project %s").printf (name), err);
@@ -928,12 +1040,7 @@ namespace Vtg
 
 		internal void close_project (ProjectManager project)
 		{
-			project.symbol_cache_building.disconnect (this.on_symbol_cache_building);
-			project.symbol_cache_builded.disconnect (this.on_symbol_cache_builded);
-			_plugin_instance.project_view.remove_project (project.project);
-			Vtg.Plugin.main_instance.on_project_closed (this, project);
-			project.close ();
-			_projects.remove (project);
+			Vtg.Plugin.main_instance.projects.close_project (project);
 		}
 
 		private bool create_project (string project_path)
@@ -979,17 +1086,6 @@ namespace Vtg
 				GLib.warning ("cannot open directort %s", dir_path);
 				return false;
 			}
-		}
-
-		public ProjectManager? find_project_for_id (string id)
-		{
-			foreach (ProjectManager project_manager in _projects) {
-				if (project_manager.project.id == id) {
-					return project_manager;
-				}
-			}
-			
-			return null;
 		}
 	}
 }

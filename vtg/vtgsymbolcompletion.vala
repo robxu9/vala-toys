@@ -138,7 +138,50 @@ namespace Vtg
 				display_completion_lock_failed_message ();
 			}
 		}
-		
+
+		public void goto_outerscope ()
+		{
+			Afrodite.Symbol? item = _provider.get_symbol_containing_cursor (500);
+			var view = _plugin_instance.window.get_active_view ();
+
+			if (item != null && view != null) {
+				if (item.has_source_references) {
+					var doc = (Gedit.Document) view.get_buffer ();
+					string name = Utils.get_document_name (doc);
+					do {
+						item = item.parent;
+					} while (item.fully_qualified_name != null && (item.name.has_prefix ("!") || item.type_name == "Enum"));
+
+					Afrodite.SourceReference sr = item.lookup_source_reference_filename (name);
+					if (sr != null) {
+						int line = sr.first_line;
+						int col = sr.first_column - 1;
+						if (col < 0)
+							col = 0;
+
+						SourceBookmark bookmark;
+						unowned TextMark mark = (TextMark) doc.get_insert ();
+						TextIter start;
+						doc.get_iter_at_mark (out start, mark);
+
+						// first create a bookmark with the current position
+						bookmark = new SourceBookmark ();
+						bookmark.uri = doc.get_uri ();
+						bookmark.line = start.get_line () + 1;
+						bookmark.column = start.get_line_offset () + 1;
+						_plugin_instance.bookmarks.add_bookmark (bookmark); 
+
+						doc.goto_line_offset (line, col);
+						view.scroll_to_cursor ();
+					} else {
+						Utils.trace ("no source reference for outer symbol %s: %s", item.fully_qualified_name, name);
+					}
+				}
+			} else {
+				display_completion_lock_failed_message ();
+			}
+		}
+
 		private void on_completion_lock_failed (SymbolCompletionProvider sender)
 		{
 			display_completion_lock_failed_message ();

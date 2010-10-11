@@ -619,17 +619,10 @@ namespace Afrodite
 						continue;
 					}
 					//Utils.trace ("searching %s: %d-%d %d-%d vs %d, %d", symbol.name, sr.first_line, sr.first_column, sr.last_line, sr.last_column, line, column);
-					if ((sr.first_line < line || ((line == sr.first_line && column >= sr.first_column) || sr.first_column == 0))
-					    && (line < sr.last_line || ((line == sr.last_line) || sr.last_column == 0))) {
+					if (sr.contains_position (line, column)) {
 						// let's find the best symbol
-						if (result == null 
-						   || result_sr.first_line < sr.first_line 
-						   || (result_sr.first_line == sr.first_line && result_sr.first_column < sr.first_column && result_sr.first_column != 0 && sr.first_column != 0)
-						   || result_sr.last_line > sr.last_line
-						   || (result_sr.last_line == sr.last_line && result_sr.last_column  > sr.last_column && result_sr.last_column != 0 && sr.last_column  != 0))
-						{
+						if (result == null || result_sr.contains_source_reference (sr)) {
 							// this symbol is better
-							
 							result = symbol;
 							result_sr = sr;
 						}

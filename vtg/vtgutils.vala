@@ -353,7 +353,7 @@ namespace Vtg
 				}
 			}
 
-			if (is_vala_doc(doc) && !name.has_suffix (".vala")) {
+			if (is_vala_doc(doc) && (!name.has_suffix (".vala") && !name.has_suffix (".vapi"))) {
 				name += ".vala";
 			}
 			return name;
