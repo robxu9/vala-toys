@@ -13,7 +13,7 @@ AM_CPPFLAGS = \
 
 noinst_LTLIBRARIES = libgen-project.la
 
-libgen_project_la_VALAFLAGS = -C -H gen-project.h --library gen-project-1.0 --vapidir $(top_srcdir)/vapi --pkg gio-2.0 --pkg config --pkg vala-$(VALA_VERSION) --pkg utils 
+libgen_project_la_VALAFLAGS = -C -H gen-project.h --library gen-project-1.0 --vapidir $(top_srcdir)/vapi --pkg gio-2.0 --pkg config --pkg utils 
 
 #--basedir $(top_srcdir)/gen-project/libgen-project 
 

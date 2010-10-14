@@ -151,14 +151,14 @@ namespace Afrodite
 			}
 		}
 
-		private Afrodite.MemberBinding get_vala_member_binding (global::MemberBinding binding)
+		private Afrodite.MemberBinding get_vala_member_binding (Vala.MemberBinding binding)
 		{
 			switch (binding) {
-				case global::MemberBinding.INSTANCE:
+				case Vala.MemberBinding.INSTANCE:
 					return Afrodite.MemberBinding.INSTANCE;
-				case global::MemberBinding.CLASS:
+				case Vala.MemberBinding.CLASS:
 					return Afrodite.MemberBinding.CLASS;
-				case global::MemberBinding.STATIC:
+				case Vala.MemberBinding.STATIC:
 					return Afrodite.MemberBinding.STATIC;
 				default:
 					warning ("Unknown vala member binding constant");
