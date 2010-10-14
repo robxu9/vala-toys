@@ -1,6 +1,16 @@
 2010-10-15  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsymbolcompletionprovider.vala:
+
+	don't generate a completion event when pressing TAB
+
+	* vtg/vtgutils.vala:
+
+	don't ignore < > characters during line parsing
+
+2010-10-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
 	* vtg/vtgutils.vala:
 
 	better parse scheduling logic

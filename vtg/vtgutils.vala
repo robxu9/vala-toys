@@ -661,7 +661,7 @@ namespace Vtg
 						} else if (ch == '_' || ch == '.' || (tok.length == 0 && ch.isalpha ()) || (tok.length > 0 && ch.isalnum ())) {
 							// valid identifier
 							tok = ch.to_string () + tok;
-						} else if (ch == ' ' || ch == '=' || ch == '!') {
+						} else if (ch == ' ' || ch == '=' || ch == '!' || ch == '<' || ch == '>') {
 							if (in_string) {
 								tok = ch.to_string () + tok;
 							} else
@@ -686,7 +686,7 @@ namespace Vtg
 					i--;
 				}
 			}
-			
+
 			return tok == "" ? null : tok;
 		}
 		

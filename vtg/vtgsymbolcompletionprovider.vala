@@ -125,19 +125,21 @@ namespace Vtg
 			TextIter start;
 
 			src.get_iter_at_mark (out start, mark);
+			unichar ch = start.get_char ();
+			bool result = true;
+			
 			TextIter pos = start;
-			bool result = !Utils.is_inside_comment_or_literal (src, pos);
-
-			if (result) {
+			if (!Utils.is_inside_comment_or_literal (src, pos)) {
 				pos = start;
 				int line = pos.get_line ();
-				unichar ch = pos.get_char ();
+			
 				if (pos.backward_char ()) {
 					if (pos.get_line () == line) {
 						unichar prev_ch = pos.get_char ();
 						if (prev_ch == '(' || ch == '('
 						    || prev_ch == '[' || ch == '['
 						    || prev_ch == ' '
+						    || prev_ch == '\t'
 						    || prev_ch == ')'
 						    || prev_ch == ']'
 						    || prev_ch == ';'
