@@ -250,11 +250,12 @@ namespace Vtg
 		private static Gtk.Builder _builder = null;
 		private static string[] _vala_keywords = new string[] {
 				"var", "out", "ref", "const",
-				"static", "inline",
+				"static", "inline", "readonly", "async",
 				"public", "protected", "private", "internal",
 				"this", "base",
 				"if", "while", "do", "else", "return",
-				"try", "catch"
+				"try", "catch",
+				"class", "struct", "interface", "enum", "signal"
 		};
 
 		//public const int prealloc_count = 500;

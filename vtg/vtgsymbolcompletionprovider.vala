@@ -39,7 +39,6 @@ namespace Vtg
 		
 		private uint _timeout_id = 0;
 		private uint _idle_id = 0;
-		private bool _all_doc = false; //this is a hack!!!
 
 		private int _prealloc_index = 0;
 
@@ -50,13 +49,15 @@ namespace Vtg
 
 		private Gtk.SourceCompletionInfo _calltip_window = null;
 		private Gtk.Label _calltip_window_label = null;
-		
-		private int _last_line = -1;
-		private bool _doc_changed = false;
-		
+
 		private unowned SymbolCompletion _symbol_completion = null;
 		private unowned CompletionEngine _completion = null;
-		
+
+		private unichar[] _reparse_chars = new unichar[] { '\n', '}', ';' };
+
+		private bool _doc_changed = false;
+		private int _last_line = 0;
+
 		public SymbolCompletionProvider (Vtg.SymbolCompletion symbol_completion)
 		{
 			_icon = this.get_icon ();
@@ -72,18 +73,17 @@ namespace Vtg
 			_symbol_completion.view.key_press_event.connect (this.on_view_key_press);
 			_symbol_completion.view.focus_out_event.connect (this.on_view_focus_out);
 			_symbol_completion.view.get_completion ().show.connect (this.on_completion_window_hide);
-			
-			doc.notify["text"] += this.on_text_changed;
-			doc.notify["cursor-position"] += this.on_cursor_position_changed;
+
+			doc.notify["cursor-position"].connect (this.on_cursor_position_changed);
 			Signal.connect (doc, "saved", (GLib.Callback) on_document_saved, this);
 			
 			var status_bar = (Gedit.Statusbar) _symbol_completion.plugin_instance.window.get_statusbar ();
 			_sb_context_id = status_bar.get_context_id ("symbol status");
 			
 			_cache_building = true; 
-			_all_doc = true;
 			_symbol_completion.notify["completion-engine"].connect (this.on_completion_engine_changed);
 			_completion = _symbol_completion.completion_engine;
+			_last_line = this.get_current_line ();
 		}
 
 		~SymbolCompletionProvider ()
@@ -99,8 +99,7 @@ namespace Vtg
 			_symbol_completion.view.focus_out_event.disconnect (this.on_view_focus_out);
 			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			_symbol_completion.notify["completion-engine"].disconnect (this.on_completion_engine_changed);
-			doc.notify["text"] -= this.on_text_changed;
-			doc.notify["cursor-position"] -= this.on_cursor_position_changed;
+			doc.notify["cursor-position"].disconnect (this.on_cursor_position_changed);
 			SignalHandler.disconnect_by_func (doc, (void*)this.on_document_saved, this);
 						
 			if (_sb_msg_id != 0) {
@@ -191,7 +190,7 @@ namespace Vtg
 				bool dummy, is_declaration;
 				ParserUtils.parse_line (text, out word, out dummy, out dummy, out is_declaration);
 				
-				if (!is_declaration && word.rstr(".") == null) {
+				if (!is_declaration && word != null && word.rstr(".") == null) {
 					symbols_in_scope_mode = true;
 					_filter = false;
 				}
@@ -199,13 +198,15 @@ namespace Vtg
 
 			if (!_filter) {
 				_proposals = new GLib.List<Gtk.SourceCompletionItem> ();
-				if (symbols_in_scope_mode)
-					this.lookup_visible_symbols_in_scope (word, CompareMode.START_WITH);
-				else
+				if (symbols_in_scope_mode) {
+					if (word != null) {
+						this.lookup_visible_symbols_in_scope (word, CompareMode.START_WITH);
+					}
+				} else
 					this.complete_current_word ();
 				
 				context.add_proposals (this, _proposals, true);
-			} else {
+			} else if (word != null) {
 				string[] tmp = word.split (".");
 				string last_part = "";
 				
@@ -287,88 +288,57 @@ namespace Vtg
 		[CCode(instance_pos=-1)]
 		private void on_document_saved (Gedit.Document doc, void *arg1)
 		{
-			_doc_changed = true;
-			_all_doc = true;
 			if (_sb.path != Utils.get_document_name (doc))
 				_sb.path = Utils.get_document_name (doc);
 
-			this.schedule_reparse ();
+			this.parse ();
 		}
-		
-		private void on_completion_engine_changed (GLib.Object sender, ParamSpec pspec)
+
+		private int get_current_line (Gedit.Document? doc = null)
 		{
-			_completion = _symbol_completion.completion_engine;
+			int line, col;
+			this.get_current_line_and_column (out line, out col);
+			return line;
 		}
-		
-		private int get_current_line_index (Gedit.Document? doc = null)
-		{
-			if (doc == null) {
-				doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
-			}
-			
-			// get current line
-			unowned TextMark mark = (TextMark) doc.get_insert ();
-			TextIter start;
-			doc.get_iter_at_mark (out start, mark);
-			return start.get_line ();
-		}
-		
-		private void schedule_reparse ()
-		{
-			if (_timeout_id == 0 && _doc_changed) {
-				_timeout_id = Timeout.add (250, this.on_timeout_parse);
-			}	
-		}
-		
-		private void on_text_changed (GLib.Object sender, ParamSpec pspec)
-		{
-			_doc_changed = true;
-			// parse text only on init or line changes
-			if (_last_line == -1 || _last_line != get_current_line_index ()) {
-				_all_doc = true;
-				schedule_reparse ();
-			}
-		}
-		
+
 		private void on_cursor_position_changed (GLib.Object sender, ParamSpec pspec)
 		{
-			// parse text only on init or line changes
-			if (_last_line == -1 || _last_line != get_current_line_index ()) {
-				_all_doc = true;
-				schedule_reparse ();
+			int curr_line = get_current_line ();
+			if (_doc_changed && _last_line != curr_line) {
+				_last_line = curr_line;
+				parse ();
 			}
 		}
 
-		private bool on_timeout_parse ()
+		private void on_completion_engine_changed (GLib.Object sender, ParamSpec pspec)
 		{
-			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
-			parse (doc);
-			_timeout_id = 0;
-			_last_line = get_current_line_index (doc);
-			return false;
+			_completion = _symbol_completion.completion_engine;
 		}
 
 		private bool on_view_key_press (Gtk.Widget sender, Gdk.EventKey evt)
 		{
 			unichar ch = Gdk.keyval_to_unicode (evt.keyval);
-			
+
 			if (ch == '(') {
 				this.show_calltip ();
 			} else if (evt.keyval == Gdk.Key_Escape || ch == ')' || ch == ';' || ch == '{' ||
 					(evt.keyval == Gdk.Key_Return && (evt.state & ModifierType.SHIFT_MASK) != 0)) {
 				this.hide_calltip ();
 			}
-			if (evt.keyval == Gdk.Key_Return || ch == ';') {
-				_all_doc = true; // new line or eol, reparse all source buffer
-			} else if (ch.isprint () 
-				   || evt.keyval == Gdk.Key_Delete
-				   || evt.keyval == Gdk.Key_BackSpace) {
-				_all_doc = false; // a change so reparse the buffer minus the current line
+
+			if (!_doc_changed && (ch.isalnum () || ch.isprint ())) {
 				_doc_changed = true;
+			}
+
+			foreach (unichar reparse_char in _reparse_chars) {
+				if (ch == reparse_char || (reparse_char == '\n' && evt.keyval == Gdk.Key_Return)) {
+					idle_parse ();
+					break;
+				}
 			}
 			return false;
 		}
-		
+
 		private void show_calltip ()
 		{
 			Afrodite.Symbol? completion_result = get_current_symbol_item ();
@@ -408,8 +378,17 @@ namespace Vtg
 			_calltip_window.set_widget (_calltip_window_label);
 		}
 
-		private void parse (Gedit.Document doc)
+		private void idle_parse ()
 		{
+			if (_idle_id == 0) {
+				_idle_id = Idle.add (this.parse, Priority.LOW);
+			}
+		}
+
+		private bool parse ()
+		{
+			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
+
 			// automatically add package if this buffer
 			// belong to the default project
 			var current_project = _symbol_completion.plugin_instance.project_view.current_project; 
@@ -419,11 +398,12 @@ namespace Vtg
 				}
 			}
 
-			// schedule a parse
-			var buffer = this.get_document_text (doc, _all_doc);
-			_sb.content = buffer;
+			// request the parse to the completion engine
+			_sb.content = doc.text;
 			_completion.queue_source (_sb);
 			_doc_changed = false;
+			_idle_id = 0;
+			return false;
 		}
 
 		private int autoadd_packages (Gedit.Document doc, Vtg.ProjectManager project_manager)
@@ -431,7 +411,7 @@ namespace Vtg
 			int added_count = 0;
 
 			try {
-				var text = this.get_document_text (doc, true);
+				var text = doc.text;
 				GLib.Regex regex = new GLib.Regex ("""^\s*(using)\s+(\w\S*)\s*;.*$""");
 
 				foreach (string line in text.split ("\n")) {
@@ -487,9 +467,6 @@ namespace Vtg
 
 		private void append_symbols (Afrodite.QueryOptions? options, Vala.List<Afrodite.Symbol> symbols, bool include_private_symbols = true)
 		{
-			//unowned Gtk.SourceCompletionItem[] proposals = Utils.get_proposal_cache ();
-
-			
 			foreach (Afrodite.Symbol symbol in symbols) {
 				if ((!include_private_symbols && symbol.access == Afrodite.SymbolAccessibility.PRIVATE)
 					|| symbol.name == "new"
@@ -658,7 +635,7 @@ namespace Vtg
 			string symbol_name = last_part;
 			
 			//don't try to find method signature if is a: for, foreach, if, while etc...
-			if (is_vala_keyword (symbol_name)) {
+			if (Vtg.Utils.is_vala_keyword (symbol_name)) {
 				return null;
 			}
 			
@@ -859,58 +836,6 @@ namespace Vtg
 			result = ast.get_symbol_for_name_and_path (options, word, _sb.path, line, column);
 			
 			return result;
-		}
-
-		private bool is_vala_keyword (string keyword)
-		{
-			return (keyword == "if"
-				|| keyword == "for"
-				|| keyword == "foreach"
-				|| keyword == "while"
-				|| keyword == "switch");
-		}
-
-		private string get_document_text (Gedit.Document doc, bool all_doc = false)
-		{
-			weak TextMark mark = (TextMark) doc.get_insert ();
-			TextIter end;
-			TextIter start;
-
-			doc.get_iter_at_mark (out start, mark);
-			string doc_text;
-			if (all_doc || doc.is_untouched ()) {
-				end = start;
-				start.set_line_offset (0);
-				while (start.backward_line ())
-					;
-
-				while (end.forward_line ())
-					;
-				
-				doc_text = start.get_text (end);
-			} else {
-				end = start;
-				end.set_line_offset (0);
-				while (start.backward_line ())
-					;
-
-				string text1 = start.get_text (end);
-				string text2 = "";
-				//trick: jump the current edited row (there
-				//are a lot of probability that this row will
-				//cause a parser error)
-				if (end.forward_line ()) {
-					end.set_line_offset (0);
-					start = end;
-					while (end.forward_line ())
-						;
-
-					text2 = start.get_text (end);
-				}
-				doc_text = "%s\n%s".printf (text1, text2);
-			}
-			
-			return doc_text;
 		}
 	}
 }
