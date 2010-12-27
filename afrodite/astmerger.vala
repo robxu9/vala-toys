@@ -611,7 +611,7 @@ namespace Afrodite
 			}
 		}
 
-		public override void visit_formal_parameter (FormalParameter p) 
+		public override void visit_formal_parameter (Vala.Parameter p) 
 		{
 			DataType d;
 			

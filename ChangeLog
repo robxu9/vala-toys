@@ -1,3 +1,12 @@
+2010-12-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fix compilation with vala master
+
 2010-10-15  Andrea Del Signore  <sejerpz@tin.it>
 
 	* vtg/vtgsymbolcompletionprovider.vala:

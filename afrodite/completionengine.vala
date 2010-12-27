@@ -39,7 +39,7 @@ namespace Afrodite
 		private Mutex _merge_queue_mutex;
 		private Mutex _ast_mutex = null;
 		
-		private unowned Thread _parser_thread;
+		private unowned Thread<int> _parser_thread;
 		private int _parser_stamp = 0;
 		private int _parser_remaining_files = 0;
 		private int _current_parsing_total_file_count = 0;
@@ -245,15 +245,15 @@ namespace Afrodite
 		{				
 			try {
 				if (_parser_thread != null) {
-					_parser_thread.join ();
+					_parser_thread.join<int> ();
 				}
-				_parser_thread = Thread.create_full (this.parse_sources, 0, true, false, ThreadPriority.LOW);
+				_parser_thread = Thread.create_full<int> (this.parse_sources, 0, true, false, ThreadPriority.LOW);
 			} catch (ThreadError err) {
 				error ("%s: can't create parser thread: %s", id, err.message);
 			}
 		}
 
-		private void* parse_sources ()
+		private int parse_sources ()
 		{
 #if DEBUG
 			GLib.Timer timer = new GLib.Timer ();
@@ -405,7 +405,7 @@ namespace Afrodite
 			Utils.trace ("engine %s: parser thread *** exiting *** (elapsed time parsing %g, resolving %g)...", id, parsing_time, timer.elapsed ());
 #endif
 			end_parsing (this);
-			return null;
+			return 0;
 		}
 		
 		private bool on_parse_results ()

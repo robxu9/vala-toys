@@ -108,7 +108,7 @@ namespace Vtg
 			}
 		}
 
-		public string get_name ()
+		public unowned string get_name ()
 		{
 			return _("Vala Toys Completion Provider");
 		}
@@ -237,7 +237,7 @@ namespace Vtg
 			}
 		}
 
-		public unowned Gdk.Pixbuf? get_icon ()
+		public unowned Gdk.Pixbuf get_icon ()
 		{
 			if (_icon == null)
 			{
@@ -263,10 +263,10 @@ namespace Vtg
 				Gtk.SourceCompletionActivation.USER_REQUESTED;
 		}
 
-		public unowned Gtk.Widget? get_info_widget (Gtk.SourceCompletionProposal proposal)
+		/*public unowned Gtk.Widget get_info_widget (Gtk.SourceCompletionProposal proposal)
 		{
 			return null;
-		}
+		}*/
 
 		public int get_interactive_delay ()
 		{
@@ -278,9 +278,10 @@ namespace Vtg
 			return false;
 		}
 
-		public void update_info (Gtk.SourceCompletionProposal proposal, Gtk.SourceCompletionInfo info)
+		/*public void update_info (Gtk.SourceCompletionProposal proposal, Gtk.SourceCompletionInfo info)
 		{
-		}
+		}*/
+
 		private bool on_view_focus_out (Gtk.Widget sender, Gdk.EventFocus event)
 		{
 			hide_calltip ();
