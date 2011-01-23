@@ -107,8 +107,15 @@ namespace Vtg
 				status_bar.remove (_sb_context_id, _sb_msg_id);
 			}
 		}
-
+/*
 		public unowned string get_name ()
+		{
+			// it's a bug in the vapi the get_name shouldn't be unwoned!
+			string* hack = _("Vala Toys Completion Provider").dup();
+			return hack; 
+		}
+*/
+		public string get_name ()
 		{
 			return _("Vala Toys Completion Provider");
 		}
@@ -237,7 +244,7 @@ namespace Vtg
 			}
 		}
 
-		public unowned Gdk.Pixbuf get_icon ()
+		public unowned Gdk.Pixbuf? get_icon ()
 		{
 			if (_icon == null)
 			{
