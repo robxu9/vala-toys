@@ -307,7 +307,7 @@ namespace Vtg
 					instance.backward_skip_spaces (start);
 					prev_char_is_parenthesis = start.get_char () == '(';
 					
-					line_has_semicolon = ParserUtils.get_line_to_end (pos).rstr (";") != null;
+					line_has_semicolon = ParserUtils.get_line_to_end (pos).last_index_of (";") != -1;
 
 					if (src.has_selection) {
 						if (instance.enclose_selection_with_delimiters (src, "(", ")")) {

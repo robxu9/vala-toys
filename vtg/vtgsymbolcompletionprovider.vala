@@ -199,7 +199,7 @@ namespace Vtg
 				bool dummy, is_declaration;
 				ParserUtils.parse_line (text, out word, out dummy, out dummy, out is_declaration);
 				
-				if (!is_declaration && word != null && word.rstr(".") == null) {
+				if (!is_declaration && word != null && word.last_index_of (".") == -1) {
 					symbols_in_scope_mode = true;
 					_filter = false;
 				}
@@ -724,10 +724,10 @@ namespace Vtg
 			
 			if (is_creation) {
 				options = QueryOptions.creation_methods ();
-			} else if (is_assignment || (line != null && line.rstr (":") != null)) {
+			} else if (is_assignment || (line != null && line.last_index_of (":") != -1)) {
 				options = QueryOptions.standard ();
 				options.binding |= Afrodite.MemberBinding.STATIC;
-			} else if (line != null && (line.str ("throws ") != null || line.str ("throw ") != null)) {
+			} else if (line != null && (line.index_of ("throws ") != -1 || line.index_of ("throw ") != -1)) {
 				options = QueryOptions.error_domains ();
 			}
 			if (options == null) {
