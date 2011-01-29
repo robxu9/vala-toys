@@ -32,6 +32,7 @@ namespace Vtg
 		ERROR,
 		CHILD_PROCESS,
 		BUILD,
+		AUTO_BUILD,
 		SEARCH
 	}
 	

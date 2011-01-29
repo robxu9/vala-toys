@@ -62,6 +62,7 @@ namespace Vtg
 			COLUMN,
 			IS_WARNING,
 			IS_VALA_SOURCE,
+			IS_AUTO_BUILD_MESSAGE,
 			PROJECT,
 			COLUMNS_COUNT
 		}
@@ -158,7 +159,7 @@ namespace Vtg
 			_ui.pack_start (toolbar, false, true, 0);
 			
 			//error / warning list view
-			this._child_model = new ListStore (Columns.COLUMNS_COUNT, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof (int), typeof (bool), typeof(GLib.Object));
+			this._child_model = new ListStore (Columns.COLUMNS_COUNT, typeof(string), typeof(string), typeof(string), typeof(int), typeof(int), typeof (int), typeof (bool), typeof(bool), typeof(GLib.Object));
 			var model_tmp = new Gtk.TreeModelFilter (_child_model, null);
 			_model = model_tmp;
 			_model.set_visible_func (this.filter_model);
@@ -364,6 +365,11 @@ namespace Vtg
 				_current_error_row = (this.shown_messages) - 1;
 		}
 
+		public void clear_messages ()
+		{
+			_child_model.clear ();
+		}
+
 		public void clear_messages_for_source (string filename)
 		{
 			TreeIter iter;
@@ -373,8 +379,12 @@ namespace Vtg
 				do {
 					string file;
 					bool is_warning;
-					_child_model.get (iter, Columns.FILENAME, out file, Columns.IS_WARNING, out is_warning);
-					if (file == basename) {
+					bool is_auto_build;
+
+					_child_model.get (iter, Columns.FILENAME, out file,
+								Columns.IS_WARNING, out is_warning,
+								Columns.IS_AUTO_BUILD_MESSAGE, out is_auto_build);
+					if (is_auto_build && file == basename) {
 						TreeIter copy = iter;
 						to_del.add (copy);
 						if (is_warning)
@@ -393,17 +403,17 @@ namespace Vtg
 		public void update_parse_result (string filename, Afrodite.ParseResult parse_result)
 		{
 			foreach (string message in parse_result.errors) {
-				add_message (OutputTypes.BUILD, message);
+				add_message (OutputTypes.AUTO_BUILD, message);
 			}
 			foreach (string message in parse_result.warnings) {
-				add_message (OutputTypes.BUILD, message);
+				add_message (OutputTypes.AUTO_BUILD, message);
 			}
 			update_toolbar_button_status ();
 		}
 
 		private void add_message (OutputTypes output_type, string message)
 		{
-			if (output_type != OutputTypes.BUILD)
+			if (output_type != OutputTypes.BUILD && output_type != OutputTypes.AUTO_BUILD)
 				return;
 
 			string[] lines = message.split ("\n");
@@ -413,9 +423,9 @@ namespace Vtg
 				if (!StringUtils.is_null_or_empty (tmp[0])
 				    && !StringUtils.is_null_or_empty (tmp[1])) {
 					if (tmp[0].has_suffix (".vala") || tmp[0].has_suffix (".vapi")) {
-						add_vala_message (tmp[0], tmp[1]);
+						add_vala_message (tmp[0], tmp[1], output_type == OutputTypes.AUTO_BUILD);
 					} else if (tmp[0].has_suffix (".c") || tmp[0].has_suffix (".h")) {
-						add_c_message (tmp[0], tmp[1]);
+						add_c_message (tmp[0], tmp[1], output_type == OutputTypes.AUTO_BUILD);
 					}
 				}
 				idx++;
@@ -438,7 +448,7 @@ namespace Vtg
 			vtgprojectmanagerui.vala:377.13-377.16: warning: local variable `iter' declared but never used
 
 		 */
-		private void add_vala_message (string file, string message)
+		private void add_vala_message (string file, string message, bool is_auto_build_message)
 		{
 			string[] parts = message.split (":", 3);
 			string[] src_ref = parts[0].split ("-")[0].split (".");
@@ -478,7 +488,8 @@ namespace Vtg
 						Columns.LINE, line, 
 						Columns.COLUMN, col, 
 						Columns.IS_WARNING, is_warning, 
-						Columns.IS_VALA_SOURCE, true, 
+						Columns.IS_VALA_SOURCE, true,
+						Columns.IS_AUTO_BUILD_MESSAGE, is_auto_build_message,
 						Columns.PROJECT, _project);
 					update_toolbar_button_status ();
 				}
@@ -505,7 +516,7 @@ namespace Vtg
 		  /usr/include/glib-2.0/glib/gi18n.h:29:1: warning: this is the location of the previous definition
 		 */
 
-		private void add_c_message (string file, string message)
+		private void add_c_message (string file, string message, bool is_auto_build_message)
 		{
 			string[] parts = message.split (":", 3);
 			string[] src_ref = parts[0].split ("-")[0].split (".");
@@ -554,7 +565,8 @@ namespace Vtg
 						Columns.LINE, line, 
 						Columns.COLUMN, 0, 
 						Columns.IS_WARNING, is_warning, 
-						Columns.IS_VALA_SOURCE, false, 
+						Columns.IS_VALA_SOURCE, false,
+						Columns.IS_AUTO_BUILD_MESSAGE, is_auto_build_message,
 						Columns.PROJECT, _project);
 					update_toolbar_button_status ();
 				}
