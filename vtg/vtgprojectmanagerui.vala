@@ -206,6 +206,7 @@ namespace Vtg
 			});
 			signal_ids[2] = _prj_builder.build_start.connect ((sender) => {
 				var prj = _plugin_instance.project_view.current_project;
+				_prj_builder.error_pane.clear_messages ();
 				update_ui (prj);
 			});
 			signal_ids[3] = _prj_builder.build_exit.connect ((sender, exit_status) => {
