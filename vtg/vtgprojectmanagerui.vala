@@ -518,22 +518,13 @@ namespace Vtg
 			try {
 				ProjectManager pm = _plugin_instance.project_view.current_project;
 				Gtk.TreeStore model = FilteredListDialog.create_model ();
-				bool show = true;
 
 				/* getting the symbols */
-				Afrodite.Ast ast;
+
 				foreach (Afrodite.CompletionEngine engine in pm.completions.get_values ()) {
-					bool res = engine.try_acquire_ast (out ast, 1000);
-					if (res) {
-						build_search_symbol_model (pm.project.id, model, ast.root);
-						engine.release_ast (ast);
-					} else {
-						show = false;
-						break;
-					}
+					Afrodite.Ast ast = engine.ast;
+					build_search_symbol_model (pm.project.id, model, ast.root);
 				}
-				if (!show)
-					return;
 
 				var dialog = new FilteredListDialog (model, this.sort_symbol_model);
 				dialog.set_transient_for (_plugin_instance.window);
@@ -705,20 +696,16 @@ namespace Vtg
 				/* getting the symbols */
 				var name = Utils.get_document_name (doc);
 				Afrodite.QueryResult result = null;
-				Afrodite.Ast ast;
-				bool res = scs.completion_engine.try_acquire_ast (out ast, 1000);
-				if (res) {
-					var options = Afrodite.QueryOptions.standard ();
-					options.all_symbols = true;
-					result = ast.get_symbols_for_path (options, name);
-					
-					/* building the model */
-					model = FilteredListDialog.create_model ();
-					if (!result.is_empty) {
-						var first = result.children.get (0);
-						build_goto_symbol_model (model, first);
-					}					
-					scs.completion_engine.release_ast (ast);
+				var options = Afrodite.QueryOptions.standard ();
+
+				options.all_symbols = true;
+				result = scs.completion_engine.ast.get_symbols_for_path (options, name);
+
+				/* building the model */
+				model = FilteredListDialog.create_model ();
+				if (!result.is_empty) {
+					var first = result.children.get (0);
+					build_goto_symbol_model (model, first);
 				}
 				if (result == null || result.is_empty)
 					return;

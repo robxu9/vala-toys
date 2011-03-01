@@ -226,21 +226,16 @@ namespace Vtg
 			var doc = (Gedit.Document) _active_view.get_buffer ();
 			var name = Utils.get_document_name (doc);
 			Afrodite.QueryResult result = null;
-			Afrodite.Ast ast;
-			bool res = scs.completion_engine.try_acquire_ast (out ast, 0);
-			if (res) {
-				Utils.trace ("ast acquired");
-				var options = Afrodite.QueryOptions.standard ();
-				options.all_symbols = true;
-				result = ast.get_symbols_for_path (options, name);
-				update_cursor_position (doc);
-				_outliner_view.update_view (name, result);
-				scs.completion_engine.release_ast (ast);
-			}
+			var options = Afrodite.QueryOptions.standard ();
+			options.all_symbols = true;
+			result = scs.completion_engine.ast.get_symbols_for_path (options, name);
+			update_cursor_position (doc);
+			_outliner_view.update_view (name, result);
+
 			if (result == null || result.is_empty) {
 				_outliner_view.clear_view ();
 			}
-			return res;
+			return true;
 		}
 	}
 }

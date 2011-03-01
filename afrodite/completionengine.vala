@@ -207,19 +207,12 @@ namespace Afrodite
 			
 			queue_sources (sources);
 		}
-		
-		public bool try_acquire_ast (out Ast ast, int retry_count = -1)
-		{
-			// this method is a NO-OP
-			ast = _ast;
-			return true;
-		}
-		
 
-		
-		public void release_ast (Ast ast)
+		public Ast ast
 		{
-			// this method is a NO-OP
+			get {
+				return _ast;
+			}
 		}
 
 		private void create_parser_thread ()
