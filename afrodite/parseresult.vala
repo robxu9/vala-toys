@@ -30,6 +30,8 @@ namespace Afrodite
 		public Vala.List<string> errors = new Vala.ArrayList<string> ();
 		public Vala.List<string> notes = new Vala.ArrayList<string> ();
 
+		public SourceItem source { get; set; }
+
 		public override void warn (Vala.SourceReference? source, string message)
 		{
 			base.warn (source, message);
