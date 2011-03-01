@@ -136,6 +136,10 @@ namespace Afrodite
 
 
 			parent.symbols.set (symbol.fully_qualified_name, symbol);
+			if (!parent.unresolved_symbols.contains(symbol)) {
+				parent.unresolved_symbols.add(symbol);
+			}
+
 #if DEBUG
 			// debug
 			if (!parent.leaked_symbols.contains (symbol)) {

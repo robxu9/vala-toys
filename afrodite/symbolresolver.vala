@@ -59,8 +59,12 @@ namespace Afrodite
 				}
 			}
 
-			if (ast.root.has_children)
-				visit_symbols (ast.root.children);
+			if (ast.unresolved_symbols.size > 0) {
+				Afrodite.Utils.trace ("(symbol resolver): symbols to resolve %d", ast.unresolved_symbols.size);
+				visit_symbols (ast.unresolved_symbols);
+				Afrodite.Utils.trace ("(symbol resolver): unresolved symbol after resolve process %d", ast.unresolved_symbols.size);
+			}
+
 		}
 		
 		private Symbol? resolve_type (Symbol symbol, DataType type)
@@ -303,7 +307,52 @@ namespace Afrodite
 
 			}
 		}
-		
+
+		private bool visit_symbol (Symbol symbol)
+		{
+			//print_symbol (symbol);
+			bool resolved = true;
+			
+			// resolving base types
+			if (symbol.has_base_types) {
+				foreach (DataType type in symbol.base_types) {
+					if (type.unresolved) {
+						type.symbol = resolve_type (symbol, type);
+						resolved &= !type.unresolved;
+					}
+				}
+			}
+			// resolving return type
+			if (symbol.return_type != null) {
+				if (symbol.return_type.unresolved) {
+					symbol.return_type.symbol = resolve_type (symbol, symbol.return_type);
+					resolved &= !symbol.return_type.unresolved;
+				}
+			}
+
+			// resolving symbol parameters
+			if (symbol.has_parameters) {
+				foreach (DataType type in symbol.parameters) {
+					if (type.unresolved) {
+						type.symbol = resolve_type (symbol, type);
+						resolved &= !type.unresolved;
+					}
+				}
+			}
+			// resolving local variables
+			if (symbol.has_local_variables) {
+				foreach (DataType type in symbol.local_variables) {
+					if (type.unresolved) {
+						resolve_symbol (symbol, type);
+						resolved &= !type.unresolved;
+					}
+				}
+			}
+			
+			return resolved;
+		}
+
+		/*
 		private void visit_symbol (Symbol symbol)
 		{
 			//print_symbol (symbol);
@@ -342,13 +391,20 @@ namespace Afrodite
 			if (symbol.has_children) {
 				visit_symbols (symbol.children);
 			}
-		}
+		}*/
 
-		private void visit_symbols (Vala.List<Afrodite.Symbol> symbols)
+		private void visit_symbols (Vala.List<unowned Afrodite.Symbol> symbols)
 		{
+			Vala.List<unowned Afrodite.Symbol> resolved = new Vala.ArrayList<unowned Afrodite.Symbol>();
+			
 			foreach (Symbol symbol in symbols) {
-				visit_symbol (symbol);
+				if (visit_symbol (symbol)) {
+					resolved.add (symbol);
+				}
 			}
+			
+			foreach (Symbol symbol in resolved)
+				symbols.remove(symbol);
 		}
 	}
 }

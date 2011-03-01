@@ -32,7 +32,8 @@ namespace Afrodite
 		public static Vala.List<unowned Symbol> leaked_symbols = new Vala.ArrayList<unowned Symbol>();
 #endif
 		public Vala.HashMap<string, unowned Symbol> symbols = new Vala.HashMap <string, unowned Symbol>(GLib.str_hash, GLib.str_equal);
-
+		public Vala.List<unowned Symbol> unresolved_symbols = new Vala.ArrayList<unowned Symbol>();
+		
 		private Symbol _root = new Symbol (null, null);
 
 		~Ast ()
