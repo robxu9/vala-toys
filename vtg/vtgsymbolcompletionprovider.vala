@@ -607,16 +607,12 @@ namespace Vtg
 		public Afrodite.Symbol? get_symbol_containing_cursor (int retry_count = 0)
 		{
 			int line, col;
-			Afrodite.Ast ast;
 			Afrodite.Symbol? symbol = null;
 			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			string name = Utils.get_document_name (doc);
 
 			get_current_line_and_column (out line, out col);
-			if (_completion.try_acquire_ast (out ast, retry_count)) {
-				symbol = ast.lookup_symbol_at (name, line, col);
-				_completion.release_ast (ast);
-			}
+			symbol = _completion.ast.lookup_symbol_at (name, line, col);
 
 			return symbol;
 		}
@@ -656,29 +652,26 @@ namespace Vtg
 				first_part = word; // "this"; //HACK: this won't work for static methods
 			}
 			
-			Afrodite.Ast ast;
+			Afrodite.Ast ast = _completion.ast;
 			Afrodite.Symbol? symbol = null;
 			
-			if (_completion.try_acquire_ast (out ast, retry_count)) {
-				Afrodite.QueryResult? result = null;
-				Afrodite.QueryOptions options = this.get_options_for_line (text, is_assignment, is_creation);
+			Afrodite.QueryResult? result = null;
+			Afrodite.QueryOptions options = this.get_options_for_line (text, is_assignment, is_creation);
+			
+			if (word == symbol_name)
+				result = get_symbol_for_name (options, ast, first_part, null,  line, col);
+			else
+				result = get_symbol_type_for_name (options, ast, first_part, null,  line, col);
 				
-				if (word == symbol_name)
-					result = get_symbol_for_name (options, ast, first_part, null,  line, col);
-				else
-					result = get_symbol_type_for_name (options, ast, first_part, null,  line, col);
-					
-				if (result != null && !result.is_empty) {
-					var first = result.children.get (0);
-					if (word == symbol_name) {
-						symbol = first.symbol;
-					} else {
-						symbol = get_symbol_for_name_in_children (symbol_name, first.symbol);
-						if (symbol == null)
-							symbol =  get_symbol_for_name_in_base_types (symbol_name, first.symbol);
-					}
+			if (result != null && !result.is_empty) {
+				var first = result.children.get (0);
+				if (word == symbol_name) {
+					symbol = first.symbol;
+				} else {
+					symbol = get_symbol_for_name_in_children (symbol_name, first.symbol);
+					if (symbol == null)
+						symbol =  get_symbol_for_name_in_base_types (symbol_name, first.symbol);
 				}
-				_completion.release_ast (ast);
 			}
 			return symbol;
 		}
@@ -749,10 +742,9 @@ namespace Vtg
 
 			ParserUtils.parse_line (text, out word, out is_assignment, out is_creation, out is_declaration);
 
-			Afrodite.Ast ast = null;
+			Afrodite.Ast ast = _completion.ast;
 			Utils.trace ("completing word: '%s'", word);
-			if (!StringUtils.is_null_or_empty (word) 
-			    && _completion.try_acquire_ast (out ast)) {
+			if (!StringUtils.is_null_or_empty (word)) {
 			        QueryOptions options = get_options_for_line (text, is_assignment, is_creation);
 				Afrodite.QueryResult result = null;
 				int line, col;
@@ -766,8 +758,6 @@ namespace Vtg
 				}
 				result = get_symbol_type_for_name (options, ast, word, text, line, col);
 				transform_result (options, result);
-				_completion.release_ast (ast);
-				
 			} else {
 				if (!StringUtils.is_null_or_empty (word)) {
 					Utils.trace ("build_proposal_item_list: couldn't acquire ast lock");
@@ -781,12 +771,11 @@ namespace Vtg
 
 		private void lookup_visible_symbols_in_scope (string word, CompareMode mode)
 		{
-			Afrodite.Ast ast = null;
+			Afrodite.Ast ast = _completion.ast;
 			Utils.trace ("lookup_all_symbols_in_scope: mode: %s word:'%s' ", 
 				mode == CompareMode.EXACT ? "exact" : "start-with",
 				word);
-			if (!StringUtils.is_null_or_empty (word) 
-			    && _completion.try_acquire_ast (out ast, 0)) {
+			if (!StringUtils.is_null_or_empty (word)) {
         			Vala.List<Afrodite.Symbol> results = new Vala.ArrayList<Afrodite.Symbol> ();
 
 				weak Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
@@ -811,7 +800,6 @@ namespace Vtg
 					_proposals = new GLib.List<Gtk.SourceCompletionItem> ();
 					append_symbols (null, results);
 				}
-				_completion.release_ast (ast);
 			} else {
 				if (!StringUtils.is_null_or_empty (word)) {
 					Utils.trace ("build_proposal_item_list: couldn't acquire ast lock");

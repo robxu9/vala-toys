@@ -97,90 +97,85 @@ public class AfroditeTest.Application : Object {
 			}
 		}
 		
-		Afrodite.Ast ast;
 		print (": done\n\n");
 		print ("Looking for '%s' %d,%d\n\nDump follows:\n", option_symbol_name, option_line, option_column);
 		while (true)
 		{
-			// try to acquire ast
-			if (engine.try_acquire_ast (out ast)) {
-				// dumping tree (just a debug facility)
-				var dumper = new Afrodite.AstDumper ();
-				dumper.dump (ast, option_namespace);
-				print ("\n");
+			// dumping tree (just a debug facility)
+			var dumper = new Afrodite.AstDumper ();
+			dumper.dump (engine.ast, option_namespace);
+			print ("\n");
 
-				// Query the AST
-				if (option_visible_symbols != null) {
-					var source = ast.lookup_source_file (option_visible_symbols);
-					if (source != null) {
-						// get the source node at this position
-						var s = ast.get_symbol_for_source_and_position (source, option_line, option_column);
-						if (s != null) {
-							Vala.List<Symbol> syms = null;
-							syms = ast.lookup_visible_symbols_from_symbol (s, option_filter);
-							print ("Symbols found: %d\n", syms.size);
-							foreach (Symbol sym in syms) {
-								print ("          from %s: %s\n", sym.parent == null ? "<root>" : sym.parent.fully_qualified_name, Utils.unescape_xml_string (sym.description));
-							}
-						} else {
-							print ("no symbol found for position: %d-%d\n", option_line, option_column);
+			// Query the AST
+			if (option_visible_symbols != null) {
+				var source = engine.ast.lookup_source_file (option_visible_symbols);
+				if (source != null) {
+					// get the source node at this position
+					var s = engine.ast.get_symbol_for_source_and_position (source, option_line, option_column);
+					if (s != null) {
+						Vala.List<Symbol> syms = null;
+						syms = engine.ast.lookup_visible_symbols_from_symbol (s, option_filter);
+						print ("Symbols found: %d\n", syms.size);
+						foreach (Symbol sym in syms) {
+							print ("          from %s: %s\n", sym.parent == null ? "<root>" : sym.parent.fully_qualified_name, Utils.unescape_xml_string (sym.description));
 						}
 					} else {
-						print ("source file not found: %s\n", option_visible_symbols);
+						print ("no symbol found for position: %d-%d\n", option_line, option_column);
 					}
-				} else if (option_symbol_name != null) {
-					// Setup query options
-					QueryOptions options = QueryOptions.standard ();
-					options.auto_member_binding_mode = true;
-					options.compare_mode = CompareMode.EXACT;
-					options.access = Afrodite.SymbolAccessibility.ANY;
-					options.binding = Afrodite.MemberBinding.ANY;
+				} else {
+					print ("source file not found: %s\n", option_visible_symbols);
+				}
+			} else if (option_symbol_name != null) {
+				// Setup query options
+				QueryOptions options = QueryOptions.standard ();
+				options.auto_member_binding_mode = true;
+				options.compare_mode = CompareMode.EXACT;
+				options.access = Afrodite.SymbolAccessibility.ANY;
+				options.binding = Afrodite.MemberBinding.ANY;
 
-					QueryResult sym = null;
-					sym = ast.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
-					print ("The type for '%s' is: ", option_symbol_name);
-					if (!sym.is_empty) {
-						foreach (ResultItem item in sym.children) {
-							print ("%s\n     Childs:\n", Utils.unescape_xml_string (item.symbol.description));
-							if (item.symbol.has_children) {
-								int count = 0;
-								// print an excerpt of the child symbols
-								foreach (var child in item.symbol.children) {
-									print ("          %s\n", Utils.unescape_xml_string (child.description));
-									count++;
+				QueryResult sym = null;
+				sym = engine.ast.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
+				print ("The type for '%s' is: ", option_symbol_name);
+				if (!sym.is_empty) {
+					foreach (ResultItem item in sym.children) {
+						print ("%s\n     Childs:\n", Utils.unescape_xml_string (item.symbol.description));
+						if (item.symbol.has_children) {
+							int count = 0;
+							// print an excerpt of the child symbols
+							foreach (var child in item.symbol.children) {
+								print ("          %s\n", Utils.unescape_xml_string (child.description));
+								count++;
+								if (count == 6) {
+									print ("          ......\n");
+									break;
+								}
+							}
+							if (count < 6 && item.symbol.has_base_types) {
+								foreach (var base_item in item.symbol.base_types) {
+									if (base_item.unresolved || !base_item.symbol.has_children)
+										continue;
+
+									foreach (var child in base_item.symbol.children) {
+										print ("          %s\n", Utils.unescape_xml_string (child.description));
+										count++;
+										if (count == 6)
+											break;
+									}
+
 									if (count == 6) {
 										print ("          ......\n");
 										break;
 									}
 								}
-								if (count < 6 && item.symbol.has_base_types) {
-									foreach (var base_item in item.symbol.base_types) {
-										if (base_item.unresolved || !base_item.symbol.has_children)
-											continue;
-
-										foreach (var child in base_item.symbol.children) {
-											print ("          %s\n", Utils.unescape_xml_string (child.description));
-											count++;
-											if (count == 6)
-												break;
-										}
-
-										if (count == 6) {
-											print ("          ......\n");
-											break;
-										}
-									}
-								}
 							}
 						}
-					} else {
-						print ("unresolved :(\n");
-						result = 1;
 					}
+				} else {
+					print ("unresolved :(\n");
+					result = 1;
 				}
-				engine.release_ast (ast);
-				break;
 			}
+			break;
 		}
 		
 		print ("done\n");
