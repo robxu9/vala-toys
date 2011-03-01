@@ -37,7 +37,6 @@ namespace Afrodite
 		
 		private Mutex _source_queue_mutex;
 		private Mutex _merge_queue_mutex;
-		private Mutex _ast_mutex = null;
 		
 		private unowned Thread<int> _parser_thread;
 		private int _parser_stamp = 0;
@@ -46,7 +45,7 @@ namespace Afrodite
 		private bool _glib_init = false;
 		
 		private Ast _ast;
-		private Vala.HashMap<string, ParseResult> _parse_result_list = new Vala.HashMap<string, ParseResult> (GLib.str_hash, GLib.str_equal, GLib.direct_equal);
+		private Vala.List<ParseResult> _parse_result_list = new Vala.ArrayList<ParseResult> ();
 		private uint _idle_id = 0;
 
 		public CompletionEngine (string? id = null)
@@ -62,16 +61,13 @@ namespace Afrodite
 			_merge_queue_mutex = new Mutex ();
 			
 			_ast = new Ast ();
-			_ast_mutex = new Mutex ();
 		}
 		
 		~Completion ()
 		{
 			Utils.trace ("Completion %s destroy", id);
 			// invalidate the ast so the parser thread will exit asap
-			_ast_mutex.lock ();
 			_ast = null;
-			_ast_mutex.unlock ();
 
 			if (AtomicInt.@get (ref _parser_stamp) != 0) {
 				Utils.trace ("join the parser thread before exit");
@@ -121,8 +117,10 @@ namespace Afrodite
 			return null;
 		}
 
-		public void queue_sources (Vala.List<SourceItem> sources)
+		public bool queue_sources (Vala.List<SourceItem> sources, bool no_update_check = false)
 		{
+			bool result = false;
+			
 			_source_queue_mutex.@lock ();
 			if (!_glib_init) {
 				// merge standard base vapi (glib and gobject)
@@ -144,22 +142,36 @@ namespace Afrodite
 				}
 			}
 			foreach (SourceItem source in sources) {
-				var item = source_queue_contains (source);
-				if (item == null || item.content != source.content) {
-				/*
-					if (source.content == null || source.content == "")
-						Utils.trace ("%s: queued source %s. sources to parse %d", id, source.path, source_queue.size);
-					else
-						Utils.trace ("%s: queued live buffer %s. sources to parse %d", id, source.path, source_queue.size);
-				*/	
-					if (item != null)
-						_source_queue.remove (item);
+				bool skip_unchanged_file = false;
 
-					_source_queue.add (source.copy ());
-				} 
-				else if (item.content == null && source.content != null) {
-					item.content = source.content;
-					//Utils.trace ("%s: updated live buffer %s. sources to parse %d", id, source.path, source_queue.size);
+				// test if file is really changed but only if it's not a live buffer
+				if (no_update_check == false && source.content == null && _ast != null) {
+					var sf = _ast.lookup_source_file (source.path);
+					if (sf != null && sf.update_last_modification_time ()) {
+						Utils.trace ("engine %s: skip unchanged source %s", id, source.path);
+						skip_unchanged_file = true;
+					}
+				}
+
+				if (!skip_unchanged_file)
+				{
+					var item = source_queue_contains (source);
+					if (item == null || item.content != source.content) {
+					/*
+						if (source.content == null || source.content == "")
+							Utils.trace ("%s: queued source %s. sources to parse %d", id, source.path, source_queue.size);
+						else
+							Utils.trace ("%s: queued live buffer %s. sources to parse %d", id, source.path, source_queue.size);
+					*/	
+						if (item != null)
+							_source_queue.remove (item);
+
+						_source_queue.add (source.copy ());
+					} 
+					else if (item.content == null && source.content != null) {
+						item.content = source.content;
+						//Utils.trace ("%s: updated live buffer %s. sources to parse %d", id, source.path, source_queue.size);
+					}
 				}
 			}
 			_source_queue_mutex.@unlock ();
@@ -168,7 +180,9 @@ namespace Afrodite
 				create_parser_thread ();
 			} else {
 				AtomicInt.inc (ref _parser_stamp);
-			}		
+			}
+			
+			return result;
 		}
 		
 		public void queue_sourcefile (string path, string? content = null, bool is_vapi = false, bool is_glib = false)
@@ -196,49 +210,16 @@ namespace Afrodite
 		
 		public bool try_acquire_ast (out Ast ast, int retry_count = -1)
 		{
-			bool res = false;
-			ast = null;
-			bool first_run = true;
-			int file_count = 0;
-			int retry = 0;
-			
-			while (ast == null 
-				&& _ast_mutex != null 
-				&& (first_run || (file_count = AtomicInt.get (ref _current_parsing_total_file_count)) <= 2))
-			{
-				first_run = false;
-				res = _ast_mutex.@trylock ();
-				if (res) {
-					ast = _ast;
-				} else {
-					if (retry_count < 0 || retry < retry_count) {
-						retry++;
-						GLib.Thread.usleep (100 * 1000);
-					} else {
-						break;
-					}
-				}
-			}
-
-#if DEBUG
-			if (ast == null) {
-				//Utils.trace ("can't acquire lock: %d", file_count);
-			} else {
-				Utils.trace ("lock acquired: %d", file_count);
-			}
-#endif
-
-			return res;
+			// this method is a NO-OP
+			ast = _ast;
+			return true;
 		}
+		
+
 		
 		public void release_ast (Ast ast)
 		{
-			if (_ast != ast) {
-				warning ("%s: release_ast requested for unknown ast instance", id);
-				return;
-			}
-			
-			_ast_mutex.unlock ();
+			// this method is a NO-OP
 		}
 
 		private void create_parser_thread ()
@@ -271,12 +252,10 @@ namespace Afrodite
 				start_parsing_time = timer.elapsed ();
 #endif
 				int stamp = AtomicInt.get (ref _parser_stamp);
-				// set the number of sources to process + 1, because the last one
-				// will be decreased by the resolve part
-				AtomicInt.set (ref _parser_remaining_files, _source_queue.size + 1);
+				// set the number of sources to process
+				AtomicInt.set (ref _parser_remaining_files, _source_queue.size );
 				// get the source to parse
 				_source_queue_mutex.@lock ();
-				int source_count = _source_queue.size;
 				foreach (SourceItem item in _source_queue) {
 					sources.add (item.copy ());
 				}
@@ -287,109 +266,30 @@ namespace Afrodite
 				_source_queue.clear ();
 				_source_queue_mutex.@unlock ();
 
-				AstMerger merger = null;
 				foreach (SourceItem source in sources) {
-					bool skip_unchanged_file = false;
+#if DEBUG
+					Utils.trace ("engine %s: parsing source: %s", id, source.path);
+					start_time = timer.elapsed ();
+#endif
 
-					// test if file is really changed but only if it's not a live buffer
-					if (source.content == null) {
-						_ast_mutex.@lock ();
-						if (_ast != null) {
-							var sf = _ast.lookup_source_file (source.path);
-							if (sf != null) {
-								if (sf.update_last_modification_time ()) {
-									// no need to reparse the source since it isn't changed
-									Utils.trace ("engine %s: source file parsing optimized out since it isn't changed: %s", id, source.path);
-									_ast_mutex.@unlock ();
-									skip_unchanged_file = true;
-								}
-							}
-						}
-						_ast_mutex.@unlock ();
+					Parser p = new Parser.with_source (source);
+					var parse_results = p.parse ();
+					lock (_parse_result_list) {
+						_parse_result_list.add (parse_results);
+						if (_idle_id == 0)
+							_idle_id = Idle.add_full (Priority.DEFAULT_IDLE, on_parse_results);
 					}
-
-					if (!skip_unchanged_file) {
 #if DEBUG
-						Utils.trace ("engine %s: parsing source: %s", id, source.path);
-						start_time = timer.elapsed ();
+					Utils.trace ("engine %s: parsing source: %s done %g", id, source.path, timer.elapsed () - start_time);
 #endif
-
-						Parser p = new Parser.with_source (source);
-						var parse_results = p.parse ();
-						lock (_parse_result_list) {
-							_parse_result_list.set (source.path, parse_results);
-							if (_idle_id == 0)
-								_idle_id = Idle.add_full (Priority.LOW, on_parse_results);
-						}
-#if DEBUG
-						Utils.trace ("engine %s: parsing source: %s done %g", id, source.path, timer.elapsed () - start_time);
-#endif
-						source.context = p.context;
-						if (source.context == null)
-							critical ("source %s context == null, non thread safe access to source item", source.path);
-						else {
-							foreach (Vala.SourceFile s in source.context.get_source_files ()) {
-								if (s.filename == source.path) {
-									// do the real merge
-									_ast_mutex.@lock ();
-									if (_ast != null) {
-										bool source_exists = _ast.lookup_source_file (source.path) != null;
-
-										// if the ast is still valid: not null
-										// and not 
-										// if I'm parsing just one source and there are errors and the source already exists in the ast: I'll keep the previous copy
-										// do the merge
-										if (!(source_count == 1 && source_exists && p.context.report.get_errors () > 0)) {
-											if (merger == null) {
-												// lazy init the merger, here I'm sure that _ast != null
-												merger = new AstMerger (_ast);
-											}
-											if (source_exists) {
-												merger.remove_source_filename (source.path);
-											}
-#if DEBUG
-											Utils.trace ("engine %s: merging source %s", id, source.path);
-											start_time = timer.elapsed ();
-#endif
-											merger.merge_vala_context (s, source.context, source.is_glib);
-#if DEBUG
-											Utils.trace ("engine %s: merging source %s done %g", id, source.path, timer.elapsed () - start_time);
-#endif
-										}
-									}
-									_ast_mutex.unlock ();
-								
-									//timer.stop ();
-									//debug ("%s: merging context and file %s in %g", id, s.filename, timer.elapsed ());
-									break;
-								}
-							}
-						}
-					}
 					AtomicInt.add (ref _parser_remaining_files, -1);
 				}
 #if DEBUG
 				parsing_time += (timer.elapsed () - start_parsing_time);
 #endif
 
-				_ast_mutex.@lock ();
-				if (_ast != null) {
-#if DEBUG
-					//_ast.dump_symbols ();
-					Utils.trace ("engine %s: resolving ast", id);
-					start_time = timer.elapsed ();
-#endif
-					var resolver = new SymbolResolver ();
-					resolver.resolve (_ast);
-#if DEBUG
-					Utils.trace ("engine %s: resolving ast done %g", id, timer.elapsed () - start_time);
-#endif
-				}
-				AtomicInt.add (ref _parser_remaining_files, -1);
-				_ast_mutex.unlock ();
-				
 				sources.clear ();
-				
+
 				//check for changes or exit request
 				if (_ast == null || AtomicInt.compare_and_exchange (ref _parser_stamp, stamp, 0)) {
 					break;
@@ -407,19 +307,24 @@ namespace Afrodite
 			end_parsing (this);
 			return 0;
 		}
-		
+
 		private bool on_parse_results ()
 		{
 			bool more_results = true;
 			string filename = null;
 			ParseResult result = null;
+#if DEBUG
+			GLib.Timer timer = new GLib.Timer ();
+			double start_time = 0;
+			timer.start ();
+#endif
 
 			lock (_parse_result_list) {
 				if (_parse_result_list.size > 0) {
-					foreach (string key in _parse_result_list.get_keys ()) {
-						result = _parse_result_list.get (key);
+					foreach (ParseResult key in _parse_result_list) {
+						result = key;
 						_parse_result_list.remove (key);
-						filename = key;
+						filename = key.source.path;
 						break; // one iteration
 					}
 				}
@@ -429,6 +334,44 @@ namespace Afrodite
 				}
 			}
 			if (result != null) {
+				foreach (Vala.SourceFile s in result.source.context.get_source_files ()) {
+					if (s.filename == result.source.path) {
+						bool source_exists = _ast.lookup_source_file (result.source.path) != null;
+						var merger = new AstMerger (_ast);
+						if (source_exists) {
+#if DEBUG
+							Utils.trace ("engine %s: removing source %s", id, result.source.path);
+							start_time = timer.elapsed ();
+#endif
+							merger.remove_source_filename (result.source.path);
+#if DEBUG
+							Utils.trace ("engine %s: removing source %s done %g", id, result.source.path, timer.elapsed () - start_time);
+#endif
+
+						}
+#if DEBUG
+						Utils.trace ("engine %s: merging source %s", id, result.source.path);
+						start_time = timer.elapsed ();
+#endif
+						merger.merge_vala_context (s, result.source.context, result.source.is_glib);
+						result.source.context = null; // let's free some memory
+#if DEBUG
+						Utils.trace ("engine %s: merging source %s done %g", id, result.source.path, timer.elapsed () - start_time);
+#endif
+
+#if DEBUG
+						//_ast.dump_symbols ();
+						Utils.trace ("engine %s: resolving ast", id);
+						start_time = timer.elapsed ();
+#endif
+						var resolver = new SymbolResolver ();
+						resolver.resolve (_ast);
+#if DEBUG
+						Utils.trace ("engine %s: resolving ast done %g", id, timer.elapsed () - start_time);
+#endif
+						break; // found the file
+					}
+				}
 				this.file_parsed (this, filename, result);
 			}
 			return more_results;

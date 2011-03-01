@@ -26,21 +26,15 @@ namespace Afrodite
 {
 	public class Parser : GLib.Object
 	{
-		public CodeContext context = null;
+		private CodeContext context = null;
 
-		public Parser (Vala.List<SourceItem> sources)
-		{
-			context = new Vala.CodeContext();
-			foreach (SourceItem source in sources) {
-				add_source_item (source);
-			}
-
-		}
-
+		private SourceItem _source;
+		
 		public Parser.with_source (SourceItem source_item)
 		{
 			context = new Vala.CodeContext();
 			add_source_item (source_item);
+			_source = source_item;
 		}
 
 		private void add_source_item (SourceItem source)
@@ -99,6 +93,9 @@ namespace Afrodite
 			parser.parse (context);
 
 			CodeContext.pop ();
+			
+			_source.context = context;
+			parse_result.source = _source;
 			return parse_result;
 		}
 	}
