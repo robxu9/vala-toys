@@ -186,8 +186,6 @@ namespace Vtg
 			}
 		}
 
-		// this method is called from another thread context
-		// for this reason the update is done in the idle handler
 		private void on_end_parsing (Afrodite.CompletionEngine sender)
 		{
 			setup_idle ();
@@ -199,7 +197,7 @@ namespace Vtg
 			lock (idle_id) {
 				if (idle_id == 0) {
 					Utils.trace ("Idle setup real");
-					idle_id =  Idle.add (this.on_idle_update, Priority.DEFAULT_IDLE);
+					idle_id =  Idle.add (this.on_idle_update, Priority.LOW);
 				}
 			}
 		}

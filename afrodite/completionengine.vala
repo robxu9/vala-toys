@@ -43,7 +43,8 @@ namespace Afrodite
 		private int _parser_remaining_files = 0;
 		private int _current_parsing_total_file_count = 0;
 		private bool _glib_init = false;
-		
+		private bool _is_parsing = false;
+
 		private Ast _ast;
 		private Vala.List<ParseResult> _parse_result_list = new Vala.ArrayList<ParseResult> ();
 		private uint _idle_id = 0;
@@ -84,7 +85,7 @@ namespace Afrodite
 		public bool is_parsing
 		{
 			get {
-				return AtomicInt.@get (ref _parser_stamp) != 0;
+				return _is_parsing;
 			}
 		}
 
@@ -231,19 +232,14 @@ namespace Afrodite
 		{
 #if DEBUG
 			GLib.Timer timer = new GLib.Timer ();
-			double start_parsing_time = 0;
-			double parsing_time = 0;
 			double start_time = 0;
 			timer.start ();
 #endif
 			Utils.trace ("engine %s: parser thread *** starting ***...", id);
-			begin_parsing (this);
+
 			Vala.List<SourceItem> sources = new ArrayList<SourceItem> ();
 
 			while (true) {
-#if DEBUG
-				start_parsing_time = timer.elapsed ();
-#endif
 				int stamp = AtomicInt.get (ref _parser_stamp);
 				// set the number of sources to process
 				AtomicInt.set (ref _parser_remaining_files, _source_queue.size );
@@ -277,9 +273,6 @@ namespace Afrodite
 #endif
 					AtomicInt.add (ref _parser_remaining_files, -1);
 				}
-#if DEBUG
-				parsing_time += (timer.elapsed () - start_parsing_time);
-#endif
 
 				sources.clear ();
 
@@ -295,79 +288,152 @@ namespace Afrodite
 
 #if DEBUG
 			timer.stop ();
-			Utils.trace ("engine %s: parser thread *** exiting *** (elapsed time parsing %g, resolving %g)...", id, parsing_time, timer.elapsed ());
+			Utils.trace ("engine %s: parser thread *** exiting *** (elapsed time parsing %g)...", id, timer.elapsed());
 #endif
-			end_parsing (this);
 			return 0;
 		}
 
+		private void on_begin_parsing ()
+		{
+			_is_parsing = true;
+			end_parsing (this);
+		}
+
+		private void on_end_parsing ()
+		{
+			_is_parsing = false;
+			end_parsing (this);
+		}
+
+
 		private bool on_parse_results ()
 		{
-			bool more_results = true;
-			string filename = null;
+			bool keep_idle = true;
 			ParseResult result = null;
+
+			lock (_parse_result_list) {
+				if (_parse_result_list.size > 0) {
+					Utils.trace ("*** size %d", _parse_result_list.size);
+					foreach (ParseResult key in _parse_result_list) {
+						result = key;
+						_parse_result_list.remove (key);
+						break; // one iteration
+					}
+					Utils.trace ("*** after size %d", _parse_result_list.size);
+				}
+				if (_parse_result_list.size == 0) {
+					_idle_id = 0;
+					keep_idle = false;
+					
+				}
+			}
+			if (result != null) {
+				if (!_is_parsing) {
+					on_begin_parsing();
+				}
+
+				// I remove the idle but not set _idle_id to 0
+				// to prevent the parser thread to readd the Idle back
+				// since the merge_and_resolve callback will readd it
+				keep_idle = false; 
+				merge_and_resolve.begin (result, this.on_merge_and_resolve_ended);
+			}
+			
+			if (_idle_id == 0 && result == null) {
+				// this is the last run after the merge
+				on_end_parsing ();
+			}
+			return keep_idle;
+		}
+
+		private void on_merge_and_resolve_ended (GLib.Object? source, GLib.AsyncResult r)
+		{
+			ParseResult result = merge_and_resolve.end (r);
+			string path = result.source_path;
+			this.file_parsed (this, path, result);
+			_idle_id = Idle.add_full (Priority.DEFAULT_IDLE, on_parse_results);
+		}
+
+		private async ParseResult merge_and_resolve (ParseResult result)
+		{
+			Utils.trace ("engine %s: async merge and resolve: %s", id, result.source_path);
+			foreach (Vala.SourceFile s in result.context.get_source_files ()) {
+				if (s.filename == result.source_path) {
+					var ast_source = _ast.lookup_source_file (result.source_path);
+					bool source_exists = ast_source != null;
+					bool need_update = true;
+
+					// if I already parsed this source and this copy is a live gedit buffer
+					// and the parsing contains some error, I maintain the previous copy in the ast
+					if (!(source_exists && result.is_edited && result.errors.size > 0))
+					{
+						// if the source was already parsed and it's not opend in a edit window
+						if (source_exists && !result.is_edited) {
+							need_update = ast_source.update_last_modification_time();
+						}
+						// this is important!
+						// TODO: we shouldn't hold this reference lookup_source_file should return an unowned ref
+						ast_source = null;
+						if (need_update) {
+							yield merge_vala_source (s, result, source_exists);
+							yield resolve_ast ();
+						}
+					} else {
+						Utils.trace ("engine %s: source (live buffer) with errors mantaining the previous parsing: %s", id, result.source_path);
+					}
+					break; // found the file
+				}
+			}
+			
+			return result;
+		}
+		
+		private async void merge_vala_source (Vala.SourceFile s, ParseResult result, bool source_exists)
+		{
+#if DEBUG
+			GLib.Timer timer = new GLib.Timer ();
+			double start_time = 0, elapsed;
+			timer.start ();
+#endif
+			var merger = new AstMerger (_ast);
+			if (source_exists) {
+#if DEBUG
+				Utils.trace ("engine %s: removing source (%p) %s", id, result, result.source_path);
+				start_time = timer.elapsed ();
+#endif
+				merger.remove_source_filename (result.source_path);
+#if DEBUG
+				Utils.trace ("engine %s: removing source (%p) %s done %g", id, result, result.source_path, timer.elapsed () - start_time);
+#endif
+			}
+#if DEBUG
+			Utils.trace ("engine %s: merging source %s", id, result.source_path);
+			start_time = timer.elapsed ();
+#endif
+			merger.merge_vala_context (s, result.context, result.is_glib);
+			result.context = null; // let's free some memory
+			merger = null;
+#if DEBUG
+			elapsed = timer.elapsed () - start_time;
+			Utils.trace ("engine %s: merging source %s done %g %s", id, result.source_path, elapsed, elapsed > 0.7 ? " <== Warning" : "");
+#endif
+		}
+		
+		private async void resolve_ast ()
+		{
 #if DEBUG
 			GLib.Timer timer = new GLib.Timer ();
 			double start_time = 0;
 			timer.start ();
+			//_ast.dump_symbols ();
+			Utils.trace ("engine %s: resolving ast", id);
+			start_time = timer.elapsed ();
 #endif
-
-			lock (_parse_result_list) {
-				if (_parse_result_list.size > 0) {
-					foreach (ParseResult key in _parse_result_list) {
-						result = key;
-						_parse_result_list.remove (key);
-						filename = key.source.path;
-						break; // one iteration
-					}
-				}
-				if (_parse_result_list.size == 0) {
-					_idle_id = 0;
-					more_results = false;
-				}
-			}
-			if (result != null) {
-				foreach (Vala.SourceFile s in result.source.context.get_source_files ()) {
-					if (s.filename == result.source.path) {
-						bool source_exists = _ast.lookup_source_file (result.source.path) != null;
-						var merger = new AstMerger (_ast);
-						if (source_exists) {
+			var resolver = new SymbolResolver ();
+			resolver.resolve (_ast);
 #if DEBUG
-							Utils.trace ("engine %s: removing source %s", id, result.source.path);
-							start_time = timer.elapsed ();
+			Utils.trace ("engine %s: resolving ast done %g", id, timer.elapsed () - start_time);
 #endif
-							merger.remove_source_filename (result.source.path);
-#if DEBUG
-							Utils.trace ("engine %s: removing source %s done %g", id, result.source.path, timer.elapsed () - start_time);
-#endif
-
-						}
-#if DEBUG
-						Utils.trace ("engine %s: merging source %s", id, result.source.path);
-						start_time = timer.elapsed ();
-#endif
-						merger.merge_vala_context (s, result.source.context, result.source.is_glib);
-						result.source.context = null; // let's free some memory
-#if DEBUG
-						Utils.trace ("engine %s: merging source %s done %g", id, result.source.path, timer.elapsed () - start_time);
-#endif
-
-#if DEBUG
-						//_ast.dump_symbols ();
-						Utils.trace ("engine %s: resolving ast", id);
-						start_time = timer.elapsed ();
-#endif
-						var resolver = new SymbolResolver ();
-						resolver.resolve (_ast);
-#if DEBUG
-						Utils.trace ("engine %s: resolving ast done %g", id, timer.elapsed () - start_time);
-#endif
-						break; // found the file
-					}
-				}
-				this.file_parsed (this, filename, result);
-			}
-			return more_results;
 		}
 	}
 }

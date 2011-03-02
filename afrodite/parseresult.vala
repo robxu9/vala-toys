@@ -30,8 +30,11 @@ namespace Afrodite
 		public Vala.List<string> errors = new Vala.ArrayList<string> ();
 		public Vala.List<string> notes = new Vala.ArrayList<string> ();
 
-		public SourceItem source { get; set; }
-
+		public string source_path = null;
+		public bool is_glib = false;
+		public Vala.CodeContext context = null;
+		public bool is_edited = false;
+		
 		public override void warn (Vala.SourceReference? source, string message)
 		{
 			base.warn (source, message);
