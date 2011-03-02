@@ -149,7 +149,6 @@ namespace Afrodite
 				*/
 
 				foreach (SourceFile file in source_files) {
-					
 					if (file.filename == filename) {
 						return file;
 					}

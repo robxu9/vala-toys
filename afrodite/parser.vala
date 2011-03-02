@@ -28,7 +28,7 @@ namespace Afrodite
 	{
 		private CodeContext context = null;
 
-		private SourceItem _source;
+		private unowned SourceItem _source;
 		
 		public Parser.with_source (SourceItem source_item)
 		{
@@ -94,8 +94,10 @@ namespace Afrodite
 
 			CodeContext.pop ();
 			
-			_source.context = context;
-			parse_result.source = _source;
+			parse_result.source_path = _source.path;
+			parse_result.is_glib = _source.is_glib;
+			parse_result.is_edited = _source.content != null;
+			parse_result.context = context;
 			return parse_result;
 		}
 	}

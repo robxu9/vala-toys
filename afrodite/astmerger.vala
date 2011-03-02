@@ -102,7 +102,7 @@ namespace Afrodite
 						//Utils.trace ("adding source reference %s to source %s", symbol.fully_qualified_name, _source_file.filename);
 						_source_file.add_symbol (symbol);
 					} else {
-						warning ("two sources with the same name were merged: %s", _source_file.filename);
+						warning ("two sources with the same name were merged %s: %s", symbol.fully_qualified_name, _source_file.filename);
 					}
 				}
 			}
