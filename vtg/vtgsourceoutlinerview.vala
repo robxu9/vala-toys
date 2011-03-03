@@ -33,9 +33,20 @@ namespace Vtg
 	{
 		NAME = 0,
 		ICON,
-		SYMBOL,
-		SOURCE_REFERENCE,
+		DATA,
 		COLUMNS_COUNT
+	}
+	
+	private class Data : GLib.Object
+	{
+		public Afrodite.Symbol symbol;
+		public Afrodite.SourceReference? source_reference;
+		
+		public Data (Afrodite.Symbol symbol, Afrodite.SourceReference? source_reference = null)
+		{
+			this.symbol = symbol;
+			this.source_reference = source_reference;
+		}
 	}
 	
 	internal class SourceOutlinerView : GLib.Object
@@ -276,9 +287,11 @@ namespace Vtg
 
 			TreeIter iter;
 			if (_combo_items.get_active_iter (out iter)) {
-				Afrodite.SourceReference sr;
-				_combo_items.get_model ().get (iter, Columns.SOURCE_REFERENCE, out sr);
-				this.goto_source (sr.first_line, sr.first_column, sr.last_column);
+				Data data;
+				_combo_items.get_model ().get (iter, Columns.DATA, out data);
+				this.goto_source (data.source_reference.first_line,
+					data.source_reference.first_column,
+					data.source_reference.last_column);
 			}
 		}
 
@@ -320,12 +333,12 @@ namespace Vtg
 
 		private TreeStore build_tree_model ()
 		{
-			return new Gtk.TreeStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object), typeof(Afrodite.SourceReference));
+			return new Gtk.TreeStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object));
 		}
 
 		private ListStore build_combo_model ()
 		{
-			var model = new Gtk.ListStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object), typeof(Afrodite.SourceReference));
+			var model = new Gtk.ListStore (Columns.COLUMNS_COUNT, typeof(string), typeof(Gdk.Pixbuf), typeof(GLib.Object));
 			model.set_sort_column_id (0, SortType.ASCENDING);
 			model.set_sort_func (0, this.sort_model);
 			model.set_default_sort_func (this.sort_model);
@@ -381,16 +394,16 @@ namespace Vtg
 		{
 			int count = 0;
 			TreeIter iter;
-			Afrodite.Symbol symbol;
+			Data data;
 
 			var model = (ListStore) _combo_items.get_model ();
 
 			model.clear ();
 			_combo_items.set_model (null);
 			if (_combo_groups.get_active_iter (out iter)) {
-				_combo_groups.get_model ().get (iter, Columns.SYMBOL, out symbol);
-				if (symbol != null && symbol.has_children) {
-					foreach (Afrodite.Symbol child in symbol.children) {
+				_combo_groups.get_model ().get (iter, Columns.DATA, out data);
+				if (data.symbol != null && data.symbol.has_children) {
+					foreach (Afrodite.Symbol child in data.symbol.children) {
 						if (!child.name.has_prefix ("!")) {
 							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
 							/*
@@ -414,8 +427,7 @@ namespace Vtg
 								model.set (iter,
 									Columns.NAME, child.name,
 									Columns.ICON, Utils.get_icon_for_type_name (child.type_name),
-									Columns.SYMBOL, child,
-									Columns.SOURCE_REFERENCE, sr);
+									Columns.DATA, new Data(child, sr));
 							}
 							count++;
 						}
@@ -474,9 +486,9 @@ namespace Vtg
 			TreeIter iter;
 			
 			if (model.get_iter (out iter, path)) {
-				Afrodite.Symbol symbol;
-				model.get (iter, Columns.SYMBOL, out symbol);
-				goto_line (symbol);
+				Data data;
+				model.get (iter, Columns.DATA, out data);
+				goto_line (data.symbol);
 			}
 		}
 		
@@ -486,9 +498,9 @@ namespace Vtg
 			TreeModel model;
 			if (_src_view.get_selection ().get_selected (out model, out iter))
 			{
-				Afrodite.Symbol symbol;
-				model.get (iter, Columns.SYMBOL, out symbol);
-				goto_line (symbol);
+				Data data;
+				model.get (iter, Columns.DATA, out data);
+				goto_line (data.symbol);
 			}
 		}
 		
@@ -500,11 +512,11 @@ namespace Vtg
 				var rows =  _src_view.get_selection ().get_selected_rows (out model);
 				if (rows.length () == 1) {
 					TreeIter iter;
-					GLib.Object obj;
+					Data obj;
 					weak TreePath path = rows.nth_data (0);
 					model.get_iter (out iter, path);
-					model.get (iter, Columns.SYMBOL, out obj);
-					if (obj is Afrodite.Symbol) {
+					model.get (iter, Columns.DATA, out obj);
+					if (obj.symbol is Afrodite.Symbol) {
 						_popup_symbols.popup (null, null, null, event.button, event.time);
 					}
 				}
@@ -550,8 +562,7 @@ namespace Vtg
 						combo_model.set (iter_group,
 							Columns.NAME, symbol.fully_qualified_name, 
 							Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
-							Columns.SYMBOL, symbol,
-							Columns.SOURCE_REFERENCE, sr);
+							Columns.DATA, new Data (symbol, sr));
 					}
 
 					if (item.children.size > 0) {
@@ -563,8 +574,7 @@ namespace Vtg
 					combo_model.set (iter_group,
 						Columns.NAME, _("(none)"),
 						Columns.ICON, Utils.get_icon_for_type_name ("Namespace"),
-						Columns.SYMBOL, symbol.parent,
-						Columns.SOURCE_REFERENCE, null);
+						Columns.DATA, new Data (symbol.parent, null));
 					root_namespace_added = true;
 				}
 			}
@@ -613,8 +623,7 @@ namespace Vtg
 						model.@set (iter,
 							Columns.NAME, des,
 							Columns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
-							Columns.SYMBOL, symbol,
-							Columns.SOURCE_REFERENCE, sr);
+							Columns.DATA, new Data (symbol, sr));
 
 						if (item.children.size > 0) {
 							populate_treeview_model (model, source_path, item.children, iter);
@@ -626,13 +635,15 @@ namespace Vtg
 
 		private int sort_model (TreeModel model, TreeIter a, TreeIter b)
 		{
-			Afrodite.Symbol vala = null;
-			Afrodite.Symbol valb = null;
+			Data vala = null;
+			Data valb = null;
 			
-			model.@get (a, Columns.SYMBOL, out vala);
-			model.@get (b, Columns.SYMBOL, out valb);
+			model.@get (a, Columns.DATA, out vala);
+			model.@get (b, Columns.DATA, out valb);
 
-			var result = Utils.symbol_type_compare (vala, valb);
+			var sa = vala == null ? null : vala.symbol;
+			var sb = valb == null ? null : valb.symbol;
+			var result = Utils.symbol_type_compare (sa, sb);
 			return result;
 		}
 
@@ -652,10 +663,10 @@ namespace Vtg
 			if (model.get_iter_first (out iter)) {
 				TreeIter? found = null;
 				do {
-					Afrodite.Symbol s;
-					model.get (iter, Columns.SYMBOL, out s);
-					if (s.has_children) {
-						foreach (Afrodite.Symbol child in s.children) {
+					Data data;
+					model.get (iter, Columns.DATA, out data);
+					if (data.symbol.has_children) {
+						foreach (Afrodite.Symbol child in data.symbol.children) {
 							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
 							if (sr != null && sr.contains_position (_current_line + 1, _current_column)) {
 								symbol = child;
@@ -676,9 +687,9 @@ namespace Vtg
 				model = _combo_items.get_model ();
 				if (model.get_iter_first (out iter)) {
 					do {
-						Afrodite.Symbol s;
-						model.get (iter, Columns.SYMBOL, out s);
-						if (s == symbol) {
+						Data data;
+						model.get (iter, Columns.DATA, out data);
+						if (data.symbol == symbol) {
 							_combo_items.set_active_iter (iter);
 							break;
 						}

@@ -36,7 +36,7 @@ namespace Vtg
 		SELECTABLE,
 		COLUMNS_COUNT
 	}
-	
+
 	public class FilteredListDialog : GLib.Object
 	{
 		public static TreeStore create_model ()
