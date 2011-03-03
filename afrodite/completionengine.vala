@@ -296,7 +296,7 @@ namespace Afrodite
 		private void on_begin_parsing ()
 		{
 			_is_parsing = true;
-			end_parsing (this);
+			begin_parsing (this);
 		}
 
 		private void on_end_parsing ()

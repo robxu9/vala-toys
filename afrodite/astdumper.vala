@@ -140,7 +140,7 @@ namespace Afrodite
 						inc_pad ();
 						print ("%slocal variables\n", pad);
 						foreach (DataType local in symbol.local_variables) {
-							var sr = local.source_reference;
+							unowned SourceReference sr = local.source_reference;
 							print ("%s   %s     - [(%d - %d) %s]\n",
 								pad,
 								Utils.unescape_xml_string (local.description),

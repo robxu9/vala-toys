@@ -28,7 +28,7 @@ namespace Afrodite
 	{
 		Afrodite.Symbol _current = null;
 		Afrodite.DataType _current_type = null;
-		Afrodite.SourceReference _current_sr = null;
+		unowned Afrodite.SourceReference _current_sr = null;
 		Afrodite.SourceFile _source_file = null;
 		Afrodite.DataType _inferred_type = null;
 		Vala.Literal _last_literal = null;
@@ -39,6 +39,8 @@ namespace Afrodite
 		
 		private Afrodite.Ast _ast = null;
 		
+		GLib.Timer timer;
+
 		public AstMerger (Afrodite.Ast ast)
 		{
 			this._ast = ast;
@@ -58,6 +60,8 @@ namespace Afrodite
 			foreach (UsingDirective u in source.current_using_directives) {
 				_source_file.add_using_directive (u.namespace_symbol.get_full_name ());
 			}
+			
+			timer = new Timer();
 			context.root.accept_children (this);
 		}
 
@@ -69,8 +73,9 @@ namespace Afrodite
 			_ast.remove_source (source);
 		}
 
-		private Afrodite.Symbol visit_symbol (Vala.Symbol s, out Afrodite.SourceReference source_reference)
+		private Afrodite.Symbol visit_symbol (Vala.Symbol s, out unowned Afrodite.SourceReference source_reference)
 		{
+			timer.start();
 			Afrodite.Symbol symbol;
 
 			set_fqn (s.name);
@@ -97,8 +102,9 @@ namespace Afrodite
 					// add one more source reference to the symbol
 					source_reference = symbol.lookup_source_reference_filename (_source_file.filename);
 					if (source_reference == null) {
-						source_reference = create_source_reference (s);
-						symbol.add_source_reference (source_reference);
+						var sr = create_source_reference (s);
+						symbol.add_source_reference (sr);
+						source_reference = sr;
 						//Utils.trace ("adding source reference %s to source %s", symbol.fully_qualified_name, _source_file.filename);
 						_source_file.add_symbol (symbol);
 					} else {
@@ -106,28 +112,29 @@ namespace Afrodite
 					}
 				}
 			}
-
 			return symbol;
 		}
 		
-		private Afrodite.Symbol add_symbol (Vala.Symbol s, out Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
+		private Afrodite.Symbol add_symbol (Vala.Symbol s, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, s.type_name);
 			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
-				source_ref = create_source_reference (s, last_line, last_column);
-				symbol.add_source_reference (source_ref);
+				var sr = create_source_reference (s, last_line, last_column);
+				symbol.add_source_reference (sr);
+				source_ref = sr;
 			}
 			symbol.access = get_vala_symbol_access (s.access);
 			_source_file.add_symbol (symbol);
 			return symbol;
 		}
 
-		private Afrodite.Symbol add_codenode (string type_name, Vala.CodeNode c, out Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
+		private Afrodite.Symbol add_codenode (string type_name, Vala.CodeNode c, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, type_name);
 			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
-				source_ref = create_source_reference (c, last_line, last_column);
-				symbol.add_source_reference (source_ref);
+				var sr = create_source_reference (c, last_line, last_column);
+				symbol.add_source_reference (sr);
+				source_ref = sr;
 			}
 			symbol.access = Afrodite.SymbolAccessibility.PRIVATE;
 			_source_file.add_symbol (symbol);
@@ -202,7 +209,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			var prev_child_count = _child_count;
 			
 			_current = visit_symbol (ns, out _current_sr);
@@ -219,7 +226,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			_current = visit_symbol (c, out _current_sr);
 			_current.is_abstract = c.is_abstract;
@@ -235,7 +242,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			_current = visit_symbol (s, out _current_sr);
 			s.accept_children (this);
@@ -249,7 +256,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 
 			_current = visit_symbol (iface, out _current_sr);
 			iface.accept_children (this);
@@ -274,7 +281,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (m.name);
 			int last_line = 0;
@@ -312,7 +319,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 
 			set_fqn (m.name);
 			int last_line = 0;
@@ -350,7 +357,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn ("constructor:%s".printf(_current.fully_qualified_name));
 			int last_line = 0;
@@ -374,7 +381,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn ("destructor:%s".printf(_current.fully_qualified_name));
 			int last_line = 0;
@@ -397,7 +404,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (ev.name);
 			var sym = add_symbol (ev, out _current_sr);
@@ -415,7 +422,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (e.name);
 			var s = add_symbol (e, out _current_sr);
@@ -432,7 +439,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (d.name);
 			var sym = add_symbol (d, out _current_sr);
@@ -449,7 +456,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (s.name);
 			var sym = add_symbol (s, out _current_sr);
@@ -468,7 +475,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			
 			set_fqn (f.name);
@@ -497,7 +504,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (c.name);
 			var s = add_symbol (c, out _current_sr);
@@ -515,7 +522,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (p.name);
 			var s = add_symbol (p, out _current_sr);
@@ -544,7 +551,7 @@ namespace Afrodite
 			this.visit_scoped_codenode (a.readable ? "get" : "set", a, a.body);
 			/*
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			if (a.body != null 
 			    && a.body.source_reference != null
@@ -562,7 +569,7 @@ namespace Afrodite
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 						
 			set_fqn (ed.name);
 			var s = add_symbol (ed, out _current_sr);
@@ -580,7 +587,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (ecode.name);
 			var s = add_symbol (ecode, out _current_sr);
@@ -965,7 +972,7 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			var prev_sr = _current_sr;
+			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn ("!%s".printf (name));
 			int last_line = 0;
