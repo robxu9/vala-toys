@@ -529,11 +529,11 @@ namespace Vtg
 				var dialog = new FilteredListDialog (model, this.sort_symbol_model);
 				dialog.set_transient_for (_plugin_instance.window);
 				if (dialog.run ()) {
-					Afrodite.Symbol symbol;
-					model.get (dialog.selected_iter , FilteredListDialogColumns.OBJECT, out symbol);
+					FilteredListDialogData data;
+					model.get (dialog.selected_iter , FilteredListDialogColumns.OBJECT, out data);
 					Afrodite.SourceReference sr;
-					if (symbol.has_source_references) {
-						sr = symbol.source_references.get (0);
+					if (data.symbol.has_source_references) {
+						sr = data.symbol.source_references.get (0);
 						_plugin_instance.activate_uri (Filename.to_uri (sr.file.filename), sr.first_line, sr.first_column);
 					}
 				}
@@ -608,7 +608,7 @@ namespace Vtg
 					FilteredListDialogColumns.NAME , item.symbol.display_name, 
 					FilteredListDialogColumns.MARKUP, item.symbol.display_name,
 					FilteredListDialogColumns.VISIBILITY, true, 
-					FilteredListDialogColumns.OBJECT, item.symbol,
+					FilteredListDialogColumns.OBJECT, new FilteredListDialogData (item.symbol),
 					FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (item.symbol.type_name),
 					FilteredListDialogColumns.SELECTABLE, true);
 
@@ -644,7 +644,7 @@ namespace Vtg
 						FilteredListDialogColumns.NAME , symbol.display_name,
 						FilteredListDialogColumns.MARKUP, symbol.display_name,
 						FilteredListDialogColumns.VISIBILITY, true,
-						FilteredListDialogColumns.OBJECT, symbol,
+						FilteredListDialogColumns.OBJECT, new FilteredListDialogData (symbol),
 						FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (symbol.type_name),
 						FilteredListDialogColumns.SELECTABLE, true);
 
@@ -657,13 +657,15 @@ namespace Vtg
 
 		private int sort_symbol_model (TreeModel model, TreeIter a, TreeIter b)
 		{
-			Afrodite.Symbol vala;
-			Afrodite.Symbol valb;
+			FilteredListDialogData vala;
+			FilteredListDialogData valb;
 			
 			model.get (a, FilteredListDialogColumns.OBJECT, out vala);
 			model.get (b, FilteredListDialogColumns.OBJECT, out valb);
 			
-			return Utils.symbol_type_compare (vala, valb);
+			var sa = vala == null ? null : vala.symbol;
+			var sb = valb == null ? null : valb.symbol;
+			return Utils.symbol_type_compare (sa, sb);
 
 		}
 		
@@ -714,11 +716,11 @@ namespace Vtg
 				var dialog = new FilteredListDialog (model, this.sort_symbol_model);
 				dialog.set_transient_for (_plugin_instance.window);
 				if (dialog.run ()) {
-					Afrodite.Symbol symbol;
-					model.get (dialog.selected_iter , FilteredListDialogColumns.OBJECT, out symbol);
+					FilteredListDialogData data;
+					model.get (dialog.selected_iter , FilteredListDialogColumns.OBJECT, out data);
 					Afrodite.SourceReference sr;
-					if (symbol.has_source_references) {
-						sr = symbol.source_references.get (0);
+					if (data.symbol.has_source_references) {
+						sr = data.symbol.source_references.get (0);
 					
 						doc.goto_line (sr.first_line - 1);
 						view.scroll_to_cursor ();
@@ -1074,6 +1076,16 @@ namespace Vtg
 				GLib.warning ("cannot open directort %s", dir_path);
 				return false;
 			}
+		}
+	}
+	
+	private class FilteredListDialogData : GLib.Object
+	{
+		public Afrodite.Symbol symbol;
+		
+		public FilteredListDialogData (Afrodite.Symbol symbol)
+		{
+			this.symbol = symbol;
 		}
 	}
 }
