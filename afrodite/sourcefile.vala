@@ -69,16 +69,10 @@ namespace Afrodite
 		~SourceFile ()
 		{
 			Utils.trace ("SourceFile destroying: %s", filename);
-#if DEBUG
-			Utils.trace ("     symbol count before destroy %d", parent.leaked_symbols.size);
-#endif
 			while (symbols != null && symbols.size > 0) {
 				var symbol = symbols.get (0);
 				remove_symbol (symbol);
 			}
-#if DEBUG
-			Utils.trace ("     symbol count after destroy  %d", parent.leaked_symbols.size);
-#endif
 			Utils.trace ("SourceFile destroyed: %s", filename);
 		}
 
@@ -130,25 +124,11 @@ namespace Afrodite
 			if (symbols == null) {
 				symbols = new ArrayList<unowned Symbol> ();
 			}
-			assert (symbols.contains (symbol) == false);
 
 			symbols.add (symbol);
 
-
 			parent.symbols.set (symbol.fully_qualified_name, symbol);
-			if (!parent.unresolved_symbols.contains(symbol)) {
-				parent.unresolved_symbols.add(symbol);
-			}
-
-#if DEBUG
-			// debug
-			if (!parent.leaked_symbols.contains (symbol)) {
-				//parent.leaked_symbols.add (symbol);
-				symbol.weak_ref (this.on_symbol_destroy);
-			} else {
-				Utils.trace ("Symbol already added to the leak check: %s", symbol.fully_qualified_name);
-			}
-#endif
+			parent.unresolved_symbols.add(symbol);
 		}
 
 		public void remove_symbol (Symbol symbol)
@@ -182,13 +162,5 @@ namespace Afrodite
 				return symbols != null;
 			}
 		}
-
-#if DEBUG
-		private void on_symbol_destroy (Object obj)
-		{
-			parent.leaked_symbols.remove ((Symbol)obj);
-			//Utils.trace ("symbol destroyed (%p)",  obj);
-		}
-#endif
 	}
 }

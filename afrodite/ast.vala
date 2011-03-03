@@ -26,11 +26,6 @@ namespace Afrodite
 {
 	public class Ast
 	{
-
-#if DEBUG
-		// debug utility to dump leaked symbols when destroying a source file
-		public static Vala.List<unowned Symbol> leaked_symbols = new Vala.ArrayList<unowned Symbol>();
-#endif
 		public Vala.HashMap<string, unowned Symbol> symbols = new Vala.HashMap <string, unowned Symbol>(GLib.str_hash, GLib.str_equal);
 		public Vala.List<unowned Symbol> unresolved_symbols = new Vala.ArrayList<unowned Symbol>();
 		
@@ -39,20 +34,9 @@ namespace Afrodite
 		~Ast ()
 		{
 			Utils.trace ("Ast destroy");
-#if DEBUG
-			Utils.trace ("     symbol count before destroy %d", leaked_symbols.size);
-#endif
 			// destroy the root symbol
 			_root = null;
 			source_files = null;// source have to be destroyes after root symbol
-
-#if DEBUG
-			Utils.trace ("     symbol count after destroy  %d", leaked_symbols.size);
-			if (leaked_symbols.size > 0) {
-				this.dump_leaks ();
-			}
-#endif
-
 			Utils.trace ("Ast destroyed");
 		}
 
@@ -606,7 +590,7 @@ namespace Afrodite
 		public Symbol? get_symbol_for_source_and_position (SourceFile source, int line, int column)
 		{
 			Symbol result = null;
-			SourceReference result_sr = null;
+			unowned SourceReference result_sr = null;
 			
 			if (source.has_symbols) {
 				// base 0
@@ -638,19 +622,5 @@ namespace Afrodite
 			
 			return result;
 		}
-
-#if DEBUG
-		private void dump_leaks ()
-		{
-			foreach (Symbol s in leaked_symbols) {
-				Utils.trace ("    -- leaked symbol %s (%p), parent %s (%p), generic_parent %s (%p) childs %d, refcount %u",
-					s.fully_qualified_name, s,
-					s.parent == null ? "null" : s.parent.fully_qualified_name, s.parent,
-					s.generic_parent == null ? "null" : s.generic_parent.fully_qualified_name, s.generic_parent,
-					s.has_children ? s.children.size : 0,
-					s.ref_count);
-			}
-		}
-#endif
 	}
 }

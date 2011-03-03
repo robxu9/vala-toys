@@ -24,7 +24,7 @@ using Vala;
 
 namespace Afrodite
 {	
-	public class Symbol : Object
+	public class Symbol
 	{
 		public static VoidType VOID = new VoidType ();
 		public static EllipsisType ELLIPSIS = new EllipsisType ();
@@ -522,7 +522,6 @@ namespace Afrodite
 				generic_type_arguments = new ArrayList<Symbol> ();
 			}
 
-			assert (generic_type_arguments.contains(sym) == false);
 			//debug ("added generic %s to %s", sym.name, this.fully_qualified_name);
 			//Utils.trace ("add generic type args symbol %s: %s", _fully_qualified_name, sym.fully_qualified_name);
 			generic_type_arguments.add (sym);
@@ -623,16 +622,18 @@ namespace Afrodite
 			}
 		}
 		
-		public SourceReference? lookup_source_reference_filename (string filename)
+		public unowned SourceReference? lookup_source_reference_filename (string filename)
 		{
+			unowned SourceReference? result = null;
 			if (has_source_references) {
 				foreach (SourceReference reference in source_references) {
 					if (reference.file.filename == filename)
-						return reference;
+						result = reference;
+						break;
 				}
 			}
 			
-			return null;
+			return result;
 		}
 		
 		public SourceReference? lookup_source_reference_sourcefile (SourceFile source)
@@ -1053,7 +1054,6 @@ namespace Afrodite
 			if (_specialized_symbols == null)
 				_specialized_symbols = new Vala.ArrayList<Symbol> ();
 
-			assert (_specialized_symbols.contains (item) == false);
 			_specialized_symbols.add (item);
 			item.generic_parent = this;
 		}
@@ -1061,7 +1061,6 @@ namespace Afrodite
 		public void remove_specialized_symbol (Symbol? item)
 		{
 			assert (item != this);
-			assert (_specialized_symbols.contains (item));
 
 			_specialized_symbols.remove (item);
 			if (item.generic_parent == this)
