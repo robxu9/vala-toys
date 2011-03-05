@@ -265,6 +265,7 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
+		/*
 		public override void visit_expression_statement (Vala.ExpressionStatement e)
 		{
 			e.accept_children (this);
@@ -275,6 +276,7 @@ namespace Afrodite
 			//Utils.trace ("visit method call: %s", c.call.type_name);
 			c.accept_children (this);
 		}
+		*/
 		
 		public override void visit_method (Method m)
 		{
@@ -308,8 +310,18 @@ namespace Afrodite
 			
 			_current = s;
 			visit_type_for_generics (m.return_type, s.return_type);
-			m.accept_children (this);
-			
+			foreach (TypeParameter p in m.get_type_parameters ()) {
+				p.accept (this);
+			}
+
+			foreach (Vala.Parameter param in m.get_parameters ()) {
+				param.accept (this);
+			}
+
+			if (m.body != null) {
+				m.body.accept (this);
+			}
+
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -346,8 +358,18 @@ namespace Afrodite
 			
 			_current = s;
 			visit_type_for_generics (m.return_type, s.return_type);
-			m.accept_children (this);
-			
+			foreach (TypeParameter p in m.get_type_parameters ()) {
+				p.accept (this);
+			}
+
+			foreach (Vala.Parameter param in m.get_parameters ()) {
+				param.accept (this);
+			}
+
+			if (m.body != null) {
+				m.body.accept (this);
+			}
+
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -370,8 +392,9 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = s;
-			m.accept_children (this);
-			
+			if (m.body != null) {
+				m.body.accept (this);
+			}
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -394,7 +417,10 @@ namespace Afrodite
 			_current.add_child (s);
 			 
 			_current = s;
-			m.accept_children (this);
+			if (m.body != null) {
+				m.body.accept (this);
+			}
+
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -428,7 +454,19 @@ namespace Afrodite
 			var s = add_symbol (e, out _current_sr);
 			_current.add_child (s);
 			_current = s;
-			e.accept_children (this);
+
+			foreach (Vala.EnumValue value in e.get_values ()) {
+				value.accept (this);
+			}
+
+			foreach (Method m in e.get_methods ()) {
+				m.accept (this);
+			}
+
+			foreach (Constant c in e.get_constants ()) {
+				c.accept (this);
+			}
+
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -443,9 +481,17 @@ namespace Afrodite
 			
 			set_fqn (d.name);
 			var sym = add_symbol (d, out _current_sr);
+			sym.return_type = new DataType (d.return_type.to_string ());
 			_current.add_child (sym);
 			_current = sym;
-			d.accept_children (this);
+
+			foreach (TypeParameter p in d.get_type_parameters ()) {
+				p.accept (this);
+			}
+			foreach (Vala.Parameter param in d.get_parameters ()) {
+				param.accept (this);
+			}
+
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -464,7 +510,16 @@ namespace Afrodite
 			sym.is_virtual = s.is_virtual;
 			_current.add_child (sym);
 			_current = sym;
-			s.accept_children (this);
+
+			foreach (Vala.Parameter param in s.get_parameters ()) {
+				param.accept (this);
+			}
+			if (s.default_handler == null && s.body != null) {
+				s.body.accept (this);
+			} else if (s.default_handler != null) {
+				s.default_handler.accept (this);
+			}
+
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -540,7 +595,17 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = s;
-			p.accept_children (this);
+			if (p.get_accessor != null) {
+				p.get_accessor.accept (this);
+			}
+			if (p.set_accessor != null) {
+				p.set_accessor.accept (this);
+			}
+
+			if (p.initializer != null) {
+				p.initializer.accept (this);
+			}
+
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -576,7 +641,14 @@ namespace Afrodite
 			_current.add_child (s);
 			
 			_current = s;
-			ed.accept_children (this);
+
+			foreach (ErrorCode ecode in ed.get_codes()) {
+				ecode.accept (this);
+			}
+			foreach (Method m in ed.get_methods ()) {
+				m.accept (this);
+			}
+
 			
 			_current = prev;
 			_current_sr = prev_sr;
@@ -679,7 +751,7 @@ namespace Afrodite
  					((BinaryExpression) local.initializer).accept_children (this);
  				} else if (local.initializer is CastExpression) {
  					var cast_expr = (CastExpression)local.initializer;
-					cast_expr.accept (this);
+					//cast_expr.accept (this);
  					if (cast_expr.type_reference != null)
  					{
 	 					s.type_name = get_datatype_typename (cast_expr.type_reference);
@@ -687,12 +759,18 @@ namespace Afrodite
  				} else if (local.initializer is ArrayCreationExpression) {
  					//Utils.trace ("ArrayCreationExpression infer from init '%s' %s", s.name, local.initializer.type_name);
  					var ac = (ArrayCreationExpression) local.initializer; 
- 					ac.accept_children (this);
  					s.is_array = true;
+ 					if (ac.element_type == null) {
+						if (ac.initializer_list != null) {
+							ac.initializer_list.accept (this);
+						}
+ 					}
  					s.type_name = get_datatype_typename (ac.element_type);
 					//Utils.trace ("init type %s: %s %s", local.name, s.type_name, ac.element_type.type_name);
 				} else {
-					local.accept_children (this);
+					if (local.initializer != null) {
+						local.initializer.accept (this);
+					}
 				}
 				_last_literal = null;
 				//debug ("infer from init done %s", _inferred_type.type_name);
