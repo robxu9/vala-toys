@@ -346,7 +346,7 @@ namespace Afrodite
 			return null;
 		}
 
-		public DataType? lookup_datatype_for_variable (CompareMode mode, string name, SymbolAccessibility access = SymbolAccessibility.ANY)
+		public DataType? lookup_datatype_for_variable_name (CompareMode mode, string name, SymbolAccessibility access = SymbolAccessibility.ANY)
 		{
 			if (has_local_variables) {
 				foreach (DataType d in local_variables) {
@@ -355,7 +355,7 @@ namespace Afrodite
 					}
 				}
 			}
-			
+
 			// search in symbol parameters
 			if (has_parameters) {
 				foreach (DataType type in parameters) {
@@ -365,6 +365,11 @@ namespace Afrodite
 				}
 			}
 			
+			return null;
+		}
+
+		public DataType? lookup_datatype_for_symbol_name (CompareMode mode, string name, SymbolAccessibility access = SymbolAccessibility.ANY)
+		{
 			if (has_children) {
 				foreach (Symbol s in this.children) {
 					if ((s.access & access) != 0
@@ -377,7 +382,7 @@ namespace Afrodite
 			if (has_base_types) {
 				foreach (DataType d in this.base_types) {
 					if (d.symbol != null) {
-						var r = d.symbol.lookup_datatype_for_variable (mode, name, 
+						var r = d.symbol.lookup_datatype_for_symbol_name (mode, name, 
 							SymbolAccessibility.INTERNAL | SymbolAccessibility.PROTECTED | SymbolAccessibility.PROTECTED);
 						if (r != null) {
 							return d;
@@ -387,15 +392,24 @@ namespace Afrodite
 			}
 			return null;
 		}
-		
-		public DataType? scope_lookup_datatype_for_variable (CompareMode mode, string name)
+
+		public DataType? lookup_datatype_for_name (CompareMode mode, string name, SymbolAccessibility access = SymbolAccessibility.ANY)
 		{
-			DataType result = lookup_datatype_for_variable (mode, name);
+			var result = lookup_datatype_for_variable_name (mode, name, access);
+			if (result != null)
+				return result;
+
+			return lookup_datatype_for_symbol_name (mode, name, access);
+		}
+		
+		public DataType? scope_lookup_datatype_for_name (CompareMode mode, string name)
+		{
+			DataType result = lookup_datatype_for_name (mode, name);
 			
 			if (result == null) {
 
 				if (this.parent != null) {
-					result = this.parent.scope_lookup_datatype_for_variable (mode, name);
+					result = this.parent.scope_lookup_datatype_for_name (mode, name);
 				}
 				
 				if (result == null) {
@@ -405,7 +419,7 @@ namespace Afrodite
 							if (s.file.has_using_directives) {
 								foreach (var u in s.file.using_directives) {
 									if (!u.unresolved) {
-										result = u.symbol.lookup_datatype_for_variable (mode, name, SymbolAccessibility.INTERNAL | SymbolAccessibility.PUBLIC);
+										result = u.symbol.lookup_datatype_for_symbol_name (mode, name, SymbolAccessibility.INTERNAL | SymbolAccessibility.PUBLIC);
 										if (result != null) {
 											break;
 										}
