@@ -54,11 +54,11 @@ namespace Afrodite
 
 		public Vala.List<SourceFile> source_files { get; set; }
 	
-		public Symbol? lookup (string fully_qualified_name, out Symbol? parent)
+		public Symbol? lookup (string fully_qualified_name)
 		{
 			Symbol result = null;
 			
-			parent = _root;
+			Symbol parent = _root;
 			if (_root.has_children) {
 				result = lookup_symbol (fully_qualified_name, _root, ref parent, CompareMode.EXACT);
 			}
@@ -566,10 +566,11 @@ namespace Afrodite
 				// search in using directives
 				if (source.has_using_directives) {
 					foreach (DataType u in source.using_directives) {
-						Symbol parent;
 						
-						sym = lookup (u.type_name, out parent);
+						
+						sym = lookup (u.type_name);
 						if (sym != null) {
+							Symbol parent = sym.parent;
 							if (compare_symbol_names (sym.name, name, mode)) {
 								// is a reference to a namespace
 								return sym;

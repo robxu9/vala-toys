@@ -44,13 +44,12 @@ namespace Afrodite
 
 			// first resolve the using directives
 			if (_ast.has_source_files) {
-				Symbol dummy;
 				foreach (SourceFile file in _ast.source_files) {
 					if (file.has_using_directives) {
 						foreach (DataType using_directive in file.using_directives) {
 							//
 							if (using_directive.unresolved) {
-								using_directive.symbol = _ast.lookup (using_directive.type_name, out dummy);
+								using_directive.symbol = _ast.lookup (using_directive.type_name);
 								if (using_directive.unresolved)
 									message ("file %s - can't resolve using directive: %s", file.filename, using_directive.type_name);
 							}

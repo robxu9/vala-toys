@@ -75,32 +75,26 @@ namespace Afrodite
 
 		private Afrodite.Symbol visit_symbol (Vala.Symbol s, out unowned Afrodite.SourceReference source_reference)
 		{
-			timer.start();
 			Afrodite.Symbol symbol;
 
 			set_fqn (s.name);
-			//symbol = _ast.lookup (_vala_symbol_fqn, out parent);
-			//assert (parent != null);
-			symbol = _ast.symbols.@get (_vala_symbol_fqn);
 
-			if (symbol == null) {
+			//NOTE: usually we should always add symbols but 
+			// we should merge namespaces content.
+			// This must be changed whenever vala will support 
+			// partial classes.
+			if (s.type_name != "ValaNamespace") {
 				symbol = add_symbol (s, out source_reference);
-				//Utils.trace ("adding %s to source %s", symbol.fully_qualified_name, _source_file.filename);
 				_current.add_child (symbol);
 			} else {
-				Afrodite.Symbol parent = symbol.parent;
-				//NOTE: see if we should replace the symbol
-				// we should replace it if is not a namespace
-				// this can change whenever vala will support
-				// partial classes
-				bool replace = s.type_name != "ValaNamespace";
-				if (replace) {
-					parent.remove_child (symbol);
+				symbol = _ast.lookup (_vala_symbol_fqn);
+				if (symbol == null) {
 					symbol = add_symbol (s, out source_reference);
-					parent.add_child (symbol);
+					//Utils.trace ("adding %s to source %s", symbol.fully_qualified_name, _source_file.filename);
+					_current.add_child (symbol);
 				} else {
-					// add one more source reference to the symbol
 					source_reference = symbol.lookup_source_reference_filename (_source_file.filename);
+					// add one more source reference to the symbol
 					if (source_reference == null) {
 						var sr = create_source_reference (s);
 						symbol.add_source_reference (sr);
@@ -280,6 +274,10 @@ namespace Afrodite
 		
 		public override void visit_method (Method m)
 		{
+			//var timer = new Timer();
+			//timer.start ();
+			//Utils.trace ("visit method %s", m.name);
+
 			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
@@ -310,21 +308,23 @@ namespace Afrodite
 			
 			_current = s;
 			visit_type_for_generics (m.return_type, s.return_type);
+			//Utils.trace ("visit method (symbol) %s: %f", m.name, timer.elapsed());
 			foreach (TypeParameter p in m.get_type_parameters ()) {
 				p.accept (this);
 			}
-
+			//Utils.trace ("visit method (typeparam) %s: %f", m.name, timer.elapsed());
 			foreach (Vala.Parameter param in m.get_parameters ()) {
 				param.accept (this);
 			}
-
+			//Utils.trace ("visit method (param) %s: %f", m.name, timer.elapsed());
 			if (m.body != null) {
 				m.body.accept (this);
 			}
-
+			//Utils.trace ("visit method (body) %s: %f", m.name, timer.elapsed());
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
+			//Utils.trace ("visit method %s: %f", m.name, timer.elapsed());
 		}
 
 		public override void visit_creation_method (CreationMethod m)
@@ -728,17 +728,14 @@ namespace Afrodite
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
-			
+
 			set_fqn (local.name);
 			DataType s = new DataType ("", local.name);
 			if (local.variable_type != null) {
 				s.type_name = get_datatype_typename (local.variable_type);
-			} else if (local.variable_type == null && local.initializer != null) {
-				// try to resolve local variable type from initializers
-				var prev_inferred_type = _inferred_type;
-				_inferred_type = s;
+			} else if (local.variable_type == null) {
 				//Utils.trace ("infer from init '%s': %s", s.name, local.initializer.type_name);
-				
+				/* 
 				if (local.initializer is ObjectCreationExpression) {
 					//debug ("START: initialization %s from %s: %s", local.name, s.name, _inferred_type.type_name);
 					var obj_initializer = (ObjectCreationExpression) local.initializer;
@@ -746,7 +743,17 @@ namespace Afrodite
 					//debug ("END: initialization done %s", _inferred_type.type_name);
 				} else if (local.initializer is MethodCall) {
 					//Utils.trace ("method call: %s", s.name);
- 					((MethodCall) local.initializer).call.accept (this); // this avoid visit parameters of method calls
+					var call = ((MethodCall) local.initializer);
+					Utils.trace ("method call: %s -> %s %s", local.name, call.to_string (), call.call.type_name);
+					var ma = call.call as MemberAccess;
+					if (true || ma == null)
+	 					call.call.accept (this); // this avoid visit parameters of method calls
+	 				else {
+	 					
+						Utils.trace ("ma inner: %s", ma.member_name);
+	 				}
+	 				Utils.trace ("AFTER: %s", s.type_name);
+ 					//breakpoint();
  				} else if (local.initializer is BinaryExpression) {
  					((BinaryExpression) local.initializer).accept_children (this);
  				} else if (local.initializer is CastExpression) {
@@ -772,6 +779,21 @@ namespace Afrodite
 						local.initializer.accept (this);
 					}
 				}
+				*/
+				// try to resolve local variable type from initializers
+				var prev_inferred_type = _inferred_type;
+				_inferred_type = s;
+
+				if (local.initializer != null) {
+					local.initializer.accept (this);
+					// HACK:
+					if (s.type_name != null 
+					    && (s.type_name.has_prefix ("this.") || s.type_name.has_prefix ("base.")))
+					{
+						s.type_name = s.type_name.substring (5);
+					}
+				}
+
 				_last_literal = null;
 				//debug ("infer from init done %s", _inferred_type.type_name);
 				_inferred_type = prev_inferred_type;
@@ -819,23 +841,34 @@ namespace Afrodite
 		{
 			if (_inferred_type == null)
 				return;
-			
-			//Utils.trace ("visit member access %s: %s", _inferred_type.type_name, expr.member_name);
-			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
-				_inferred_type.type_name = expr.member_name;
-			else {
-				string member_name = null;
-				// lookup in the scope variables
+
+			string member_name = expr.member_name;
+			Utils.trace ("MemberAccess %s: %s", _current.name, expr.member_name);
+			if (expr.inner == null) {
+				// this is the last iteration
+				// lookup the name in all the visible symbols
 				if (_current != null) {
-					DataType d = _current.scope_lookup_datatype_for_variable (CompareMode.EXACT, expr.member_name);
+					// try the first optimized path
+					DataType d = _current.lookup_datatype_for_variable_name (CompareMode.EXACT, member_name);
 					if (d != null) {
 						member_name = d.type_name;
+					} else if (_current.parent != null) {
+						d = _current.parent.lookup_datatype_for_symbol_name (CompareMode.EXACT, member_name);
+						if (d != null) {
+							member_name = d.type_name;
+						} /* else {
+							// this is the slowest path
+							d = _current.scope_lookup_datatype_for_name (CompareMode.EXACT, member_name);
+							if (d != null) {
+								member_name = d.type_name;
+							}
+						}*/
 					}
 				}
-				
-				// if not found assume that is a static type
-				if (member_name == null)
-					member_name = expr.member_name;
+			}
+			if (_inferred_type.type_name == null || _inferred_type.type_name == "") {
+				_inferred_type.type_name = member_name;
+			} else {
 				_inferred_type.type_name = "%s.%s".printf (member_name, _inferred_type.type_name);
 			}
 		}
@@ -862,7 +895,6 @@ namespace Afrodite
 	
 		public override void visit_binary_expression (BinaryExpression expr) 
 		{
-			//debug ("vidit binary expr %p", expr);
 			expr.accept_children (this);
 		}
 		
@@ -873,8 +905,6 @@ namespace Afrodite
 			
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
 				_inferred_type.type_name = "bool";
-			else  if (_inferred_type.type_name != "bool")
-				_inferred_type.type_name = "%s.%s".printf ("bool", _inferred_type.type_name);
 		}
 
 
@@ -885,8 +915,6 @@ namespace Afrodite
 				
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
 				_inferred_type.type_name = "char";
-			else if (_inferred_type.type_name != "char")
-				_inferred_type.type_name = "%s.%s".printf ("char", _inferred_type.type_name);
 		}
 
 		public override void visit_integer_literal (IntegerLiteral lit) 
@@ -896,8 +924,6 @@ namespace Afrodite
 
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
 				_inferred_type.type_name = lit.type_name;
-			else if (_inferred_type.type_name != lit.type_name)
-				_inferred_type.type_name = "%s.%s".printf (lit.type_name, _inferred_type.type_name);
 		}
 
 		public override void visit_real_literal (RealLiteral lit) 
@@ -906,8 +932,6 @@ namespace Afrodite
 				return;
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
 				_inferred_type.type_name = lit.get_type_name ();
-			else if (_inferred_type.type_name != lit.get_type_name ())
-				_inferred_type.type_name = "%s.%s".printf (lit.get_type_name (), _inferred_type.type_name);
 		}
 
 		public override void visit_string_literal (StringLiteral lit) 
@@ -917,8 +941,6 @@ namespace Afrodite
 			
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "")
 				_inferred_type.type_name = "string";
-			else if (_inferred_type.type_name != "string")
-				_inferred_type.type_name = "%s.%s".printf ("string", _inferred_type.type_name);
 		}
 		
 		public override void visit_declaration_statement (DeclarationStatement stmt)
@@ -970,7 +992,7 @@ namespace Afrodite
 		{
 			var s = visit_scoped_codenode ("catch", clause, clause.body);
 			var d = new DataType (get_datatype_typename (clause.error_type), clause.variable_name);
-			s.add_local_variable (d);			
+			s.add_local_variable (d);
 		}
 		
 		public override void visit_if_statement (IfStatement stmt) 
