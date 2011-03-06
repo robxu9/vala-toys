@@ -68,7 +68,7 @@ namespace Afrodite
 			if (ns.name != null)
 				_current = visit_symbol (ns, out _current_sr);
 
-			foreach (Enum en in ns.get_enums ()) {
+			foreach (Vala.Enum en in ns.get_enums ()) {
 				en.accept (this);
 			}
 
@@ -356,7 +356,7 @@ namespace Afrodite
 				p.accept (this);
 			}
 			//Utils.trace ("visit method (typeparam) %s: %f", m.name, timer.elapsed());
-			foreach (Vala.Parameter param in m.get_parameters ()) {
+			foreach (Vala.FormalParameter param in m.get_parameters ()) {
 				param.accept (this);
 			}
 			//Utils.trace ("visit method (param) %s: %f", m.name, timer.elapsed());
@@ -405,7 +405,7 @@ namespace Afrodite
 				p.accept (this);
 			}
 
-			foreach (Vala.Parameter param in m.get_parameters ()) {
+			foreach (Vala.FormalParameter param in m.get_parameters ()) {
 				param.accept (this);
 			}
 
@@ -529,7 +529,7 @@ namespace Afrodite
 			foreach (TypeParameter p in d.get_type_parameters ()) {
 				p.accept (this);
 			}
-			foreach (Vala.Parameter param in d.get_parameters ()) {
+			foreach (Vala.FormalParameter param in d.get_parameters ()) {
 				param.accept (this);
 			}
 
@@ -551,7 +551,7 @@ namespace Afrodite
 			_current.add_child (sym);
 			_current = sym;
 
-			foreach (Vala.Parameter param in s.get_parameters ()) {
+			foreach (Vala.FormalParameter param in s.get_parameters ()) {
 				param.accept (this);
 			}
 			if (s.default_handler == null && s.body != null) {
