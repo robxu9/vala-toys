@@ -1,3 +1,15 @@
+Vala toys for gEdit version 0.11.0
+==================================
+
+* Improved libafrodite stability and simpler API
+* Symbol picker combo in the source editor
+* Go to outer scope command
+* Find symbol in project dialog 
+* Automatic management of projects. Eg. when you open
+  a source that belong to a project that project will
+  be opened (and closed) automatically.
+* Various fixes in the source code outliner view
+
 Vala toys for gEdit version 0.10.0
 ==================================
 
