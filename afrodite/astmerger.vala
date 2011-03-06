@@ -35,37 +35,128 @@ namespace Afrodite
 		
 		string _vala_symbol_fqn = null;
 		bool _merge_glib = true;
-		int _child_count = 0;
-		
+
 		private Afrodite.Ast _ast = null;
-		
-		GLib.Timer timer;
 
 		public AstMerger (Afrodite.Ast ast)
 		{
 			this._ast = ast;
 		}
 
-		public void merge_vala_context (Vala.SourceFile source, CodeContext context, bool merge_glib = false)
+		public async void merge_vala_context (Vala.SourceFile source, CodeContext context, bool merge_glib = false)
 		{
 			_merge_glib = merge_glib;
 			_vala_symbol_fqn = null;
 			_current_type = null;
-			_child_count = 0;
 			_current = _ast.root;
 			assert (_ast.lookup_source_file (source.filename) == null);
 
 			//debug ("COMPLETING FILE %s", source.filename);
 			_source_file = _ast.add_source_file (source.filename);
 			foreach (UsingDirective u in source.current_using_directives) {
-				_source_file.add_using_directive (u.namespace_symbol.get_full_name ());
+				_source_file.add_using_directive (u.namespace_symbol.to_string ());
 			}
-			
-			timer = new Timer();
-			context.root.accept_children (this);
+			yield visit_namespace_sliced (context.root);
 		}
 
-		public void remove_source_filename (string filename)
+		public async void visit_namespace_sliced (Namespace ns)
+		{
+			var prev_vala_fqn = _vala_symbol_fqn;
+			var prev = _current;
+			unowned SourceReference prev_sr = _current_sr;
+			
+			if (ns.name != null)
+				_current = visit_symbol (ns, out _current_sr);
+
+			foreach (Enum en in ns.get_enums ()) {
+				en.accept (this);
+			}
+
+			foreach (ErrorDomain edomain in ns.get_error_domains ()) {
+				edomain.accept (this);
+			}
+
+			foreach (Vala.Namespace n in ns.get_namespaces ()) {
+				yield visit_namespace_sliced (n);
+			}
+
+			foreach (Vala.Class cl in ns.get_classes ()) {
+				yield visit_class_sliced (cl);
+			}
+
+			foreach (Interface iface in ns.get_interfaces ()) {
+				yield visit_interface_sliced (iface);
+			}
+
+			foreach (Struct st in ns.get_structs ()) {
+				yield visit_struct_sliced (st);
+			}
+
+			foreach (Delegate d in ns.get_delegates ()) {
+				d.accept (this);
+			}
+
+			foreach (Constant c in ns.get_constants ()) {
+				c.accept (this);
+			}
+
+			foreach (Field f in ns.get_fields ()) {
+				f.accept (this);
+			}
+
+			foreach (Method m in ns.get_methods ()) {
+				m.accept (this);
+			}
+
+			_current = prev;
+			_current_sr = prev_sr;
+			_vala_symbol_fqn = prev_vala_fqn;
+		}
+
+		public async void visit_class_sliced (Class c)
+		{
+			visit_class (c);
+		}
+
+		public async void visit_struct_sliced (Struct st)
+		{
+			visit_struct (st);
+		}
+
+		public async void visit_interface_sliced (Interface iface)
+		{
+			visit_interface (iface);
+		}
+
+		public override void visit_class (Class c)
+		{
+			var prev_vala_fqn = _vala_symbol_fqn;
+			var prev = _current;
+			unowned SourceReference prev_sr = _current_sr;
+
+			_current = visit_symbol (c, out _current_sr);
+			_current.is_abstract = c.is_abstract;
+			c.accept_children (this);
+
+			_current = prev;
+			_current_sr = prev_sr;
+			_vala_symbol_fqn = prev_vala_fqn;
+		}
+		
+		public override void visit_struct (Struct s)
+		{
+			var prev_vala_fqn = _vala_symbol_fqn;
+			var prev = _current;
+			unowned SourceReference prev_sr = _current_sr;
+			
+			_current = visit_symbol (s, out _current_sr);
+			s.accept_children (this);
+			_current = prev;
+			_current_sr = prev_sr;
+			_vala_symbol_fqn = prev_vala_fqn;
+		}
+
+		public async void remove_source_filename (string filename)
 		{
 			var source = _ast.lookup_source_file (filename);
 			assert (source != null);
@@ -199,55 +290,8 @@ namespace Afrodite
 			}
 		}
 
-		public override void visit_namespace (Namespace ns)
-		{
-			var prev_vala_fqn = _vala_symbol_fqn;
-			var prev = _current;
-			unowned SourceReference prev_sr = _current_sr;
-			var prev_child_count = _child_count;
-			
-			_current = visit_symbol (ns, out _current_sr);
-			ns.accept_children (this);
-
-			_child_count = prev_child_count;
-			_current = prev;
-			_current_sr = prev_sr;
-			_vala_symbol_fqn = prev_vala_fqn;
-		}
-		
-		public override void visit_class (Class c)
-		{
-			_child_count++;
-			var prev_vala_fqn = _vala_symbol_fqn;
-			var prev = _current;
-			unowned SourceReference prev_sr = _current_sr;
-			
-			_current = visit_symbol (c, out _current_sr);
-			_current.is_abstract = c.is_abstract;
-			c.accept_children (this);
-
-			_current = prev;
-			_current_sr = prev_sr;
-			_vala_symbol_fqn = prev_vala_fqn;
-		}
-		
-		public override void visit_struct (Struct s)
-		{
-			_child_count++;
-			var prev_vala_fqn = _vala_symbol_fqn;
-			var prev = _current;
-			unowned SourceReference prev_sr = _current_sr;
-			
-			_current = visit_symbol (s, out _current_sr);
-			s.accept_children (this);
-			_current = prev;
-			_current_sr = prev_sr;
-			_vala_symbol_fqn = prev_vala_fqn;
-		}
-		
 		public override void visit_interface (Interface iface)
 		{
-			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
@@ -278,7 +322,6 @@ namespace Afrodite
 			//timer.start ();
 			//Utils.trace ("visit method %s", m.name);
 
-			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
@@ -445,7 +488,6 @@ namespace Afrodite
 		
 		public override void visit_enum (Vala.Enum e) 
 		{
-			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
@@ -474,7 +516,6 @@ namespace Afrodite
 		
 		public override void visit_delegate (Delegate d) 
 		{
-			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
@@ -499,7 +540,6 @@ namespace Afrodite
 
 	       	public override void visit_signal (Vala.Signal s) 
 		{
-			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
@@ -527,7 +567,6 @@ namespace Afrodite
 		
 		public override void visit_field (Field f) 
 		{
-			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
@@ -556,7 +595,6 @@ namespace Afrodite
 
 		public override void visit_constant (Vala.Constant c) 
 		{
-			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
@@ -574,7 +612,6 @@ namespace Afrodite
 	
 		public override void visit_property (Property p) 
 		{
-			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
@@ -631,7 +668,6 @@ namespace Afrodite
 		
 		public override void visit_error_domain (ErrorDomain ed)
 		{
-			_child_count++;
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
@@ -843,7 +879,7 @@ namespace Afrodite
 				return;
 
 			string member_name = expr.member_name;
-			Utils.trace ("MemberAccess %s: %s", _current.name, expr.member_name);
+			//Utils.trace ("MemberAccess %s: %s", _current.name, expr.member_name);
 			if (expr.inner == null) {
 				// this is the last iteration
 				// lookup the name in all the visible symbols

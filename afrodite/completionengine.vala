@@ -266,7 +266,8 @@ namespace Afrodite
 					lock (_parse_result_list) {
 						_parse_result_list.add (parse_results);
 						if (_idle_id == 0)
-							_idle_id = Idle.add_full (Priority.DEFAULT_IDLE, on_parse_results);
+							//_idle_id = Idle.add (this.on_parse_results, Priority.LOW);
+							_idle_id = Timeout.add (250, this.on_parse_results, Priority.LOW);
 					}
 #if DEBUG
 					Utils.trace ("engine %s: parsing source: %s done %g", id, source.path, timer.elapsed () - start_time);
@@ -295,63 +296,57 @@ namespace Afrodite
 
 		private void on_begin_parsing ()
 		{
-			_is_parsing = true;
-			begin_parsing (this);
+			if (!_is_parsing) {
+				_is_parsing = true;
+				begin_parsing (this);
+			}
 		}
 
 		private void on_end_parsing ()
 		{
-			_is_parsing = false;
-			end_parsing (this);
+			if (AtomicInt.@get (ref _current_parsing_total_file_count) == 0) {
+				_is_parsing = false;
+				end_parsing (this);
+			}
 		}
 
 
 		private bool on_parse_results ()
 		{
-			bool keep_idle = true;
-			ParseResult result = null;
+			bool merge_scheduled = false;
 
 			lock (_parse_result_list) {
 				if (_parse_result_list.size > 0) {
-					Utils.trace ("*** size %d", _parse_result_list.size);
 					foreach (ParseResult key in _parse_result_list) {
-						result = key;
-						_parse_result_list.remove (key);
-						break; // one iteration
+						if (!merge_scheduled) {
+							merge_scheduled = true;
+							merge_and_resolve.begin (key, this.on_merge_and_resolve_ended);
+							_parse_result_list.remove (key);
+							break;
+						}
 					}
-					Utils.trace ("*** after size %d", _parse_result_list.size);
-				}
-				if (_parse_result_list.size == 0) {
+				} else {
+					// Tell to the parser thread the a new Idle should be created
+					// for the merge process
 					_idle_id = 0;
-					keep_idle = false;
-					
 				}
 			}
-			if (result != null) {
-				if (!_is_parsing) {
-					on_begin_parsing();
-				}
 
-				// I remove the idle but not set _idle_id to 0
-				// to prevent the parser thread to readd the Idle back
-				// since the merge_and_resolve callback will readd it
-				keep_idle = false; 
-				merge_and_resolve.begin (result, this.on_merge_and_resolve_ended);
-			}
-			
-			if (_idle_id == 0 && result == null) {
+			if (merge_scheduled) {
+				on_begin_parsing();
+			} else {
 				// this is the last run after the merge
 				on_end_parsing ();
 			}
-			return keep_idle;
+
+			return false;
 		}
 
 		private void on_merge_and_resolve_ended (GLib.Object? source, GLib.AsyncResult r)
 		{
-			ParseResult result = merge_and_resolve.end (r);
-			string path = result.source_path;
-			this.file_parsed (this, path, result);
-			_idle_id = Idle.add_full (Priority.DEFAULT_IDLE, on_parse_results);
+			merge_and_resolve.end (r);
+			//_idle_id = Idle.add (this.on_parse_results, Priority.LOW);
+			_idle_id = Timeout.add (250, this.on_parse_results, Priority.LOW);
 		}
 
 		private async ParseResult merge_and_resolve (ParseResult result)
@@ -375,8 +370,8 @@ namespace Afrodite
 						// TODO: we shouldn't hold this reference lookup_source_file should return an unowned ref
 						ast_source = null;
 						if (need_update) {
-							yield merge_vala_source (s, result, source_exists);
-							yield resolve_ast ();
+							yield perform_merge_and_resolve (s, result, source_exists);
+							this.file_parsed (this, result.source_path, result);
 						}
 					} else {
 						Utils.trace ("engine %s: source (live buffer) with errors mantaining the previous parsing: %s", id, result.source_path);
@@ -386,6 +381,12 @@ namespace Afrodite
 			}
 			
 			return result;
+		}
+
+		private async void perform_merge_and_resolve (Vala.SourceFile s, ParseResult result, bool source_exists)
+		{
+			yield merge_vala_source (s, result, source_exists);
+			yield resolve_ast ();
 		}
 		
 		private async void merge_vala_source (Vala.SourceFile s, ParseResult result, bool source_exists)
@@ -401,7 +402,7 @@ namespace Afrodite
 				Utils.trace ("engine %s: removing source (%p) %s", id, result, result.source_path);
 				start_time = timer.elapsed ();
 #endif
-				merger.remove_source_filename (result.source_path);
+				yield merger.remove_source_filename (result.source_path);
 #if DEBUG
 				Utils.trace ("engine %s: removing source (%p) %s done %g", id, result, result.source_path, timer.elapsed () - start_time);
 #endif
@@ -410,7 +411,7 @@ namespace Afrodite
 			Utils.trace ("engine %s: merging source %s", id, result.source_path);
 			start_time = timer.elapsed ();
 #endif
-			merger.merge_vala_context (s, result.context, result.is_glib);
+			yield merger.merge_vala_context (s, result.context, result.is_glib);
 			result.context = null; // let's free some memory
 			merger = null;
 #if DEBUG
