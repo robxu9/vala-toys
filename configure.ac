@@ -1,7 +1,7 @@
-AC_INIT([vtg], m4_esyscmd([build-aux/git-version-gen .tarball-version]), [sejerpz@tin.it], [vtg])
-AC_CONFIG_AUX_DIR([build-aux])
+AC_INIT([vtg], [0.10.3beta2], [sejerpz@tin.it], [vtg])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
+AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([dist-bzip2])
 AM_MAINTAINER_MODE
 
