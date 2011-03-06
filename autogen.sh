@@ -16,4 +16,6 @@ then
     exit 1
 fi
 
+# Automake requires that ChangeLog exist.
+touch ChangeLog
 . gnome-autogen.sh

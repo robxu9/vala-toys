@@ -24,14 +24,8 @@ vtgdoc_DATA = \
         COPYING-LGPL\
 	COPYING \
         AUTHORS\
-        ChangeLog\
         INSTALL\
         NEWS
-
-DISTCLEANFILES = \
-        intltool-extract \
-        intltool-merge \
-        intltool-update
 
 # Copy all the spec files. Of cource, only one is actually used.
 # dist-hook:
