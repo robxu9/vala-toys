@@ -47,10 +47,11 @@ const OptionEntry[] options = {
 };
 
 public class AfroditeTest.Application : Object {
-	public int run (string[] args) {
-		int i = 0;
-		int result = 0;
 
+	private MainLoop _loop;
+	private Afrodite.CompletionEngine _engine;
+	
+	public int run (string[] args) {
 		// parse options
 		var opt_context = new OptionContext ("- Afrodite Test");
 		opt_context.set_help_enabled (true);
@@ -60,47 +61,29 @@ public class AfroditeTest.Application : Object {
 		} catch (Error err) {
 			error (_("parsing options"));
 		}
-		
-		var engine = new Afrodite.CompletionEngine ("afrodite-test-engine");
-		
+
 		if (option_repeat == 0)
 			option_repeat = 1;
-			
-		for(int repeat = 0; repeat < option_repeat; repeat++) {
-			print ("Adding sources (%d):\n", repeat);
-			i = 0;
-			while (option_files[i] != null) {
-				string filename = option_files[i];
-				print ("   %s%s\n", filename, option_live_buffers ? " (live buffer)" : "");
-				if (option_live_buffers) {
-					var source = new Afrodite.SourceItem ();
-					string buffer;
-					try {
-						FileUtils.get_contents(filename, out buffer);
-					} catch (Error err) {
-						error (_("parsing options"));
-					}
-					source.content = buffer;
-					source.path = "live-buffer.vala";
-					engine.queue_source (source);
-				} else {
-					engine.queue_sourcefile (filename);
-				}
-				i++;
-			}
 
-			print ("\nAfrodite engine is parsing sources (%d)", repeat);
-			// Wait for the engine to complete the parsing
-			i = 0;
-			while (engine.is_parsing)
-			{
-				if (i % 10 == 0)
-					print (".");
-				Thread.usleep (1 * 250000);
-				i++;
-			}
-		}
-		
+		parse ();
+		_loop = new MainLoop();
+		_loop.run();
+		return 0;
+	}
+
+	private void on_begin_parsing (CompletionEngine engine)
+	{
+		print ("\nAfrodite engine is parsing sources\n");
+	}
+	private void on_end_parsing (CompletionEngine engine)
+	{
+		print ("\nAfrodite engine end parsing sources\n");
+		_loop.quit ();
+		dump (engine);
+	}
+
+	private void dump (CompletionEngine engine)
+	{
 		print (": done\n\n");
 		print ("Looking for '%s' %d,%d\n\nDump follows:\n", option_symbol_name, option_line, option_column);
 		while (true)
@@ -176,19 +159,48 @@ public class AfroditeTest.Application : Object {
 					}
 				} else {
 					print ("unresolved :(\n");
-					result = 1;
 				}
 			}
 			break;
 		}
 		
 		print ("done\n");
-		return result;
+	}
+	
+	private void parse () {
+		int i = 0;
+
+		_engine = new Afrodite.CompletionEngine ("afrodite-test-engine");
+		_engine.begin_parsing.connect (this.on_begin_parsing);
+		_engine.end_parsing.connect (this.on_end_parsing);
+		
+		for(int repeat = 0; repeat < option_repeat; repeat++) {
+			print ("Adding sources (%d):\n", repeat);
+			i = 0;
+			while (option_files[i] != null) {
+				string filename = option_files[i];
+				print ("   %s%s\n", filename, option_live_buffers ? " (live buffer)" : "");
+				if (option_live_buffers) {
+					var source = new Afrodite.SourceItem ();
+					string buffer;
+					try {
+						FileUtils.get_contents(filename, out buffer);
+					} catch (Error err) {
+						error (_("parsing options"));
+					}
+					source.content = buffer;
+					source.path = "live-buffer.vala";
+					_engine.queue_source (source);
+				} else {
+					_engine.queue_sourcefile (filename);
+				}
+				i++;
+			}
+		}
 	}
 
 	static int main (string[] args) {
 		var application = new Application ();
-		application.run (args);
-		return 0;
+		return application.run (args);
 	}
 }
