@@ -1,0 +1,6222 @@
+2010-12-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fix compilation with vala master
+
+2010-10-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	don't generate a completion event when pressing TAB
+
+	* vtg/vtgutils.vala:
+
+	don't ignore < > characters during line parsing
+
+2010-10-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	better parse scheduling logic
+
+2010-10-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/Makefile.am:
+	* afrodite/astmerger.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* vbf/Makefile.am:
+	* vbf/vbf-1.0.vapi:
+	* vtg/Makefile.am:
+
+	fix compilation with current vala master
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojects.vala:
+
+	close automatically a project that was opened automatically
+	by vala toys when all its edit views were closed
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	include symbols from the root namespace in the combos
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	reset current combo index when no symbol is found
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parser.vala:
+
+	don't warning on empty source
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	smoother update for the symbol browser combos
+
+2010-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgutils.vala:
+
+	don't add vala extension to vapi files
+
+2010-10-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	removing debug code
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	debug code removal
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parseresult.vala:
+	* afrodite/Makefile.am:
+	* afrodite/parser.vala:
+
+	minor source rationalization
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	dead code removal
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+
+	fixed signal disconnection on exit
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+	* afrodite/parser.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	added live compile results in the build log view
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	track cursor position in a idle to be more responsive
+
+2010-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	added find symbol in all project files command
+
+2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/vtg.ui:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgprojects.vala:
+
+	added an user option to enable / disable finding project root folder
+
+2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/vbfutils.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojects.vala:
+	* vtg/vtgprojectview.vala:
+
+	find the project root automatically when opening a source file
+
+2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfiprojectbackend.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojects.vala:
+
+	cleanup project open & close
+
+2010-10-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/utils.vala:
+	* vbf/vbfpackage.vala:
+
+	fixes to compile with libvala 0.11.0
+
+2010-10-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added goto outer scope command
+
+2010-10-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	added combox box symbol browser
+
+2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/sourcereference.vala:
+
+	moved the contains method to the sourcereference where it belongs
+
+2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	make the source outliner view flicker less
+
+2010-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parser.vala:
+	* configure:
+	* configure.ac:
+	* vbf/vbf-1.0.vapi:
+
+	fix compilation against vala master
+
+2010-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	version bump
+
+2010-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearch.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletion.vala:
+
+	fixed the activation deactivation of the plugin
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfautotools.vala:
+
+	fix the spurious file added by the $(NULL) variable to the source list.
+	Fixes issue #111
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/sourcefile.vala:
+
+	fixed symbol removal from global index when removing
+	the symbol from all its source references.
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/utils.vala:
+
+	search vapi dependency also on the local vapi directories
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	removed some debugging code
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	fixed some generic types regressions in the resolve process
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	minor cleanup
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbolresolver.vala:
+
+	add some corner case when resolving symbols
+
+2010-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed some regression when building the visible symbol list
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	use the new hashtable index to speedup symbol merging
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbolresolver.vala:
+
+	use the new hashtable index to speedup resolving
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/sourcefile.vala:
+
+	added an hashtable with all the indexed symbols to speedup
+	the resolving process and don't resolve more than one time
+	a source file if it isn't really changed.
+
+2010-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ellipsistype.vala:
+
+	ellipsis type should be automatically resolved
+
+2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	avoid duplicating all the symbols (previously done for generic symbol specialization)
+
+2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+
+	fix changelog file to better rappresent the squashed changes
+
+2010-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/parser.vala:
+	* afrodite/symbol.vala:
+	* afrodite/utils.vala:
+
+	make afrodite parse one file at a time this simplify the astmerge process
+
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/resultitem.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	better memory management for afrodite symbols
+
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojects.vala:
+	* vtg/vtgprojectview.vala:
+
+	update the project view when closing the current project.
+	This force all the resources to be release immediatly
+
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfautotools.vala:
+
+	fixed a null reference warning when parsing empty variables in the
+	automake backend
+
+2010-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfautotools.vala:
+
+	removed some dead code
+
+2010-09-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	post release version bump
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgutils.vala:
+
+	fix a compilation error on 64bit system. Fixes issue #157
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	fixed all the deprecate / obsolete warning from the new compiler
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parser.vala:
+	* afrodite/utils.vala:
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	make vala toys compile with vala git-master compiler
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* m4/intltool.m4:
+	* m4/libtool.m4:
+	* m4/ltoptions.m4:
+	* m4/ltsugar.m4:
+	* m4/ltversion.m4:
+	* m4/lt~obsolete.m4:
+	* configure:
+	* configure.ac:
+
+	post release version bump, fix the gtk sourceview version bug and switched to valac master
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	version bump
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgutils.vala:
+
+	backport from master: fix a compilation error on 64bit system.
+
+2010-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	fixed Gtk SourceView check
+>>>>>>> vtg_0_10_x
+
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+	* configure.ac:
+
+	news file update & version bump to follows vala compiler 0.10
+
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/parser.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgutils.vala:
+
+	fixed sort function for constructor and construction blocks. Fixes issue #156
+
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutliner.vala:
+
+	changed the outliner idle function default priority to see
+	if it's related to bug #156
+
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+
+	avod adding the same package several times
+
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+
+	fix path resolution when adding source files
+
+2010-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	add support for basic wscript parsing
+
+2010-09-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+
+	this file was not up to date in previous commit
+
+2010-09-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/vbfpackage.vala:
+
+	better support for packages in the cmake smartfolder backend. Fixes issue #150
+
+2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectview.vala:
+
+	improved project combox box using a ListStore model. Fixes issue #154
+
+2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfutils.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	improved guess heuristic when looking for vapi file names. Fixes issue #155
+
+2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgplugininstance.vala:
+
+	fixed some warnings
+
+2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+
+	add an option to simulate live buffer parsing
+
+2010-09-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	add filename extension to live buffer in order to fix the parsing
+
+2010-09-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parser.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbffile.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	improved stadalone file edit support
+
+2010-08-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/symbolresolver.vala:
+
+	Hierarchical presentation of classes and inner-classes in source outliner. Fixes issue #151
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fix a bug that prevent GLib symbol merging in standalone file edit
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/utils.vala:
+	* vbf/vbfutils.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fix filename guess when importing libxxx vapis
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbfutils.vala:
+
+	fix filename error when importing libxxx vapis
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	fix a null reference when shutting down the completion engine
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbfutils.vala:
+
+	add support for libxxx vapi file in guess_package_name
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbfutils.vala:
+
+	use the thirdy party directory only if present
+
+2010-08-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	use pkg-config --variable=vapidir to get the system wide
+	vapi directory setting
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	postrelease version bump
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	news file update
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	implemented a shift click for quick selectign public / non public symbols
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	minor cleanup to have a more compact UI
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* images/internal-symbols-22.png:
+	* images/private-symbols-22.png:
+	* images/protected-symbols-22.png:
+	* images/public-symbols-22.png:
+	* images/Makefile.am:
+
+	included the new pixmaps required by the source code outliner
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	source code outliner: added the possibility to filter symbols by scope.
+	Fixes issue #144
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* autogen.sh:
+
+	check for valac presence
+
+2010-08-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/symbol.vala:
+	* afrodite/utils.vala:
+
+	Add support for default values in the calltip and sourceoutliner. Fixes issue #149
+
+2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectview.vala:
+
+	Don't show open configure / makefile for backends different from autotools.
+	Fixes issue #148
+
+2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	explicit declare the children symbol collection as
+	owned because that is what they are. 
+	With the previous commit this fixes issue #147
+
+2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+
+	safe workaround for leaks caused by vala bug:
+	https://bugzilla.gnome.org/show_bug.cgi?id=615830
+
+2010-08-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+
+	added option to dump all visible items from a source positions
+
+2010-08-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	Crash when using generics. Fixes issue #145
+
+2010-08-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	post release version bump
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	updated the news file
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojects.vala:
+	* vtg/vtgprojectview.vala:
+
+	remove a source from the default project when it became part of another
+	opened project
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	try to speedup parser thread destruction
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfautotools.vala:
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbfutils.vala:
+
+	reworked the file monitor logic to improve the smartfolder backend
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	some minor message changes
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	fixed some missing TreePath conversions from the parent model
+	to the child one.
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectview.vala:
+
+	fix project tree view bug when updating a project.
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	pass the configured author and email to vala-gen-project. Fixes issue #109
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbfutils.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgutils.vala:
+
+	using standard project configure routine now that we support
+	more than one project backend
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/ui/gen-project.ui:
+
+	minor cleanup to the dialog. Fixes issue #86
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	fixed merge of standard packages that extends the GLib namespace
+	like GIO. Fixes issue #57
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	inform the user when the creation of a project fails because
+	vala-gen-project is missing from the system
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfsmartfolder.vala:
+
+	sniff vala sources for used packages and a lot of fixes
+	for the smartfolder backend
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectbuilder.vala:
+
+	inform the user when we cannot spawn a subprocess
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/utils.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfutils.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	move the guess_package_name from afrodite to the vala build framework
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* debian/changelog:
+	* vbf/vbf-1.0.vapi:
+
+	simple ricompilation
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/parser.vala:
+
+	updated the parser to better comply with the real vala
+	compiler defines
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+
+	add a 'repeat' option to test the remove parts of afrodite.
+	prettify the output.
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+
+	Fix GObject style constructor chainup with new vala compiler
+
+2010-08-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	C Warning are not always interpreted correctly. Fixes issue #143
+
+2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	Configure help text of the vapidir option is wrong. Fixes issue #142
+
+2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/Makefile.am:
+	* vbf/backends/vbfsmartfolder.vala:
+	* vbf/backends/vbfautotools.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbftarget.vala:
+	* vbf/vbftest.vala:
+	* vbf/vbfutils.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	first support for folder base projects
+
+2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/backends/vbfautotools.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfiprojectbackend.vala:
+	* vbf/vbfproject.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	moved the clean/build/configure commands to the backend layer
+
+2010-08-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* configure:
+	* configure.ac:
+	* po/POTFILES.in:
+	* vbf/Makefile.am:
+	* vbf/backends/vbfautotools.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfiprojectbackend.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbftest.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	bump version to 0.9.2 and prepare to implement another vbf backend
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixes when a completion is allowed
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+
+	fixed member binding handling
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgutils.vala:
+
+	better parse of string constants
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	initial support for generics completion
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	fixed a thread issue
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astdumper.vala:
+	* afrodite/utils.vala:
+
+	unescape the xml entities in the afroditetest output
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgutils.vala:
+
+	fix line parsing where
+
+2010-08-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+
+	if we have space print also members from the base classes
+
+2010-08-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	visit local variables for generic types
+
+2010-08-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astdumper.vala:
+	* afrodite/datatype.vala:
+
+	fixes some printing issue with afroditetest
+
+2010-08-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/utils.vala:
+	* config.h.in:
+	* configure:
+	* configure.ac:
+	* vapi/config.vapi:
+
+	search also the standard vapi directory in the guess package function
+
+2010-08-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectsearch.vala:
+
+	Grep search reports duplicate results. Fixes issue #139
+
+2010-08-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/Makefile.am:
+
+	better variabale name for vapi files
+
+2010-08-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgutils.vala:
+
+	Bracket completion: spurious ';' character insertions. Fixes issue #137
+
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* .gitignore:
+
+	added some more file to the git ignore list
+
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/Makefile.am:
+
+	added missing file
+
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/utils.vala:
+	* vbf/vbfutils.vala:
+
+	fixed the trace function on 64bit systems. 
+	Thanks to Matías De la Puente for the testing and the quick patch.
+
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* Makefile.am:
+	* configure:
+	* configure.ac:
+
+	include the required vapis in the distributed tarball. 
+	bump version to 0.9.1 to do a bug fix release soon
+
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+	* configure:
+	* po/POTFILES.skip:
+
+	news and distcheck fixes
+
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+	* vbf/vbf-1.0.vapi:
+
+	bump required vala version
+
+2010-08-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/templates/Makefile.am:
+
+	added gedit plugin template to the distribution
+
+2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/Makefile.am:
+	* vbf/am/vbfamprojectmanager.vala:
+
+	added support for variables in package names
+
+2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/Makefile.am:
+	* configure:
+	* configure.ac:
+	* gen-project/libgen-project/Makefile.am:
+	* vbf/Makefile.am:
+	* vtg/Makefile.am:
+
+	other fixes to the build system with the new vala directort layout
+
+2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectview.vala:
+
+	fixed a crash
+
+2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/templates/gedit-2.20-plugin.ini:
+	* gen-project/templates/gedit-2.20-plugin.png:
+	* gen-project/templates/gedit-2.20-plugin.tar.gz:
+	* gen-project/templates/gtk+-vala-template.ini:
+	* gen-project/templates/sharedlib-vala-template.ini:
+
+	added a new gedit-plugin template
+
+2010-08-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	Quick fix for building vtg with the new vala directory scheme
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/readline.vapi:
+	* ChangeLog:
+
+	not needed anymore
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gedit-2.20.vapi:
+	* vapi/packages/gedit-2.20/gedit-2.20.deps:
+	* vapi/packages/gedit-2.20/gedit-2.20.files:
+	* vapi/packages/gedit-2.20/gedit-2.20.gi:
+	* vapi/packages/gedit-2.20/gedit-2.20.metadata:
+	* vapi/packages/gedit-2.20/gedit-2.20.namespace:
+	* ChangeLog:
+
+	now gedit bindings are upstream
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gtksourcecompletion-2.0.vapi:
+
+	not needed anymore
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gedit-2.20.vapi:
+
+	updated the gedit vapi
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gnome-build-1.0.vapi:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0-custom.vala:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0.deps:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0.excludes:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0.files:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0.gi:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0.metadata:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0.namespace:
+
+	removed gnome build unused library
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgvcsbackendsgit.vala:
+	* vtg/vtgvcsbackendsitem.vala:
+
+	added deleted file to the change log file list of the git backend
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+
+	normalize teh target name when searching a target in a group
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	don't align on right word boundary when doing an
+	interactive completion
+
+2010-08-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/genprojectdialog.vala:
+	* gen-project/ui/gen-project.ui:
+
+	replaced the project combo with an icon view
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	don't trigger a completion while typing some more
+	special characters like ';' etc...
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgutils.vala:
+
+	expanded the is_vala_keyword routine to include more
+	vala keywords
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/tagcloud.vala:
+	* gen-project/tagclouditem.vala:
+	* gen-project/Makefile.am:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/templates/gtk+-vala-template.ini:
+	* gen-project/templates/sharedlib-vala-template.ini:
+	* gen-project/ui/gen-project.ui:
+
+	added tag cloud base selection widget for the project type
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	fixed // autoindentation & ';' autoinsert on methods.
+
+	This commit partially revert back the previous behaviour
+	when dealing with '(' and ';' characters.
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	hide calltips when pressing '{'
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutliner.vala:
+
+	better fix for multithread lock issue
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgutils.vala:
+
+	added 'this' to the minimal list of vala keywords
+	required to recognize if I'm doing an assignment
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	fix symbol orphan check
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	renamed the parse method
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	add a stop compilation menu item. Fixes issue #106
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	fixed a bug that prevented ';' insertion most of the time
+
+2010-08-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	better calltip for class default constructors
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	guess better query options with the new line parser
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	rewrote the line parser
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	rewrote the parsing line routine for the lookup_visible_symbols_in_scope "mode"
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	disabled the completion when not *really* inside a comment or string
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	disable completion inside comments and string literals
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgutils.vala:
+
+	extracted the check if current cursor is inside a commen or a string
+	in an utility method
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vtg/vtgbuildlogview.vala:
+
+	implemented support for C errors / warnings. Fixes issue #114
+
+2010-08-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	remove a redundant check
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added the lock failed signal also when explicitly requesting
+	a completion
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added a flash message when we can't acquire an ast lock
+	because the engine is busy parsing sources
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	fixed the error/warning parser so only vala releated messages
+	are added to the build log view
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed automember mode & tuned the timeouts to make the editing more fluent
+	even when parsing files
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	implemented a quick pick dialog for all the opened projects.
+	Fixes issue #112
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	avoid concurrency problems in the source outliner view
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+
+	avoid duplicate variables in the same scope
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/constants.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	implemented a quite aggressive completion mode
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	allow ctrl/shift + enter even if in a string or comment
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	reverted to the old symbol search code
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	Fix symbol resolution when importing more that one namespace
+
+2010-08-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/Makefile.am:
+
+	Fix debug support
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/queryoptions.vala:
+	* afrodite/symbolresolver.vala:
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/libgen-project/templates.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed all the active debug (...) function left in
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+
+	extended the local variable search to parent scopes and symbols
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+
+	fixed type inference from local variable and member access initialization
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+	* afrodite/datatype.vala:
+
+	better diagnostic output from afroditetest utility
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	merged the clean & clean vala stamps menus. Fixes issue #124
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	use the information provided by the syntax highlighting do
+	deactivate the bracket completion in comments or string literals.
+	Fixes issue #51
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	semicolon is now added also on single line conditional statements
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	better indentation when completing '{'
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added some trace 
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vtg/vtgbracketcompletion.vala:
+	
+	more fixes to the '(' completion
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+	
+	better handling of '(' completion
+
+2010-08-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbolresolver.vala:
+
+	fix resolving symbols from imported namespaces
+
+2010-08-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbfutils.vala:
+	* afrodite/Makefile.am:
+	* afrodite/completionengine.vala:
+	* afrodite/utils.vala:
+	* vbf/Makefile.am:
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	added a trace utility function to Afrodite & Vbf
+
+2010-08-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	visit also lambda expressions
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure:
+	* configure.ac:
+
+	postrelease version bump
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* NEWS:
+	* configure:
+	* configure.ac:
+	* po/POTFILES.skip:
+
+	distcheck fixed and preparative for a new release
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/templates/sharedlib-vala-template.ini:
+	* gen-project/templates/sharedlib-vala-template.png:
+	* gen-project/templates/sharedlib-vala-template.tar.gz:
+	* gen-project/templates/Makefile.am:
+
+	added a shared library template. Fixes issue #90
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/queryoptions.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	various fixes to the completion engine
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added a simple tooltip message when the cache is still building
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+	* afrodite/astmerger.vala:
+
+	first support for var type inference from cast expressions
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+
+	fixed var type inference from method creation
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/utils.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed some bug in the standalone file edit mode
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+
+	fix wrong target name search in automake 1.11 profile
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/parser.vala:
+	* afrodite/symbolresolver.vala:
+	* afrodite/utils.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfgroup.vala:
+	* vbf/vbfmodule.vala:
+	* vbf/vbfpackage.vala:
+	* vbf/vbftarget.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added initial support for dynamic namespace import
+
+2010-08-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	avoid adding interface methods since they're duplicated by the class implementation
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	improved completion responsiveness
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	renamed some local variables for consistency
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed project build menu should be always enabled
+	because you can interrupt a previous build to start
+	a new one
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* po/POTFILES.in:
+
+	diskcheck fixes
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gst-0.7.0:
+
+	deleted my private copy of the old gtk source completion framework
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* Makefile.am:
+	* configure:
+	* configure.ac:
+	* vtg/Makefile.am:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	ported the completion engine to the new Gtk SourceCompletion API
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	hide callip when the source buffer lost the focus
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+
+	fixed library name handling when parsing extended vala informations
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	use a more aggressive policy to acquire the ast lock
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* gen-project/libgen-project/projectgenerator.vala:
+
+	fix some unreachable code warnings
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbfproject.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgfilteredlistdialog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectexecuterdialog.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	fixed the usage of the depracted +=, -= signal syntax
+
+2010-07-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	fixed vala 0.9.4 compilation issue
+
+2010-06-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	*   configure:
+	*   config.guess:
+	*   config.sub:
+	*   ltmain.sh:
+	*   config.h.in:
+	*   install-sh:
+
+	added the configure script to workaround issue #135
+
+2010-06-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* debian/vala-gen-project.install:
+	* .gitignore:
+	* debian/control:
+	* gen-project/libgen-project/Makefile.am:
+
+	separated vala-gen-project from the vtg deb package
+
+2010-06-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/templates/Makefile.am:
+	
+	fixes to the vala-gen-project distribution
+
+2010-06-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/templates/Makefile.am:
+
+	fixed a typo
+
+2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/Makefile.am:
+	* gen-project/templates/Makefile.am:
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+
+	make distcheck fixes
+
+2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/genprojectdialog.vala:
+	* gen-project/ui/gen-project.ui:
+
+	show the template icon on the project type selector combobox
+
+2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/genprojectdialog.vala:
+	* gen-project/main.vala:
+
+	new command line switches to select & list a project template
+
+2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/templates.vala:
+
+	sort the template list by name
+
+2010-06-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/templates/gtk+-vala-template.ini:
+	* gen-project/templates/gtk+-vala-template.png:
+	* gen-project/templates/gtk+-vala-template/AUTHORS.template:
+	* gen-project/templates/gtk+-vala-template/ChangeLog:
+	* gen-project/templates/gtk+-vala-template/MAINTAINERS.template:
+	* gen-project/templates/gtk+-vala-template/Makefile.am.template:
+	* gen-project/templates/gtk+-vala-template/NEWS:
+	* gen-project/templates/gtk+-vala-template/README:
+	* gen-project/templates/gtk+-vala-template/autogen.sh.template:
+	* gen-project/templates/gtk+-vala-template/configure.ac.template:
+	* gen-project/templates/gtk+-vala-template/po/ChangeLog:
+	* gen-project/templates/gtk+-vala-template/po/LINGUAS:
+	* gen-project/templates/gtk+-vala-template/po/POTFILES.in:
+	* gen-project/templates/gtk+-vala-template/po/POTFILES.skip:
+	* gen-project/templates/gtk+-vala-template/src/Makefile.am.template:
+	* gen-project/templates/gtk+-vala-template/src/main.vala.template:
+	* gen-project/templates/Makefile.am:
+	* gen-project/templates/gtk+-vala-template.ini:
+	* gen-project/templates/gtk+-vala-template.png:
+
+	new a Gtk+ project template
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/libgen-project/templates.vala:
+	* gen-project/templates/console-vala-template/src/main.vala.template:
+
+	added support for license related tags
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/constants.vala:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/libgen-project/projectoptions.vala:
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/libgen-project/templates.vala:
+	* gen-project/templates/console-vala-template/AUTHORS.template:
+	* gen-project/templates/console-vala-template/MAINTAINERS.template:
+	* gen-project/templates/console-vala-template/Makefile.am.template:
+	* gen-project/templates/console-vala-template/autogen.sh.template:
+	* gen-project/templates/console-vala-template/configure.ac.template:
+	* gen-project/templates/console-vala-template/src/Makefile.am.template:
+	* gen-project/templates/console-vala-template/src/main.vala.template:
+	* .gitignore:
+	* ChangeLog:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* gen-project/main.vala:
+	* gen-project/templates/console-vala-template.ini:
+	* gen-project/ui/gen-project.ui:
+
+	something went wrong when doing git svn dcommit, redoing it!
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/templates.vala:
+
+	minor cleanup
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/libgen-project/projectoptions.vala:
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/libgen-project/templates.vala:
+	* gen-project/main.vala:
+	* gen-project/templates/console-vala-template/src/main.vala.template:
+	* gen-project/ui/gen-project.ui:
+
+	initial functional support for templates in vala-gen-project
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/templates.vala:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/libgen-project/projectoptions.vala:
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/libgen-project/templates.vala:
+	* gen-project/main.vala:
+	* gen-project/templates/console-vala-template.ini:
+
+	finish support for templates scanning
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/genprojectdialog.vala:
+	* gen-project/main.vala:
+
+	indentation & coding style cleanup
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/constants.vala:
+	* gen-project/libgen-project/projectoptions.vala:
+	* .gitignore:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* gen-project/libgen-project/projectgenerator.vala:
+	* gen-project/main.vala:
+
+	source reorganization in order to prepare the support for gen-project 2nd generation
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/templatedefinition.vala:
+	* gen-project/templates/Makefile.am:
+	* gen-project/templates/console-vala-template.ini:
+	* gen-project/templates/console-vala-template.png:
+	* gen-project/templates/console-vala-template/AUTHORS:
+	* gen-project/templates/console-vala-template/ChangeLog:
+	* gen-project/templates/console-vala-template/MAINTAINERS:
+	* gen-project/templates/console-vala-template/Makefile.am:
+	* gen-project/templates/console-vala-template/NEWS:
+	* gen-project/templates/console-vala-template/README:
+	* gen-project/templates/console-vala-template/autogen.sh:
+	* gen-project/templates/console-vala-template/configure.ac:
+	* gen-project/templates/console-vala-template/po/ChangeLog:
+	* gen-project/templates/console-vala-template/po/LINGUAS:
+	* gen-project/templates/console-vala-template/po/POTFILES.in:
+	* gen-project/templates/console-vala-template/po/POTFILES.skip:
+	* gen-project/templates/console-vala-template/src/Makefile.am:
+	* gen-project/templates/console-vala-template/src/main.vala:
+	* configure.ac:
+	* gen-project/Makefile.am:
+	* gen-project/genprojectdialog.vala:
+	* gen-project/libgen-project/Makefile.am:
+	* gen-project/libgen-project/projectgenerator.vala:
+
+	added console template files
+
+2010-06-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* Makefile.am:
+	* configure.ac:
+	* doc/Makefile.am:
+	* gsc-0.7.0/Makefile.in:
+	* gsc-0.7.0/aclocal.m4:
+	* gsc-0.7.0/configure:
+	* gsc-0.7.0/gtk-doc.make:
+	* gsc-0.7.0/gtksourcecompletion/Makefile.in:
+	* gsc-0.7.0/pixmaps/Makefile.in:
+
+	added a configure switch to only compile afrodite library
+
+2010-06-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/sourceitem.vala:
+	* afrodite/symbolresolver.vala:
+
+	better support for "var" keyword
+
+2010-06-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/afroditetest.vala:
+	* afrodite/Makefile.am:
+
+	added a simple test program for afrodite
+
+2010-05-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+
+	refactor the sync save code
+
+2010-05-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	reparse all document on save
+
+2010-05-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+
+	gEdit async file save workaround. Fixes issue #134
+
+2010-05-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbolresolver.vala:
+
+	fix a crash when a parsed file doesn't include any using statement
+
+2010-05-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/libgen-project/Makefile.am:
+
+	added missing file in previous commit
+
+2010-05-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+	* gen-project/Makefile.am:
+	* gen-project/libgen-project/valaprojectgenerator.vala:
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+
+	Refactor gen-project and splitted in an ui frontend and 
+	a convenience (static) library.
+
+2010-05-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/main.vala:
+	* gen-project/valagenprojectdialog.vala:
+	* gen-project/Makefile.am:
+	* gen-project/valaprojectgenerator.vala:
+	* THANKS
+
+	Split gen-project in ui + backend. Patch by Nicolas Joseph
+
+2010-04-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+	* vtg/vtgutils.vala:
+
+	fix 'weak' deprecated syntax warinings
+
+2010-04-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* vbf/vbfconfignodelist.vala:
+	* vbf/vbfgroup.vala:
+	* vbf/vbfmodule.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbftarget.vala:
+	* vbf/vbfvariable.vala:
+
+	fix compilation issues with new valac 0.8.0. Fix issue #131
+
+2010-03-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/ui/Makefile.am:
+	* gen-project/ui/gen-project.ui:
+	* configure.ac:
+	* gen-project/Makefile.am:
+	* gen-project/valaprojectgenerator.vala:
+	* po/POTFILES.in:
+
+	ported vala-gen-project to GtkBuider
+
+2010-03-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	bump Gtk+ minimum required version. Fixes issue #129
+
+2010-03-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	Fix for: the SourceOutliner pane is not cleaned when last tab is closed. Fixes issue #127
+
+2010-02-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgutils.vala:
+
+	add a message dialog when project operation fails
+
+2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbftarget.vala:
+	* vtg/vtgprojectsearch.vala:
+
+	Search in project doesn't work if source directory 
+	doesn't contains a vapi file. Fixes issue #105
+
+2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	Same fix of the compile options, but for the configure menu item
+
+2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/vtg.ui:
+	* vtg/vtgparametersdialog.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgutils.vala:
+
+	Last compile options are not saved. Fixes issue #123
+
+2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/datatype.vala:
+	* afrodite/queryresult.vala:
+	* afrodite/resultitem.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/sourcereference.vala:
+	* afrodite/symbol.vala:
+
+	Change public fields to properties. Patch by Levi Bard fixes issue #122
+
+2010-02-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	GEDIT_REQUIRED should be 2.28 fixes issue #121
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	fixed bracket completion of { when there is just a } on a new line
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gsc-0.7.0/configure:
+	* gsc-0.7.0/configure.ac:
+
+	reenabled shared library build because there are some
+	problem building vtg on 64bit systems.
+
+	Even if the build is enabled vtg still links with the
+	statically builded version of Gsc
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	post release version bump	
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* README:
+
+	update the readme file to reflect the new dir structure
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	news for the upcoming 0.7.0 release
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	removed some debug code
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	removed some 
+
+2010-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectsearchresultsview.vala:
+
+	fixed a segmentation fault
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	using the new delay parameter when appropriated
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	using the new delay parameter when appropriated
+	fixed the build menu items status
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gsc-0.7.0/po/Makefile.in.in:
+
+	updated by autotools build system
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutliner.vala:
+	
+	set the delay to 1 when updating the source outliner.
+	This means faster source tab switch.
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+	
+	improved logic when trying to acquire the ast lock
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	
+	fixed a null assertion warning
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+
+	fix a compilation issue with the upcoming vala compiler. Fixes issue #120
+
+2010-02-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	smarter completion
+
+2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gsc-0.7.0/po/Makefile.in.in:
+
+	missing file from previous commit
+
+	* debian/changelog:
+	* debian/rules:
+
+	updated to 0.7.0, but still not working	
+
+2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gsc-0.7.0/AUTHORS:
+	* gsc-0.7.0/COPYING:
+	* gsc-0.7.0/ChangeLog:
+	* gsc-0.7.0/INSTALL:
+	* gsc-0.7.0/Makefile.am:
+	* gsc-0.7.0/Makefile.in:
+	* gsc-0.7.0/NEWS:
+	* gsc-0.7.0/README:
+	* gsc-0.7.0/TODO:
+	* gsc-0.7.0/aclocal.m4:
+	* gsc-0.7.0/autogen.sh:
+	* gsc-0.7.0/config.guess:
+	* gsc-0.7.0/config.guess.cdbs-orig:
+	* gsc-0.7.0/config.h.in:
+	* gsc-0.7.0/config.sub:
+	* gsc-0.7.0/config.sub.cdbs-orig:
+	* gsc-0.7.0/configure:
+	* gsc-0.7.0/configure.ac:
+	* gsc-0.7.0/depcomp:
+	* gsc-0.7.0/gtk-doc.make:
+	* gsc-0.7.0/gtksourcecompletion-2.0.pc.in:
+	* gsc-0.7.0/gtksourcecompletion.spec.in:
+	* gsc-0.7.0/gtksourcecompletion/Makefile.am:
+	* gsc-0.7.0/gtksourcecompletion/Makefile.in:
+	* gsc-0.7.0/gtksourcecompletion/gsc-completion-priv.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-completion.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-completion.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-i18n.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-info.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-info.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-marshal.list:
+	* gsc-0.7.0/gtksourcecompletion/gsc-proposal.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-proposal.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-provider.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-provider.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-autowords.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-autowords.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-customkey.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-customkey.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-userrequest.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger-userrequest.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-trigger.h:
+	* gsc-0.7.0/gtksourcecompletion/gsc-utils.c:
+	* gsc-0.7.0/gtksourcecompletion/gsc-utils.h:
+	* gsc-0.7.0/install-sh:
+	* gsc-0.7.0/intltool-extract.in:
+	* gsc-0.7.0/intltool-merge.in:
+	* gsc-0.7.0/intltool-update.in:
+	* gsc-0.7.0/ltmain.sh:
+	* gsc-0.7.0/missing:
+	* gsc-0.7.0/mkinstalldirs:
+	* gsc-0.7.0/pixmaps/Makefile.am:
+	* gsc-0.7.0/pixmaps/Makefile.in:
+	* gsc-0.7.0/pixmaps/document-words-icon.png:
+	* gsc-0.7.0/po/ChangeLog:
+	* gsc-0.7.0/po/POTFILES.in:
+	* gsc-0.7.0/po/POTFILES.skip:
+	* gsc-0.7.0/po/es.po:
+	* gsc-0.7.0/po/fr.po:
+	* gsc-0.7.0/po/it.po:
+	* Makefile.am:
+	* configure.ac:
+	* po/POTFILES.in:
+	* vtg/Makefile.am:
+
+	include a modified version of GtkSourceCompletion until vtg will be ported
+	to the new completion api of GtkSourceView
+
+2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectview.vala:
+
+	open the context project menu' on the project node
+
+2010-01-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	finish completion when deleting the dot that started it
+
+2010-01-17  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	improvements on the bracket completion module
+
+2010-01-17  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed menu item enable status
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	fixed a null assertion on the build log view
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gedit-2.20.vapi:
+	* vapi/packages/gedit-2.20/gedit-2.20.metadata:
+
+	fix an header definition bug
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	used the correct gedit vapi to save documents
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	little fix cause by the gedit api upgrade
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourcebookmarks.vala:
+
+	fixed line / column offset when taking the bookmark	
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsymbolcompletion.vala:
+
+	fixed goto line / column behaviour in auto bookmarks
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gedit-2.20.vapi:
+	* vapi/packages/gedit-2.20/gedit-2.20.gi:
+	* vapi/packages/gedit-2.20/gedit-2.20.metadata:
+	
+	updated the gedit vapi
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+	* afrodite/sourceitem.vala:
+
+	determine the is_vapi property from filename extension	
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgutils.vala:
+
+	revamped the auto-bookmark feature
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed a null reference crash
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+
+	disconnect signals on destroy
+
+	* vtg/vtgsymbolcompletion.vala:
+
+	destroy the Competion widget in the destructor
+
+2010-01-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	suppress a warning cause by concourrency when destroy the engine
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	suppressed some debugging print
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed calltip popup on simple request (eg debug (...) vs GLib.debug (...))
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed a bug when request a simple symbol name
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	avoid inclusion of duplicated methods when and interface
+	is implemented multiple times in an object hierarchy
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	when building compleiton list check for duplicated item 
+	when symbol overrides flags is true
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	speedup parser thread exit when destroy the completion engine object
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed the cache building events and message
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	fixed support for interface prerequisites
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	include base type symbols in completion list
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	fixed a bug caused by last commit when display a signal
+
+2010-01-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/symbol.vala:
+	* afrodite/utils.vala:
+
+	added first support for connect / disconnect signal methods
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed a bug when trying to complete symbols defined in a base class
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	fixed the show private symbols check button
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/datatype.vala:
+
+	more dead code remove
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/queryresult.vala:
+	* afrodite/sourcereference.vala:
+	* afrodite/symbol.vala:
+
+	dead code removal
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed to use the new afrodite api
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/constants.vala:
+	* afrodite/queryoptions.vala:
+	* afrodite/queryresult.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+
+	changed the api for completion support	
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	try to minimize the duration of locks when parsing / updating the ast
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbftarget.vala:
+
+	fixed a bug when removing a vala source from the default project
+
+2010-01-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/constants.vala:
+	* afrodite/ellipsistype.vala:
+	* afrodite/queryoptions.vala:
+	* afrodite/queryresult.vala:
+	* afrodite/resultitem.vala:
+	* afrodite/sourceitem.vala:
+	* afrodite/Makefile.am:
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/datatype.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	source reorganization e api refactoring
+
+2010-01-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/symbol.vala:
+
+	added ellipsis support
+
+2010-01-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/symbol.vala:
+
+	added preliminary support for Generics info tips
+
+2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	improved calltip window symbol definition is now searched also on base types
+
+2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/datatype.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	
+	fixed symbol copy recoursion and missing children
+
+2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfgroup.vala:
+	* vtg/vtgprojectview.vala:
+
+	new "show only sources" check button on the project view.
+
+2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed display of creation method names
+
+2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgconfiguration.vala:
+
+	added the options to store project view visibility status
+
+2010-01-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/datatype.vala:
+
+	copied the target datatype symbol to preserve it between recompilations
+
+	* afrodite/symbol.vala:
+	
+	better completion for creation methods
+
+2010-01-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+
+	support for new style makefile target references
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutliner.vala:
+
+	fixed a warning on cleanup
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	cleanup source code outliner on close
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletion.vala:
+
+	cleanup symbol completion on close
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	set the symbol accessibility for enum values and error codes
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	try to be a little more smarter about symbol accessibility
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	fixed null warning with constructor / destructor names
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	save source outliner show private symbol status in config
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutliner.vala:
+
+	removed some debug print
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+
+	cleanup the gedit bug workaround 
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/astmerger.vala:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearch.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	fixes for the upcoming vala compiler
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgutils.vala:
+
+	better icons for error domains and codes
+ 
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgutils.vala:
+
+	added support for "GObject constructors"
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectview.vala:
+
+	added an icon to the project view pane
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	added an icon to the outiliner view pane
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+
+	work around a gedit bug when scroll to cursor seems not to work on newly created tabs
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgvcsbackendsgit.vala:
+
+	removed a debug statement	
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+
+	make distcheck pass
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	removed a wrong path for fixing memory corruption problem
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	better signal [markup] description
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	better signal completion info	
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojects.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed some simple warnings
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojects.vala:
+
+	rebind all completion engines on project reload / update
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	refactored SymbolCompletionProvider to store as little esternal references as possibile.
+
+	workaround invalidate all engine instances when re-reading a project this should fix
+	all memory corruptions seen so far.
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojects.vala:
+	* vtg/vtgprojectview.vala:
+
+	removed the ProjectDescriptor class
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/Makefile.am:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsymbolcompletion.vala:
+
+	renamed SymbolCompletionHelper -> SymbolCompletion
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojects.vala:
+	* vtg/vtgsourcebookmarks.vala:
+
+	fixed an uri vs filename issue in contains_filename
+	move the project view instance to the plugin instance class where it really belongs
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojects.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+
+	added new vtgprojects class which will superseed projectdescriptor one
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	silenced some glib warning and criticals
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectview.vala:
+
+	added default project support aka "standalone mode"	
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbfgroup.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbftarget.vala:
+
+	add the essential methods to manipulate the project structure
+
+2010-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/completionengine.vala:
+
+	better locks to avoid null reference and concurrency problems
+
+2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	Go To next error should include to the next error or warning too. Fixes issue #115	
+
+2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	Add the number of errors / warning in the error / warning buttons. Fixes issue #113	
+
+2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	dead code removal, and missing changelog from previous commit
+
+2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	minor code reorganization
+
+2010-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	use standard completion options (for now) when = is present on the line
+
+2010-01-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/datatype.vala:
+
+	fixed out / ref parameter description in calltips
+
+2010-01-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	skip unselectable nodes when using the cursor up / down keys
+
+2010-01-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	refactor dialog move up/down methods
+
+2010-01-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vtg/vtgoutputview.vala:
+
+	fixed when sometime the output view looses some chars
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	start from the first column when evicting the current document line
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/symbolresolver.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	renabled the circular reference check (now causes an abort)
+	and removed some print / debug messages
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	fixed items recoursive filtering
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	simple optimization
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	changed *goto_method* to *goto_symbol*
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	enanched the goto method to goto symbol
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	
+	removed a wrong check
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vtg/vtgfilteredlistdialog.vala:
+
+	simple typo and a nullable parameter fix
+
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgutils.vala:
+
+	refactored the sort function in order to reuse it later
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	added the possibility to specify a user compare function for
+	the filtered list dialog
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	updated the goto method with the last filtered list dialog changes
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	make treenodes conditionally selectable in the filtered list dialog
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	fixed keyboad navigation in the filtered list dialog
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgutils.vala:
+
+	added support for icons in the filtered list dialog
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fix a bug when trying to align to the right word boundary 
+	and the word contains an underscore
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	filtered list dialog now receive a TreeStore
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	use the new TreeStore to present target and relative
+	sources to the user in the goto file dialog
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/utils.vapi:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	added strcmp0 binding and used in the source code outliner since
+	it's more frendly with null values
+
+2010-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/Makefile.am:
+	
+	no --thread compiler flags since is effectless in library projects
+
+2010-01-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	revert svn commit #434 since it breaks symbol browsing
+	in the source code outliner and in the goto method menu
+
+2010-01-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+	
+	create a low priority thread for parsing
+
+2010-01-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	fix static type / factory symbol checking
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	simple cleanup
+
+2010-01-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+
+	more readeable code for try_acquire_ast
+
+2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	using a vala class for symbol to improve performance
+
+2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	fixed switch statement visit
+
+2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added back the option to disable the completion engine
+	and improved the parsing signal handling
+
+2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+
+	cosmetic cleanup
+
+	* afrodite/parser.vala:
+
+	only add real files to the parser	
+
+2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	fixed an infinite recoursion bug and a segfault when reparenting a symbol	
+
+2009-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed a segfault when a looking for a symbol withou source references.	
+
+2009-11-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed afrodite source reference handling
+
+2009-11-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+
+	removed some debugging code
+
+	* vtg/vtgprojectmanager.vala:
+
+	fixed idle return value, that greatly reduced cpu utilization.
+
+2009-11-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgvcsbackendsitem.vala:
+
+	added missing source file. Fixes issue #116
+
+2009-11-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/datatype.vala:
+	* afrodite/parser.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* afrodite/utils.vala:
+	* afrodite/voidtype.vala:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfcodenodepair.vala:
+	* vbf/vbfconfignode.vala:
+	* vbf/vbfconfignodelist.vala:
+	* vbf/vbfconfignodepair.vala:
+	* vbf/vbfconstantliteral.vala:
+	* vbf/vbffile.vala:
+	* vbf/vbfgroup.vala:
+	* vbf/vbfmodule.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbfstringliteral.vala:
+	* vbf/vbftarget.vala:
+	* vbf/vbfunresolvedconfignode.vala:
+	* vbf/vbfvariable.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearch.vala:
+	* vtg/vtgprojectsearchresultsview.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+	* vtg/vtgutils.vala:
+	* vtg/vtgvcsbackendsbzr.vala:
+	* vtg/vtgvcsbackendsgit.vala:
+	* vtg/vtgvcsbackendssvn.vala:
+	* vtg/vtgvcsbackendsvcsbase.vala:
+
+	make vtg vompile with vala 0.7.8
+
+2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* afrodite/completionengine.vala:
+
+	add a retry parameter when trying to lock the ast structure
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	added a new status bar message when symbol cache is building and then not available
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	removed obsolete status bar messages and dead code
+
+2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+
+	don't copy all referenced symbols by default
+
+2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+
+	fix completion of method parameters
+
+	* afrodite/utils.vala:
+
+	suppress a null warning	
+
+2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/utils.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	added support for per target private vapis
+
+2009-11-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+
+	added some debug print
+
+	* afrodite/completionengine.vala:
+
+	try to wait some time if there are a few more file to parse
+	
+	* afrodite/symbol.vala:
+
+	check if the symbol is already copied to avoid circular copies
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	add base symbols even if the symbol doesn't define any new method or property etc...	
+
+2009-10-31  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	marked some apis as internal.
+	fixed a bug when trying to find the current codenode
+
+	* afrodite/astdumper.vala:
+
+	using symbol.description instead of the internal print_dataype function
+
+	* afrodite/astmerger.vala:
+
+	update the current source variable when visiting the tree. A lot of fixes.
+
+	* afrodite/datatype.vala:
+
+	added out, ref parameters support
+
+	* afrodite/parser.vala:
+
+	warning when dynamic source objects don't have any source
+
+	* afrodite/symbol.vala:
+
+	fixes in symbol description and info generation
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	used the new symbol.markup_description property
+
+	* vtg/vtgsymbolcompletionhelper.vala:
+
+	setup the completion library when the widged is realized
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added some debug code
+
+2009-10-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/Makefile.am:
+
+	updated to build the afrodite shared library
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	fixed some old variables related to vsc
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	try to parse the source buffer at right time from the outliner
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	fixed some criticals and a parsing loop in the source code outliner
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* vtg/vtgutils.vala:
+
+	cleanup destructor and delegate icons
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	removed internal nodes from source code outliner view
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	implemented options to filter symbols according to the completion context
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added base class and interfaces symbols to completion list
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed base keyword completion
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	fixed a bug on how current codenode from position is found
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+
+	search variables up to the parent chain
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added merger support for the most common statements (if, while, for, etc...)
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/completionengine.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	restored go to definition function
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added a notification on the gedit status bar when the parsing thread is executed
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/completionengine.vala:
+	* .gitignore:
+
+	added a missing source file
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/symbol.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	the source outliner view is updated automatically when opening a new source file
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+
+	fixed creation methods display name
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/parser.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgutils.vala:
+
+	fixed icons in source outliner view
+
+2009-10-11  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	changed the acquire ast to make the function call to it non blocking while the
+	cache is rebuilt
+
+2009-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/datatype.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	restored sourcecode outliner pane
+
+2009-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/ast.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	restored goto method function
+
+2009-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/astmerger.vala:
+	* afrodite/parser.vala:
+	* afrodite/symbol.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	added description and info properties
+
+2009-10-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* afrodite/Makefile.am:
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/parser.vala:
+	* afrodite/sourcefile.vala:
+	* afrodite/sourcereference.vala:
+	* afrodite/symbol.vala:
+	* afrodite/symbolresolver.vala:
+	* afrodite/utils.vala:
+	* afrodite/voidtype.vala:
+	* Makefile.am:
+	* afrodite/Makefile.am:
+	* afrodite/ast.vala:
+	* afrodite/astdumper.vala:
+	* afrodite/astmerger.vala:
+	* afrodite/datatype.vala:
+	* afrodite/parser.vala:
+	* afrodite/symbol.vala:
+	* afrodite/utils.vala:
+	* configure.ac:
+	* vbf/Makefile.am:
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectdescriptor.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	the new completion library afrodite is landed
+
+2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectdescriptor.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+
+	use 1 completion engine for each project target
+
+2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+
+	updated the vsc-shell to use the new SymbolItem	
+
+2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsourceoutlinervisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolitem.vala:
+
+	removed the Vala.Symbol reference in the SymbolItem element with
+	the hope that it will fix some gedit crash on exit
+
+2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectbuilder.vala:
+
+	fix clean and remove 'stamp' menu' item
+
+2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added ! as word break character and angular <> bracket support	
+
+2009-10-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/Makefile.am:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbftest.vala:
+	
+	added support for $(srcdir) & $(top_dir) variable substitution
+	
+
+2009-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	added a filter to the source outliner treeview to hide the private symbols.
+	Fixes issue #101
+
+2009-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/vtg.ui:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	new option to disable the source outliner. Fixes issue #104
+
+2009-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/Makefile.am:
+	* vsc/vscclasslistvisitor.vala:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscmethodlistvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionresult.vala:
+	* vsc/vscsymbolitem.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	removed the use of SymbolCompletionItem and use the new SymbolItem instead.
+
+2009-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	Double click an item in a "quick pick dialog" to jump to it. Fixes issue #55
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed some warnings, and fixed constructor and static method completion
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	fixed some bad markup generation in the filtered list dialog
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+
+	fixed some criticals while refiltering the file list
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	new 'Save All' files menu item. Fixes issue #88
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	post release version bump
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	prerelease news update
+
+	* po/POTFILES.skip:
+
+	fixed some for make distcheck
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	cleaned up some debug messages
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+
+	fixed a critical on startup
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	better logic for source reparsing
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgsourceoutliner.vala:
+
+	silenced some warnings
+
+2009-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+
+	updated for vala 0.7.7
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsourceoutlinervisitor.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	better accuracy of the source code outliner
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsourceoutlinervisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	add support for multiple class / namespace in the source outliner view.
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectsearchdialog.vala:
+
+	propose the current selection in the 'Search in Project' dialog. Fixed issue #95
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	fix double enter on empty lines.
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletionitem.vala:
+	
+	fix creation methods name in the completion popup.
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	
+	Prefer method overrides when available. Patch by Levi Bard. Fixes issue #71
+
+	* vsc/vscsymbolitem.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	better description for elements in the source outliner pane
+
+2009-09-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	added missing types in the sort callback function.
+
+2009-09-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/Makefile.am:
+	* ui/vtg.ui:
+	
+	removed the support for the glade file. Fixes issue #99
+
+2009-09-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	the items in the source code outliner are now sorted. Fixes issue #100
+
+2009-09-25  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsourceoutlinervisitor.vala:
+
+	make sure that only symbol defined in the current source are
+	included in the source outliner view.
+	The first source outliner version now is complete! Fixes issue #89
+
+2009-09-25  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+
+	double click the source outliner to go to the corresponding source line
+
+2009-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourceoutlinerview.vala:
+
+	enanched the code outliner with the proper icons and
+	prepared for the goto source position feature.
+
+2009-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+	
+	prevent the use of the "lock context" function.
+	Now the code context should be acquired first from the propeties
+	and then used. This minimize lock contection with the parser thread.
+
+	* vsc/vscsymbolcompletion.vala:
+
+	use the context only from local variables to make the lock times smaller.	
+
+2009-09-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsourceoutlinervisitor.vala:
+	* vsc/vscsymbolitem.vala:
+	* vtg/vtgsourceoutliner.vala:
+	* vtg/vtgsourceoutlinerview.vala:
+	* ChangeLog:
+	* po/POTFILES.skip:
+	* vsc/Makefile.am:
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	initial support for the source outliner.
+	misc cleanups.
+
+2009-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+
+	enabled semantic analisys when there are no errors.
+
+2009-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+
+	minor warning cleanup
+
+	* vsc/vscsymbolcompletionitem.vala:
+
+	ensure that the symbol is properly referenced before using it.	
+
+2009-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectview.vala:
+
+	Open configure.ac contextual menu' is be displayed
+	on the 'reference' item. Fixes issue #94
+
+2009-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+
+	changed the treeview icons on a per target basis
+
+2009-09-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbftest.vala:
+
+	dump target type information
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletionitem.vala:
+
+	workaround for another SIGSEGV
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectview.vala:
+
+	project view displays the real group - target relation. Fixes issue #93
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+
+	deleted some debug print	
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbftest.vala:
+
+	added support to other source file types dump info to help the debug 
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbffile.vala:
+
+	added support for other source file types
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbftest.vala:
+
+	dump if the source file is a vala source to help the debug
+
+2009-09-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+
+	transform the project id in a valid automake identifier. Fixes issue #91
+
+2009-09-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	bump vala requirement to 0.7.6
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/readline.vapi:
+
+	fix build issue on some system
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	post release version bump	
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	news file updated
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectsearchresultsview.vala:
+	
+	fixed result view navigation
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectbuilder.vala:
+
+	duplicated filename when compiling a single source. Fixes issue #59
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgoutputview.vala:
+
+	increased buffer dimensions
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	silenced some warnings, minor cleanups
+
+2009-09-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletionitem.vala:
+
+	workaround a frequent segfault: check if symbol reference is not null
+	before calling a to_string method.
+
+2009-09-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbftest.vala:
+
+	first support for automake 1.11 style vala-projects. Fixes issue #82
+
+2009-09-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/valaprojectgenerator.vala:
+
+	fixed an automake 1.11 support bug when a gtk+ project is generated 
+	and no --pkg gtk+-2.0 is specified on the vala command line.
+
+2009-09-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed a segfault when completing a 'var' local variable
+
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+
+	new 'Open Recent Project' menu'
+
+2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	enabled silent rules by default if support is present
+
+2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* po/POTFILES.skip:
+
+	make dist check pass
+
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	fixed bug an empty info windows is shown even if there isn't
+	any proposal in the completion list.
+
+2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* INSTALL:
+
+	update install instructions. Fixes issue #69
+
+2009-08-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gdkkeysyms-update.sh:
+	* vapi/gdkkeysyms.vapi:
+	* vbf/vbf-1.0.vapi:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	compile fixes for valac 0.7.6.
+
+2009-07-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+
+	assigned the correct response id to the filtered list dialog. Fixes issue #78
+
+2009-07-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	first implementation of 'go to definition'. Fixes issue #79
+
+2009-07-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectsearch.vala:
+
+	fixed inverted logic for the match case option in the project search 
+
+2009-07-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfproject.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgprocesswatchinfo.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	first implementation of 'grep in project files' function. Fixes issue #54
+
+2009-07-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+
+	fixed another deadlock	
+
+2009-07-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgsourcebookmarks.vala:
+
+	fixed some vala compiler warnings
+
+2009-07-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	add highlight to the matched rows in filtered list dialog. Fixes issue #75
+
+2009-07-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletionitem.vala:
+
+	fixed some critical messages due to use of 'source reference null instances'
+
+2009-07-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed some critical messages due to use of 'null instances'
+
+2009-07-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/config.vapi:
+	* vtg/vtgutils.vala:
+
+	prepared to use the new VALA_VAPIDIR Config Option
+
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+
+	fixed slow completion due to a lot of unresolved symbols
+
+2009-07-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbfproject.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgprojectexecuterdialog.vala:
+
+	fixed some vala 0.7.4 incompatibilities. Patch by Shuerhaaken.
+
+2009-06-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	added --with-vapidir configuration option
+
+2009-06-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscclasslistvisitor.vala:
+
+	added missing file 
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgoutputview.vala:
+
+	added preliminary support for output view highlight
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/valaprojectgenerator.vala:
+	
+	fixed Makefile.am support for vala 0.7.x. Fixes issue #73
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	check for missing gio, and summary message indicating all required libraries.
+	Patch by Levi Bard. Fixes issue #70.
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscmethodlistvisitor.vala:
+
+	fixed visiting some missing symbols when looking form methods. Patch by Levi Bard.
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	add ending lines to symbol locations. Patch by Levi Bard. Fixes issue #66.
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/Makefile.am:
+	* vsc/vscsymbolcompletion.vala:
+
+	list classes defined in a given source file. Patch by Levi Bard. Fixes issue #65.
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+
+	reduce deadlocks. Base on a patch by Levi Bard. Fixes issue #68.
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+
+	renamed find_vala_package_filename -> find_vala_package_filenames
+
+	* vsc/vsctypefindvisitor.vala:
+
+	remove a debug function call	
+
+2009-06-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsctypefindvisitor.vala:
+
+	use 'replace_type' to speedup code completion
+
+2009-04-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/Makefile.am:
+	* vsc/Makefile.am:
+	* vtg/Makefile.am:
+
+	updated to support the new vala 0.7.x include file generation schema
+
+	* vbf/vbf-1.0.gir:
+	* vbf/vbf-1.0.vapi:
+
+	regenerated
+
+2009-04-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gtksourcecompletion-2.0.vapi:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0-custom.vala:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0.deps:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0.files:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0.gi:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0.metadata:
+	* vapi/packages/gtksourcecompletion-2.0/gtksourcecompletion-2.0.namespace:
+
+	added the updated gtksourcecompletion 2.0 vapi
+
+2009-04-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	implemented the gsc info window persistence. Fixes issue #11
+
+2009-04-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/vbf-1.0.gir:
+
+	changed due to valac 0.6.0 compiler update
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+
+	Emit position information for SymbolCompletionItems. Patch by Levi Bard. Fixes issue #64.
+
+2009-03-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+	
+	better error reporting when required libraries are missing.
+	(even if the configure.ac code looks so ugly ;) )
+	
+2009-02-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbftarget.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectexecuterdialog.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	fixed execute project dialog that was broken during vbf migration. Fixes issue #60
+
+2009-02-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed another deadlock when completing a type
+
+2009-02-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+	* vtg/Makefile.am:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	updated the Gsc library support to the new (to be released soon) 2.0 version.
+
+2009-02-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/Makefile.am:
+
+	removed unwanted library dependencies
+
+	* vsc/vscparsermanager.vala:
+	* vsc/vsctypefindvisitor.vala:
+
+	fixed the completion engine to support the new vala CodeContext
+	stack api with tls support. See valac bugs #573041, #573043
+
+2009-02-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	now the asterisk can be type again in the source window	
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	updated the news file from the vtg 0.4.1 release
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+
+	fixed a deadlock in the parser threads
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	post release version bump
+	update the required vala version to 0.5.7
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	fixed some wording :)
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	fixed some spelling
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	updated the news file
+
+	* vsc/vscparsermanager.vala:
+
+	fixed a bug due to the introdution of the new CodeContext stack in libvala
+
+2009-02-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+	* vbf/Makefile.am:
+	* vbf/vbf-1.0.vapi:
+
+	fixes to make diskcheck pass
+
+	* vtg/vtgoutputview.vala:
+
+	fixes to use vala 0.5.7 compiler	
+
+2009-02-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectdescriptor.vala:
+	* ChangeLog:
+	* vtg/Makefile.am:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgplugininstance.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgsourcebookmarks.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	refactored vtg to better suite the gEdit application model of multiple
+	main windows per application. Fixes issue #40
+
+2009-02-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	bracket completion plays better with current selection. Fixes issue #16
+
+2009-02-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsourcebookmarks.vala:
+
+	removed some debugging code
+
+2009-02-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+
+	fixed a typo
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed a wrong name when retrieving an action item in update_ui
+	
+	* vtg/vtgsourcebookmarks.vala:
+	
+	simplified the bookmarks function
+
+2009-02-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed a warning on startup caused by the use of an uninitialized variable
+
+2009-02-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed a regression in the quick method picker dialog
+
+2009-02-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	change the default vtg plugin build setting from auto to yes
+
+2009-02-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed a race condition that causes issue #48 again!
+
+	* vtg/vtgsourcebookmark.vala:
+	* vtg/vtgsourcebookmarks.vala:	
+	* vtg/Makefile.am:
+	* vtg/vtgprojectmanagerui.vala:
+
+	automatic bookmarks. Fixes issue #52
+
+2009-02-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	changed the array iteration from foreach to a while loop since
+	vala 0.5.6 generates wrong C code and double unref the context
+	variable. Ensure that unlock is really called (another valac
+	bug). I hope this really fixes issue #48.
+
+2009-02-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	fixed a warning on gedit startup caused by uninitialized model
+
+2009-02-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletionresult.vala:
+
+	remove duplicate entries from completion popup. Fixes issue #25
+
+2009-02-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed a crash in get_datatype_for_name. Fixes issue #48
+
+	* vtg/vtgbuildlogview.vala:
+
+	added the possibility to filter warnings out from the build result pane. Fixes issue #50
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	drop the schema from the source name when creating the SourceBuffer object
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbuildlogview.vala:
+
+	errors are sorted first in build results messages pane. Fixes issue #49
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+
+	fixed a regression cause by the change in the group display name	
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vtg/vtgprojectmanager.vala:
+	
+	added project version information in the project pane
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	better handling of keys when the calltip is shown. Fixes issue #37
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgfilteredlistdialog.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	the method / file list dialog is now modal
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbf-1.0.gir:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfgroup.vala:
+	* vbf/vbftarget.vala:
+	* vbf/vbftest.vala:
+	* vsc/vscparsermanager.vala:
+	* vtg/vtgplugin.vala:
+
+	added support for per target packages, build libraries and include dirs
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* README:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbfgroup.vala:
+
+	added a default name for the root project group
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+
+	removed double gee-1.0 library inclusion when vala-1.0 library is used
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed completion inside when the word is close to an open parenthesis	
+
+2009-02-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+	* vtg/vtgplugin.vala:
+
+	fixed a bug introduced with the vbf migration
+
+2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	crash during a normal completion. Patch by Levi Bard. Fixed issue #46
+
+2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+
+	get visible symbols from a given context. Patch by Levi Bard. Fixed issue #47
+
+2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+
+	expose creation methods in vsc-shell output. Patch by Levi Bard. Fixed issue #44
+
+2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+
+	expand vsc-shell output format. Patch by Levi Bard. Fixed issue #43
+
+2009-02-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+
+	add get-namespaces to libvsc and vsc-shell. Patch by Levi Bard. Fixed issue #39
+
+2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+
+	fixed a bug that prevents the save of data file before compiling
+	Now we are Vbf has all the features that I used from the old GBF!
+
+2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+	* vtg/vtgprojectmanager.vala:
+
+	show data files in the project treeview
+	(included previous missing changelog notice)
+
+2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
+
+        * vbf/am/vbfamprojectmanager.vala:
+        * vbf/vbf-1.0.gir:
+        * vbf/vbf-1.0.vapi:
+        * vbf/vbffile.vala:
+        * vbf/vbfsource.vala:
+        * vbf/vbftarget.vala:
+        * vbf/vbftest.vala:
+        * vtg/vtgprojectmanager.vala:
+
+        added support for "data" files
+
+2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* .gitignore:
+
+	updated .gitignore
+
+2009-02-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+	* vbf/Makefile.am:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbf-1.0.gir:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbffile.vala:
+	* vbf/vbfgroup.vala:
+	* vbf/vbfiprojectmanager.vala:
+	* vbf/vbfmodule.vala:
+	* vbf/vbfpackage.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbftarget.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgbuildlogview.vala:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgfilteredlistdialog.vala:
+	* vtg/vtgoutputview.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprocesswatchinfo.vala:
+	* vtg/vtgprojectbuilder.vala:
+	* vtg/vtgprojectexecuter.vala:
+	* vtg/vtgprojectexecuterdialog.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerui.vala:
+	* vtg/vtgprojectview.vala:
+	* vtg/vtgutils.vala:
+
+	replaced libgbf with libvbg, bye bye Gnome Build Framework!
+
+2009-02-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vbf/Makefile.am:
+	* vbf/am/vbfamprojectmanager.vala:
+	* vbf/vbf-1.0.gir:
+	* vbf/vbf-1.0.vapi:
+	* vbf/vbfcodenodepair.vala:
+	* vbf/vbfconfignode.vala:
+	* vbf/vbfconfignodelist.vala:
+	* vbf/vbfconfignodepair.vala:
+	* vbf/vbfconstantliteral.vala:
+	* vbf/vbffile.vala:
+	* vbf/vbfgroup.vala:
+	* vbf/vbfiprojectmanager.vala:
+	* vbf/vbfmanager.vala:
+	* vbf/vbfmodule.vala:
+	* vbf/vbfpackage.vala:
+	* vbf/vbfproject.vala:
+	* vbf/vbfsource.vala:
+	* vbf/vbfstringliteral.vala:
+	* vbf/vbftarget.vala:
+	* vbf/vbftest.vala:
+	* vbf/vbfunresolvedconfignode.vala:
+	* vbf/vbfvariable.vala:
+	* Makefile.am:
+	* configure.ac:
+
+	merged the first version of Vala Build Framework that will
+	replace Gnome Build Framework aka libgbf dependency
+
+2009-01-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	merged the news from the 0.3.2 release
+
+2009-01-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsctypefindvisitor.vala:
+	* vsc/vsccompletionvisitor.vala:
+
+	fixed api changes in libvala version 0.5.6
+
+2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	merged the news from the 0.3.1 release
+
+2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+
+	better glib/gobject-2.0.vapi file check
+
+2009-01-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsourcebuffer.vala:
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed api changes in libvala version 0.5.5
+
+2009-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	post release version bump
+
+2009-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* po/POTFILES.skip:
+
+	added the new generated c file to POTFILES.skip so that
+	make distcheck passes
+
+2009-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+
+	updated the news for version 0.3.0
+
+2009-01-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	replaced the old # syntax with the new (owned) one
+
+2009-01-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	changed from ValueType to StructValueType class
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgbracketcompletion.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgprojectmanagerexecuter.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerprojectgroup.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	removed all debug messages
+
+2009-01-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	used the new parse_current_line function in the calltip routine
+
+2009-01-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	first rough support for array types
+
+2009-01-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgprojectmanageroutputview.vala:
+	* vtg/vtgutils.vala:
+
+	added parameters dialog to compile file function
+
+2008-12-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	unified calltip and proposals routines
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+
+	added a confirm rebuild dialog, closes issue #27
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+
+	get_qualified_namespace_name sometimes returned the name
+	of the root namespace (null)
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletionfilteroptions.vala:
+	* vsc/vscsymbolcompletionresult.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added support for error domains completion, closes issue #29
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed completion support for constructors, destructors and properties,
+	closes issues #28, #30, #31
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionfilteroptions.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	include static symbols in key-binded completion, closes issue #26
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	qualified the namespace name when searching for a type
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletionitem.vala:
+
+	escaped the calltip text for correct markup parsing
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+
+	improved symbol type inference when including a namespace with
+	using Ns1.Ns2.Ns3.
+
+	improved symbol completion for generic types	
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+
+	interface prerequisites members are added to the completion
+	list
+
+2008-12-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsctypefindvisitor.vala:
+
+	added support for interfaces in the type finder visitor
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/Makefile.am:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgvcsbackendsbzr.vala:
+	* vtg/vtgvcsbackendsgit.vala:
+	* vtg/vtgvcsbackendsivcs.vala:
+	* vtg/vtgvcsbackendssvn.vala:
+
+	renamed IGeneric interface to IVcs
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+
+	now constants are added to the completion list
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	some minor speed improvements in symbol lookup and completion
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	optimized the source reparse so it isn't triggered
+	when moving the cursor up / down
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+
+	fixed the empty param bug, closes #23
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgvcsbackendsbzr.vala:
+	* vtg/vtgvcsbackendssvn.vala:
+
+	added bzr and svn support to ChangeLog backends
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgvcsbackendsbzr.vala:
+	* vtg/vtgvcsbackendsgeneric.vala:
+	* vtg/vtgvcsbackendsgit.vala:
+	* vtg/vtgvcsbackendssvn.vala:
+
+	implemented ChangeLog support, closes issues #17, #24
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgchangelog.vala:
+	* vtg/vtgvcsbackendsbzr.vala:
+	* vtg/vtgvcsbackendsgeneric.vala:
+	* vtg/vtgvcsbackendsgit.vala:
+	* vtg/vtgvcsbackendssvn.vala:
+
+	prepared vtg for the new prepare changelog feature
+
+2008-12-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* doc/Makefile.am:
+	* doc/vala-gen-project.1:
+	* .gitignore:
+	* Makefile.am:
+	* configure.ac:
+	* debian/rules:
+
+	added vala gen project man page and adapted the debian
+	package
+
+2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	post release version bump
+
+2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* NEWS:
+
+	update news files before release
+
+2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed symbol completion inside properties
+
+2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/vtg.glade:
+	
+	set the ask-param default width 
+
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed some critical warning in IfStatement visit
+
+2008-12-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* debian/changelog:
+	* debian/control:
+	* debian/copyright:
+	* debian/rules:
+
+	update the debian package script to be more lintian
+	error free
+
+	* vsc/vscsymbolcompletion.vala:
+
+	readded a warning on unsupported type
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	better support for if statement in symbol completion
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	don't use lambda expressions since I have to detach from
+	that events on object cleanup. This may prevent some random
+	crashes that I had.
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerbuildlogview.vala:
+
+	prevent the lost focus from the documentview when
+	the build view is activated
+	
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+	
+	don't try to find the method signature if the method name
+	is a vala language keyword
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+
+	don't change the current project to null if
+	the current file isn't a vala source
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerexecuterdialog.vala:
+	* ui/vtg.glade:
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/Makefile.am:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerexecuter.vala:
+
+	added new exec program dialog, fixes issue #12
+
+	* vtg/vtgutils.vala:
+
+	caches now behave like a stack
+
+2008-12-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+
+	really remove the source from the secondary buffer, 
+	fixes issue #22
+
+2008-12-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgutils.vala:
+
+	added configure command to the project builder module
+
+2008-12-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+
+	scroll the treeview to the selection if not visible
+
+2008-12-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgutils.vala:
+
+	added error dialog if project open fails, fixes issue #18
+
+2008-12-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	binded the "key-binded completion" to a menu item in the edit menu' 
+	and to key shortcut
+
+2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionfilteroptions.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	added a first raw support for key-binded completion activation
+
+2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	added a workaround to set the calltip info align to the left
+
+2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+
+	visit implemented interfaces, fixed issue #20
+
+	* vtg/vtgprojectmanagerbuilder.vala:
+
+	debug messages cleanup
+
+2008-12-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgconfiguration.vala:
+
+	debug messages cleanup
+
+	* vtg/Makefile.am:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgutils.vala:
+	* vtg/vtgparametersdialog.vala:
+
+	new dialog for asking 'make' parameters on compilation
+
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+
+	keyboard navigation improuvments
+
+	* vtg/vtgprojectmanageroutputview.vala:
+
+	fixed two criticals warnings
+
+2008-12-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* vtg/vtgutils.vala:
+
+	fixed tree sorting again
+	
+2008-12-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* po/es_AR.po:
+
+	added spanish argentinia translation, courtesy of
+	Matias De la Puente
+
+	* po/LINGUAS:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* gen-project/valaprojectgenerator.vala:
+
+	fixed internationalization support
+
+	* debian/changelog:
+
+	package version bump
+
+2008-12-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgutils.vala:
+
+	fixed some warnings due to bad offsets in string.substring usage
+
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed unwanted parser deallocation, issue #15
+
+	* vsc/vscparsermanager.vala:
+
+	fixed some criticals when adding an unknown namespace 
+	directly from a vala source file
+
+2008-12-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/valaprojectgenerator.vala:
+
+	fixed some missing '\n' chars in the top level makefile,
+	patch from Matias De la Puente
+
+	* THANKS:
+
+	added thanks file
+
+2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerproject.vala:
+
+	fixed side pane tree sorting
+
+2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgutils.vala:
+
+	fixed some warning cause by the use of substring without 
+	the check of the string length
+
+2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* po/it.po:
+	* po/vtg.pot
+	* po/LINGUAS:
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+
+	added italian translation
+
+2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	re-bumped version number with a more appropriate one
+
+2008-12-18  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/valaprojectgenerator.vala:
+
+	added some useful command line options fixes #4
+
+2008-12-17  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* configure.ac:
+
+	post release version bump
+
+	* README:
+	
+	added vtg homepage web address
+
+2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* NEWS:
+	* gen-project/valaprojectgenerator.vala:
+
+	added myself to the author list
+
+	* vsc/vsccompletionvisitor.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed visit of base classes
+
+2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac:
+
+	version bump if GtkSourceCompletion dependency
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	symbol completion speed improvements
+
+2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* debian/changelog:
+	* debian/compat:
+	* debian/control:
+	* debian/copyright:
+	* debian/rules:
+
+	debianized to make some distribution tests
+
+2008-12-16  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* NEWS:
+	* README:
+	* configure.ac:
+	* Makefile.am:
+	* vsc-shell/Makefile.am:
+	* vsc/Makefile.am:
+	* vtg/Makefile.am:
+	* vtg/vtg.gedit-plugin:
+
+	build system improvments
+
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	completion improvments
+
+2008-12-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	removed a lot of dead code
+
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed completion bug with instantiable type
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgutils.vala:
+
+	improved completion accuracy and speed.
+	more debug message cleaned up
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanageroutputview.vala:
+
+	removed some debug prints
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed the completion search in the using clauses
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerview.vala:
+
+	now changelog and other project files can be opened
+	with a double click on the project manager view
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala:
+
+	fixed a doubly declared variable
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuildlogview.vala:
+	* vtg/vtgprojectmanageroutputview.vala:
+	* vtg/vtgprojectmanagerview.vala:
+
+	remove ui on plugin deactivation
+
+2008-12-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vsctypefindvisitor.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgprojectmanagerbuildlogview.vala:
+	* vtg/vtgprojectmanagerexecuter.vala:
+	* vtg/vtgprojectmanagerview.vala:
+
+	enabled / disabled menu' actions
+
+2008-12-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	really fixed the crash when completing the base keyword
+
+2008-12-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/valaprojectgenerator.vala:
+	* vsc-shell/vsccompletionshell.vala:
+
+	fixed a crash when using -h command line switch
+
+	* vsc/Makefile.am:
+	* vsc-shell/Makefile.am:
+
+	don't use valac -g if debug is enabled
+
+2008-12-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed a crash when completing the base keyword
+
+2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsctypefindvisitor.vala:
+	* vsc/Makefile.am:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+
+	vsc performance and accuracy improvments
+
+2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala
+
+	added first support for enum completion
+
+2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletion.vala
+
+	fixed symbol scope test
+	improved class analysis for static methods
+	improved namespace search in completion engine
+
+2008-12-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	improved static method completion
+
+2008-12-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+	* vtg/vtgutils.vala:
+
+	now space can be use as a wildcard '*' in the filter dialog
+
+2008-12-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fiexd a crash when visiting a costructor
+
+2008-12-08  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* Makefile.am:
+
+	fixed a build issue, when vsc-shell build 
+	is not enabled (default settings)
+
+2008-12-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/Makefile.am:
+	* vsc/vsccompletionvisitor.vala:
+	* vsc/vscparsermanager.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionresult.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	started the rewriting of vsc, migrated the completion part
+	to a more appropriated completion visitor
+
+2008-12-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/Makefile.am:
+	* vsc/Makefile.am:
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanagerprojectgroup.vala:
+
+	fixed a crash cause by not adding all the referenced vapi
+
+2008-12-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-tests/simple.script
+	* vsc-tests/simple.vala
+	* configure.ac:
+	* vapi/readline.vapi:
+	* vsc-shell/Makefile.am:
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/vscparsermanager.vala:
+	* vtg/vtgprojectmanager.vala:
+	
+	revamped vsc-shell for implementing some automated test in vsc
+
+2008-12-06  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vtg/vtgconfiguration.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgprojectmanagerbuildlogview.vala:
+	* vtg/vtgprojectmanageroutputview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	new support for 'out of project'  single file compilation
+	
+2008-12-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+
+	changed get_qualified_name_for_datatype from private to public
+
+2008-12-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsemanager.vala: 
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanagerprojectmodule.vala:
+	
+	added suspend / resume parsing threads
+
+2008-11-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerbuilder.vala: 
+	* vtg/vtgprojectmanageroutputview.vala: 	
+	
+	the botton pane is shown or hidden according to its previous
+	status and compilation result. 
+	
+	Added also beeps on compilation finish.
+	
+	* vtg/vtgprojectmanageroutputview.vala: 
+
+	output window now wrap its content
+	
+2008-11-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionrpvider.vala: 
+	
+	strip the current line from the parsed text
+	only if the current buffer is modified
+	
+2008-11-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala: 
+	* vtg/vtgsymbolcompletionhelper.vala: 
+	* vtg/vtgplugin.vala: 
+	* vsc/vscparsermanager.vala: 
+
+	fixed a crash caused by adding twice the same
+	namespace due to a built library
+
+2008-11-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala: 
+
+	set the calltip window transint for the gedit one
+
+	* po/POTFILES.in:
+	* po/POTFILES.skip:
+	* ui/Makefile.am:
+	* vsc-shell/Makefile.am:
+	* vsc/Makefile.am:
+	* vtg/Makefile.am:
+	
+	vtg now pass make distcheck
+	
+2008-11-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala: 
+	* vsc/Makefile.am:
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed a concurrency bug during project destruction
+	
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+
+	implemented the Close Project menu' item
+
+
+2008-11-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala: 
+
+	added a siple hack to let the save dialog disappear when
+	creating a new project
+
+2008-11-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgconfiguration.vala: 
+	* configure.ac:
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+	* vtg/Makefile.am:
+	* vtg/vtgplugin.vala:
+
+	added a simple configuration dialog where you can enable / disable
+	symbol and bracket completion modules
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/valaprojectgenerator.vala:
+
+	changed the Makefile genration to the recursive approach
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala: 
+
+	removed the keyboard shortcut for the "new project" function
+	
+	* vtg/vtgprojectmanageroutputview.vala: 
+
+	added a little hack to clen the output view while
+	executing autogen.sh script
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala: 
+
+	used new vala-gen-project command line option
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/valaprojectgenerator.vala:
+
+	added projectpath command line option to vala-gen-project
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+	* vsc-shell/Makefile.am:
+	* vsc/Makefile.am:
+	* vtg/Makefile.am
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgutils.vala:
+
+	added "new project" function based on vala-gen-project
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* gen-project/Makefile.am:
+	* gen-project/licenses/Makefile.am:
+	* gen-project/licenses/gpl-2.0.txt:
+	* gen-project/licenses/gpl-3.0.txt:
+	* gen-project/licenses/lgpl-2.1.txt:
+	* gen-project/licenses/lgpl-3.0.txt:
+	* gen-project/valaprojectgenerator.vala:
+	* Makefile.am:
+	* configure.ac:
+	* vapi/config.vapi:
+
+	added gen-project to the vtg distribution
+
+2008-11-27  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	closed the completion popup automatically 
+	when the dot is cancelled in the edit window
+
+2008-11-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gtksourcecompletion-1.0.vapi:
+	* vapi/packages/gtksourcecompletion-1.0/gtksourcecompletion-1.0.metadata:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	ported my calltip to Gsc.Info window
+
+2008-11-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletiontrigger.vala: 
+	* vapi/gtksourcecompletion-1.0.vapi:
+	* vapi/packages/gtksourcecompletion-1.0/gtksourcecompletion-1.0.metadata:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	* vtg/vtgsymbolcompletiontrigger.vala:
+
+	the proposal list is filtered in realtime while typing
+
+2008-11-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletionitem.vala: 
+
+	fixed nullable '?' character after pointer char '*'
+
+2008-11-26  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionhelper.vala: 
+	* gtksourcecompletion-1.0.vapi:
+	* packages/gtksourcecompletion-1.0/gtksourcecompletion-1.0.gi:
+	* packages/gtksourcecompletion-1.0/gtksourcecompletion-1.0.metadata:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgutils.vala:
+
+	begin to track and test gtksourcecompletion trunk
+
+2008-11-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscparsermanager.vala:
+
+	added also gobject library to the parser contexts
+
+2008-11-24  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc-shell/vsccompletionshell.vala:
+	* vsc/Makefile.am:
+	* vsc/vscsourcebuffer.vala:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscparsermanager.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgsymbolcompletionhelper.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	splitted the symbol completion parser functions 
+	to the ParserManager class
+
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+
+	changed the dialog type hint to popup
+
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgprojectmanager.vala:
+
+	fixed a segmentationfault caused by a document 
+	with a null file uri
+	
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+	
+	sorted the item list in the filter dialog
+
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/Makefile.am:
+	* vsc/vscsymbolcompletion.vala:
+	* vsc/vscsymbolcompletionitem.vala:
+	* vsc/vscsymbolcompletionresult.vala:
+	* vtg/vtgplugin.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerprocesswatchinfo.vala:
+
+	added a go to method function
+	
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/Makefile.am:
+	* ui/vtg.glade:
+	* ui/vtg.ui:
+	* vtg/Makefile.am:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerprojectsource.vala:
+	* vtg/vtgutils.vala:
+	* vtg/vtgprojectmanagerfilteredlistdialog.vala:
+	
+	added a quick project document picker dialog
+
+2008-11-22  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed some completion bugs on local variabile type inference
+
+
+2008-11-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerprojectgroup.vala: 
+	* vtg/vtgprojectmanagerproject.vala: 
+	* vtg/vtgprojectmanagerprojecttarget.vala: 
+	* vtg/vtgprojectmanagerview.vala: 
+
+	added some shortcut to open Makefile.am & configure.ac
+
+2008-11-20  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vsc/vscsymbolcompletion.vala:
+
+	fixed some bug in search scope priority
+	
+	* vtg/vtgprojectmanagerbuildlogview.vala:
+	* vtg/vtgprojectmanageroutputview.vala:
+	* vtg/vtgprojectmanagerpackagesdialog.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerview.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+
+	fixed a lot of unused variable warnings
+	
+2008-11-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	fixed to follow libvala trunk
+
+2008-11-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/Makefile.am
+	* vapi/utils.vapi: 
+
+	renamed reflection to utils and added Posix namespace with kill function
+	
+	* vtg/vtgprojectmanageroutputview.vala: 
+	* vtg/vtgprojectmanagerprojecttarget.vala: 
+	* vtg/vtgprojectmanagerproject.vala: 
+	* vtg/vtgprojectmanagerexecuter.vala:
+	* vtg/vtgprojectmanagerprocesswatchinfo.vala:
+	* vtg/vtgprojectmanager.vala:
+	* vtg/vtgprojectmanagerbuilder.vala:
+	* vtg/vtgprojectmanagerexecuter.vala:
+	* vtg/vtgprojectmanageroutputview.vala:
+	* vtg/vtgprojectmanagerproject.vala:
+	* vtg/vtgprojectmanagerprojectmodule.vala:
+	* vtg/vtgprojectmanagerprojecttarget.vala:
+	* vtg/vtgsymbolcompletionprovider.vala:
+	
+	added first support for single project executer
+
+	* vtg/vtgprojectmanagerbuildlogview.vala:
+
+	fixed a crash when parsing gcc warning messages
+
+2008-11-17  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerpackagesdialog.vala: 
+	
+	delete some dead code
+	
+2008-11-17  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerprojectpackage.vala: 
+
+	derives from GLib.Object
+	
+	* vsc/vscsymbolcompletion.vala: 
+
+	removed the call to AttributeProcessor since it changed in vala 0.5.2
+
+	* vtg/vtgprojectmanagerprojectmodule.vala: 
+	* vtg/vtgprojectmanagerview.vala: 
+	* vtg/vtgprojectmanagerpackagesdialog.vala: 
+	* vtg/vtgutils.vala: 
+	
+	simple package selection dialog
+	
+2008-11-04  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ui/*: 
+
+	added first support for glade -> gtk builder files to the build system
+
+2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala: 
+
+	fixed nested bracket completion
+
+2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletionitem.vala: 
+
+	improved datatype to string description conversion
+
+2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerbuildlogview.vala: 
+
+	error list view scroll according to current selected error
+	
+	* vtg/vtgplugin.vala: 
+
+	fixed a +1 offset error in goto source line function
+	
+	* vtg/vtgprojectmanager.vala: 
+
+	implemented save all before build function
+	
+2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala: 
+
+	fixed goto error line function now scroll to cursor position
+
+2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala: 
+
+	call tip fixes
+
+2008-10-21  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgsymbolcompletionprovider.vala: 
+
+	first rough support for call tips
+
+2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerproject.vala: 
+
+	better handling of source file names with partial path
+	
+	* vtg/vtgplugin.vala: 
+
+	fixed some unhandled compiler warning
+
+2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	fixed some compiler warnings
+
+2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	checked for null namespace name in add_package
+
+2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+	* vsc/vscsymbolcompletionprovider.vala: 
+
+	implemented symbol search in all referenced namespaces
+
+2008-10-20  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerprojectgroup.vala: 
+	* vsc/vscsymbolcompletion.vala: 
+	
+	minor code cleanups
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletionitem.vala: 
+	* vsc/vscsymbolcompletionresult.vala: 
+	* vsc/vscsymbolcompletion.vala: 
+
+	fixed completion list with creation methods
+	more fixes on method searching function
+	
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	simple optimization in find_sub_codenode
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	first support for cast expressions, improved foreach type inference
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerprojectgroup.vala: 
+	* vtg/vtgprojectmanagerprojecttarget.vala: 
+	* vtg/vtgprojectmanagerproject.vala: 
+	* vtg/vtgplugin.vala: 
+
+	Makefile scanning to infer vapidir / vapi really used by the project
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	fixed some glib missing references
+	
+	* vtg/vtgprojectmanagerbuildlogview.vala: 
+
+	changed bottom pane icon
+	
+	* vtg/vtgprojectmanagerproject.vala: 
+
+	cleanup some unwanted source entries from the project manager
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* ChangeLog:
+
+	fixed all changelog entries
+	
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	new api for adding custom directory to the vapidir search path
+	fixed dependency handling
+	
+	* vtg/vtgplugin.vala: 
+
+	added projectname/vapi to the vapi search directory list
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala: 
+
+	adding project source file to the completion library
+
+2008-10-19  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala: 
+
+	moved the build menu
+
+2008-10-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerbuildlogview.vala: 
+	* vtg/vtgprojectmanageroutputview.vala: 
+
+	added missing files from the last commit
+
+2008-10-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgplugin.vala: 
+	* vtg/vtgprojectmanagerbuilder.vala: 
+	* vtg/vtgprojectmanagerbuildlogview.vala: 
+	* vtg/vtgprojectmanageroutputview.vala: 
+
+	splitted BuildLogView from OutputView
+	
+2008-10-16  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/Makefile.am: 
+	* vtg/vtgprojectmanageroutputview.vala: 
+	* vtg/vtgprojectmanagerbuildlogview.vala: 
+	* vtg/vtgprojectmanagerbuilder.vala: 
+
+	source reorganization
+
+2008-10-16  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* configure.ac: 
+
+	relaxed gnome-build required version
+
+2008-10-15  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vtg/vtgprojectmanagerbuilder.vala: 
+
+	better setup & handling of stderr, stdout channel in the building process
+	
+2008-10-15  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerbuilder.vala: 
+
+	fixed some typos
+
+2008-10-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerbuilder.vala: 	
+	* vtg/vtgprojectmanager.vala: 
+	
+	added clean project + vala 'stamp' command
+
+2008-10-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerbuilder.vala: 	
+
+	added make clean command
+
+2008-10-14  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerbuilder.vala: 	
+
+	misc cosmetic fixes to the build grid error view
+	
+2008-10-14  Andrea Del Signore  <sejerpz@tin.it>	
+
+	* vtg/vtgprojectmanagerbuilder.vala: 
+
+	fixed building working dir
+
+	* vtg/vtgprojectmanager.vala: 
+
+	added next / previous error commands
+
+2008-10-13  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanagerproject.vala: 
+	* vtg/vtgplugin.vala: 
+	* vtg/vtgprojectmanagerview.vala: 
+	* vtg/vtgprojectmanagerbuilder.vala: 
+	* vtg/vtgprojectmanager.vala: 
+
+	more bug fix and added functionality for the project build module
+	
+2008-10-13  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vtg/vtgprojectmanagerview.vala: 
+	* vtg/vtgprojectmanagerbuilder.vala: 
+	* vtg/vtgprojectmanager.vala: 
+
+	new project build functionality
+	
+2008-10-12  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgprojectmanager.vala: 
+
+	fixed uncheck return value erron opening a project
+
+2008-10-12  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vapi/packages/gedit-2.20/gedit-2.20.metadata: 
+
+	added missing ellipsis and nullable type attributes
+	
+2008-10-12  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vtg/vtgprojectmanagerprojectmodule.vala: 
+	* vtg/vtgprojectmanagerprojecttarget.vala: 
+	* vtg/vtgprojectmanagerproject.vala: 
+	* vtg/vtgprojectmanagerprojectpackage.vala: 
+	* vtg/vtgprojectmanagerprojectgroup.vala: 
+	* vtg/vtgprojectmanagerprojectsource.vala: 
+	* vtg/vtgplugin.vala: 
+	* vtg/vtgprojectmanagerview.vala: 
+	* vtg/Makefile.am: 
+
+	added and implemented new project 'readonly' manager view side panel
+	
+	* vtg/vtgprojectmanagerproject.vala: 
+
+	fix return value of open method
+	
+2008-10-12  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vsc/vscsymbolcompletionresult.vala: 
+
+	new total count property
+
+	* vsc-shell/vsccompletionshell.vala: 
+	* vtg/vtgsymbolcompletionprovider.vala: 
+
+	updated to the new vsc api
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	little api refactor
+	
+2008-10-12  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vtg/vtgprojectmanager.vala:
+
+	removed the open icon from Open Project
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	moved attribute parse pass to the analyze function
+	
+2008-10-10  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	added the attribute parse pass to the codecontext parse routine
+
+2008-10-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	using atomic int operation to avoid thread locking and to implement
+	in multiple parse passages
+
+2008-10-09  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	added try_add_package method
+
+2008-10-08  Andrea Del Signore  <sejerpz@tin.it>
+
+	* configure.ac: 
+
+	added gnome-build dependency
+	
+	* vtg/vtgplugin.vala: 
+	* vtg/vtgutils.vala: 
+	* vtg/vtgprojectmanager.vala: 
+	* vtg/vtgprojectmanagerprojectmodule.vala: 
+	* vtg/vtgprojectmanagerprojectgroup.vala: 
+	* vtg/vtgprojectmanagerprojecttarget.vala: 
+	* vtg/vtgprojectmanagerprojectsource.vala: 
+	* vtg/vtgprojectmanagerproject.vala: 
+
+	added project manager model classes, and first autotools loading code
+
+2008-10-08  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vtg/vtgprojectmanager.vala: 
+	* vtg/vtgplugin.vala: 
+
+	first integration (not done yet) of the project manager plugin
+	with the gedit ui
+	
+2008-10-08  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vtg/vtgprojectmanager.vala: 
+	* vtg/Makefile.am:
+
+	added a stub for the project manager plugin
+
+2008-10-07  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala: 
+
+	added a workaround for a bug introduced by the previous commit 
+	when no trimming is needed.
+
+2008-10-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vtg/vtgbracketcompletion.vala: 
+
+	trimmed line end space when adding ';'
+
+2008-10-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+	* vsc-shell/vsccompletionshell.vala: 
+
+	implemented 'reparse' command
+
+2008-10-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gnome-build-1.0.vapi:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0-custom.vala:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0.metadata:
+
+	more gnome-build-1.0 vapi fixes
+
+2008-10-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vapi/gnome-build-1.0.vapi:
+	* vapi/packages/gnome-build-1.0/gnome-build-1.0.metadata:
+
+	added gnome-build-1.0 vapi with some more fixes
+
+2008-09-30  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletionitem.vala: 
+
+	changed 'formal_parameters_to_string' method visibility from public to private
+
+2008-09-30  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vtg/vtgsymbolcompletionprovider.vala: 
+
+	changed the idle handlerto reduce CPU usage
+	
+	* vsc/vscsymbolcompletion.vala: 
+	* vsc/vscsymbolcompletionitem.vala: 
+
+	more work on symbol info pane
+
+2008-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletionitem.vala: 
+	* vsc/vscsymbolcompletion.vala: 
+
+	prepared SymbolCompletionItem to incorporate some info for parameters and return values
+
+2008-09-29  Andrea Del Signore  <sejerpz@tin.it>
+	
+	* vsc/Makefile.am: 
+
+	fixed missing license files
+	
+2008-09-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	wrong function name fixes
+
+2008-09-28  Andrea Del Signore  <sejerpz@tin.it>
+
+	* vsc/vscsymbolcompletion.vala: 
+
+	replaced the old NamespaceReference with the new UsingDirective class
+

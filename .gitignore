@@ -58,8 +58,6 @@ po/POTFILES
 po/stamp-it
 po/*.gmo
 stamp-h1
-tests/test-2
-vsc-shell/vsc-shell
 gen-project/vala-gen-project
 tests/
 vtg-*.tar.bz2
@@ -69,4 +67,4 @@ vbf/am/.dirstamp
 afrodite/afrodite-1.0.vapi
 afrodite/afrodite-1.0.gidl
 gen-project/libgen-project/gen-project-1.0.vapi
-gsc-0.7.0/po/*
+.version

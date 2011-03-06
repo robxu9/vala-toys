@@ -1,0 +1,55 @@
+2011-03-06  Andrea Del Signore  <sejerpz@tin.it>
+
+	Removed the configure script from the repository
+
+	Fixed git version script with v0.xxx style tags
+
+	Fixed the gen_start_date for the changelog
+
+	More build system fixes
+
+	Update the news file
+
+	Use the build script from valac for version & changelog generation
+
+	Fix symbol completion inside comments or string literals
+
+	porting the test utility to the new api
+
+	Made the merging process really async for namespace, classes, structs and interfaces
+
+2011-03-05  Andrea Del Signore  <sejerpz@tin.it>
+
+	Speed fixes to var keyword type inference
+
+	More performance fixes
+
+2011-03-03  Andrea Del Signore  <sejerpz@tin.it>
+
+	Fixed treestore handling of non object classes
+
+	Micro speed optimizations
+
+2011-03-02  Andrea Del Signore  <sejerpz@tin.it>
+
+	Converted the merge & resolve functions in async one
+	There is a lot to do since they still block for too
+	long the Idle function.
+
+2011-03-01  Andrea Del Signore  <sejerpz@tin.it>
+
+	Removed the try_acquire_ast / release_ast api
+
+	Moved the merge and resolve process from the parsing thread to an idle function
+
+	Added an list with all symbols to resolve to speedup symbol resolution process
+
+2011-01-29  Andrea Del Signore  <sejerpz@tin.it>
+
+	Fix the use of some deprecated functions
+
+	Separate auto build messages from normal build messages
+
+2011-01-23  Andrea Del Signore  <sejerpz@tin.it>
+
+	Fix a crash with the new gtksourceview library

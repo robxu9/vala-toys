@@ -1,0 +1,162 @@
+diff --git a/vtg/vtgsymbolcompletionprovider.vala b/vtg/vtgsymbolcompletionprovider.vala
+index 710b26a..99a861f 100644
+--- a/vtg/vtgsymbolcompletionprovider.vala
++++ b/vtg/vtgsymbolcompletionprovider.vala
+@@ -32,7 +32,8 @@ namespace Vtg
+ 		private Gdk.Pixbuf _icon;
+ 		private int _priority = 1;
+ 		private List<Gtk.SourceCompletionItem> _proposals;
+-	
++		private string _last_proposal_word = null;
++		
+ 		private Afrodite.SourceItem _sb = null;
+ 		
+ 		private uint _timeout_id = 0;
+@@ -42,7 +43,6 @@ namespace Vtg
+ 		private int _prealloc_index = 0;
+ 
+ 		private bool _cache_building = false;
+-		private bool _filter = false;
+ 		private uint _sb_msg_id = 0;
+ 		private uint _sb_context_id = 0;
+ 
+@@ -69,7 +69,6 @@ namespace Vtg
+ 			
+ 			_symbol_completion.view.key_press_event.connect (this.on_view_key_press);
+ 			_symbol_completion.view.focus_out_event.connect (this.on_view_focus_out);
+-			_symbol_completion.view.get_completion ().show.connect (this.on_completion_window_hide);
+ 			
+ 			doc.notify["text"] += this.on_text_changed;
+ 			doc.notify["cursor-position"] += this.on_cursor_position_changed;
+@@ -127,56 +126,55 @@ namespace Vtg
+ 			context.completion.view.get_buffer ().get_iter_at_mark (out end, mark);
+ 
+ 			if (!start.starts_line ())
+-			start.set_line_offset (0);
++				start.set_line_offset (0);
+ 
+ 			string text = start.get_text (end);
+-			if (text.has_suffix (".")) {
++			
++			if (text.rstr (".") != null) {
+ 				result = true;
+-				_filter = false; // do a completion
+ 			}
+ 			
++			GLib.debug ("matching %s: %d", text, (int) result);
+ 			return result;
+ 		}
+-
+-		private void on_completion_window_hide (Gtk.SourceCompletion sender)
+-		{
+-			_filter = false;
+-		}
+ 		
+ 		public void populate (Gtk.SourceCompletionContext context)
+ 		{
+-			if (!_filter) {
+-				this.build_proposal_item_list ();
+-				context.add_proposals (this, _proposals, true);
+-				// subsequent call to populate should filter the proposals 
+-				// until the proposals window will be closed
+-				_filter = true;
+-			} else {
+-				string whole_line, word, last_part;
+-				int line, column;
+-
+-				parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
+-				GLib.debug ("filtering with: '%s' - '%s'", word, last_part);
+-				if (!StringUtils.is_null_or_empty (last_part) && word != last_part) {
+-					var filtered_proposals = new GLib.List<Gtk.SourceCompletionItem>();
+-					foreach (var proposal in _proposals) {
+-						if (proposal.get_label ().has_prefix (last_part)) {
+-							filtered_proposals.append (proposal);
+-						}
+-					}
+-				
+-					if (filtered_proposals.length () == 0) {
+-						// no matching add a dummy one to prevent proposal windows from closing
+-						var dummy_proposal = new Gtk.SourceCompletionItem (_("No matching proposal"), "", null, null);
+-						filtered_proposals.append (dummy_proposal);
++			string whole_line, word, last_part;
++			int line, column;
++			string first_part = "";
++			
++			parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
++			if (word != last_part)
++				first_part = word.substring (0, word.length - last_part.length);
++			else
++				first_part = word;
++			
++			if (first_part.has_suffix (".")) {
++				first_part = first_part.substring (0, first_part.length - 1);
++			}
++
++			if (this._last_proposal_word == null || first_part != this._last_proposal_word) {				
++				GLib.debug ("completing: %s vs %s", _last_proposal_word, word);
++				if (this.build_proposal_item_list ()) {
++					_last_proposal_word = first_part;
++				}
++			}
++			
++			// eventually do the filtering
++			if (!StringUtils.is_null_or_empty (last_part) && word != last_part) {
++				GLib.debug ("filtering: %s of %s", last_part, word);
++				var filtered_proposals = new GLib.List<Gtk.SourceCompletionItem>();
++				foreach (var proposal in _proposals) {
++					if (proposal.get_label ().has_prefix (last_part)) {
++						filtered_proposals.append (proposal);
+ 					}
+-					context.add_proposals (this, filtered_proposals, true);
+-				} else {
+-					// match all optimization
+-					context.add_proposals (this, _proposals, true);
+ 				}
++				context.add_proposals (this, filtered_proposals, true);
++			} else {
++				// match all optimization
++				context.add_proposals (this, _proposals, true);
+ 			}
+-
+ 		}
+ 
+ 		public unowned Gdk.Pixbuf get_icon ()
+@@ -715,15 +713,16 @@ namespace Vtg
+ 			return options;
+ 		}
+ 
+-		private void build_proposal_item_list ()
++		private bool build_proposal_item_list ()
+ 		{
++			Afrodite.Ast ast = null;
+ 			string whole_line, word, last_part;
+ 			int line, column;
+-
++			bool lock_acquired = true;
++			
+ 			parse_current_line (false, out word, out last_part, out whole_line, out line, out column);
+-
+-			Afrodite.Ast ast = null;
+ 			GLib.debug ("completing word: %s", word);
++			
+ 			if (!StringUtils.is_null_or_empty (word) 
+ 			    && _completion.try_acquire_ast (out ast)) {
+ 			        QueryOptions options = get_options_for_line (whole_line);
+@@ -733,11 +732,15 @@ namespace Vtg
+ 				transform_result (options, result);
+ 				_completion.release_ast (ast);
+ 			} else {
+-				if (!StringUtils.is_null_or_empty (word))
++				if (!StringUtils.is_null_or_empty (word)) {
+ 					GLib.debug ("build_proposal_item_list: couldn't acquire ast lock");
+-					
++					lock_acquired = false;
++				}
++
+ 				transform_result (null, null);
+ 			}
++			
++			return lock_acquired;
+ 		}
+ 		
+ 		private Afrodite.QueryResult? get_symbol_type_for_name (QueryOptions options, Afrodite.Ast ast, string word, string? whole_line, int line, int column)

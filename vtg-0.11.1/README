@@ -1,0 +1,38 @@
+Vala toys for gEdit
+
+Vala Toys for gEdit (Vtg) is an experimental collection of plugins
+that extend the gEdit editor to make it a better programmer editor
+targetted especially for the Vala language.
+
+For more information see the Vtg homepage at:
+
+	http://vtg.googlecode.com
+
+
+* HACKING *
+
+Directory structure
+
+root
+ +---- gen-project: this is the same utility shipped with the
+ |                  vala distribution. It's used by vtg to create
+ |                  a new project.
+ |
+ +---- afrodite: static library containing the completion engine
+ |
+ |
+ +---- vbf: static library that implements the autotools support
+ |
+ |
+ +---- gsc-0.7.0: private GtkSourceCompletion copy
+ |
+ |
+ +---- vtg: the gEdit plugin
+
+* AFRODITE *
+
+Afrodite is the new completion library and replaces Vsc.
+
+TODO: finish documentation :)
+
+

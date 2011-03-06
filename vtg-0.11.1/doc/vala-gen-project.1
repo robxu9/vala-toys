@@ -1,0 +1,41 @@
+.TH vala-gen-project 1  "December 24, 2008" "version 0.1.0" "USER COMMANDS"
+.SH NAME
+vala-gen-project \- generate the and automake skeleton for your vala project
+.SH SYNOPSIS
+.B vala-gen-project
+[OPTION...] [NAME]
+.SH DESCRIPTION
+Vala project generator is a little gui or command line utility
+that creates an automake project skeletoni vala program.
+.PP
+It can be used without specifing a project name, so that a gtk+
+gui will be presented or directly from the command line.
+.SH OPTIONS
+.TP
+\-?, \-\-help                     Show help options
+.TP
+\-p, \-\-projectdir=DIRECTORY     Project directory
+.TP
+\-t, \-\-type=TYPE                Project TYPE: gtk+, console
+.TP
+\-l, \-\-license=TYPE             License TYPE: gpl2, gpl3, lgpl2, lgpl3
+.TP
+\-\-version                      Display version number
+.TP
+\-a, \-\-author=NAME              Author name
+.TP
+\-e, \-\-email=EMAIL              Author email address
+.SH EXAMPLES
+.TP
+Create a gtk+ project with a gpl2 license and the name valatest
+
+.B vala-gen-project 
+\-t gtk+ \-l gpl2 valatest
+.PP
+.SH EXIT STATUS
+vala-gen-project returns a zero exist status if it succeed. 
+Non zero is returned in case of failure.
+.SH AUTHOR
+Andrea Del Signore (sejerpz (at) tin.it)
+.SH SEE ALSO
+valac(1)

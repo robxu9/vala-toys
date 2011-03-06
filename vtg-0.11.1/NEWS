@@ -1,0 +1,162 @@
+Vala toys for gEdit version 0.11.0
+==================================
+
+* Improved libafrodite stability and simpler API
+* Symbol picker combo in the source editor
+* Go to outer scope command
+* Find symbol in project dialog 
+* Automatic management of projects. Eg. when you open
+  a source that belong to a project that project will
+  be opened (and closed) automatically.
+* Various fixes in the source code outliner view
+
+Vala toys for gEdit version 0.10.0
+==================================
+
+* Much improved standalone file edit
+* Improved vbf "smart folder" backend for waf and cmake projects
+* Various fixes in the source code outliner view
+
+Vala toys for gEdit version 0.9.3
+=================================
+
+* Add the possibility to filter symbols by scope on the source code
+  outliner
+* Add support for default parameters value in the calltip
+  and i the source outliner pane
+* Fixed some ugly crash with generics support
+* Fixed a big leak when reparsing source files
+
+Vala toys for gEdit version 0.9.2
+=================================
+
+* Initial support for generics completion
+* New SmartFolder project backend: provides minimal support
+  for cmake, waf and simple makefile projects
+* A lot of small UI and usability enhancements
+* Many other bugs fixed
+
+Vala toys for gEdit version 0.9.0
+=================================
+
+* Totally new Vala Gen Project dialog
+* A more aggressive completion engine: it starts completing 
+  after the first char typed
+* Various fixes on the Vala Build Framework library
+* Many other bugs fixed
+
+
+Vala toys for gEdit version 0.8.0
+=================================
+
+* Vala Gen Project now supports user project template
+  (see http://code.google.com/p/vtg/wiki/ValaGenProject
+   to know how to do yours and please share it ;) )
+* Integrate the completion with the new Gtk SourceView
+  completion framework
+* Better support for completing 'var' variables
+* Better support for completion on standalone vala files
+* Many other bugs fixed
+
+Vala toys for gEdit version 0.7.0
+=================================
+
+* Improved source outliner and project viewer panes
+* Totally new completion library: welcome Afrodite!
+* Added multi-target support to the Goto to file dialog
+* Full source code outline in the Goto to symbol dialog 
+  (once known ad Go to Method)
+* Better autobookmark support, now is active also when
+  jumping in the same source with Goto Definition menu.
+* Smarter bracket completion module
+* Many other bugs fixed
+
+Vala toys for gEdit version 0.6.0
+=================================
+
+* new source code outliner pane
+* less parser deadlocks and improved completion speed
+* no more glade file
+* a better project view
+* a lot of small details fixed
+
+Vala toys for gEdit version 0.5.0
+=================================
+
+* Search (grep) in project files
+* Support for automake 1.11
+* Completion popup info windows now remember its state
+* Go To Definition function
+* Support for recently opened projects
+* Better support for 'non standard' vala installation directory
+* Some experimental support for Mac Os X builds
+* Updated to use the 0.7.0 Gtk Source Completion library
+
+Vala toys for gEdit version 0.4.1
+=================================
+
+* Fixed a deadlock in the parser thread that causes gEdit 
+  to freeze when vtg plugin is enabled
+
+Vala toys for gEdit version 0.4.0
+=================================
+
+* Rewritten the autotool backend in vala and dropped the gnome-build
+  dependency.
+* New auto-bookmark feature: now you can go to a file and immediately go back
+  with ALT-LEFT. Bookmarks are automatically stored when you leave a source tab.
+* Improved the build result pane with the possibility to filter out warnings and
+  errors.
+* Now is safe to use vtg with multiple gEdit windows.
+* Improved vsc-shell and now it can be really used by third party developers (Levi Bard).
+* Lot of fixes in the completion engine.
+
+Vala toys for gEdit version 0.3.2
+=================================
+
+* This is a simple maintenance release since libvala api 0.5.6 is
+  different from version 0.5.5
+
+
+Vala toys for gEdit version 0.3.1
+=================================
+
+* This is a simple maintenance release since libvala api 0.5.5 is
+  different from version 0.5.4
+
+
+Vala toys for gEdit version 0.3.0
+=================================
+
+* New simple and "version control system" based ChangeLog support. 
+  Just press CTRL+SHIFT+C and a new ChangeLog entry will be created
+  in the project ChangeLog file with all the modified and added files.
+  Supported vcs backends: svn, git, bzr
+* Added the possibility to stop and restart quickly the compilation
+  process
+* Lot of improvements in the completion engine
+
+
+Vala toys for gEdit version 0.2.0
+=================================
+
+* Internationalization framework setup. A new argentinian spanish translation is included. Thanks to Matias De la Puente
+* Improved code completion engine
+* New "execute project" dialog where the executable and command line parameters can be specified
+* New build dialog where make parameters can be specified
+* New "Configure" menu item
+* Improved keyboard navigation in method and files quick pick dialogs
+* vala-gen-project utility can be used from the command line
+
+
+Vala toys for gEdit version 0.1.0
+=================================
+
+* First relase of Vala toys for gEdit
+
+  Main implemented modules are:
+       * Bracket completion
+       * Symbol completion
+       * Autotool project managment
+       * Simple "one source" workflow optimization
+                

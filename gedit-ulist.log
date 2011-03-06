@@ -1,0 +1,861 @@
+ValaBuildFramework-INFO: vbfutils.vala:59: project at: /home/andrea/Src/vala-toys/git is autotools true
+ValaBuildFramework-INFO: vbfautotools.vala:166: Resoving variables: VALA_VERSION
+ValaBuildFramework-INFO: vbfautotools.vala:169: resolved: 0.12
+ValaBuildFramework-INFO: vbfautotools.vala:166: Resoving variables: VALA_VERSION
+ValaBuildFramework-INFO: vbfautotools.vala:169: resolved: 0.12
+ValaBuildFramework-INFO: vbfautotools.vala:613: target for: libgen_project is libgen-project
+ValaBuildFramework-INFO: vbfautotools.vala:613: target for: vala_gen_project is vala-gen-project
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/afrodite/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/gen-project/ui/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/gen-project/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/gen-project/licenses/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/gen-project/templates/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/doc/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/vtg/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/vapi/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/vbf/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/ui/Makefile.am
+ValaBuildFramework-INFO: vbfautotools.vala:715: setup_file_monitors for: /home/andrea/Src/vala-toys/git/images/Makefile.am
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libafrodite.vala.stamp, referenced package: gio-2.0
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libafrodite.vala.stamp, referenced package: config
+Afrodite-INFO: completionengine.vala:265: engine libafrodite: parser thread *** starting ***...
+Afrodite-INFO: completionengine.vala:284: engine libafrodite: queued 3
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libafrodite.vala.stamp, referenced package: libvala-0.12
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libafrodite.vala.stamp, referenced package: utils
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/astmerger.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/astdumper.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/parser.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/parseresult.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/symbol.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/symbolresolver.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/datatype.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/voidtype.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/sourcereference.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/sourcefile.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/ast.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/utils.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/completionengine.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/ellipsistype.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/queryoptions.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/queryresult.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/resultitem.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/constants.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/sourceitem.vala
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target afroditetest.vala.stamp, referenced package: afrodite-1.0
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target afroditetest.vala.stamp, referenced package: gio-2.0
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target afroditetest.vala.stamp, referenced package: config
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target afroditetest.vala.stamp, referenced package: libvala-0.12
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target afroditetest.vala.stamp, referenced package: utils
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/afrodite/afroditetest.vala
+Afrodite-INFO: completionengine.vala:265: engine afroditetest: parser thread *** starting ***...
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libgen-project.la, referenced package: gio-2.0
+Afrodite-INFO: completionengine.vala:284: engine afroditetest: queued 8
+Afrodite-INFO: completionengine.vala:313: engine afroditetest: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libgen-project.la, referenced package: config
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libgen-project.la, referenced package: utils
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/projectgenerator.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/projectoptions.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/templatedefinition.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/templates.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/constants.vala
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target vala-gen-project, referenced package: gen-project-1.0
+Afrodite-INFO: completionengine.vala:265: engine libgen-project: parser thread *** starting ***...
+Afrodite-INFO: completionengine.vala:265: engine vala-gen-project: parser thread *** starting ***...
+Afrodite-INFO: completionengine.vala:284: engine vala-gen-project: queued 3
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+Afrodite-INFO: completionengine.vala:284: engine libgen-project: queued 10
+Afrodite-INFO: completionengine.vala:313: engine libgen-project: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target vala-gen-project, referenced package: gtk+-2.0
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/gen-project/main.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/gen-project/genprojectdialog.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/gen-project/tagcloud.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/gen-project/tagclouditem.vala
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvtg.vala.stamp, referenced package: config
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvtg.vala.stamp, referenced package: vbf-1.0
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvtg.vala.stamp, referenced package: afrodite-1.0
+Afrodite-INFO: completionengine.vala:265: engine libvtg: parser thread *** starting ***...
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvtg.vala.stamp, referenced package: libvala-0.12
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvtg.vala.stamp, referenced package: gedit-2.20
+Afrodite-INFO: completionengine.vala:284: engine libvtg: queued 6
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvtg.vala.stamp, referenced package: gtk+-2.0
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvtg.vala.stamp, referenced package: gtksourceview-2.0
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvtg.vala.stamp, referenced package: utils
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvtg.vala.stamp, referenced package: gdkkeysyms
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvtg.vala.stamp, referenced package: gconf-2.0
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgbracketcompletion.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgsymbolcompletion.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgsymbolcompletionprovider.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprojectmanagerui.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprojectview.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprojectbuilder.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprojectexecuter.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprojectexecuterdialog.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearch.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearchresultsview.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearchdialog.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprocesswatchinfo.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgoutputview.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgbuildlogview.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprojectmanager.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgprojects.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgfilteredlistdialog.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsvcsbase.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsitem.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsgit.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsbzr.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendssvn.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgchangelog.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgparametersdialog.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgconfiguration.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgsourcebookmark.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgsourcebookmarks.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgplugininstance.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgsourceoutlinerview.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgsourceoutliner.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgplugin.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vtg/vtgutils.vala
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvbf.vala.stamp, referenced package: gio-2.0
+Afrodite-INFO: completionengine.vala:265: engine libvbf: parser thread *** starting ***...
+erenced package: config
+Afrodite-INFO: completionengine.vala:284: engine libvbf: queued 3
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvbf.vala.stamp, referenced package: libvala-0.12
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target libvbf.vala.stamp, referenced package: utils
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfproject.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfgroup.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfmodule.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbftarget.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfsource.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbffile.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfpackage.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfvariable.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfstringliteral.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfiprojectbackend.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfmanager.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfconfignode.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfconfignodepair.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfconfignodelist.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfunresolvedconfignode.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbfutils.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/backends/vbfautotools.vala
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/backends/vbfsmartfolder.vala
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target vbftest.vala.stamp, referenced package: libvala-0.12
+ValaToys-INFO: vtgprojectmanager.vala:316: setup_completions: target vbftest.vala.stamp, referenced package: vbf-1.0
+Afrodite-INFO: completionengine.vala:265: engine vbftest: parser thread *** starting ***...
+Afrodite-INFO: completionengine.vala:284: engine vbftest: queued 3
+Afrodite-INFO: completionengine.vala:313: engine vbftest: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+ValaToys-INFO: vtgprojectmanager.vala:330: setup_completions: source /home/andrea/Src/vala-toys/git/vbf/vbftest.vala
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/./
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/./
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/./
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/./
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/afrodite/./
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/gen-project/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/gen-project/libgen-project
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/gen-project/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/gen-project/libgen-project
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/gen-project/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/gen-project/libgen-project
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../afrodite
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../afrodite
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../afrodite
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../afrodite
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../afrodite
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../afrodite
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../afrodite
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../afrodite
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../afrodite
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../afrodite
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vtg/../vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vbf/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vbf/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vbf/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vbf/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vbf/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vbf
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vbf/../vapi
+ValaBuildFramework-INFO: vbfpackage.vala:65: **** adding vapidir: /home/andrea/Src/vala-toys/git/vbf
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.471031
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.455719
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine afroditetest: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.54692
+Afrodite-INFO: completionengine.vala:351: engine afroditetest: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libgen-project: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.566313
+Afrodite-INFO: completionengine.vala:351: engine libgen-project: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.629928
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.476107
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine vbftest: parsing source: /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.555494
+Afrodite-INFO: completionengine.vala:351: engine vbftest: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.67392
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.689869
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine afroditetest: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.674622
+Afrodite-INFO: completionengine.vala:313: engine afroditetest: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libgen-project: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.663908
+Afrodite-INFO: completionengine.vala:313: engine libgen-project: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.650278
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.69052
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine vbftest: merging source /usr/share/vala-0.12/vapi/gobject-2.0.vapi done 0.571228
+Afrodite-INFO: completionengine.vala:313: engine vbftest: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.85036
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.9162
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libgen-project: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.81616
+Afrodite-INFO: completionengine.vala:351: engine libgen-project: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.81771
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine vbftest: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.90421
+Afrodite-INFO: completionengine.vala:351: engine vbftest: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine afroditetest: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi done 5.11257
+Afrodite-INFO: completionengine.vala:351: engine afroditetest: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /usr/share/vala-0.12/vapi/glib-2.0.vapi done 5.05499
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.05786
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/gen-project-1.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/gen-project-1.0.vapi done 0.00833
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/gen-project-1.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/gen-project-1.0.vapi done 0.087481
+Afrodite-INFO: completionengine.vala:379: engine vala-gen-project: resolving ast
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 3038
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.32952
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.28244
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/../vapi/config.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/../vapi/config.vapi done 0.009012
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/../vapi/config.vapi
+Afrodite-INFO: completionengine.vala:356: engine libgen-project: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.37209
+Afrodite-INFO: completionengine.vala:313: engine libgen-project: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/../vapi/config.vapi done 0.027091
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/../vbf/vbf-1.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine afroditetest: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.17457
+Afrodite-INFO: completionengine.vala:313: engine afroditetest: parsing source: /home/andrea/Src/vala-toys/git/afrodite/./afrodite-1.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.13707
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/../vbf/vbf-1.0.vapi done 0.178135
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/../vbf/vbf-1.0.vapi
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 0
+Afrodite-INFO: completionengine.vala:385: engine vala-gen-project: resolving ast done 0.555273
+Afrodite-INFO: completionengine.vala:356: engine vbftest: merging source /usr/share/vala-0.12/vapi/glib-2.0.vapi done 4.50325
+Afrodite-INFO: completionengine.vala:313: engine vbftest: parsing source: /usr/share/vala-0.12/vapi/libvala-0.12.vapi
+Afrodite-INFO: completionengine.vala:325: engine afroditetest: parsing source: /home/andrea/Src/vala-toys/git/afrodite/./afrodite-1.0.vapi done 0.366657
+Afrodite-INFO: completionengine.vala:351: engine afroditetest: merging source /home/andrea/Src/vala-toys/git/afrodite/./afrodite-1.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/../vbf/vbf-1.0.vapi done 0.296155
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/../afrodite/afrodite-1.0.vapi
+Afrodite-INFO: completionengine.vala:284: engine vala-gen-project: queued 13
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/../vapi/config.vapi
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/../vapi/config.vapi done 0.017265
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/../vapi/config.vapi
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/../vapi/config.vapi done 0.002504
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/../afrodite/afrodite-1.0.vapi done 0.31976
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/../afrodite/afrodite-1.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine afroditetest: merging source /home/andrea/Src/vala-toys/git/afrodite/./afrodite-1.0.vapi done 0.634992
+Afrodite-INFO: completionengine.vala:313: engine afroditetest: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/../afrodite/afrodite-1.0.vapi done 0.684946
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/libvala-0.12.vapi
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi done 3.93713
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libgen-project: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi done 3.95209
+Afrodite-INFO: completionengine.vala:351: engine libgen-project: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi done 4.13872
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi done 4.09236
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine afroditetest: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi done 3.80803
+Afrodite-INFO: completionengine.vala:351: engine afroditetest: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine vbftest: parsing source: /usr/share/vala-0.12/vapi/libvala-0.12.vapi done 7.22348
+Afrodite-INFO: completionengine.vala:351: engine vbftest: merging source /usr/share/vala-0.12/vapi/libvala-0.12.vapi
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi done 4.19618
+Afrodite-INFO: completionengine.vala:379: engine libafrodite: resolving ast
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 5193
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.ArrayList'
+Afrodite-INFO: completionengine.vala:356: engine libgen-project: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi done 4.28292
+Afrodite-INFO: completionengine.vala:313: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/vapi/config.vapi
+Afrodite-INFO: completionengine.vala:325: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/vapi/config.vapi done 0.006936
+Afrodite-INFO: completionengine.vala:351: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/vapi/config.vapi
+Afrodite-INFO: completionengine.vala:356: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/vapi/config.vapi done 0.018452
+Afrodite-INFO: completionengine.vala:313: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/vapi/utils.vapi
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.Collection'
+Afrodite-INFO: completionengine.vala:325: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/vapi/utils.vapi done 0.010872
+Afrodite-INFO: completionengine.vala:351: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/vapi/utils.vapi
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'K' to 'Vala.HashMap'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'V' to 'Vala.HashMap'
+Afrodite-INFO: completionengine.vala:356: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/vapi/utils.vapi done 0.028625
+Afrodite-INFO: completionengine.vala:313: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/projectgenerator.vala
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi done 3.4945
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/atk.vapi
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.HashSet'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.List'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.Set'
+Afrodite-INFO: completionengine.vala:325: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/projectgenerator.vala done 0.15656
+Afrodite-INFO: completionengine.vala:351: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/projectgenerator.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi done 4.20724
+Afrodite-INFO: completionengine.vala:379: engine libvbf: resolving ast
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 5193
+Afrodite-INFO: completionengine.vala:356: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/projectgenerator.vala done 0.147442
+Afrodite-INFO: completionengine.vala:313: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/projectoptions.vala
+Afrodite-INFO: completionengine.vala:325: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/projectoptions.vala done 0.012358
+Afrodite-INFO: completionengine.vala:351: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/projectoptions.vala
+Afrodite-INFO: completionengine.vala:356: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/projectoptions.vala done 0.021664
+Afrodite-INFO: completionengine.vala:313: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/templatedefinition.vala
+Afrodite-INFO: completionengine.vala:325: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/templatedefinition.vala done 0.068397
+Afrodite-INFO: completionengine.vala:351: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/templatedefinition.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/libvala-0.12.vapi done 7.21479
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/libvala-0.12.vapi
+Afrodite-INFO: completionengine.vala:356: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/templatedefinition.vala done 0.117631
+Afrodite-INFO: completionengine.vala:313: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/templates.vala
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/atk.vapi done 0.535856
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/atk.vapi
+Afrodite-INFO: completionengine.vala:325: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/templates.vala done 0.091218
+Afrodite-INFO: completionengine.vala:351: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/templates.vala
+Afrodite-INFO: completionengine.vala:356: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/templates.vala done 0.040261
+Afrodite-INFO: completionengine.vala:313: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/constants.vala
+Afrodite-INFO: completionengine.vala:325: engine libgen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/libgen-project/constants.vala done 0.012688
+Afrodite-INFO: completionengine.vala:351: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/constants.vala
+Afrodite-INFO: completionengine.vala:356: engine libgen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/libgen-project/constants.vala done 0.02086
+Afrodite-INFO: completionengine.vala:379: engine libgen-project: resolving ast
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 5344
+Afrodite-INFO: completionengine.vala:356: engine afroditetest: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi done 4.45883
+Afrodite-INFO: completionengine.vala:313: engine afroditetest: parsing source: /home/andrea/Src/vala-toys/git/afrodite/../vapi/config.vapi
+Afrodite-INFO: completionengine.vala:325: engine afroditetest: parsing source: /home/andrea/Src/vala-toys/git/afrodite/../vapi/config.vapi done 0.002479
+Afrodite-INFO: completionengine.vala:351: engine afroditetest: merging source /home/andrea/Src/vala-toys/git/afrodite/../vapi/config.vapi
+Afrodite-INFO: completionengine.vala:356: engine afroditetest: merging source /home/andrea/Src/vala-toys/git/afrodite/../vapi/config.vapi done 0.02114
+Afrodite-INFO: completionengine.vala:313: engine afroditetest: parsing source: /usr/share/vala-0.12/vapi/libvala-0.12.vapi
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.ArrayList'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.Collection'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'K' to 'Vala.HashMap'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'V' to 'Vala.HashMap'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.HashSet'
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 0
+Afrodite-INFO: completionengine.vala:385: engine libafrodite: resolving ast done 1.47055
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.List'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.Set'
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/atk.vapi done 0.970823
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/cairo.vapi
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 0
+Afrodite-INFO: completionengine.vala:385: engine libvbf: resolving ast done 1.4111
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/cairo.vapi done 0.256536
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/cairo.vapi
+Afrodite-INFO: completionengine.vala:284: engine libafrodite: queued 22
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/../vapi/config.vapi
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/../vapi/config.vapi done 0.001936
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/../vapi/config.vapi
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/../vapi/config.vapi done 0.009005
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /usr/share/vala-0.12/vapi/libvala-0.12.vapi
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 2
+Afrodite-INFO: completionengine.vala:385: engine libgen-project: resolving ast done 1.40802
+Afrodite-INFO: completionengine.vala:284: engine libvbf: queued 21
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/../vapi/config.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/../vapi/config.vapi done 0.01315
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/../vapi/config.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/../vapi/config.vapi done 0.002254
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /usr/share/vala-0.12/vapi/libvala-0.12.vapi
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/cairo.vapi done 0.583592
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/gdk-pixbuf-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/gdk-pixbuf-2.0.vapi done 0.154628
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/gdk-pixbuf-2.0.vapi
+Afrodite-INFO: completionengine.vala:405: engine libgen-project: parser thread *** exiting *** (elapsed time parsing 19.4398, resolving 21.55)...
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/gdk-pixbuf-2.0.vapi done 0.324837
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/pango.vapi
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/pango.vapi done 0.538501
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/pango.vapi
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/pango.vapi done 0.904336
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/pangocairo.vapi
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/pangocairo.vapi done 0.062106
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/pangocairo.vapi
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/pangocairo.vapi done 0.042943
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/gdk-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/gdk-2.0.vapi done 1.36656
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/gdk-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine afroditetest: parsing source: /usr/share/vala-0.12/vapi/libvala-0.12.vapi done 5.72061
+Afrodite-INFO: completionengine.vala:351: engine afroditetest: merging source /usr/share/vala-0.12/vapi/libvala-0.12.vapi
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.ArrayList'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.Collection'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'K' to 'Vala.HashMap'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'V' to 'Vala.HashMap'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.HashSet'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.List'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.Set'
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /usr/share/vala-0.12/vapi/libvala-0.12.vapi done 5.66283
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /usr/share/vala-0.12/vapi/libvala-0.12.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /usr/share/vala-0.12/vapi/libvala-0.12.vapi done 5.64316
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /usr/share/vala-0.12/vapi/libvala-0.12.vapi
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.ArrayList'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.Collection'
+Afrodite-INFO: completionengine.vala:356: engine vbftest: merging source /usr/share/vala-0.12/vapi/libvala-0.12.vapi done 8.78002
+Afrodite-INFO: completionengine.vala:379: engine vbftest: resolving ast
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 7647
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'K' to 'Vala.HashMap'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'V' to 'Vala.HashMap'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.HashSet'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.List'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.Set'
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/gdk-2.0.vapi done 2.36752
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/gtk+-2.0.vapi
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.ArrayList'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.Collection'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'K' to 'Vala.HashMap'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'V' to 'Vala.HashMap'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.HashSet'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.List'
+Afrodite-INFO: astmerger.vala:942: You should fix this hack: ValaUnresolvedType - type parameter is null: 'G' to 'Vala.Set'
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/libvala-0.12.vapi done 9.1133
+Afrodite-INFO: completionengine.vala:379: engine libvtg: resolving ast
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 8220
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 0
+Afrodite-INFO: completionengine.vala:385: engine vbftest: resolving ast done 3.07646
+Afrodite-INFO: completionengine.vala:284: engine vbftest: queued 2
+Afrodite-INFO: completionengine.vala:313: engine vbftest: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbf-1.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine vbftest: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbf-1.0.vapi done 0.10876
+Afrodite-INFO: completionengine.vala:351: engine vbftest: merging source /home/andrea/Src/vala-toys/git/vbf/vbf-1.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine vbftest: merging source /home/andrea/Src/vala-toys/git/vbf/vbf-1.0.vapi done 0.171279
+Afrodite-INFO: completionengine.vala:313: engine vbftest: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbftest.vala
+Afrodite-INFO: completionengine.vala:325: engine vbftest: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbftest.vala done 0.070846
+Afrodite-INFO: completionengine.vala:351: engine vbftest: merging source /home/andrea/Src/vala-toys/git/vbf/vbftest.vala
+Afrodite-INFO: completionengine.vala:356: engine vbftest: merging source /home/andrea/Src/vala-toys/git/vbf/vbftest.vala done 0.065387
+Afrodite-INFO: completionengine.vala:379: engine vbftest: resolving ast
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 193
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 0
+Afrodite-INFO: completionengine.vala:385: engine libvtg: resolving ast done 3.19653
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 0
+Afrodite-INFO: completionengine.vala:385: engine vbftest: resolving ast done 0.302467
+Afrodite-INFO: completionengine.vala:405: engine vbftest: parser thread *** exiting *** (elapsed time parsing 26.9677, resolving 31.2836)...
+Afrodite-INFO: completionengine.vala:284: engine libvtg: queued 45
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/atk.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/atk.vapi done 0.265949
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/atk.vapi
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /usr/share/vala-0.12/vapi/libvala-0.12.vapi done 6.69429
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/../vapi/utils.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/atk.vapi done 0.575783
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/cairo.vapi
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/../vapi/utils.vapi done 0.004152
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/../vapi/utils.vapi
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/../vapi/utils.vapi done 0.017308
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/astmerger.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/cairo.vapi done 0.285187
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/cairo.vapi
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/astmerger.vala done 0.389386
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/astmerger.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /usr/share/vala-0.12/vapi/libvala-0.12.vapi done 6.78456
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/../vapi/utils.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/../vapi/utils.vapi done 0.010227
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/../vapi/utils.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/../vapi/utils.vapi done 0.01168
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfproject.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfproject.vala done 0.211307
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfproject.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfproject.vala done 0.041984
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfgroup.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfgroup.vala done 0.110817
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfgroup.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/cairo.vapi done 0.664192
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfgroup.vala done 0.064517
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfmodule.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfmodule.vala done 0.231703
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfmodule.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfmodule.vala done 0.016799
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbftarget.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/astmerger.vala done 0.852563
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/astdumper.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbftarget.vala done 0.046062
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbftarget.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/astdumper.vala done 0.05213
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/astdumper.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbftarget.vala done 0.074306
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfsource.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfsource.vala done 0.121199
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfsource.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfsource.vala done 0.015225
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbffile.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbffile.vala done 0.00815
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbffile.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/astdumper.vala done 0.185626
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/parser.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbffile.vala done 0.043701
+Afrodite-IAfrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/parser.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfpackage.vala done 0.026073
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfpackage.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/parser.vala done 0.024935
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/parseresult.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/parseresult.vala done 0.023992
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/parseresult.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfpackage.vala done 0.037127
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfvariable.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfvariable.vala done 0.019971
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfvariable.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/parseresult.vala done 0.025396
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/symbol.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfvariable.vala done 0.025427
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfstringliteral.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfstringliteral.vala done 0.047286
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfstringliteral.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfstringliteral.vala done 0.010235
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfiprojectbackend.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfiprojectbackend.vala done 0.01084
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfiprojectbackend.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfiprojectbackend.vala done 0.026108
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfmanager.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfmanager.vala done 0.007173
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfmanager.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfmanager.vala done 0.000252
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfconfignode.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfconfignode.vala done 0.012116
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfconfignode.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfconfignode.vala done 0.002448
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfconfignodepair.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfconfignodepair.vala done 0.006232
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfconfignodepair.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfconfignodepair.vala done 0.013796
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfconfignodelist.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfconfignodelist.vala done 0.02019
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfconfignodelist.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfconfignodelist.vala done 0.019808
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfunresolvedconfignode.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfunresolvedconfignode.vala done 0.003042
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfunresolvedconfignode.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfunresolvedconfignode.vala done 0.008575
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfutils.vala
+Afrodite-INFO: completionengine.vala:356: engine afroditetest: merging source /usr/share/vala-0.12/vapi/libvala-0.12.vapi done 9.4064
+Afrodite-INFO: completionengine.vala:313: engine afroditetest: parsing source: /home/andrea/Src/vala-toys/git/afrodite/../vapi/utils.vapi
+Afrodite-INFO: completionengine.vala:325: engine afroditetest: parsing source: /home/andrea/Src/vala-toys/git/afrodite/../vapi/utils.vapi done 0.003977
+Afrodite-INFO: completionengine.vala:351: engine afroditetest: merging source /home/andrea/Src/vala-toys/git/afrodite/../vapi/utils.vapi
+Afrodite-INFO: completionengine.vala:356: engine afroditetest: merging source /home/andrea/Src/vala-toys/git/afrodite/../vapi/utils.vapi done 0.010058
+Afrodite-INFO: completionengine.vala:313: engine afroditetest: parsing source: /home/andrea/Src/vala-toys/git/afrodite/afroditetest.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/vbfutils.vala done 0.088477
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfutils.vala
+Afrodite-INFO: completionengine.vala:325: engine afroditetest: parsing source: /home/andrea/Src/vala-toys/git/afrodite/afroditetest.vala done 0.082059
+Afrodite-INFO: completionengine.vala:351: engine afroditetest: merging source /home/andrea/Src/vala-toys/git/afrodite/afroditetest.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/vbfutils.vala done 0.068127
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/backends/vbfautotools.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/symbol.vala done 0.396381
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/symbol.vala
+Afrodite-INFO: completionengine.vala:356: engine afroditetest: merging source /home/andrea/Src/vala-toys/git/afrodite/afroditetest.vala done 0.173409
+Afrodite-INFO: completionengine.vala:379: engine afroditetest: resolving ast
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 10343
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/backends/vbfautotools.vala done 0.413964
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/backends/vbfautotools.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/symbol.vala done 0.637914
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/symbolresolver.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/symbolresolver.vala done 0.134637
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/symbolresolver.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/backends/vbfautotools.vala done 0.38315
+Afrodite-INFO: completionengine.vala:313: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/backends/vbfsmartfolder.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/symbolresolver.vala done 0.150594
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/datatype.vala
+Afrodite-INFO: completionengine.vala:325: engine libvbf: parsing source: /home/andrea/Src/vala-toys/git/vbf/backends/vbfsmartfolder.vala done 0.251803
+Afrodite-INFO: completionengine.vala:351: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/backends/vbfsmartfolder.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/datatype.vala done 0.120519
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/datatype.vala
+Afrodite-INFO: completionengine.vala:356: engine libvbf: merging source /home/andrea/Src/vala-toys/git/vbf/backends/vbfsmartfolder.vala done 0.220746
+Afrodite-INFO: completionengine.vala:379: engine libvbf: resolving ast
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/datatype.vala done 0.209109
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 5274
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/voidtype.vala done 0.00187
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/voidtype.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/voidtype.vala done 0.014476
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/sourcereference.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/sourcereference.vala done 0.01918
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/sourcereference.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/sourcereference.vala done 0.046795
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/sourcefile.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/sourcefile.vala done 0.074303
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/sourcefile.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/sourcefile.vala done 0.064468
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/ast.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/ast.vala done 0.248502
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/ast.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gio-2.0.vapi done 3.02121
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/ast.vala done 0.299392
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/utils.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/utils.vala done 0.071936
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/utils.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/utils.vala done 0.0882
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/completionengine.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/completionengine.vala done 0.12084
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/completionengine.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/completionengine.vala done 0.166052
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/ellipsistype.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/ellipsistype.vala done 0.013141
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/ellipsistype.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/ellipsistype.vala done 0.003976
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/queryoptions.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/queryoptions.vala done 0.031585
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/queryoptions.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/queryoptions.vala done 0.034584
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/queryresult.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/queryresult.vala done 0.020378
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/queryresult.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/queryresult.vala done 0.018373
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/resultitem.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/resultitem.vala done 0.013218
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/resultitem.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/resultitem.vala done 0.038839
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/constants.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/constants.vala done 0.006101
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/constants.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/constants.vala done 0.041838
+Afrodite-INFO: completionengine.vala:313: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/sourceitem.vala
+Afrodite-INFO: completionengine.vala:325: engine libafrodite: parsing source: /home/andrea/Src/vala-toys/git/afrodite/sourceitem.vala done 0.012315
+Afrodite-INFO: completionengine.vala:351: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/sourceitem.vala
+Afrodite-INFO: completionengine.vala:356: engine libafrodite: merging source /home/andrea/Src/vala-toys/git/afrodite/sourceitem.vala done 0.017079
+Afrodite-INFO: completionengine.vala:379: engine libafrodite: resolving ast
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 5971
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /usr/share/vala-0.12/vapi/gtk+-2.0.vapi done 11.9897
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/gtk+-2.0.vapi
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 13
+Afrodite-INFO: completionengine.vala:385: engine libvbf: resolving ast done 2.70611
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 4
+Afrodite-INFO: completionengine.vala:385: engine afroditetest: resolving ast done 3.81754
+Afrodite-INFO: completionengine.vala:405: engine libvbf: parser thread *** exiting *** (elapsed time parsing 33.9334, resolving 39.388)...
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/gio-2.0.vapi done 2.61128
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gdk-pixbuf-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gdk-pixbuf-2.0.vapi done 0.05197
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/gdk-pixbuf-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/gdk-pixbuf-2.0.vapi done 0.148181
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/pango.vapi
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 39
+Afrodite-INFO: completionengine.vala:385: engine libafrodite: resolving ast done 2.10955
+Afrodite-INFO: completionengine.vala:405: engine afroditetest: parser thread *** exiting *** (elapsed time parsing 35.2392, resolving 40.0438)...
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/pango.vapi done 0.236965
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/pango.vapi
+Afrodite-INFO: completionengine.vala:405: engine libafrodite: parser thread *** exiting *** (elapsed time parsing 35.6843, resolving 40.434)...
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/pango.vapi done 0.421057
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/pangocairo.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/pangocairo.vapi done 0.011378
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/pangocairo.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/pangocairo.vapi done 0.025915
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gdk-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gdk-2.0.vapi done 0.481027
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/gdk-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/gdk-2.0.vapi done 0.758514
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gtk+-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /usr/share/vala-0.12/vapi/gtk+-2.0.vapi done 6.05483
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/main.vala
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/main.vala done 0.063488
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/main.vala
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/main.vala done 0.054802
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/genprojectdialog.vala
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/genprojectdialog.vala done 0.067236
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/genprojectdialog.vala
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/genprojectdialog.vala done 0.0793
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/tagcloud.vala
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/tagcloud.vala done 0.041583
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/tagcloud.vala
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/tagcloud.vala done 0.058411
+Afrodite-INFO: completionengine.vala:313: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/tagclouditem.vala
+Afrodite-INFO: completionengine.vala:325: engine vala-gen-project: parsing source: /home/andrea/Src/vala-toys/git/gen-project/tagclouditem.vala done 0.027061
+Afrodite-INFO: completionengine.vala:351: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/tagclouditem.vala
+Afrodite-INFO: completionengine.vala:356: engine vala-gen-project: merging source /home/andrea/Src/vala-toys/git/gen-project/tagclouditem.vala done 0.015849
+Afrodite-INFO: completionengine.vala:379: engine vala-gen-project: resolving ast
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 13331
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gtk+-2.0.vapi done 4.08494
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/gtk+-2.0.vapi
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 5
+Afrodite-INFO: completionengine.vala:385: engine vala-gen-project: resolving ast done 1.28364
+Afrodite-INFO: completionengine.vala:405: engine vala-gen-project: parser thread *** exiting *** (elapsed time parsing 44.391, resolving 47.1963)...
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/gtk+-2.0.vapi done 4.06469
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gtksourceview-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gtksourceview-2.0.vapi done 0.097663
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/gtksourceview-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/gtksourceview-2.0.vapi done 0.258598
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gedit-2.20.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gedit-2.20.vapi done 0.118908
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/gedit-2.20.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/gedit-2.20.vapi done 0.257873
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/../vapi/utils.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/../vapi/utils.vapi done 0.003182
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/../vapi/utils.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/../vapi/utils.vapi done 0.014289
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/../vapi/gdkkeysyms.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/../vapi/gdkkeysyms.vapi done 0.935092
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/../vapi/gdkkeysyms.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/../vapi/gdkkeysyms.vapi done 0.988818
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gconf-2.0.vapi
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /usr/share/vala-0.12/vapi/gconf-2.0.vapi done 0.094761
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /usr/share/vala-0.12/vapi/gconf-2.0.vapi
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /usr/share/vala-0.12/vapi/gconf-2.0.vapi done 0.155182
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgbracketcompletion.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgbracketcompletion.vala done 0.083227
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgbracketcompletion.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgbracketcompletion.vala done 0.078089
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsymbolcompletion.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsymbolcompletion.vala done 0.070323
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsymbolcompletion.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsymbolcompletion.vala done 0.028392
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsymbolcompletionprovider.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsymbolcompletionprovider.vala done 0.112316
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsymbolcompletionprovider.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsymbolcompletionprovider.vala done 0.121821
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectmanagerui.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectmanagerui.vala done 0.232081
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectmanagerui.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectmanagerui.vala done 0.160277
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectview.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectview.vala done 0.064783
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectview.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectview.vala done 0.061024
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectbuilder.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectbuilder.vala done 0.046374
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectbuilder.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectbuilder.vala done 0.052805
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectexecuter.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectexecuter.vala done 0.025798
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectexecuter.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectexecuter.vala done 0.02115
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectexecuterdialog.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectexecuterdialog.vala done 0.015637
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectexecuterdialog.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectexecuterdialog.vala done 0.030691
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearch.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearch.vala done 0.027907
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearch.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearch.vala done 0.028218
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearchresultsview.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearchresultsview.vala done 0.036223
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearchresultsview.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearchresultsview.vala done 0.028299
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearchdialog.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearchdialog.vala done 0.023195
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearchdialog.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectsearchdialog.vala done 0.013287
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprocesswatchinfo.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprocesswatchinfo.vala done 0.02592
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprocesswatchinfo.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprocesswatchinfo.vala done 0.012681
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgoutputview.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgoutputview.vala done 0.042383
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgoutputview.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgoutputview.vala done 0.049268
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgbuildlogview.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgbuildlogview.vala done 0.09543
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgbuildlogview.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgbuildlogview.vala done 0.094119
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectmanager.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojectmanager.vala done 0.091285
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectmanager.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojectmanager.vala done 0.112387
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojects.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgprojects.vala done 0.0313
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojects.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgprojects.vala done 0.029664
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgfilteredlistdialog.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgfilteredlistdialog.vala done 0.054512
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgfilteredlistdialog.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgfilteredlistdialog.vala done 0.059263
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsvcsbase.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsvcsbase.vala done 0.034762
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsvcsbase.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsvcsbase.vala done 0.012045
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsitem.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsitem.vala done 0.0091
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsitem.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsitem.vala done 0.014952
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsgit.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsgit.vala done 0.017081
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsgit.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsgit.vala done 0.016164
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsbzr.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsbzr.vala done 0.038666
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsbzr.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendsbzr.vala done 0.014655
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendssvn.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendssvn.vala done 0.021671
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendssvn.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgvcsbackendssvn.vala done 0.013048
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgchangelog.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgchangelog.vala done 0.03621
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgchangelog.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgchangelog.vala done 0.02638
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgparametersdialog.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgparametersdialog.vala done 0.026141
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgparametersdialog.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgparametersdialog.vala done 0.013292
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgconfiguration.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgconfiguration.vala done 0.070157
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgconfiguration.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgconfiguration.vala done 0.107342
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsourcebookmark.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsourcebookmark.vala done 0.025736
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsourcebookmark.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsourcebookmark.vala done 0.008177
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsourcebookmarks.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsourcebookmarks.vala done 0.035436
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsourcebookmarks.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsourcebookmarks.vala done 0.029231
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgplugininstance.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgplugininstance.vala done 0.084567
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgplugininstance.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgplugininstance.vala done 0.106671
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsourceoutlinerview.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsourceoutlinerview.vala done 0.094298
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsourceoutlinerview.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsourceoutlinerview.vala done 0.103239
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsourceoutliner.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgsourceoutliner.vala done 0.043508
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsourceoutliner.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgsourceoutliner.vala done 0.039241
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgplugin.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgplugin.vala done 0.047425
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgplugin.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgplugin.vala done 0.054583
+Afrodite-INFO: completionengine.vala:313: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgutils.vala
+Afrodite-INFO: completionengine.vala:325: engine libvtg: parsing source: /home/andrea/Src/vala-toys/git/vtg/vtgutils.vala done 0.105149
+Afrodite-INFO: completionengine.vala:351: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgutils.vala
+Afrodite-INFO: completionengine.vala:356: engine libvtg: merging source /home/andrea/Src/vala-toys/git/vtg/vtgutils.vala done 0.151532
+Afrodite-INFO: completionengine.vala:379: engine libvtg: resolving ast
+** Message: symbolresolver.vala:55: file /home/andrea/Src/vala-toys/git/vtg/vtgchangelog.vala - can't resolve using directive: Backends
+Afrodite-INFO: symbolresolver.vala:63: (symbol resolver): symbols to resolve 18633
+Afrodite-INFO: symbolresolver.vala:65: (symbol resolver): unresolved symbol after resolve process 99
+Afrodite-INFO: completionengine.vala:385: engine libvtg: resolving ast done 1.53764
+Afrodite-INFO: completionengine.vala:405: engine libvtg: parser thread *** exiting *** (elapsed time parsing 52.4235, resolving 58.6419)...
+ValaToys-INFO: vtgprojectmanagerui.vala:233: ProjectManagerUi destroying
+ValaToys-INFO: vtgprojectbuilder.vala:64: ProjectBuilder destroying
+ValaToys-INFO: vtgbuildlogview.vala:209: BuildLogView destroying
+ValaToys-INFO: vtgbuildlogview.vala:210: BuildLogView destroyed
+ValaToys-INFO: vtgprojectbuilder.vala:67: ProjectBuilder destroyed
+ValaToys-INFO: vtgprojectmanagerui.vala:247: ProjectManagerUi destroyed
+ValaToys-INFO: vtgsourcebookmarks.vala:48: SourceBoolmarks destroying
+ValaToys-INFO: vtgsourcebookmarks.vala:50: SourceBoolmarks destroying

@@ -24,14 +24,8 @@ vtgdoc_DATA = \
         COPYING-LGPL\
 	COPYING \
         AUTHORS\
-        ChangeLog\
         INSTALL\
         NEWS
-
-DISTCLEANFILES = \
-        intltool-extract \
-        intltool-merge \
-        intltool-update
 
 # Copy all the spec files. Of cource, only one is actually used.
 # dist-hook:
@@ -61,7 +55,7 @@ gen-version:
 dist-hook: gen-ChangeLog
 	echo $(VERSION) > $(distdir)/.tarball-version
 
-gen_start_date = 2009-01-23
+gen_start_date = 2011-01-23
 .PHONY: gen-ChangeLog
 gen-ChangeLog:
 	if test -d .git; then						\

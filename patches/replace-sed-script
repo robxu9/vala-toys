@@ -1,0 +1,11 @@
+#!/bin/sh
+if test "$1" = ""; then  
+	echo "no expression specified"
+	exit 1
+fi
+for file in `find . -name \*.vala -type f`
+do 
+	echo sed -f $file \"$1\" -- $file.new
+	sed -e "$1" $file > $file.new
+	mv $file.new $file 
+done
