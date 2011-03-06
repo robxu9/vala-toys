@@ -55,7 +55,7 @@ gen-version:
 dist-hook: gen-ChangeLog
 	echo $(VERSION) > $(distdir)/.tarball-version
 
-gen_start_date = 2009-01-23
+gen_start_date = 2011-01-23
 .PHONY: gen-ChangeLog
 gen-ChangeLog:
 	if test -d .git; then						\
