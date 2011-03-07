@@ -61,7 +61,7 @@ libafrodite.vala.stamp: $(libafrodite_la_VALASOURCES)
 	touch $@
 
 libafrodite_la_LDFLAGS = \
-	-version-info 0:1:0 \
+	-version-info 1:0:0 \
 	$(NULL)
 
 libafrodite_la_LIBADD = \
