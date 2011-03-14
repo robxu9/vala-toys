@@ -52,6 +52,10 @@ namespace Vbf
 			this.id = id;
 			string[] tmp = id.split (".",2);
 			this.name = tmp[0];
+			if (this.name.has_suffix ("_la") || this.name.has_suffix ("_so")) {
+				// remove the library extension
+				this.name = this.name.substring(0, this.name.length - 3);
+			}
 			this.type = type;
 		}
 		

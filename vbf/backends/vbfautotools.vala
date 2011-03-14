@@ -159,6 +159,7 @@ namespace Vbf.Backends
 							int idx = 0;
 							while (pkgs[idx] != null) {
 								string pkg = pkgs[idx];
+								if (pkg == "\\") {idx++; continue;}
 								string variable = pkg.str ("$");
 								
 								if (variable != null) {
@@ -201,10 +202,10 @@ namespace Vbf.Backends
 				resolve_package_variables (project);
 			
 				//Extract AC_CONFIG_FILES
-				reg = new GLib.Regex ("AC_CONFIG_FILES\\(\\[(.*)\\]\\)", RegexCompileFlags.MULTILINE);
+				reg = new GLib.Regex ("AC_CONFIG_FILES\\(\\[([^\\]\\)]*)\\]\\)", RegexCompileFlags.MULTILINE);
 				bool res = reg.match (buffer, RegexMatchFlags.NEWLINE_CR, out match);
 				if (!res) {
-					reg = new GLib.Regex ("AC_OUTPUT\\(\\[(.*)\\]\\)", RegexCompileFlags.MULTILINE);
+					reg = new GLib.Regex ("AC_OUTPUT\\(\\[([^\\]\\)]*)\\]\\)", RegexCompileFlags.MULTILINE);
 					res = reg.match (buffer, RegexMatchFlags.NEWLINE_CR, out match);
 				}
 				if (res) {
@@ -239,6 +240,7 @@ namespace Vbf.Backends
 				if (src_filename != null && src_filename != "") {
 					src_path = Path.build_filename (group.id, src_filename);
 					var src = new Source.with_type (target, src_path, source_file_type (src_path));
+					debug ("\t\t adding source: %s", src_filename);
 					target.add_source (src);
 				}
 			} else if (source is Variable) {
@@ -250,6 +252,7 @@ namespace Vbf.Backends
 						if (src_filename != null && src_filename != "") {
 							src_path = Path.build_filename (group.id, src_filename);
 							var src = new Source.with_type (target, src_path, source_file_type (src_path));
+							debug ("\t\t adding source2: %s", src_filename);
 							target.add_source (src);
 						}
 					} else if (item is Variable) {
@@ -266,24 +269,29 @@ namespace Vbf.Backends
 		private void add_vala_sources (Group group, Target target)
 		{
 			string source_primary_name = "%s_SOURCES".printf (convert_to_primary_name (target.id));
-			
+			string valasource_primary_name = "%s_VALASOURCES".printf (convert_to_primary_name (target.id));
+
 			foreach (Variable variable in group.get_variables ()) {
-				if (variable.name == target.id || variable.name == source_primary_name) {
+				if (variable.name == target.id || variable.name == source_primary_name || variable.name == valasource_primary_name) {
+					debug ("adding sources for target %s: %s", target.id, variable.name);
 					var val = variable.get_value ();
 					add_source (group, target, val);
 					break;
 				}
 			}
 		}
-		
-		private void add_target (Group group, TargetTypes type, string target_name)
+
+		private void add_target (Group group, TargetTypes type, string target_id)
 		{
 			Target target;
-			target = new Target (group, type, target_name);
-			group.add_target (target);
-			add_vala_sources (group, target);
+			string normalized_id = normalize_target_id (target_id);
+			if (!group.contains_target (normalized_id)) {
+				target = new Target (group, type, normalized_id);
+				group.add_target (target);
+				add_vala_sources (group, target);
+			}
 		}
-		
+
 		private void add_targets (Group group, ConfigNode node, TargetTypes type)
 		{
 			if (node is StringLiteral) {
@@ -545,9 +553,13 @@ namespace Vbf.Backends
 					string filename = normalize_string (tmps[1]);
 					string include_filename = makefile.replace ("Makefile.am", filename);
 					string included_file;
-					if (FileUtils.get_contents (include_filename, out included_file)) {
-						res = res.replace ("include %s".printf(filename), included_file);
-					}
+					try {
+					  if (FileUtils.get_contents (include_filename, out included_file)) {
+						  res = res.replace ("include %s".printf(filename), included_file);
+					  }
+					}	catch (Error e) {
+					  warning ("Cannot include %s", filename);
+ 					}
 				}
 			}
 			return res;
@@ -599,10 +611,8 @@ namespace Vbf.Backends
 						}
 						while (target_name.has_suffix ("."))
 							target_name = target_name.substring (0, target_name.length - 1);
-						
-						if (target_name.has_suffix (".la"))
-							target_name = target_name.substring (0, target_name.length - 3);
-							
+
+						target_name = normalize_target_id (target_name);
 						target_name = convert_to_primary_name (target_name);
 						foreach (var t in group.get_targets ()) {
 							if (target_name == convert_to_primary_name (t.name)) {
@@ -617,7 +627,8 @@ namespace Vbf.Backends
 							string[] trgs = rule_parts[0].split (" ");
 							//TODO: add support for multitarget rules if required
 							foreach (string trg in trgs) {
-								target = group.get_target_for_id (trg);
+								var id = normalize_target_id (trg);
+								target = group.get_target_for_id (id);
 								if (target != null) {
 									break;
 								}
@@ -697,12 +708,29 @@ namespace Vbf.Backends
 			}
 			return res;
 		}
+
+		private string normalize_target_id (string target_id)
+		{
+			var result = target_id;
+			if (result.has_suffix ("_VALASOURCES")) {
+				result = result.substring (0, result.length - "_VALASOURCES".length);
+			} else if (result.has_suffix ("_SOURCES")) {
+				result = result.substring (0, result.length - "_SOURCES".length);
+			} else if (result.has_suffix (".stamp")) {
+				result = result.substring (0, result.length - ".stamp".length);
+				if (result.has_suffix (".vala")) {
+					result = result.substring (0, result.length - ".vala".length);
+				}
+			}
+
+			return result.replace ("_",".");
+		}
 		
 		private string convert_to_primary_name (string data)
 		{
 			return data.replace (".", "_").replace ("-", "_");
 		}
-		
+
 		private void setup_file_monitors (Project project)
 		{
 			try {

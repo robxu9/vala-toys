@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
 
-BUILT_SOURCES = libafrodite.vala.stamp afroditetest.vala.stamp
+BUILT_SOURCES = libafrodite_la.vala.stamp afroditetest.vala.stamp
 
 if ENABLE_DEBUG
         DEBUG_FLAGS = -g -D DEBUG
@@ -56,7 +56,7 @@ libafrodite_la_SOURCES = \
 	$(libafrodite_la_VALASOURCES:.vala=.c) \
 	$(NULL)
 
-libafrodite.vala.stamp: $(libafrodite_la_VALASOURCES)
+libafrodite_la.vala.stamp: $(libafrodite_la_VALASOURCES)
 	$(VALAC) $(DEBUG_FLAGS) -C -H afrodite.h --library afrodite-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg libvala-$(VALA_VERSION) --pkg utils --basedir $(top_srcdir)/afrodite $^
 	touch $@
 
