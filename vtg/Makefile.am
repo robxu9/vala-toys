@@ -13,7 +13,7 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/vbf \
 	$(NULL)
 
-BUILT_SOURCES = libvtg.vala.stamp
+BUILT_SOURCES = libvtg_la.vala.stamp
 
 if ENABLE_DEBUG
         DEBUG_FLAGS = -g -D DEBUG
