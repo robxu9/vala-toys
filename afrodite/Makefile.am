@@ -52,7 +52,7 @@ libafroditeinclude_HEADERS = \
 
 
 libafrodite_la_SOURCES = \
-	libafrodite.vala.stamp \
+	libafrodite_la.vala.stamp \
 	$(libafrodite_la_VALASOURCES:.vala=.c) \
 	$(NULL)
 
@@ -88,7 +88,7 @@ afroditetest_LDADD = \
 EXTRA_DIST = \
 	$(libafrodite_la_VALASOURCES) \
 	$(afroditetest_VALASOURCES) \
-	libafrodite.vala.stamp \
+	libafrodite_la.vala.stamp \
 	afroditetest.vala.stamp \
 	$(NULL)
 

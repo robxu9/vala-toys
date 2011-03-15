@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
 	-include $(CONFIG_HEADER) \
 	$(NULL)
 
-BUILT_SOURCES = libvbf.vala.stamp vbftest.vala.stamp
+BUILT_SOURCES = libvbf_la.vala.stamp vbftest.vala.stamp
 
 if ENABLE_DEBUG
         DEBUG_FLAGS = -g -D DEBUG
@@ -55,12 +55,12 @@ noinst_HEADERS = \
 	$(NULL)
 
 libvbf_la_SOURCES = \
-	libvbf.vala.stamp \
+	libvbf_la.vala.stamp \
 	vbftest.vala.stamp \
 	$(libvbf_la_VALASOURCES:.vala=.c) \
 	$(NULL)
 
-libvbf.vala.stamp: $(libvbf_la_VALASOURCES)
+libvbf_la.vala.stamp: $(libvbf_la_VALASOURCES)
 	$(VALAC) $(DEBUG_FLAGS) -C -H vbf.h --library vbf-1.0 --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg libvala-$(VALA_VERSION) --pkg utils --basedir $(top_srcdir)/vbf $^
 	touch $@
 
@@ -84,7 +84,7 @@ vbftest_LDADD = \
 EXTRA_DIST = \
 	$(libvbf_la_VALASOURCES) \
 	$(vbftest_VALASOURCES) \
-	libvbf.vala.stamp \
+	libvbf_la.vala.stamp \
 	vbftest.vala.stamp \
 	$(NULL)
 

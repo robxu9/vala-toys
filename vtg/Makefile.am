@@ -84,7 +84,7 @@ libvtg_DATA = \
 
 EXTRA_DIST = \
 	$(libvtg_la_VALASOURCES) \
-	libvtg.vala.stamp \
+	libvtg_la.vala.stamp \
 	vtg.gedit-plugin
 	$(NULL)
 
