@@ -31,7 +31,6 @@ namespace Afrodite
 		unowned Afrodite.SourceReference _current_sr = null;
 		Afrodite.SourceFile _source_file = null;
 		Afrodite.DataType _inferred_type = null;
-		Vala.Literal _last_literal = null;
 		
 		string _vala_symbol_fqn = null;
 		bool _merge_glib = true;
@@ -313,9 +312,8 @@ namespace Afrodite
 		{
 			//Utils.trace ("visit method call: %s", c.call.type_name);
 			c.accept_children (this);
-		}
-		*/
-		
+		}*/
+
 		public override void visit_method (Method m)
 		{
 			//var timer = new Timer();
@@ -771,56 +769,11 @@ namespace Afrodite
 				s.type_name = get_datatype_typename (local.variable_type);
 			} else if (local.variable_type == null) {
 				//Utils.trace ("infer from init '%s': %s", s.name, local.initializer.type_name);
-				/* 
-				if (local.initializer is ObjectCreationExpression) {
-					//debug ("START: initialization %s from %s: %s", local.name, s.name, _inferred_type.type_name);
-					var obj_initializer = (ObjectCreationExpression) local.initializer;
-					obj_initializer.member_name.accept (this); 
-					//debug ("END: initialization done %s", _inferred_type.type_name);
-				} else if (local.initializer is MethodCall) {
-					//Utils.trace ("method call: %s", s.name);
-					var call = ((MethodCall) local.initializer);
-					Utils.trace ("method call: %s -> %s %s", local.name, call.to_string (), call.call.type_name);
-					var ma = call.call as MemberAccess;
-					if (true || ma == null)
-	 					call.call.accept (this); // this avoid visit parameters of method calls
-	 				else {
-	 					
-						Utils.trace ("ma inner: %s", ma.member_name);
-	 				}
-	 				Utils.trace ("AFTER: %s", s.type_name);
- 					//breakpoint();
- 				} else if (local.initializer is BinaryExpression) {
- 					((BinaryExpression) local.initializer).accept_children (this);
- 				} else if (local.initializer is CastExpression) {
- 					var cast_expr = (CastExpression)local.initializer;
-					//cast_expr.accept (this);
- 					if (cast_expr.type_reference != null)
- 					{
-	 					s.type_name = get_datatype_typename (cast_expr.type_reference);
- 					}
- 				} else if (local.initializer is ArrayCreationExpression) {
- 					//Utils.trace ("ArrayCreationExpression infer from init '%s' %s", s.name, local.initializer.type_name);
- 					var ac = (ArrayCreationExpression) local.initializer; 
- 					s.is_array = true;
- 					if (ac.element_type == null) {
-						if (ac.initializer_list != null) {
-							ac.initializer_list.accept (this);
-						}
- 					}
- 					s.type_name = get_datatype_typename (ac.element_type);
-					//Utils.trace ("init type %s: %s %s", local.name, s.type_name, ac.element_type.type_name);
-				} else {
-					if (local.initializer != null) {
-						local.initializer.accept (this);
-					}
-				}
-				*/
 				// try to resolve local variable type from initializers
-				var prev_inferred_type = _inferred_type;
-				_inferred_type = s;
-
 				if (local.initializer != null) {
+					var prev_inferred_type = _inferred_type;
+					_inferred_type = s;
+
 					local.initializer.accept (this);
 					// HACK:
 					if (s.type_name != null 
@@ -828,12 +781,10 @@ namespace Afrodite
 					{
 						s.type_name = s.type_name.substring (5);
 					}
+
+					_inferred_type = prev_inferred_type;
 				}
 
-				_last_literal = null;
-				//debug ("infer from init done %s", _inferred_type.type_name);
-				_inferred_type = prev_inferred_type;
-				
 				
 				if (s.type_name != null && s.type_name.has_suffix ("Literal")) {
 					if (s.type_name == "ValaIntegerLiteral") {
@@ -879,8 +830,9 @@ namespace Afrodite
 				return;
 
 			string member_name = expr.member_name;
-			//Utils.trace ("MemberAccess %s: %s", _current.name, expr.member_name);
+			//Utils.trace ("MemberAccess %s - %s: %s -> %s (%s)", _inferred_type.name, _current.name, expr.member_name,  expr.inner == null ? "TRUE" : "FALSE", expr.inner != null ? expr.inner.to_string() : "");
 			if (expr.inner == null) {
+				// Utils.trace (".\n");
 				// this is the last iteration
 				// lookup the name in all the visible symbols
 				if (_current != null) {
@@ -916,16 +868,21 @@ namespace Afrodite
 
 			expr.member_name.accept_children (this);
 		}
-		
+
+		/*
 		public override void visit_expression (Expression expr) 
 		{
-			//debug ("visit expression %p, %s", expr, expr.type_name);
+			// these expressions cause infinite recoursion
+			if (expr is Vala.MemberAccess || expr is Vala.MethodCall || expr is Vala.BinaryExpression || expr is Vala.StringLiteral)
+				return;
+
+			debug ("visit expression %p, %s", expr, expr.type_name);
 			expr.accept_children (this);
 		}
+		*/
 
 		public override void visit_initializer_list (InitializerList list) 
 		{
-			//debug ("vidit init list");
 			list.accept_children (this);
 		}
 	
