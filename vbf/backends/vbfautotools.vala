@@ -240,7 +240,6 @@ namespace Vbf.Backends
 				if (src_filename != null && src_filename != "") {
 					src_path = Path.build_filename (group.id, src_filename);
 					var src = new Source.with_type (target, src_path, source_file_type (src_path));
-					debug ("\t\t adding source: %s", src_filename);
 					target.add_source (src);
 				}
 			} else if (source is Variable) {
@@ -252,7 +251,6 @@ namespace Vbf.Backends
 						if (src_filename != null && src_filename != "") {
 							src_path = Path.build_filename (group.id, src_filename);
 							var src = new Source.with_type (target, src_path, source_file_type (src_path));
-							debug ("\t\t adding source2: %s", src_filename);
 							target.add_source (src);
 						}
 					} else if (item is Variable) {
@@ -273,7 +271,6 @@ namespace Vbf.Backends
 
 			foreach (Variable variable in group.get_variables ()) {
 				if (variable.name == target.id || variable.name == source_primary_name || variable.name == valasource_primary_name) {
-					debug ("adding sources for target %s: %s", target.id, variable.name);
 					var val = variable.get_value ();
 					add_source (group, target, val);
 					break;
@@ -600,27 +597,27 @@ namespace Vbf.Backends
 				}
 				//try extract the the rule target name
 				if (target == null) {
-					string[] rule_parts = line.split ("=", 2);;
+					string[] rule_parts = line.split ("=", 2);
 					if (rule_parts.length >= 2 && rule_parts[0].chomp().has_suffix ("_VALAFLAGS")) {
 						// automake 1.11 with vala support
-						string target_name = "";
+						string target_id = "";
 						
 						string[] target_tmp = rule_parts[0].split ("_");
 						for (int i=0; i < target_tmp.length - 1; i++) {
-							target_name = target_name.concat (target_tmp[i], ".");
+							target_id = target_id.concat (target_tmp[i], ".");
 						}
-						while (target_name.has_suffix ("."))
-							target_name = target_name.substring (0, target_name.length - 1);
+						while (target_id.has_suffix ("."))
+							target_id = target_id.substring (0, target_id.length - 1);
 
-						target_name = normalize_target_id (target_name);
-						target_name = convert_to_primary_name (target_name);
+						target_id = normalize_target_id (target_id);
+						target_id = convert_to_primary_name (target_id);
 						foreach (var t in group.get_targets ()) {
-							if (target_name == convert_to_primary_name (t.name)) {
+							if (target_id == t.id) {
 								target = t;
 								break;
 							}
 						}
-						Utils.trace ("target for: %s is %s", target_name, target == null ? "not found!" : target.name);
+						Utils.trace ("group %s - target for: %s is %s", group.id, target_id, target == null ? "not found!" : target.id);
 					} else {
 						rule_parts = line.split (":", 2);
 						if (rule_parts.length == 2) {
@@ -669,7 +666,7 @@ namespace Vbf.Backends
 						if (target != null) {
 							target.add_package (new Package (tmp));
 						} else {
-							debug ("adding to group because target is null");
+							Utils.trace ("adding to group because target is null");
 							group.add_package (new Package (tmp));
 						}
 						idx++;

@@ -86,7 +86,7 @@ namespace Vbf.Tests
 				print ("      TARGETS\n");
 				foreach (Target target in group.get_targets ()) {
 					print ("        TARGET\n");
-					print ("          name %s %s\n", get_target_type_description (target.type), target.name);
+					print ("          name %s %s (%s)\n", get_target_type_description (target.type), target.name, target.id);
 					print ("          VAPI DIRS\n");
 					foreach(string path in target.get_include_dirs ()) {
 						print ("            directory %s\n", path);
