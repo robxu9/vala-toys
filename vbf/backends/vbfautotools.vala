@@ -723,7 +723,7 @@ namespace Vbf.Backends
 				}
 			}
 
-			return result.replace ("_",".");
+			return convert_to_primary_name (result);
 		}
 		
 		private string convert_to_primary_name (string data)
