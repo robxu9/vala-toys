@@ -56,3 +56,6 @@ gen-project/libgen-project/constants.vala
 gen-project/main.vala
 gen-project/genprojectdialog.vala
 [type: getttext/glade]gen-project/ui/gen-project.ui
+
+#option schemas
+data/org.gnome.gedit.plugins.vala-toys.gschema.xml.in.in

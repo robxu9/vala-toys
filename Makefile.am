@@ -14,7 +14,7 @@ SUBDIRS += gen-project
 endif
 
 if HAVE_VTGPLUGIN
-SUBDIRS += vbf vtg images ui po
+SUBDIRS += vbf vtg images ui po data
 endif
 
 vtgdocdir = ${prefix}/doc/vtg

@@ -15,6 +15,8 @@ AC_PROG_LIBTOOL
 AC_PATH_PROG(VALAC, valac, valac)
 AC_SUBST(VALAC)
 
+GLIB_GSETTINGS
+
 AH_TEMPLATE([GETTEXT_PACKAGE], [Vala toys for GEdit])
 GETTEXT_PACKAGE=vtg
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
@@ -197,6 +199,8 @@ AC_CONFIG_FILES([
 	vbf/Makefile
 	ui/Makefile
 	images/Makefile
+	data/Makefile
+	data/org.gnome.gedit.plugins.vala-toys.gschema.xml.in
 	po/Makefile.in])
 
 AC_OUTPUT
