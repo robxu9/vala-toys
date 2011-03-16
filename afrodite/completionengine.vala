@@ -371,11 +371,11 @@ namespace Afrodite
 						ast_source = null;
 						if (need_update) {
 							yield perform_merge_and_resolve (s, result, source_exists);
-							this.file_parsed (this, result.source_path, result);
 						}
 					} else {
 						Utils.trace ("engine %s: source (live buffer) with errors mantaining the previous parsing: %s", id, result.source_path);
 					}
+					this.file_parsed (this, result.source_path, result);
 					break; // found the file
 				}
 			}
