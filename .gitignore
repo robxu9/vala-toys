@@ -73,3 +73,7 @@ afrodite/afroditetest
 configure
 afrodite/tests/tests-basic
 afrodite/tests/tests-var
+data/org.gnome.gedit.plugins.vala-toys.gschema.valid
+data/org.gnome.gedit.plugins.vala-toys.gschema.xml
+data/org.gnome.gedit.plugins.vala-toys.gschema.xml.in
+.dirstamp
