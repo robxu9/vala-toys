@@ -33,7 +33,6 @@ namespace Vtg
 
 		private GLib.Settings _settings_prefs;
 		private GLib.Settings _settings_state;
-		private Gtk.Dialog _dialog;
 
 		private bool _info_window_visible = false;
 		private bool _outliner_show_private_symbols = false;
@@ -175,15 +174,14 @@ namespace Vtg
 			_settings_state.changed.connect (this.on_conf_value_changed);
 		}
 
-		public unowned Gtk.Widget? get_configuration_dialog ()
+		public Gtk.Widget? get_configuration_dialog ()
 		{
 			try {
 				var builder = new Gtk.Builder ();
-				builder.add_from_file (Utils.get_ui_path ("vtg.ui"));
-				_dialog = (Gtk.Dialog) builder.get_object ("dialog-settings");
-				assert (_dialog != null);
-				var button = (Gtk.Button) builder.get_object ("button-settings-close");
-				button.clicked.connect (this.on_button_close_clicked);
+				builder.add_objects_from_file (Utils.get_ui_path ("vtg.ui"), new string[] { "vbox-settings-main" });
+
+				var config_widget = (Gtk.Widget) builder.get_object ("vbox-settings-main");
+				assert (config_widget != null);
 				var check = (Gtk.CheckButton) builder.get_object ("checkbutton-settings-bracket-completion");
 				assert (check != null);
 				check.set_active (_bracket_enabled);
@@ -208,17 +206,11 @@ namespace Vtg
 				assert (text != null);
 				text.set_text (_email_address);
 				text.notify["text"].connect (this.on_text_changed);
-				return _dialog;
+				return config_widget;
 			} catch (Error err) {
 				GLib.warning ("(get_configuration_dialog): %s", err.message);
 				return null;
 			}
-		}
-
-		private void on_button_close_clicked (Gtk.Button sender)
-		{
-			return_if_fail (_dialog != null);
-			_dialog.destroy ();
 		}
 
 		private void on_conf_value_changed (GLib.Settings sender, string key)

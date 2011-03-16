@@ -329,8 +329,7 @@ namespace Vtg
 
 	    public Gtk.Widget create_configure_widget () 
 	    {
-	          string text = "Placeholder for Vala Toys config dialog";
-		  return new Gtk.Label (text);
+		  return Plugin.main_instance.config.get_configuration_dialog ();
 	    }
 	}
 }
