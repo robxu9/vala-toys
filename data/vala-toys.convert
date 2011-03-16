@@ -1,0 +1,16 @@
+[org.gnome.ValaToys.preferences]
+bracket-completion-enabled = /apps/gedit-2/plugins/vtg/bracket_completion_enabled
+symbol-completion-enabled = /apps/gedit-2/plugins/vtg/symbol_completion_enabled
+sourcecode-outliner-enabled = /apps/gedit-2/plugins/vtg/sourcecode_outliner_enabled
+author = /apps/gedit-2/plugins/vtg/author
+email-address = /apps/gedit-2/plugins/vtg/email_address
+project-find-root-folder = /apps/gedit-2/plugins/vtg/project_find_root_folder
+
+[org.gnome.ValaToys.status]
+info-window-visible = /apps/gedit-2/plugins/vtg/info-window-visible
+outliner-show-private-symbols = /apps/gedit-2/plugins/vtg/outliner_show_private_symbols
+outliner-show-public-symbols = /apps/gedit-2/plugins/vtg/outliner_show_public_symbols
+outliner-show-protected-symbols = /apps/gedit-2/plugins/vtg/outliner_show_protected_symbols
+outliner-show-internal-symbols = /apps/gedit-2/plugins/vtg/outliner_show_internal_symbols
+project-view-show-only-sources = /apps/gedit-2/plugins/vtg/project_view_only_show_sources
+

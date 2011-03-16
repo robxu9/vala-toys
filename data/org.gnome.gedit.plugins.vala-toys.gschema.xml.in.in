@@ -1,0 +1,70 @@
+<schemalist>
+  <schema gettext-domain="@GETTEXT_PACKAGE@" id="org.gnome.gedit.plugins.vala-toys" path="/org/gnome/gedit/plugins/vala-toys/">
+    <child name="preferences" schema="org.gnome.gedit.plugins.vala-toys.preferences"/>
+    <child name="state" schema="org.gnome.gedit.plugins.vala-toys.state"/>
+  </schema>
+  <schema gettext-domain="@GETTEXT_PACKAGE@" id="org.gnome.gedit.plugins.vala-toys.preferences" path="/org/gnome/gedit/plugins/vala-toys/preferences/">
+    <key name="bracket-completion-enabled" type="b">
+      <default>true</default>
+      <_summary>Enable Bracket Completion</_summary>
+      <_description></_description>
+    </key>
+    <key name="symbol-completion-enabled" type="b">
+      <default>true</default>
+      <_summary>Enable Symbol Completion</_summary>
+      <_description></_description>
+    </key>
+    <key name="sourcecode-outliner-enabled" type="b">
+      <default>true</default>
+      <_summary>Enable Source Code Outliner</_summary>
+      <_description></_description>
+    </key>
+    <key name="author" type="s">
+      <default l10n="messages">''</default>
+      <_summary>Author</_summary>
+      <_description></_description>
+    </key>
+    <key name="email" type="s">
+      <default l10n="messages">''</default>
+      <_summary>Email</_summary>
+      <_description></_description>
+    </key>
+    <key name="project-find-root-folder" type="b">
+      <default>false</default>
+      <_summary>Automatically Find Project Root Folder</_summary>
+      <_description></_description>
+    </key>
+  </schema>
+  <schema gettext-domain="@GETTEXT_PACKAGE@" id="org.gnome.gedit.plugins.vala-toys.state" path="/org/gnome/gedit/plugins/vala-toys/state/">
+    <key name="info-window-visible" type="b">
+      <default>true</default>
+      <_summary>Enable Bracket Completion</_summary>
+      <_description></_description>
+    </key>
+    <key name="outliner-show-private-symbols" type="b">
+      <default>true</default>
+      <_summary>Show Private Symbol</_summary>
+      <_description></_description>
+    </key>
+    <key name="outliner-show-public-symbols" type="b">
+      <default>true</default>
+      <_summary>Show Public Symbol</_summary>
+      <_description></_description>
+    </key>
+    <key name="outliner-show-protected-symbols" type="b">
+      <default>true</default>
+      <_summary>Show Protected Symbol</_summary>
+      <_description></_description>
+    </key>
+    <key name="outliner-show-internal-symbols" type="b">
+      <default>true</default>
+      <_summary>Show Internal Symbol</_summary>
+      <_description></_description>
+    </key>
+    <key name="project-view-show-only-sources" type="b">
+      <default>true</default>
+      <_summary>Show Only Sources</_summary>
+      <_description></_description>
+    </key>
+  </schema>
+</schemalist>
