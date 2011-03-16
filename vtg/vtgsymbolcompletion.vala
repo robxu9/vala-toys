@@ -190,7 +190,7 @@ namespace Vtg
 		private void display_completion_lock_failed_message ()
 		{
 			var status = (Gedit.Statusbar) _plugin_instance.window.get_statusbar ();
-			status.flash_message (1, _("updating source symbols..."));
+			//status.flash_message (1, _("updating source symbols..."));
 		}
 	}
 }

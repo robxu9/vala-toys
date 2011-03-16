@@ -28,17 +28,40 @@ using Vbf;
 
 namespace Vtg
 {	
-	public class Plugin : Peas.ExtensionBase, Peas.Activatable
+	//TODO: remove this class an consolidate all this logic inside PluginInstance
+	public class PluginWindowAdapter : Peas.ExtensionBase, Gedit.WindowActivatable
+	{
+		private Gedit.Window _window;
+
+		public Gedit.Window window { owned get { return _window; } construct { _window = value; } }
+
+		public PluginWindowAdapter ()
+		{
+			GLib.Object ();
+		}
+
+		public void activate () 
+		{
+			Plugin.main_instance.activate_for_window (_window);
+		}
+
+		public void deactivate () 
+		{
+			//TODO
+		}
+
+		public void update_state () {
+			Plugin.main_instance.update_state_for_window (_window);
+		}
+	}
+
+	public class Plugin : Peas.ExtensionBase, Gedit.AppActivatable
 	{
 		public static unowned Vtg.Plugin main_instance = null;
 		
 		private Vala.List<PluginInstance> _instances = new Vala.ArrayList<PluginInstance> ();
 		private Configuration _config = null;
 		private Vtg.Projects _projects = null;
-
-		public Object object { get; construct; }
-
-		private Gedit.Window _window;
 
 		private enum DeactivateModuleOptions
 		{
@@ -64,27 +87,23 @@ namespace Vtg
 				return _config;
 			}
 		}
+		
+		public Gedit.App app
+		{
+			owned get;
+			construct;
+		}
 
 		public Plugin ()
 		{
-			GLib.debug ("hajdgajh");
 			GLib.Object ();
-			GLib.debug ("construct plugin: %s", object == null ? "NULL!??!?" : object.get_type ().name ());
-			this._window = object as Gedit.Window;
-
-			main_instance = this;
-			_config = new Configuration ();
-			_config.notify.connect (this.on_configuration_property_changed);
-			GLib.Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
-			_projects = new Vtg.Projects (this);
-			_projects.project_opened.connect (this.on_project_opened);
-			_projects.project_closed.connect (this.on_project_closed);
 		}
 
 		construct
 		{
-			GLib.debug ("const fjskhfskhfskdhfskdh");
+			main_instance = this;
 		}
+
 		private PluginInstance? get_plugin_instance_for_window (Gedit.Window window)
 		{
 			foreach (PluginInstance instance in _instances) {
@@ -96,26 +115,36 @@ namespace Vtg
 			return null;
 		}
 		
-		public void activate ()
+		public void activate_for_window (Gedit.Window window)
 		{
-			GLib.debug ("activate");
-			if (get_plugin_instance_for_window (_window) == null) {
-				var instance = new PluginInstance (_window);
+			if (get_plugin_instance_for_window (window) == null) {
+				var instance = new PluginInstance (window);
 				_instances.add (instance);
 			}
 		}
 		
+		public void activate ()
+		{
+			GLib.debug ("app activate");
+			_config = new Configuration ();
+			_config.notify.connect (this.on_configuration_property_changed);
+			GLib.Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
+			_projects = new Vtg.Projects (this);
+			_projects.project_opened.connect (this.on_project_opened);
+			_projects.project_closed.connect (this.on_project_closed);
+		}
+
 		public void deactivate ()
 		{
-			GLib.debug ("deactivate");
+			GLib.debug ("app deactivate");
 			deactivate_modules ();
 			_instances.clear ();
 		}
 
-		public void update_state ()
+		public void update_state_for_window (Gedit.Window window)
 		{
-			var view = _window.get_active_view ();
-			var instance = get_plugin_instance_for_window (_window);
+			var view = window.get_active_view ();
+			var instance = get_plugin_instance_for_window (window);
 
 			Gedit.Document doc = null;
 			if (view != null) {
@@ -304,37 +333,6 @@ namespace Vtg
 		  return new Gtk.Label (text);
 	    }
 	}
-
-	public class ValaHelloPlugin : Peas.ExtensionBase, Gedit.WindowActivatable {
-	    private Gtk.Widget label;
-	    public Object object { get; construct; }
-
-	    public ValaHelloPlugin () {
-	      Object ();
-		GLib.debug ("constructed");
-	    }
-
-	    public void activate () {
-	      var window = object as Gtk.Window;
-		GLib.debug ("activated");
-	      label = new Gtk.Label ("Hello World from Vala!");
-	      var box = window.get_child () as Gtk.Box;
-	      box.pack_start (label);
-	      label.show ();
-	    }
-
-	    public void deactivate () {
-	      var window = object as Gtk.Window;
-		GLib.debug ("deactivated");
-	      var box = window.get_child () as Gtk.Box;
-	      box.remove (label);
-	    }
-
-	    public void update_state () {
-		GLib.debug ("update_state");
-	    }
-	  }
-
 }
 
 [ModuleInit]
@@ -342,8 +340,10 @@ public void peas_register_types (TypeModule module)
 {
 	var objmodule = module as Peas.ObjectModule;
 	GLib.debug ("register types: %s", objmodule == null ? "null": "NOT null");
- 	objmodule.register_extension_type (typeof (Peas.Activatable),
-                                     typeof (Vtg.ValaHelloPlugin));
+ 	objmodule.register_extension_type (typeof (Gedit.AppActivatable),
+                                     typeof (Vtg.Plugin));
+ 	objmodule.register_extension_type (typeof (Gedit.WindowActivatable),
+                                     typeof (Vtg.PluginWindowAdapter));
         objmodule.register_extension_type (typeof (PeasGtk.Configurable),
                                      typeof (Vtg.PluginConfig));
 
