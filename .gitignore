@@ -24,7 +24,6 @@ debian/vtg.substvars
 debian/vtg
 debian/tmp
 debian/vala-gen-project*
-templates
 ui/gen-project.ui
 vsc/*.gir
 vtg-*.cdbs-config_list
