@@ -34,7 +34,7 @@ namespace Vtg
 
 		private Gedit.View _view = null;
 		private SymbolCompletionProvider _provider;
-		private Gtk.SourceCompletion _manager;
+		private GtkSource.Completion _manager;
 
 		public Vtg.PluginInstance plugin_instance { get { return _plugin_instance; } }
 		public Gedit.View view { get { return _view; } }
@@ -46,7 +46,7 @@ namespace Vtg
 			this._view = view;
 			this._completion_engine = completion_engine;
 
-			if (this._view.is_realized ()) {
+			if (this._view.get_realized ()) {
 				setup_gsc_completion (_view);
 			} else {
 				this.view.realize.connect (this.on_realized);
@@ -118,7 +118,7 @@ namespace Vtg
 						
 							// first create a bookmark with the current position
 							bookmark = new SourceBookmark ();
-							bookmark.uri = doc.get_uri ();
+							bookmark.uri = Utils.get_document_uri (doc);
 							bookmark.line = start.get_line () + 1;
 							bookmark.column = start.get_line_offset () + 1;
 							_plugin_instance.bookmarks.add_bookmark (bookmark); 
@@ -166,7 +166,7 @@ namespace Vtg
 
 						// first create a bookmark with the current position
 						bookmark = new SourceBookmark ();
-						bookmark.uri = doc.get_uri ();
+						bookmark.uri = Utils.get_document_uri (doc);
 						bookmark.line = start.get_line () + 1;
 						bookmark.column = start.get_line_offset () + 1;
 						_plugin_instance.bookmarks.add_bookmark (bookmark); 

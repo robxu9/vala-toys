@@ -53,7 +53,7 @@ namespace Vtg
 		private static void on_tab_changed (Gedit.Window sender, Gedit.Tab tab, Vtg.SourceBookmarks instance)
 		{
 			var doc = tab.get_document ();
-			string uri = doc.get_uri ();
+			string uri = Utils.get_document_uri (doc);
 			var prj = instance._plugin_instance.project_view.current_project;
 			if (prj != null && prj.contains_vala_source_file (uri)) {
 				instance._idle_add_doc = doc;
@@ -67,7 +67,7 @@ namespace Vtg
 		public bool on_idle_bookmark_add ()
 		{
 			if (_idle_add_doc != null) {
-				string uri = _idle_add_doc.get_uri ();
+				string uri = Utils.get_document_uri (_idle_add_doc);
 				var prj = _plugin_instance.project_view.current_project;
 				if (prj != null && prj.contains_vala_source_file (uri)) {
 					unowned TextMark mark = (TextMark) _idle_add_doc.get_insert ();

@@ -28,14 +28,14 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 
-GLIB_REQUIRED=2.12.0
-GTHREAD_REQUIRED=2.16.0
-GTK_REQUIRED=2.18.0
-GEDIT_REQUIRED=2.28.0
-GTKSOURCEVIEW_REQUIRED=2.10.3
-VALA_REQUIRED=0.9.7
+GLIB_REQUIRED=2.28.0
+GTHREAD_REQUIRED=2.28.0
+GTK_REQUIRED=3.0.0
+GEDIT_REQUIRED=2.91.0
+GTKSOURCEVIEW_REQUIRED=2.91.0
+VALA_REQUIRED=0.11.0
 VALA_VERSION=0.12
-GCONF_REQUIRED=2.22.0
+PEAS_REQUIRED=0.7.4
 
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
 AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
@@ -93,16 +93,16 @@ PKG_CHECK_MODULES(GLIB, [glib-2.0 >= $GLIB_REQUIRED],,)
 ### gen-project ###############################################
 if test "x${genprj}" != xno ; then
 	PKG_CHECK_MODULES(GENPROJECT, 
-		[glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-2.0 >= $GTK_REQUIRED],
+		[glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-3.0 >= $GTK_REQUIRED],
 		HAVE_GENPROJECT=1,
 		[
 			HAVE_GENPROJECT=0
 			AC_MSG_RESULT([gen-project dependencies not met:])
 			PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gtk+-2.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-2.0 >= $GTK_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([gtk+-3.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-3.0 >= $GTK_REQUIRED: not found]))
 			if test "x$genprj" = xyes ; then
-				AC_MSG_ERROR([gen-project dependencies not met: glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-2.0 >= $GTK_REQUIRED])
+				AC_MSG_ERROR([gen-project dependencies not met: glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-3.0 >= $GTK_REQUIRED])
 			fi
 		])
 else
@@ -151,11 +151,12 @@ if test "x${vtgplugin}" != xno ; then
 		[glib-2.0 >= $GLIB_REQUIRED 
 		gobject-2.0 >= $GLIB_REQUIRED 
 		gthread-2.0 >= $GTHREAD_REQUIRED 
-		gtk+-2.0 >= $GTK_REQUIRED 
-		gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED 
-		gedit-2.20 >= $GEDIT_REQUIRED 
+		gtk+-3.0 >= $GTK_REQUIRED 
+		gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED 
+		gedit >= $GEDIT_REQUIRED 
 		libvala-$VALA_VERSION >= $VALA_REQUIRED 
-		gconf-2.0 >= $GCONF_REQUIRED],
+		libpeas-1.0 >= $PEAS_REQUIRED
+		libpeas-gtk-1.0 >= $PEAS_REQUIRED],
 		HAVE_VTGPLUGIN=1,
 		[
 			HAVE_VTGPLUGIN=0
@@ -163,13 +164,14 @@ if test "x${vtgplugin}" != xno ; then
 			PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gtk+-2.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-2.0 >= $GTK_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gedit-2.20 >= $GEDIT_REQUIRED] ,, AC_MSG_RESULT([    gedit-2.20 >= $GEDIT_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED] ,, AC_MSG_RESULT([    gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([gtk+-3.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-3.0 >= $GTK_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([gedit >= $GEDIT_REQUIRED] ,, AC_MSG_RESULT([    gedit >= $GEDIT_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED] ,, AC_MSG_RESULT([    gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([libvala-$VALA_VERSION >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    libvala-$VALA_VERSION >= $VALA_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gconf-2.0 >= $GCONF_REQUIRED] ,, AC_MSG_RESULT([    gconf-2.0 >= $GCONF_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([libpeas-1.0 >= $PEAS_REQUIRED] ,, AC_MSG_RESULT([    libpeas-1.0 >= $PEAS_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([libpeas-gtk-1.0 >= $PEAS_REQUIRED] ,, AC_MSG_RESULT([    libpeas-1.0 >= $PEAS_REQUIRED: not found]))
 			if test "x$vtgplugin" = xyes ; then
-				AC_MSG_ERROR([vtg-plugin dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED libvala-$VALA_VERSION >= $VALA_REQUIRED gtk+-2.0 >= $GTK_REQUIRED gtksourceview-2.0 >= $GTKSOURCEVIEW_REQUIRED gedit-2.20 >= $GEDIT_REQUIRED gconf-2.0 >= GCONF_REQUIRED])
+				AC_MSG_ERROR([vtg-plugin dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED libvala-$VALA_VERSION >= $VALA_REQUIRED gtk+-3.0 >= $GTK_REQUIRED gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED gedit >= $GEDIT_REQUIRED libpeas-1.0 >= $PEAS_REQUIRED libpeas-gtk-1.0 >= $PEAS_REQUIRED])
 			fi
 		])
 else

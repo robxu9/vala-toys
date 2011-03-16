@@ -21,7 +21,7 @@ vala_gen_project_SOURCES = \
 	tagclouditem.vala \
 	$(NULL)
 
-vala_gen_project_VALAFLAGS = --vapidir $(srcdir)/../vapi --vapidir $(srcdir)/libgen-project --pkg gen-project-1.0 --pkg config --pkg gtk+-2.0 --basedir $(top_srcdir) 
+vala_gen_project_VALAFLAGS = --vapidir $(srcdir)/../vapi --vapidir $(srcdir)/libgen-project --pkg gen-project-1.0 --pkg config --pkg gtk+-3.0 --basedir $(top_srcdir) 
 
 vala_gen_project_LDADD = \
 	./libgen-project/libgen-project.la

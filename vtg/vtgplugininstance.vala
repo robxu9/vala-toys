@@ -142,7 +142,7 @@ namespace Vtg
 					// add the source to the project
 					source = new Vbf.Source.with_type (target, Utils.get_document_name (doc), FileTypes.VALA_SOURCE);
 
-					if (doc.get_uri () == null) {
+					if (Utils.get_document_uri (doc) == null) {
 						source.filename = Utils.get_document_name (doc);
 					}
 
@@ -397,7 +397,7 @@ namespace Vtg
 			Gedit.Tab tab = null;
 			Document existing_doc = null;
 			foreach (Document doc in _window.get_documents ()) {
-				if (doc.get_uri () == uri) {
+				if (Utils.get_document_uri (doc) == uri) {
 					tab = Tab.get_from_document (doc);
 					existing_doc = doc;
 					break;
@@ -405,7 +405,7 @@ namespace Vtg
 			}
 			
 			if (tab == null) {
-				tab = _window.create_tab_from_uri (uri, Encoding.get_utf8 (), line, true, false);
+				tab = _window.create_tab_from_location (GLib.File.new_for_uri (uri), Encoding.get_utf8 (), line, col, true, false);
 				_window.set_active_tab (tab);
 				_last_created_view = tab.get_view();
 				Idle.add (this.on_idle_cursor_mode, Priority.DEFAULT_IDLE);
@@ -508,7 +508,7 @@ namespace Vtg
 		[CCode(instance_pos=-1)]
 		private void on_document_saved (Gedit.Document doc, void *arg1)
 		{
-			Utils.trace ("document saved: %s", doc.get_uri ());
+			Utils.trace ("document saved: %s", Utils.get_document_uri (doc));
 
 			try {
 				var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
@@ -519,10 +519,10 @@ namespace Vtg
 						source = open_docs.get (doc);
 					}
 					if (source != null) {
-						string file = doc.get_uri ();
+						string file = Utils.get_document_uri (doc);
 						if (source.uri != file) {
 							Utils.trace ("update source info for: %s", file);
-							source.update_file_data (Filename.from_uri (doc.get_uri ()));
+							source.update_file_data (Filename.from_uri (Utils.get_document_uri (doc)));
 							_project_view.current_project.project.update ();
 						}
 					} else {
@@ -530,7 +530,7 @@ namespace Vtg
 					}
 				}
 			} catch (Error err) {
-				GLib.warning ("error converting file to uri: %s", doc.get_uri ());
+				GLib.warning ("error converting file to uri: %s", Utils.get_document_uri (doc));
 			}
 		}
 	}

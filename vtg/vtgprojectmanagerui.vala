@@ -294,7 +294,7 @@ namespace Vtg
 				var doc = _plugin_instance.window.get_active_document ();
 				if (doc != null) {
 					var prj = _plugin_instance.project_view.current_project;
-					string uri = doc.get_uri ();
+					string uri = Utils.get_document_uri (doc);
 					string file = doc.get_short_name_for_display ();
 					if (prj != null) {
 						var src = prj.get_source_file_from_uri (uri);
@@ -367,7 +367,7 @@ namespace Vtg
 				      null);
 
 			if (dialog.run () == ResponseType.ACCEPT) {
-				dialog.hide_all ();
+				dialog.hide ();
 				var foldername = dialog.get_filename ();
 				open_project (foldername);				
 			}
@@ -687,7 +687,7 @@ namespace Vtg
 			var doc = (Gedit.Document) view.get_buffer ();
 			return_if_fail (doc != null);
 
-			var uri = doc.get_uri ();
+			var uri = Utils.get_document_uri (doc);
 			if (uri == null)
 				return;
 
@@ -747,7 +747,7 @@ namespace Vtg
 		{
 			var doc = _plugin_instance.window.get_active_document ();
 			if (doc != null) {
-				string file = doc.get_uri ();
+				string file = Utils.get_document_uri (doc);
 				var project = _plugin_instance.project_view.current_project;
 
 				if (project != null && !project.is_default) {
@@ -767,7 +767,7 @@ namespace Vtg
 					try {
 						if (file == null || !doc.is_untouched () && Vtg.Plugin.main_instance.config.save_before_build) {
 							Gedit.commands_save_document (_plugin_instance.window, doc);
-							file = doc.get_uri ();
+							file = Utils.get_document_uri (doc);
 						}
 
 						if (file != null) {

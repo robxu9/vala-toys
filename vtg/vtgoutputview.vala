@@ -71,7 +71,7 @@ namespace Vtg
 			_ui = new Gtk.ScrolledWindow (null, null);
 			_ui.add (_textview);
 			_ui.show_all ();
-			panel.add_item (_ui, _("Output"), null);
+			panel.add_item (_ui, "Output", _("Output"), null);
 		}
 
 		~OutputView ()

@@ -194,7 +194,7 @@ namespace Vtg
 
 			_side_panel.show_all ();
 			var icon = new Gtk.Image.from_pixbuf (Utils.get_icon_for_type_name (SymbolType.CLASS));
-			panel.add_item (_side_panel, _("Source"), icon);
+			panel.add_item (_side_panel, "Source", _("Source"), icon);
 			panel.activate_item (_side_panel);
 
 			_actions = new Gtk.ActionGroup ("SourceOutlinerActionGroup");
@@ -219,7 +219,7 @@ namespace Vtg
 			_top_ui = new Gtk.HBox (true, 0);
 			_combo_groups = new Gtk.ComboBox ();
 			var model = build_combo_model ();
-			model.sort_column_id = Columns.NAME;
+			model.set_sort_column_id (Columns.NAME, SortType.ASCENDING);
 			_combo_groups.set_model (model);
 
 			renderer = new CellRendererPixbuf ();
@@ -233,7 +233,7 @@ namespace Vtg
 
 			_combo_items = new Gtk.ComboBox ();
 			model = build_combo_model ();
-			model.sort_column_id = Columns.NAME;
+			model.set_sort_column_id (Columns.NAME, SortType.ASCENDING);
 			_combo_items.set_model (model);
 
 			renderer = new CellRendererPixbuf ();

@@ -197,7 +197,7 @@ namespace Vtg
 			scroll.add (_build_view);
 			_ui.pack_start (scroll, true, true, 0);
 			_ui.show_all ();
-			panel.add_item_with_stock_icon (_ui, _("Build results"), Gtk.Stock.EXECUTE);
+			panel.add_item_with_stock_icon (_ui, "Build results", _("Build results"), Gtk.Stock.EXECUTE);
 			_plugin_instance.output_view.message_added.connect (this.on_message_added);
 			_child_model.set_sort_column_id (5, SortType.ASCENDING);
 			

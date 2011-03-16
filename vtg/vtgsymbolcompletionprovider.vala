@@ -27,7 +27,7 @@ using Afrodite;
 
 namespace Vtg
 {
-	internal class SymbolCompletionProvider : GLib.Object, Gtk.SourceCompletionProvider
+	internal class SymbolCompletionProvider : GLib.Object, GtkSource.CompletionProvider
 	{
 		public signal void completion_lock_failed ();
 		
@@ -45,7 +45,7 @@ namespace Vtg
 		private uint _sb_msg_id = 0;
 		private uint _sb_context_id = 0;
 
-		private Gtk.SourceCompletionInfo _calltip_window = null;
+		private GtkSource.CompletionInfo _calltip_window = null;
 		private Gtk.Label _calltip_window_label = null;
 
 		private unowned SymbolCompletion _symbol_completion = null;
@@ -117,9 +117,13 @@ namespace Vtg
 			return _priority;
 		}
 
-		public bool match (Gtk.SourceCompletionContext context)
+		public bool match (GtkSource.CompletionContext context)
 		{
+<<<<<<< HEAD
 			Gtk.SourceBuffer src = (Gtk.SourceBuffer) _symbol_completion.view.get_buffer ();
+=======
+			var src = (GtkSource.Buffer) _symbol_completion.view.get_buffer ();
+>>>>>>> Ported to gnome 3.0
 			weak TextMark mark = (TextMark) src.get_insert ();
 			TextIter start;
 
@@ -158,12 +162,12 @@ namespace Vtg
 			return result;
 		}
 
-		private void on_completion_window_hide (Gtk.SourceCompletion sender)
+		private void on_completion_window_hide (GtkSource.Completion sender)
 		{
 			_filter = false;
 		}
 
-		public void populate (Gtk.SourceCompletionContext context)
+		public void populate (GtkSource.CompletionContext context)
 		{
 			Utils.trace ("populate");
 			unowned Gtk.TextMark mark = (Gtk.TextMark) context.completion.view.get_buffer ().get_insert ();
@@ -199,7 +203,7 @@ namespace Vtg
 			}
 
 			if (!_filter) {
-				_proposals = new GLib.List<Gtk.SourceCompletionItem> ();
+				_proposals = new GLib.List<GtkSource.CompletionItem> ();
 				if (symbols_in_scope_mode) {
 					if (word != null) {
 						this.lookup_visible_symbols_in_scope (word, CompareMode.START_WITH);
@@ -217,7 +221,7 @@ namespace Vtg
 				
 				Utils.trace ("filtering with: '%s' - '%s'", word, last_part);
 				if (!StringUtils.is_null_or_empty (last_part)) {
-					var filtered_proposals = new GLib.List<Gtk.SourceCompletionItem>();
+					var filtered_proposals = new GLib.List<GtkSource.CompletionItem>();
 					foreach (var proposal in _proposals) {
 						if (proposal.get_label ().has_prefix (last_part)) {
 							filtered_proposals.append (proposal);
@@ -226,7 +230,7 @@ namespace Vtg
 				
 					if (_proposals.length () > 0 && filtered_proposals.length () == 0) {
 						// no matching add a dummy one to prevent proposal windows from closing
-						var dummy_proposal = new Gtk.SourceCompletionItem (_("No matching proposal"), "", null, null);
+						var dummy_proposal = new GtkSource.CompletionItem (_("No matching proposal"), "", null, null);
 						filtered_proposals.append (dummy_proposal);
 					}
 					context.add_proposals (this, filtered_proposals, true);
@@ -237,7 +241,7 @@ namespace Vtg
 			}
 		}
 
-		public unowned Gdk.Pixbuf? get_icon ()
+		public unowned Gdk.Pixbuf get_icon ()
 		{
 			if (_icon == null)
 			{
@@ -252,36 +256,36 @@ namespace Vtg
 			return _icon;
 		}
 
-		public bool activate_proposal (Gtk.SourceCompletionProposal proposal, Gtk.TextIter iter)
+		public bool activate_proposal (GtkSource.CompletionProposal proposal, Gtk.TextIter iter)
 		{
 			_filter = false;
 			return false;
 		}
 
-		public Gtk.SourceCompletionActivation get_activation ()
+		public GtkSource.CompletionActivation get_activation ()
 		{
-			return Gtk.SourceCompletionActivation.INTERACTIVE |
-				Gtk.SourceCompletionActivation.USER_REQUESTED;
+			return GtkSource.CompletionActivation.INTERACTIVE |
+				GtkSource.CompletionActivation.USER_REQUESTED;
 		}
 
-		/*public unowned Gtk.Widget get_info_widget (Gtk.SourceCompletionProposal proposal)
+		public unowned Gtk.Widget get_info_widget (GtkSource.CompletionProposal proposal)
 		{
 			return null;
-		}*/
+		}
 
 		public int get_interactive_delay ()
 		{
 			return 10;
 		}
 
-		public bool get_start_iter (Gtk.SourceCompletionContext context, Gtk.SourceCompletionProposal proposal,	Gtk.TextIter iter)
+		public bool get_start_iter (GtkSource.CompletionContext context, GtkSource.CompletionProposal proposal,	Gtk.TextIter iter)
 		{
 			return false;
 		}
 
-		/*public void update_info (Gtk.SourceCompletionProposal proposal, Gtk.SourceCompletionInfo info)
+		public void update_info (GtkSource.CompletionProposal proposal, GtkSource.CompletionInfo info)
 		{
-		}*/
+		}
 
 		private bool on_view_focus_out (Gtk.Widget sender, Gdk.EventFocus event)
 		{
@@ -357,7 +361,7 @@ namespace Vtg
 
 			if (markup_text != null) {
 				_calltip_window_label.set_markup (markup_text);
-				_calltip_window.move_to_iter (_symbol_completion.view);
+				_calltip_window.move_to_iter (_symbol_completion.view, null);
 				_calltip_window.show_all ();
 				_calltip_window.show ();
 			}
@@ -373,9 +377,9 @@ namespace Vtg
 
 		private void initialize_calltip_window ()
 		{
-			_calltip_window = new Gtk.SourceCompletionInfo ();
+			_calltip_window = new GtkSource.CompletionInfo ();
 			_calltip_window.set_transient_for (_symbol_completion.plugin_instance.window);
-			_calltip_window.set_sizing (800, 400, true, true);
+			//_calltip_window.set_sizing (800, 400, true, true);
 			_calltip_window_label = new Gtk.Label ("");
 			_calltip_window.set_widget (_calltip_window_label);
 		}
@@ -459,7 +463,7 @@ namespace Vtg
 		
 		private bool proposal_list_contains_name (string name)
 		{
-			foreach (Gtk.SourceCompletionItem proposal in _proposals) {
+			foreach (GtkSource.CompletionItem proposal in _proposals) {
 				if (proposal.get_label () == name) {
 					return true;
 				}
@@ -487,7 +491,7 @@ namespace Vtg
 				}
 
 				if (!symbol.overrides || (symbol.overrides && !this.proposal_list_contains_name (name))) {
-					Gtk.SourceCompletionItem proposal;
+					GtkSource.CompletionItem proposal;
 					var info = (symbol.info != null ? symbol.info : "");
 					Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.symbol_type);
 
@@ -500,7 +504,7 @@ namespace Vtg
 						proposal.info = info;
 						proposal.icon = icon;
 					} else {*/
-						proposal = new Gtk.SourceCompletionItem(name, name, icon, info);
+						proposal = new GtkSource.CompletionItem(name, name, icon, info);
 					//}
 					//Utils.trace ("append symbols: %s", symbol.name);
 					_proposals.append (proposal);
@@ -510,7 +514,7 @@ namespace Vtg
 			_proposals.sort (this.proposal_sort);
 		}
 
-		private static int proposal_sort (Gtk.SourceCompletionItem a, Gtk.SourceCompletionItem b)
+		private static int proposal_sort (GtkSource.CompletionItem a, GtkSource.CompletionItem b)
 		{
 			return strcmp (a.get_label (), b.get_label ());
 		}
@@ -518,7 +522,7 @@ namespace Vtg
 		private void transform_result (Afrodite.QueryOptions? options, Afrodite.QueryResult? result)
 		{
 			_prealloc_index = 0;
-			_proposals = new GLib.List<Gtk.SourceCompletionItem> ();
+			_proposals = new GLib.List<GtkSource.CompletionItem> ();
 			var visited_interfaces = new Vala.ArrayList<Symbol> ();
 			
 			if (result != null && !result.is_empty) {
@@ -795,7 +799,7 @@ namespace Vtg
 					Utils.trace ("no symbol visible");
 					transform_result (null, null);
 				} else {
-					_proposals = new GLib.List<Gtk.SourceCompletionItem> ();
+					_proposals = new GLib.List<GtkSource.CompletionItem> ();
 					append_symbols (null, results);
 				}
 			} else {

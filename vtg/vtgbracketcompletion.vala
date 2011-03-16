@@ -37,8 +37,10 @@ namespace Vtg
 			this._plugin_instance = plugin_instance;
 			this._view = view;
 
-			if (Gedit.prefs_manager_get_insert_spaces ())
-				tab_chars = string.nfill (Gedit.prefs_manager_get_tabs_size (), ' ');
+			var gs = new GLib.Settings ("org.gnome.gedit.preferences.editor");
+			
+			if (gs.get_boolean ("insert-spaces"))
+				tab_chars = string.nfill (gs.get_int ("tabs-size"), ' ');
 			else
 				tab_chars = "\t";
 
@@ -224,7 +226,7 @@ namespace Vtg
 			bool result = false;
 	
 			if ((evt.state & ( ModifierType.MOD1_MASK)) == 0) {
-				var src = (Gtk.SourceBuffer)sender.get_buffer ();
+				var src = (GtkSource.Buffer)sender.get_buffer ();
 				weak TextMark mark = (TextMark) src.get_insert ();
 				TextIter pos;
 

@@ -292,7 +292,7 @@ namespace Vtg
 			return doc.language != null && (doc.language.id == "vala" || doc.language.id == "genie");
 		}
 
-		public static bool is_inside_comment_or_literal (SourceBuffer src, TextIter pos)
+		public static bool is_inside_comment_or_literal (GtkSource.Buffer src, TextIter pos)
 		{
 			bool res = false;
 			
@@ -345,9 +345,19 @@ namespace Vtg
 			return res;
 		}
 		
+		public static string get_document_uri (Gedit.Document doc)
+		{
+			string result = null;
+			var file = doc.get_location ();
+			if (file != null)
+			   result = file.get_uri ();
+
+			return result;
+		}
+
 		public static string get_document_name (Gedit.Document doc)
 		{
-			string name = doc.get_uri ();
+			string name = get_document_uri (doc);
 			if (name == null) {
 				name = doc.get_short_name_for_display ();
 			} else {

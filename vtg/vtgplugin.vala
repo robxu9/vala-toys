@@ -28,13 +28,17 @@ using Vbf;
 
 namespace Vtg
 {	
-	public class Plugin : Gedit.Plugin
+	public class Plugin : Peas.ExtensionBase, Peas.Activatable
 	{
 		public static unowned Vtg.Plugin main_instance = null;
 		
 		private Vala.List<PluginInstance> _instances = new Vala.ArrayList<PluginInstance> ();
 		private Configuration _config = null;
 		private Vtg.Projects _projects = null;
+
+		public Object object { get; construct; }
+
+		private Gedit.Window _window;
 
 		private enum DeactivateModuleOptions
 		{
@@ -63,11 +67,11 @@ namespace Vtg
 
 		public Plugin ()
 		{
+			GLib.debug ("hajdgajh");
 			GLib.Object ();
-		}
+			GLib.debug ("construct plugin: %s", object == null ? "NULL!??!?" : object.get_type ().name ());
+			this._window = object as Gedit.Window;
 
-		construct
-		{
 			main_instance = this;
 			_config = new Configuration ();
 			_config.notify.connect (this.on_configuration_property_changed);
@@ -77,6 +81,10 @@ namespace Vtg
 			_projects.project_closed.connect (this.on_project_closed);
 		}
 
+		construct
+		{
+			GLib.debug ("const fjskhfskhfskdhfskdh");
+		}
 		private PluginInstance? get_plugin_instance_for_window (Gedit.Window window)
 		{
 			foreach (PluginInstance instance in _instances) {
@@ -88,34 +96,26 @@ namespace Vtg
 			return null;
 		}
 		
-		public override void activate (Gedit.Window window)
+		public void activate ()
 		{
-			if (get_plugin_instance_for_window (window) == null) {
-				var instance = new PluginInstance (window);
+			GLib.debug ("activate");
+			if (get_plugin_instance_for_window (_window) == null) {
+				var instance = new PluginInstance (_window);
 				_instances.add (instance);
 			}
 		}
 		
-		public override void deactivate (Gedit.Window window)
+		public void deactivate ()
 		{
+			GLib.debug ("deactivate");
 			deactivate_modules ();
 			_instances.clear ();
 		}
 
-		public override bool is_configurable ()
+		public void update_state ()
 		{
-			return true;
-		}
-
-		public override unowned Gtk.Widget? create_configure_dialog ()
-		{
-			return _config.get_configuration_dialog ();
-		}
-
-		public override void update_ui (Gedit.Window window)
-		{
-			var view = window.get_active_view ();
-			var instance = get_plugin_instance_for_window (window);
+			var view = _window.get_active_view ();
+			var instance = get_plugin_instance_for_window (_window);
 
 			Gedit.Document doc = null;
 			if (view != null) {
@@ -283,16 +283,68 @@ namespace Vtg
 
 		~Plugin ()
 		{
+			GLib.debug ("~Plugin");
 			_projects.project_opened.disconnect (this.on_project_opened);
 			_projects.project_closed.disconnect (this.on_project_closed);
 			deactivate_modules ();
 			main_instance = null;
 		}
 	}
+
+	public class PluginConfig : Peas.ExtensionBase, PeasGtk.Configurable 
+	{
+	    public PluginConfig () 
+	    {
+	          Object ();
+            }
+
+	    public Gtk.Widget create_configure_widget () 
+	    {
+	          string text = "Placeholder for Vala Toys config dialog";
+		  return new Gtk.Label (text);
+	    }
+	}
+
+	public class ValaHelloPlugin : Peas.ExtensionBase, Gedit.WindowActivatable {
+	    private Gtk.Widget label;
+	    public Object object { get; construct; }
+
+	    public ValaHelloPlugin () {
+	      Object ();
+		GLib.debug ("constructed");
+	    }
+
+	    public void activate () {
+	      var window = object as Gtk.Window;
+		GLib.debug ("activated");
+	      label = new Gtk.Label ("Hello World from Vala!");
+	      var box = window.get_child () as Gtk.Box;
+	      box.pack_start (label);
+	      label.show ();
+	    }
+
+	    public void deactivate () {
+	      var window = object as Gtk.Window;
+		GLib.debug ("deactivated");
+	      var box = window.get_child () as Gtk.Box;
+	      box.remove (label);
+	    }
+
+	    public void update_state () {
+		GLib.debug ("update_state");
+	    }
+	  }
+
 }
 
 [ModuleInit]
-public GLib.Type register_gedit_plugin (TypeModule module) 
+public void peas_register_types (TypeModule module) 
 {
-	return typeof (Vtg.Plugin);
+	var objmodule = module as Peas.ObjectModule;
+	GLib.debug ("register types: %s", objmodule == null ? "null": "NOT null");
+ 	objmodule.register_extension_type (typeof (Peas.Activatable),
+                                     typeof (Vtg.ValaHelloPlugin));
+        objmodule.register_extension_type (typeof (PeasGtk.Configurable),
+                                     typeof (Vtg.PluginConfig));
+
 }

@@ -120,11 +120,11 @@ class Vala.TagCloud : Gtk.DrawingArea
 		}
 		return false;
 	}
-	protected override bool expose_event (Gdk.EventExpose e)
+
+	public override bool draw (Cairo.Context c)
 	{
-		var c = Gdk.cairo_create (e.window);
-		int w, h;
-		e.window.get_size (out w, out h);
+		int w = this.get_allocated_width ();
+		int h = this.get_allocated_height ();
 
 		Pango.Rectangle ink_rect;
 		Pango.Rectangle logical_rect;
@@ -218,7 +218,6 @@ class Vala.TagCloud : Gtk.DrawingArea
 			x += logical_rect.width + 8;
 			last_height = item.height;
 		}
-
 		return false;
 	}
 }
