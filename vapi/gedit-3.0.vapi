@@ -274,7 +274,7 @@ namespace Gedit {
 		[NoAccessorMethod]
 		public Gedit.App app { owned get; construct; }
 	}
-	[CCode (cheader_filename = "gedit/gedit-window-activatable.h", type_cname = "GeditViewActivatableInterface", type_id = "gedit_view_activatable_get_type ()")]
+	[CCode (cheader_filename = "gedit/gedit-view-activatable.h", type_cname = "GeditViewActivatableInterface", type_id = "gedit_view_activatable_get_type ()")]
 	public interface ViewActivatable : GLib.Object {
 		public abstract void activate ();
 		public abstract void deactivate ();
