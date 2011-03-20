@@ -414,7 +414,7 @@ namespace Afrodite
 							name, 
 							mode,
 							case_sensitiveness,
-							SymbolAccessibility.INTERNAL | SymbolAccessibility.PROTECTED | SymbolAccessibility.PROTECTED);
+							SymbolAccessibility.INTERNAL | SymbolAccessibility.PROTECTED | SymbolAccessibility.PUBLIC);
 					}
 				}
 			}
