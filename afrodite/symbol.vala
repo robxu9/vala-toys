@@ -72,9 +72,7 @@ namespace Afrodite
 		internal int _static_child_count = 0;
 		internal int _creation_method_child_count = 0;
 
-		private string _info = null;
 		private string _des = null;
-		private string _markup_des = null;
 		private string _display_name = null;
 		
 		private DataType _symbol_data_type = null;
@@ -730,31 +728,22 @@ namespace Afrodite
 		
 		public string description
 		{
-			get {
-				if (_des == null)
-					_des = build_description (false);
-				
-				return _des;
+			owned get {
+				return build_description (false);
 			}
 		}
 
 		public string markup_description
 		{
-			get {
-				if (_markup_des == null)
-					_markup_des = build_description (true);
-				
-				return _markup_des;
+			owned get {
+				return build_description (true);
 			}
 		}
 
 		public string info
 		{
-			get {
-				if (_info == null)
-					_info = build_info ();
-				
-				return _info;
+			owned get {
+				return build_info ();
 			}
 		}
 		
@@ -1060,8 +1049,6 @@ namespace Afrodite
 				this.generic_type_arguments[i].name  = types[i].type_name;
 				this.generic_type_arguments[i].return_type = types[i];
 				this._des = null;
-				this._info = null;
-				this._markup_des = null;
 			}
 		}
 
