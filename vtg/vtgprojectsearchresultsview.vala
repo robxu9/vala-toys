@@ -149,7 +149,7 @@ namespace Vtg
 			if (_match_count == 0)
 				return;
 				
-			if (_current == null || _current.to_string ().to_int () == _match_count - 1) {
+			if (_current == null || int.parse(_current.to_string ()) == _match_count - 1) {
 				_current = new TreePath.first ();
 			} else {
 				_current.next ();
@@ -188,7 +188,7 @@ namespace Vtg
 					
 				string[] parts = line.split (":", 2);
 				if (parts[0] != null && parts.length > 1) {
-					int line_number = parts[0].to_int ();
+					int line_number = int.parse(parts[0]);
 					string text = Pango.trim_string (parts[1]);
 
 					TreeIter iter;

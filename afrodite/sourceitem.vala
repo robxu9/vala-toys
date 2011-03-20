@@ -33,12 +33,6 @@ namespace Afrodite
 		UNKNOWN
 	}
 
-	public errordomain SourceItemErrors
-	{
-		NULL_PATH,
-		UNKNOWN_SOURCE_TYPE
-	}
-	
 	public class SourceItem
 	{
 		private string _path;
@@ -54,17 +48,17 @@ namespace Afrodite
 			}
 		}
 
-		public SourceItem (string? path, SourceType source_type = SourceType.AUTO) throws SourceItemErrors
+		public SourceItem (string? path, SourceType source_type = SourceType.AUTO)
 		{
 			if (path == null && source_type == SourceType.AUTO) {
-				throw new SourceItemErrors.NULL_PATH ("You have to specified either a path or a source_type");
+				critical ("You have to specified either a path or a source_type");
 			}
 
 			this._path = path;
 			if (source_type == SourceType.AUTO) {
 				this.source_type = SourceItem.get_source_type (_path);
 				if (this.source_type == SourceType.UNKNOWN) {
-					throw new SourceItemErrors.UNKNOWN_SOURCE_TYPE ("Cannot determine the source type");
+					critical ("Cannot determine the source type");
 				}
 			} else {
 				this.source_type = source_type;

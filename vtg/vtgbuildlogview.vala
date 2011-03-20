@@ -455,11 +455,11 @@ namespace Vtg
 			if (src_ref.length < 2)
 				return;
 			
-			int line = src_ref[0].to_int ();
+			int line = int.parse (src_ref[0]);
 			int col = 0;
 
 			if (src_ref[1] != null)
-				col = src_ref[1].to_int ();
+				col = int.parse(src_ref[1]);
 
 			string stock_id = null;
 
@@ -523,7 +523,7 @@ namespace Vtg
 			if (src_ref.length > 1)
 				return;
 			
-			int line = src_ref[0].to_int ();
+			int line = int.parse(src_ref[0]);
 
 			string stock_id = null;
 
@@ -532,7 +532,7 @@ namespace Vtg
 					string message_type;
 					string message_text;
 					int is_warning = 0;
-					if (parts[1].to_int () != 0) {
+					if (int.parse(parts[1]) != 0) {
 						string[] tmp = parts[2].split(":", 2);
 						message_type = tmp[0].strip ();
 						message_text = tmp[1];
