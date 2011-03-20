@@ -28,6 +28,7 @@ int option_column;
 string option_visible_symbols;
 string option_filter;
 string option_namespace;
+bool option_dump_unresolved;
 [NoArrayLength ()]
 string[] option_files;
 int option_repeat;
@@ -41,6 +42,7 @@ const OptionEntry[] options = {
 	{ "column", 'c', 0, OptionArg.INT, ref option_column, "Column NUMBER", "NUMBER" },
 	{ "repeat", 'r', 0, OptionArg.INT, ref option_repeat, "Repeat parsing NUMBER", "NUMBER" },
 	{ "dump-namespace", 'n', 0, OptionArg.STRING, ref option_namespace, "Namespace to dump NAME", "NAME" },
+	{ "dump-unresolved", 'u', 0, OptionArg.NONE, ref option_dump_unresolved, "Dump unresolved symbol", null },
 	{ "queue-as-live-buffer", 'e', 0, OptionArg.STRING, ref option_live_buffers, "Parse the source files as live buffers", null },
 	{ "", 0, 0, OptionArg.FILENAME_ARRAY, ref option_files, "Source files NAME", "NAME" },
 	{ null }
@@ -164,6 +166,45 @@ public class AfroditeTest.Application : Object {
 			break;
 		}
 		
+		if (option_dump_unresolved) {
+			print ("Unresolved symbols:");
+			if (engine.ast.unresolved_symbols != null && engine.ast.unresolved_symbols.size > 0) {
+				print (" %d\n", engine.ast.unresolved_symbols.size);
+				foreach (Afrodite.Symbol symbol in engine.ast.unresolved_symbols) {
+					print ("\t%s: %s - '%s'\n", 
+						Utils.Symbols.get_symbol_type_description (symbol.symbol_type),
+						symbol.fully_qualified_name,
+						symbol.description);
+
+					if (symbol.has_local_variables) {
+						print ("\t  unresolved local variables:");
+						foreach (Afrodite.DataType p in symbol.local_variables) {
+							if (p.unresolved) {
+								print ("\n\t\t%s - '%s'",
+									p.name,
+									p.type_name);
+							}
+						}
+						print ("\n");
+					}
+
+					if (symbol.has_parameters) {
+						print ("\t  unresolved parameters:");
+						foreach (Afrodite.DataType p in symbol.parameters) {
+							if (p.unresolved) {
+								print ("\n\t\t%s - '%s'",
+									p.name,
+									p.type_name);
+							}
+						}
+						print ("\n");
+					}
+				}
+				print ("\n");
+			} else {
+				print (" none\n");
+			}
+		}
 		print ("done\n");
 	}
 	
