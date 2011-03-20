@@ -119,6 +119,60 @@ namespace Afrodite.Utils
 				
 			return _predefined;
 		}
+		
+		public static string get_symbol_type_description (SymbolType type)
+		{
+			switch (type) {
+				case SymbolType.NONE:
+					return _("None");
+				case SymbolType.VOID:
+					return _("Void");
+				case SymbolType.CONSTANT:
+					return _("Constant");
+				case SymbolType.ENUM:
+					return _("Enum");
+				case SymbolType.ENUM_VALUE:
+					return _("Enum Value");
+				case SymbolType.FIELD:
+					return _("Field");
+				case SymbolType.PROPERTY:
+					return _("Property");
+				case SymbolType.LOCAL_VARIABLE:
+					return _("Variable");
+				case SymbolType.SIGNAL:
+					return _("Signal");
+				case SymbolType.CREATION_METHOD:
+					return _("Creation Method");
+				case SymbolType.CONSTRUCTOR:
+					return _("Constructor");
+				case SymbolType.DESTRUCTOR:
+					return _("Destructor");
+				case SymbolType.METHOD:
+					return _("Method");
+				case SymbolType.DELEGATE:
+					return _("Delegate");
+				case SymbolType.PARAMETER:
+					return _("Parameter");
+				case SymbolType.ERROR_DOMAIN:
+					return _("Error Domain");
+				case SymbolType.ERROR_CODE:
+					return _("Error Code");
+				case SymbolType.NAMESPACE:
+					return _("Namespace");
+				case SymbolType.STRUCT:
+					return _("Struct");
+				case SymbolType.CLASS:
+					return _("Class");
+				case SymbolType.INTERFACE:
+					return _("Interface");
+				case SymbolType.SCOPED_CODE_NODE:
+					return _("Block");
+				default:
+					string des = type.to_string ().up ();
+					warning ("Undefined description for symbol type: %s", des);
+					return des;
+			}
+		}
 
 		public class PredefinedSymbols
 		{
@@ -130,19 +184,19 @@ namespace Afrodite.Utils
 			
 			public PredefinedSymbols ()
 			{
-				_connect_method = new Afrodite.Symbol ("connect", "Method");
+				_connect_method = new Afrodite.Symbol ("connect", SymbolType.METHOD);
 				_connect_method.return_type = new DataType ("void");
 				_connect_method.return_type.symbol =  Symbol.VOID;
 				_connect_method.access = SymbolAccessibility.ANY;
 				_connect_method.binding = MemberBinding.ANY;
 			
-				_disconnect_method = new Afrodite.Symbol ("disconnect", "Method");
+				_disconnect_method = new Afrodite.Symbol ("disconnect", SymbolType.METHOD);
 				_disconnect_method.return_type = new DataType ("void");
 				_disconnect_method.return_type.symbol =  Symbol.VOID;
 				_disconnect_method.access = SymbolAccessibility.ANY;
 				_disconnect_method.binding = MemberBinding.ANY;
 				
-				_signal_symbol = new Symbol ("#signal", "Class");
+				_signal_symbol = new Symbol ("#signal", SymbolType.CLASS);
 				_signal_symbol.add_child (_connect_method);
 				_signal_symbol.add_child (_disconnect_method);
 				

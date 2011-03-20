@@ -29,7 +29,7 @@ namespace Afrodite
 		public Vala.HashMap<string, unowned Symbol> symbols = new Vala.HashMap <string, unowned Symbol>(GLib.str_hash, GLib.str_equal);
 		public Vala.List<unowned Symbol> unresolved_symbols = new Vala.ArrayList<unowned Symbol>();
 		
-		private Symbol _root = new Symbol (null, null);
+		private Symbol _root = new Symbol (null, SymbolType.NONE);
 
 		~Ast ()
 		{
@@ -210,15 +210,16 @@ namespace Afrodite
 				}
 
 				sym = lookup_name_with_symbol (parts[0], sym, source, options.compare_mode);
-				if (sym != null && sym.symbol_type != null) {
+				if (sym != null && sym.symbol_data_type != null) {
 					if (mode != LookupMode.Symbol || parts.length > 1) {
-						sym = sym.symbol_type.symbol;
+						sym = sym.symbol_data_type.symbol;
 					}
 				}
 				
 				if (parts.length > 1 && sym != null && sym.has_children) {
-					if (sym.type_name == "Namespace"
-					    || (parts[0] == sym.name && (sym.type_name == "Class" || sym.type_name == "Struct" || sym.type_name == "Interface"))) {
+					if (sym.symbol_type == SymbolType.NAMESPACE
+					    || (parts[0] == sym.name 
+					        && (sym.symbol_type == SymbolType.CLASS || sym.symbol_type == SymbolType.STRUCT || sym.symbol_type == SymbolType.INTERFACE))) {
 					    	// namespace access or MyClass.my_static_method
 						//debug ("CHANGE ONLY STATIC");
 						binding = MemberBinding.STATIC;
@@ -235,10 +236,10 @@ namespace Afrodite
 						}
 						
 						//print ("... result: %s\n", sym == null ? "not found" : sym.name);
-						if (sym != null && mode == LookupMode.Type && sym.symbol_type != null) {
+						if (sym != null && mode == LookupMode.Type && sym.symbol_data_type != null) {
 							//debug ("result type %s", sym.symbol_type.unresolved ? "<unresolved>" : sym.symbol_type.symbol.name);
 							
-							sym = sym.symbol_type.symbol;
+							sym = sym.symbol_data_type.symbol;
 						} else {
 							break;
 						}
@@ -247,8 +248,8 @@ namespace Afrodite
 			}
 			
 			// return the symbol or the return type: for properties, field and methods
-			if (sym != null && sym.symbol_type != null && mode == LookupMode.Type)
-				return sym.symbol_type.symbol;
+			if (sym != null && sym.symbol_data_type != null && mode == LookupMode.Type)
+				return sym.symbol_data_type.symbol;
 			else
 				return sym;
 		}
@@ -347,14 +348,14 @@ namespace Afrodite
 			// search first class in the parent chain, break when a namespace is found
 			Symbol current = root;
 			while (current != null) {
-				if (current.type_name == "Class" || current.type_name == "Struct") {
+				if (current.symbol_type == SymbolType.CLASS || current.symbol_type == SymbolType.STRUCT) {
 					break;
-				} else if (current.type_name == "Namespace") {
+				} else if (current.symbol_type == SymbolType.NAMESPACE) {
 					current = null; // exit
 				} else
 					current = current.parent;
 			}
-			
+
 			return current;
 		}
 		
@@ -371,7 +372,7 @@ namespace Afrodite
 					if (!d.unresolved 
 					    && ((access & SymbolAccessibility.PRIVATE) != 0)
 					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
-						var s = new Afrodite.Symbol (d.name, d.type_name);
+						var s = new Afrodite.Symbol (d.name, SymbolType.LOCAL_VARIABLE);
 						s.return_type = d.copy ();
 						s.return_type.symbol = d.symbol;
 						results.add (s);
@@ -385,7 +386,7 @@ namespace Afrodite
 					if (!d.unresolved 
 					    && ((access & SymbolAccessibility.PRIVATE) != 0)
 					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
-						var s = new Afrodite.Symbol (d.name, d.type_name);
+						var s = new Afrodite.Symbol (d.name, SymbolType.PARAMETER);
 						s.return_type = d.copy ();
 						s.return_type.symbol = d.symbol;
 						results.add (s);
@@ -509,7 +510,7 @@ namespace Afrodite
 					foreach (DataType type in this_sym.base_types) {
 						//debug ("search base types: %s", type.type_name);
 						
-						if (!type.unresolved && type.symbol.type_name == "Class") {
+						if (!type.unresolved && type.symbol.symbol_type == SymbolType.CLASS) {
 							return type.symbol;
 						}
 					}

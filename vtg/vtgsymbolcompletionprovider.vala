@@ -127,7 +127,7 @@ namespace Vtg
 
 		public bool match (Gtk.SourceCompletionContext context)
 		{
-			var src = (Gtk.SourceBuffer) _symbol_completion.view.get_buffer ();
+			Gtk.SourceBuffer src = (Gtk.SourceBuffer) _symbol_completion.view.get_buffer ();
 			weak TextMark mark = (TextMark) src.get_insert ();
 			TextIter start;
 
@@ -256,6 +256,7 @@ namespace Vtg
 					critical ("error: %s", err.message);
 				}
 			}
+			
 			return _icon;
 		}
 
@@ -488,7 +489,7 @@ namespace Vtg
 
 				string name;
 
-				if (symbol.type_name == "CreationMethod") {
+				if (symbol.symbol_type == SymbolType.CREATION_METHOD) {
 					name = symbol.name;
 				} else {
 					name = (symbol.display_name != null ? symbol.display_name : "<null>");
@@ -497,7 +498,7 @@ namespace Vtg
 				if (!symbol.overrides || (symbol.overrides && !this.proposal_list_contains_name (name))) {
 					Gtk.SourceCompletionItem proposal;
 					var info = (symbol.info != null ? symbol.info : "");
-					Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.type_name);
+					Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.symbol_type);
 
 					/*if (false && _prealloc_index < Utils.prealloc_count) {
 						proposal = proposals [_prealloc_index];
@@ -549,13 +550,13 @@ namespace Vtg
 		private void append_base_type_symbols (Afrodite.QueryOptions? options, Symbol symbol, Vala.List<Symbol> visited_interfaces)
 		{
 			if (symbol.has_base_types 
-			    && (symbol.type_name == "Class" || symbol.type_name == "Interface" || symbol.type_name == "Struct")) {
+			    && (symbol.symbol_type == SymbolType.CLASS || symbol.symbol_type == SymbolType.INTERFACE || symbol.symbol_type == SymbolType.STRUCT)) {
 				foreach (DataType type in symbol.base_types) {
 					Utils.trace ("visiting base type: %s", type.type_name);
 					if (!type.unresolved 
 					    && type.symbol.has_children
 					    && (options == null || type.symbol.check_options (options))
-					    && (type.symbol.type_name == "Class" || type.symbol.type_name == "Interface" || type.symbol.type_name == "Struct")) {
+					    && (type.symbol.symbol_type == SymbolType.CLASS || type.symbol.symbol_type == SymbolType.INTERFACE || type.symbol.symbol_type == SymbolType.STRUCT)) {
 							// symbols of base types (classes or interfaces)
 							if (!visited_interfaces.contains (type.symbol)) {
 								visited_interfaces.add (type.symbol);
@@ -565,7 +566,7 @@ namespace Vtg
 					}
 				}
 			} else {
-				Utils.trace ("NO base type for %s-%s", symbol.name, symbol.type_name);
+				Utils.trace ("NO base type for %s-%s", symbol.name, symbol.symbol_type.to_string ());
 			}
 		}
 
@@ -610,7 +611,7 @@ namespace Vtg
 			return start.get_text (end);
 		}
 
-		public Afrodite.Symbol? get_symbol_containing_cursor (int retry_count = 0)
+		public Afrodite.Symbol? get_symbol_containing_cursor ()
 		{
 			int line, col;
 			Afrodite.Symbol? symbol = null;
@@ -623,7 +624,7 @@ namespace Vtg
 			return symbol;
 		}
 	
-		public Afrodite.Symbol? get_current_symbol_item (int retry_count = 0)
+		public Afrodite.Symbol? get_current_symbol_item ()
 		{
 			string text = get_current_line_text (true);
 			string word;

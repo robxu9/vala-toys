@@ -454,35 +454,35 @@ namespace Vtg
 			}
 		}
 		
-		public static Gdk.Pixbuf get_icon_for_type_name (string type_name)
+		public static Gdk.Pixbuf get_icon_for_type_name (SymbolType type)
 		{
 			if (!_initialized) {
 				initialize ();
 			}
-			if (icon_namespace != null && type_name == "Namespace")
+			if (icon_namespace != null && type == SymbolType.NAMESPACE)
 				return icon_namespace;
 			else if (icon_class != null 
-				&& (type_name == "Class" 
-					|| type_name == "CreationMethod" 
-					|| type_name == "Destructor" 
-					|| type_name == "Constructor"
-					|| type_name == "ErrorDomain"))
+				&& (type == SymbolType.CLASS
+					|| type == SymbolType.CREATION_METHOD
+					|| type == SymbolType.DESTRUCTOR 
+					|| type == SymbolType.CONSTRUCTOR
+					|| type == SymbolType.ERROR_DOMAIN))
 				return icon_class;
-			else if (icon_struct != null && type_name == "Struct")
+			else if (icon_struct != null && type == SymbolType.STRUCT)
 				return icon_struct;
-			else if (icon_iface != null && type_name == "Interface")
+			else if (icon_iface != null && type == SymbolType.INTERFACE)
 				return icon_iface;
-			else if (icon_field != null && type_name == "Field")
+			else if (icon_field != null && type == SymbolType.FIELD)
 				return icon_field;
-			else if (icon_property != null && type_name == "Property")
+			else if (icon_property != null && type == SymbolType.PROPERTY)
 				return icon_property;
-			else if (icon_method != null && (type_name == "Method" || type_name == "Delegate"))
+			else if (icon_method != null && (type == SymbolType.METHOD || type == SymbolType.DELEGATE))
 				return icon_method;
-			else if (icon_enum != null && type_name == "Enum")
+			else if (icon_enum != null && type == SymbolType.ENUM)
 				return icon_enum;
-			else if (icon_const != null && (type_name == "Constant" || type_name == "EnumValue" || type_name == "ErrorCode"))
+			else if (icon_const != null && (type == SymbolType.CONSTANT || type == SymbolType.ENUM_VALUE || type == SymbolType.ERROR_CODE))
 				return icon_const;
-			else if (icon_signal != null && type_name == "Signal")
+			else if (icon_signal != null && type == SymbolType.SIGNAL)
 				return icon_signal;
 
 			return icon_generic;
@@ -500,7 +500,7 @@ namespace Vtg
 				case TargetTypes.BUILT_SOURCES:
 					return Gtk.Stock.EXECUTE;
 				default:
-					return Gtk.Stock.DIRECTORY;		
+					return Gtk.Stock.DIRECTORY;
 			}
 		}
 		
@@ -514,58 +514,58 @@ namespace Vtg
 			else if (vala != null && valb == null)
 				return -1;
 		
-			if (vala.type_name != valb.type_name) {
-				if (vala.type_name == "Constant") {
+			if (vala.symbol_type != valb.symbol_type) {
+				if (vala.symbol_type == SymbolType.CONSTANT) {
 					return -1;
-				} else if (valb.type_name == "Constant") {
+				} else if (valb.symbol_type == SymbolType.CONSTANT) {
 					return 1;
-				} else if (vala.type_name == "Enum") {
+				} else if (vala.symbol_type == SymbolType.ENUM) {
 					return -1;
-				} else if (valb.type_name == "Enum") {
+				} else if (valb.symbol_type == SymbolType.ENUM) {
 					return 1;
-				} else if (vala.type_name == "Field") {
+				} else if (vala.symbol_type == SymbolType.FIELD) {
 					return -1;
-				} else if (valb.type_name == "Field") {
+				} else if (valb.symbol_type == SymbolType.FIELD) {
 					return 1;
-				} else if (vala.type_name == "Property") {
+				} else if (vala.symbol_type == SymbolType.PROPERTY) {
 					return -1;
-				} else if (valb.type_name == "Property") {
+				} else if (valb.symbol_type == SymbolType.PROPERTY) {
 					return 1;
-				} else if (vala.type_name == "Signal") {
+				} else if (vala.symbol_type == SymbolType.SIGNAL) {
 					return -1;
-				} else if (valb.type_name == "Signal") {
+				} else if (valb.symbol_type == SymbolType.SIGNAL) {
 					return 1;
-				} else if (vala.type_name == "CreationMethod") {
+				} else if (vala.symbol_type == SymbolType.CREATION_METHOD) {
 					return -1;
-				} else if (valb.type_name == "CreationMethod") {
+				} else if (valb.symbol_type == SymbolType.CREATION_METHOD) {
 					return 1;
-				} else if (vala.type_name == "Constructor") {
+				} else if (vala.symbol_type == SymbolType.CONSTRUCTOR) {
 					return -1;
-				} else if (valb.type_name == "Constructor") {
+				} else if (valb.symbol_type == SymbolType.CONSTRUCTOR) {
 					return 1;
-				} else if (vala.type_name == "Method") {
+				} else if (vala.symbol_type == SymbolType.METHOD) {
 					return -1;
-				} else if (valb.type_name == "Method") {
+				} else if (valb.symbol_type == SymbolType.METHOD) {
 					return 1;
-				} else if (vala.type_name == "ErrorDomain") {
+				} else if (vala.symbol_type == SymbolType.ERROR_DOMAIN) {
 					return -1;
-				} else if (valb.type_name == "ErrorDomain") {
+				} else if (valb.symbol_type == SymbolType.ERROR_DOMAIN) {
 					return 1;
-				} else if (vala.type_name == "Namespace") {
+				} else if (vala.symbol_type == SymbolType.NAMESPACE) {
 					return -1;
-				} else if (valb.type_name == "Namespace") {
+				} else if (valb.symbol_type == SymbolType.NAMESPACE) {
 					return 1;
-				} else if (vala.type_name == "Struct") {
+				} else if (vala.symbol_type == SymbolType.STRUCT) {
 					return -1;
-				} else if (valb.type_name == "Struct") {
+				} else if (valb.symbol_type == SymbolType.STRUCT) {
 					return 1;
-				} else if (vala.type_name == "Class") {
+				} else if (vala.symbol_type == SymbolType.CLASS) {
 					return -1;
-				} else if (valb.type_name == "Class") {
+				} else if (valb.symbol_type == SymbolType.CLASS) {
 					return 1;
-				} else if (vala.type_name == "Interface") {
+				} else if (vala.symbol_type == SymbolType.INTERFACE) {
 					return -1;
-				} else if (valb.type_name == "Interface") {
+				} else if (valb.symbol_type == SymbolType.INTERFACE) {
 					return 1;
 				}
 			}

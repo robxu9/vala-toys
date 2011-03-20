@@ -51,7 +51,7 @@ namespace Afrodite
 		public string fully_qualified_name { get; set; }
 		
 		public DataType return_type { get; set; } // real symbol return type
-		public string type_name { get; set; }
+		public SymbolType symbol_type { get; set; }
 		
 		public Vala.List<SourceReference> source_references { get; set; }
 		public Vala.List<DataType> parameters { get; set; }
@@ -77,7 +77,7 @@ namespace Afrodite
 		private string _markup_des = null;
 		private string _display_name = null;
 		
-		private DataType _symbol_type = null;
+		private DataType _symbol_data_type = null;
 		
 		private Vala.List<Symbol> _specialized_symbols = null;
 
@@ -88,29 +88,26 @@ namespace Afrodite
 			}
 		}
 
-		public DataType symbol_type {
+		public DataType symbol_data_type {
 			get {
-				if (_symbol_type == null)
+				if (_symbol_data_type == null)
 					return return_type;
 					
-				return _symbol_type;
+				return _symbol_data_type;
 			}
 		}
 
-		public Symbol (string? fully_qualified_name, string? type_name)
+		public Symbol (string? fully_qualified_name, SymbolType type)
 		{
 			if (fully_qualified_name != null) {
 				string[] parts = fully_qualified_name.split (".");
 				name = parts[parts.length-1];
 				this.fully_qualified_name = fully_qualified_name;
 			}
-			if (type_name != null && type_name.has_prefix ("Vala"))
-				this.type_name = type_name.substring (4);
-			else
-				this.type_name = type_name;
+			this.symbol_type = type;
 
-			if (this.type_name == "Signal") {
-				_symbol_type = Afrodite.Utils.Symbols.get_predefined ().signal_type;
+			if (this.symbol_type == SymbolType.SIGNAL) {
+				_symbol_data_type = Afrodite.Utils.Symbols.get_predefined ().signal_type;
 			}
 		}
 		
@@ -227,8 +224,8 @@ namespace Afrodite
 				}
 			}
 
-			if (_symbol_type != null && !_symbol_type.unresolved) {
-				_symbol_type.symbol = null;
+			if (_symbol_data_type != null && !_symbol_data_type.unresolved) {
+				_symbol_data_type.symbol = null;
 			}
 		}
 
@@ -268,8 +265,8 @@ namespace Afrodite
 				unresolve_datatype_of_target (base_types, target);
 			}
 
-			if (_symbol_type != null && _symbol_type.symbol == target)
-				_symbol_type.symbol = null;
+			if (_symbol_data_type != null && _symbol_data_type.symbol == target)
+				_symbol_data_type.symbol = null;
 		}
 
 		public int static_child_count
@@ -310,7 +307,7 @@ namespace Afrodite
 			if (child.is_static || child.has_static_child) {
 				static_child_count++;
 			}
-			if (child.type_name == "CreationMethod" || child.has_creation_method_child) {
+			if (child.symbol_type == SymbolType.CREATION_METHOD || child.has_creation_method_child) {
 				creation_method_child_count++;
 			}
 		}
@@ -329,7 +326,7 @@ namespace Afrodite
 				static_child_count--;
 			}
 			if (_creation_method_child_count > 0 
-				&& (child.type_name == "CreationMethod" || child.has_creation_method_child)) {
+				&& (child.symbol_type == SymbolType.CREATION_METHOD || child.has_creation_method_child)) {
 				creation_method_child_count++;
 			}
 		}
@@ -708,17 +705,17 @@ namespace Afrodite
 					return false;
 				}
 				if (options.only_creation_methods 
-					&& type_name != "CreationMethod"
-					&& type_name != "ErrorDomain"
+					&& symbol_type != SymbolType.CREATION_METHOD
+					&& symbol_type != SymbolType.ERROR_DOMAIN
 					&& !has_creation_method_child) {
 					//debug ("excluded only creation %s: %d, %s", type_name, this.creation_method_child_count, this.fully_qualified_name);
 					return false;
 				}
-				if (options.exclude_creation_methods && type_name == "CreationMethod") {
+				if (options.exclude_creation_methods && symbol_type == SymbolType.CREATION_METHOD) {
 					//debug ("excluded exclude creation %s: %s", type_name, this.fully_qualified_name);
 					return false;
 				}
-				if (type_name == "Destructor") {
+				if (symbol_type == SymbolType.DESTRUCTOR) {
 					return false;
 				}
 
@@ -777,7 +774,7 @@ namespace Afrodite
 
 		internal string build_info ()
 		{
-			if (type_name == "Class")
+			if (symbol_type == SymbolType.CLASS)
 			{
 				var s = get_default_constructor ();
 				if (s != null) {
@@ -826,10 +823,10 @@ namespace Afrodite
 			}
 			
 			string return_type_descr = "";
-			string type_name_descr = type_name;
+			string type_name_descr = Utils.Symbols.get_symbol_type_description (symbol_type);
 			
 			if (return_type != null) {
-				if (type_name == "CreationMethod") {
+				if (symbol_type == SymbolType.CREATION_METHOD) {
 					type_name_descr = _("Class");
 				} else {
 					return_type_descr = return_type.description;
@@ -845,7 +842,7 @@ namespace Afrodite
 				    (param_count > 2 ? "\n" : ""),
 				    params);
 				    
-			if (type_name != null && !type_name.has_suffix ("Method")) {
+			if (symbol_type != SymbolType.METHOD && symbol_type != SymbolType.CREATION_METHOD && symbol_type != SymbolType.DELEGATE && symbol_type != SymbolType.SIGNAL) {
 				sb.truncate (sb.len - 3);
 			}
 
@@ -855,7 +852,7 @@ namespace Afrodite
 		private string build_description (bool markup)
 		{
 			var sb = new StringBuilder ();
-			if (type_name != "EnumValue") {
+			if (symbol_type != SymbolType.ENUM_VALUE) {
 				sb.append (this.access_string);
 				sb.append (" ");
 				if (binding_string != "") {
@@ -865,18 +862,19 @@ namespace Afrodite
 			}
 			
 			if (return_type != null) {
-				if (type_name == "Constructor") {
+				if (symbol_type == SymbolType.CONSTRUCTOR) {
 					sb.append ("constructor: ");
 				} else
 					sb.append_printf ("%s ", return_type.description);
 			}
 			if (markup 
-			    && type_name != null
-			    && (type_name == "Property" 
-			    || type_name.has_suffix ("Method")
-			    || type_name.has_suffix ("Signal")
-			    || type_name == "Field"
-			    || type_name == "Constructor"))
+			    && (symbol_type == SymbolType.PROPERTY
+			    || symbol_type == SymbolType.METHOD
+			    || symbol_type == SymbolType.DELEGATE
+			    || symbol_type == SymbolType.CREATION_METHOD
+			    || symbol_type == SymbolType.SIGNAL
+			    || symbol_type == SymbolType.FIELD
+			    || symbol_type == SymbolType.CONSTRUCTOR))
 				sb.append_printf ("<b>%s</b>".printf(display_name));
 			else
 				sb.append (display_name);
@@ -890,8 +888,11 @@ namespace Afrodite
 				sb.append ("&gt;");
 			}
 			
-			if (type_name != null 
-				&& (has_parameters || type_name.has_suffix ("Method") || type_name.has_suffix("Signal"))) {
+			if (has_parameters 
+			    || symbol_type == SymbolType.METHOD 
+			    || symbol_type == SymbolType.CREATION_METHOD 
+			    || symbol_type == SymbolType.DELEGATE
+			    || symbol_type == SymbolType.SIGNAL) {
 				sb.append (" (");
 			}
 			if (has_parameters) {
@@ -900,8 +901,11 @@ namespace Afrodite
 				}
 				sb.truncate (sb.len - 2);
 			}
-			if (type_name != null
-				&& (has_parameters || type_name.has_suffix ("Method") || type_name.has_suffix("Signal"))) {
+			if (has_parameters 
+			    || symbol_type == SymbolType.METHOD 
+			    || symbol_type == SymbolType.CREATION_METHOD 
+			    || symbol_type == SymbolType.DELEGATE
+			    || symbol_type == SymbolType.SIGNAL) {
 				sb.append (")");
 			}
 			
@@ -980,8 +984,8 @@ namespace Afrodite
 
 		public Symbol copy ()
 		{
-			var res = new Symbol (_fully_qualified_name, type_name);
-			res.type_name = this.type_name;
+			var res = new Symbol (_fully_qualified_name, symbol_type);
+			res.symbol_type = this.symbol_type;
 			res.parent = this.parent;
 
 			res.name = this.name;
@@ -997,7 +1001,7 @@ namespace Afrodite
 			res.is_abstract = this.is_abstract;
 			res.overrides = this.overrides;
 
-			res._symbol_type = _symbol_type;
+			res._symbol_data_type = _symbol_data_type;
 			res._static_child_count = this._static_child_count;
 			res._creation_method_child_count = this._creation_method_child_count;
 
@@ -1143,5 +1147,31 @@ namespace Afrodite
 				}
 			}
 		}
+	}
+	
+	public enum SymbolType
+	{
+		NONE,
+		VOID,
+		CONSTANT,
+		ENUM,
+		ENUM_VALUE,
+		FIELD,
+		PROPERTY,
+		LOCAL_VARIABLE,
+		SIGNAL,
+		CREATION_METHOD,
+		CONSTRUCTOR,
+		DESTRUCTOR,
+		METHOD,
+		DELEGATE,
+		PARAMETER,
+		ERROR_DOMAIN,
+		ERROR_CODE,
+		NAMESPACE,
+		STRUCT,
+		CLASS,
+		INTERFACE,
+		SCOPED_CODE_NODE
 	}
 }

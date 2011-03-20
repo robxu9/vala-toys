@@ -99,7 +99,7 @@ namespace Vtg
 		
 		public void goto_definition ()
 		{
-			Afrodite.Symbol? item = _provider.get_current_symbol_item (500);
+			Afrodite.Symbol? item = _provider.get_current_symbol_item ();
 			
 			if (item != null) {
 				if (item.has_source_references) {
@@ -141,7 +141,7 @@ namespace Vtg
 
 		public void goto_outerscope ()
 		{
-			Afrodite.Symbol? item = _provider.get_symbol_containing_cursor (500);
+			Afrodite.Symbol? item = _provider.get_symbol_containing_cursor ();
 			var view = _plugin_instance.window.get_active_view ();
 
 			if (item != null && view != null) {
@@ -150,7 +150,7 @@ namespace Vtg
 					string name = Utils.get_document_name (doc);
 					do {
 						item = item.parent;
-					} while (item.fully_qualified_name != null && (item.name.has_prefix ("!") || item.type_name == "Enum"));
+					} while (item.fully_qualified_name != null && (item.name.has_prefix ("!") || item.symbol_type == SymbolType.ENUM));
 
 					Afrodite.SourceReference sr = item.lookup_source_reference_filename (name);
 					if (sr != null) {
