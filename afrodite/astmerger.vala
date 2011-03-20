@@ -1075,7 +1075,7 @@ namespace Afrodite
 			int last_line = 0;
 			if (body != null && body.source_reference != null) {
 				last_line = body.source_reference.last_line;
-				print ("body for %s: %d,%d to %d,%d\n", name, body.source_reference.first_line, body.source_reference.first_column, body.source_reference.last_line, body.source_reference.last_column);
+				//debug ("body for %s: %d,%d to %d,%d\n", name, body.source_reference.first_line, body.source_reference.first_column, body.source_reference.last_line, body.source_reference.last_column);
 			}
 				
 			var s = add_codenode (SymbolType.SCOPED_CODE_NODE, node, out _current_sr, last_line);
