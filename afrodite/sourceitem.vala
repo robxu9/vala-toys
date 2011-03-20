@@ -24,29 +24,75 @@ using Vala;
 
 namespace Afrodite
 {
+	public enum SourceType
+	{
+		AUTO,
+		VALA,
+		GENIE,
+		VAPI,
+		UNKNOWN
+	}
+
+	public errordomain SourceItemErrors
+	{
+		NULL_PATH,
+		UNKNOWN_SOURCE_TYPE
+	}
+	
 	public class SourceItem
 	{
-		public string path;
-		public string content;
+		private string _path;
 
+		public string content;
+		public SourceType source_type = SourceType.AUTO;
 		public bool is_glib = false;
 		public CodeContext context = null;
 
-		public bool is_vapi 
-		{
+		public string path {
 			get {
-				return path != null && path.has_suffix (".vapi");
+				return _path;
 			}
 		}
-		
+
+		public SourceItem (string? path, SourceType source_type = SourceType.AUTO) throws SourceItemErrors
+		{
+			if (path == null && source_type == SourceType.AUTO) {
+				throw new SourceItemErrors.NULL_PATH ("You have to specified either a path or a source_type");
+			}
+
+			this._path = path;
+			if (source_type == SourceType.AUTO) {
+				this.source_type = SourceItem.get_source_type (_path);
+				if (this.source_type == SourceType.UNKNOWN) {
+					throw new SourceItemErrors.UNKNOWN_SOURCE_TYPE ("Cannot determine the source type");
+				}
+			} else {
+				this.source_type = source_type;
+			}
+		}
+
 		public SourceItem copy ()
 		{
-			var item = new SourceItem();
-			
-			item.path = path;
+			var item = new SourceItem(this.path, this.source_type);
+
 			item.content = content;
 			item.is_glib = is_glib;
 			return item;
+		}
+
+		public static SourceType get_source_type (string path)
+		{
+			SourceType result;
+			if (path.has_suffix (".vapi")) {
+				result = SourceType.VAPI;
+			} else if (path.has_suffix (".gs")) {
+				result = SourceType.GENIE;
+			} else if (path.has_suffix (".vala")) {
+				result = SourceType.VALA;
+			} else {
+				result = SourceType.UNKNOWN;
+			}
+			return result;
 		}
 	}
 }

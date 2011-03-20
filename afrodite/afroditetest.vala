@@ -222,7 +222,7 @@ public class AfroditeTest.Application : Object {
 				string filename = option_files[i];
 				print ("   %s%s\n", filename, option_live_buffers ? " (live buffer)" : "");
 				if (option_live_buffers) {
-					var source = new Afrodite.SourceItem ();
+					var source = new Afrodite.SourceItem ("live-buffer.vala", SourceType.VALA);
 					string buffer;
 					try {
 						FileUtils.get_contents(filename, out buffer);
@@ -230,7 +230,6 @@ public class AfroditeTest.Application : Object {
 						error (_("parsing options"));
 					}
 					source.content = buffer;
-					source.path = "live-buffer.vala";
 					_engine.queue_source (source);
 				} else {
 					_engine.queue_sourcefile (filename);

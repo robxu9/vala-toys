@@ -133,8 +133,7 @@ namespace Afrodite
 					var paths = Utils.get_package_paths (package, context);
 					if (paths != null) {
 						foreach (string path in paths) {
-							var item = new SourceItem ();
-							item.path = path;
+							var item = new SourceItem (path);
 							item.content = null;
 							item.is_glib = true;
 							sources.insert (0, item);
@@ -199,8 +198,7 @@ namespace Afrodite
 			var sources = new ArrayList<SourceItem> ();
 			
 			foreach (string path in paths) {
-				var item = new SourceItem ();
-				item.path = path;
+				var item = new SourceItem (path);
 				item.content = content;
 				item.is_glib = is_glib;
 				sources.add (item);
@@ -411,7 +409,7 @@ namespace Afrodite
 			Utils.trace ("engine %s: merging source %s", id, result.source_path);
 			start_time = timer.elapsed ();
 #endif
-			yield merger.merge_vala_context (s, result.context, result.is_glib);
+			yield merger.merge_vala_context (s, result.context, result.is_glib, result.is_edited);
 			result.context = null; // let's free some memory
 			merger = null;
 #if DEBUG

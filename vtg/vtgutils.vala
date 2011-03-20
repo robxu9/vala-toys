@@ -234,9 +234,13 @@ namespace Vtg
 			
 			if (dataa.has_suffix (".vala") || dataa.has_suffix(".vapi")) {
 				dataa = dataa.substring (0, dataa.length - 5);
+			} else if (dataa.has_suffix (".gs")) {
+				dataa = dataa.substring(0, dataa.length-3);
 			}
 			if (datab.has_suffix (".vala") || datab.has_suffix(".vapi")) {
 				datab = datab.substring (0, datab.length - 5);
+			} else if (datab.has_suffix (".gs")) {
+				datab = datab.substring(0, datab.length-3);
 			}
 			return strcmp (dataa, datab);
 		}
@@ -285,7 +289,7 @@ namespace Vtg
 	
 		public static bool is_vala_doc (Gedit.Document doc)
 		{
-			return doc.language != null && doc.language.id == "vala";
+			return doc.language != null && (doc.language.id == "vala" || doc.language.id == "genie");
 		}
 
 		public static bool is_inside_comment_or_literal (SourceBuffer src, TextIter pos)
@@ -354,10 +358,32 @@ namespace Vtg
 				}
 			}
 
-			if (is_vala_doc(doc) && (!name.has_suffix (".vala") && !name.has_suffix (".vapi"))) {
-				name += ".vala";
+			if (is_vala_doc(doc) && (!name.has_suffix (".vala") && !name.has_suffix (".vapi") && !name.has_suffix (".gs"))) {
+				if (get_source_type (doc) == SourceType.GENIE) {
+					name += ".gs";
+				} else {
+					name += ".vala";
+				}
 			}
 			return name;
+		}
+
+		public static SourceType get_source_type (Gedit.Document doc)
+		{
+			if (doc.language != null) {
+				if (doc.language.id == "vala") {
+					string name = doc.get_uri ();
+					if (name != null && name.has_suffix (".vapi")) {
+						return SourceType.VAPI;
+					} else {
+						return SourceType.VALA;
+					}
+				} else if (doc.language.id == "genie") {
+					return SourceType.GENIE;
+				}
+			}
+			
+			return SourceType.UNKNOWN;
 		}
 
 		public static Gtk.Builder get_builder ()
@@ -704,6 +730,19 @@ namespace Vtg
 		private static bool is_eof (string line, int i)
 		{
 			return i < 0;
+		}
+	}
+
+	namespace LanguageSupport
+	{
+		public static GLib.Regex get_using_regex (Gedit.Document doc) throws GLib.RegexError
+		{
+			if (Utils.get_source_type (doc) == SourceType.GENIE) {
+				//return new GLib.Regex ("""^\s*(uses)\s+(\w\S*).*$\n\s+(\w\S*)""", GLib.RegexCompileFlags.MULTILINE);
+				return new GLib.Regex ("""^(uses|\t+|\s+)(\w\S*)\s*\n""", GLib.RegexCompileFlags.MULTILINE);
+			} else {
+				return new GLib.Regex ("""^\s*(using)\s+(\w\S*)\s*;.*$""", GLib.RegexCompileFlags.MULTILINE);
+			}
 		}
 	}
 }

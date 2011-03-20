@@ -34,7 +34,8 @@ namespace Afrodite
 		
 		string _vala_symbol_fqn = null;
 		bool _merge_glib = true;
-
+		bool _merge_edited_file = false;
+		
 		private Afrodite.Ast _ast = null;
 
 		public AstMerger (Afrodite.Ast ast)
@@ -42,9 +43,10 @@ namespace Afrodite
 			this._ast = ast;
 		}
 
-		public async void merge_vala_context (Vala.SourceFile source, CodeContext context, bool merge_glib = false)
+		public async void merge_vala_context (Vala.SourceFile source, CodeContext context, bool merge_glib, bool merge_edited_file)
 		{
 			_merge_glib = merge_glib;
+			_merge_edited_file = merge_edited_file;
 			_vala_symbol_fqn = null;
 			_current_type = null;
 			_current = _ast.root;
@@ -359,7 +361,12 @@ namespace Afrodite
 			}
 			//Utils.trace ("visit method (param) %s: %f", m.name, timer.elapsed());
 			if (m.body != null) {
-				m.body.accept (this);
+				// don't visit method body in vapi files if not required
+				if (_merge_edited_file || _source_file.filename == null || !_source_file.filename.has_suffix (".vapi"))
+					m.body.accept (this);
+				else {
+					Utils.trace ("method: %s - skip visit body for vapi file: %s", m.name, _source_file.filename);
+				}
 			}
 			//Utils.trace ("visit method (body) %s: %f", m.name, timer.elapsed());
 			_current = prev;

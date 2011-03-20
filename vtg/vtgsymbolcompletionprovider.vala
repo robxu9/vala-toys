@@ -34,9 +34,7 @@ namespace Vtg
 		private Gdk.Pixbuf _icon;
 		private int _priority = 1;
 		private List<Gtk.SourceCompletionItem> _proposals;
-	
-		private Afrodite.SourceItem _sb = null;
-		
+
 		private uint _timeout_id = 0;
 		private uint _idle_id = 0;
 
@@ -60,20 +58,14 @@ namespace Vtg
 
 		public SymbolCompletionProvider (Vtg.SymbolCompletion symbol_completion)
 		{
+			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			_icon = this.get_icon ();
 
 			_symbol_completion = symbol_completion;
-			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
-			string name = Utils.get_document_name (doc);
-			Utils.trace ("initializing provider for document: %s", name);
-			_sb = new Afrodite.SourceItem ();
-			_sb.path = name;
-			_sb.content = doc.text;
-			
+
 			_symbol_completion.view.key_press_event.connect (this.on_view_key_press);
 			_symbol_completion.view.focus_out_event.connect (this.on_view_focus_out);
 			_symbol_completion.view.get_completion ().show.connect (this.on_completion_window_hide);
-
 			doc.notify["cursor-position"].connect (this.on_cursor_position_changed);
 			Signal.connect (doc, "saved", (GLib.Callback) on_document_saved, this);
 			
@@ -300,8 +292,6 @@ namespace Vtg
 		[CCode(instance_pos=-1)]
 		private void on_document_saved (Gedit.Document doc, void *arg1)
 		{
-			if (_sb.path != Utils.get_document_name (doc))
-				_sb.path = Utils.get_document_name (doc);
 
 			this.parse ();
 		}
@@ -400,7 +390,6 @@ namespace Vtg
 		private bool parse ()
 		{
 			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
-
 			// automatically add package if this buffer
 			// belong to the default project
 			var current_project = _symbol_completion.plugin_instance.project_view.current_project; 
@@ -410,9 +399,11 @@ namespace Vtg
 				}
 			}
 
-			// request the parse to the completion engine
-			_sb.content = doc.text;
-			_completion.queue_source (_sb);
+			string path = Utils.get_document_name (doc);
+			SourceType source_type = Utils.get_source_type (doc);
+			var source = new Afrodite.SourceItem (path, source_type);
+			source.content = doc.text;
+			_completion.queue_source (source);
 			_doc_changed = false;
 			_idle_id = 0;
 			return false;
@@ -424,11 +415,11 @@ namespace Vtg
 
 			try {
 				var text = doc.text;
-				GLib.Regex regex = new GLib.Regex ("""^\s*(using)\s+(\w\S*)\s*;.*$""");
+				GLib.Regex regex = Vtg.LanguageSupport.get_using_regex (doc);
 
-				foreach (string line in text.split ("\n")) {
+				//foreach (string line in text.split ("\n")) {
 					GLib.MatchInfo match;
-					regex.match (line, RegexMatchFlags.NEWLINE_ANY, out match);
+					regex.match (text, RegexMatchFlags.NEWLINE_ANY , out match);
 					while (match.matches ()) {
 						string using_name = null;
 
@@ -446,7 +437,7 @@ namespace Vtg
 						if (using_name != null)
 							package_name = Vbf.Utils.guess_package_vapi (using_name);
 
-						Utils.trace ("guessing name of using clause %s for package %s: %s", match.fetch (2), using_name, package_name);
+						Utils.trace ("guessing name of using clause '%s' for package '%s': '%s'", match.fetch (2), using_name, package_name);
 						if (package_name != null) {
 							var group = project_manager.project.get_group("Sources");
 							var target = group.get_target_for_id ("Default");
@@ -458,7 +449,7 @@ namespace Vtg
 						}
 						match.next ();
 					}
-				}
+				//}
 			} catch (Error err) {
 				critical ("error: %s", err.message);
 			}
@@ -825,7 +816,9 @@ namespace Vtg
 		private Afrodite.QueryResult? get_symbol_type_for_name (QueryOptions options, Afrodite.Ast ast, string word, string? whole_line, int line, int column)
 		{
 			Afrodite.QueryResult result = null;
-			result = ast.get_symbol_type_for_name_and_path (options, word, _sb.path, line, column);
+			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
+
+			result = ast.get_symbol_type_for_name_and_path (options, word, Utils.get_document_name (doc), line, column);
 			Utils.trace ("symbol matched %d", result.children.size);
 			return result;
 		}
@@ -833,8 +826,9 @@ namespace Vtg
 		private Afrodite.QueryResult? get_symbol_for_name (QueryOptions options, Afrodite.Ast ast,string word, string? whole_line, int line, int column)
 		{
 			Afrodite.QueryResult result = null;
-			result = ast.get_symbol_for_name_and_path (options, word, _sb.path, line, column);
-			
+			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
+
+			result = ast.get_symbol_for_name_and_path (options, word, Utils.get_document_name (doc), line, column);
 			return result;
 		}
 	}

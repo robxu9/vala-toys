@@ -179,7 +179,7 @@ namespace Vtg
 					check_vala_source_for_add (instance, project_manager, doc);
 				}
 			
-				if (doc.language != null && doc.language.id == "vala") {
+				if (Utils.is_vala_doc (doc)) {
 					var view = tab.get_view ();
 					instance.initialize_view (project_manager, view);
 					if (instance.source_outliner != null) {
@@ -234,7 +234,7 @@ namespace Vtg
 		{
 			foreach (Gedit.View view in _window.get_views ()) {
 				var doc = (Gedit.Document) (view.get_buffer ());
-				if (doc.language != null && doc.language.id == "vala") {
+				if (Utils.is_vala_doc (doc)) {
 					try {
 						var project = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 						initialize_view (project, view);
@@ -451,7 +451,7 @@ namespace Vtg
 				if (view.get_buffer () == sender) {
 					try {
 						var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (sender);
-						if (sender.language  == null || sender.language.id != "vala") {
+						if (!Utils.is_vala_doc (sender)) {
 							if (project_manager != null && project_manager.project.id == "vtg-default-project") {
 								check_vala_source_for_remove (instance, project_manager, sender);
 							}

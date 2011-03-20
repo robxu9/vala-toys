@@ -926,7 +926,7 @@ namespace Vtg
 				action.set_sensitive (_prj_builder.is_building);
 				
 			var doc = _plugin_instance.window.get_active_document ();
-			bool is_vala_source = (doc != null && doc.language != null && doc.language.id == "vala");
+			bool is_vala_source = (doc != null && Utils.is_vala_doc (doc));
 			action = _actions.get_action ("ProjectBuildCompileFile");
 			if (action != null)
 				action.set_sensitive (default_project && is_vala_source);

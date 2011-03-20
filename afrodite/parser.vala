@@ -46,9 +46,9 @@ namespace Afrodite
 				return;
 			}
 			if (source.content == null) 
-				source_file = new Vala.SourceFile (context, source.is_vapi ? SourceFileType.PACKAGE : SourceFileType.SOURCE, source.path); // normal source
+				source_file = new Vala.SourceFile (context, source.source_type == SourceType.VAPI ? SourceFileType.PACKAGE : SourceFileType.SOURCE, source.path); // normal source
 			else if (source.content != "") {
-				source_file = new Vala.SourceFile (context, source.is_vapi ? SourceFileType.PACKAGE : SourceFileType.SOURCE, source.path, source.content); // live buffer
+				source_file = new Vala.SourceFile (context, source.source_type == SourceType.VAPI ? SourceFileType.PACKAGE : SourceFileType.SOURCE, source.path, source.content); // live buffer
 				//Utils.trace ("queue live buffer %s:\n%s\n", source.path, source.content);
 			}
 			
@@ -77,7 +77,7 @@ namespace Afrodite
 			context.add_define ("GOBJECT");
 
 			int glib_major = 2;
-			int glib_minor = 14;
+			int glib_minor = 16;
 			context.target_glib_major = glib_major;
 			context.target_glib_minor = glib_minor;
 
@@ -89,9 +89,14 @@ namespace Afrodite
 				context.add_define ("GLIB_2_%d".printf (i));
 			}
 
-			var parser = new Vala.Parser ();
-			parser.parse (context);
-
+			if (_source.source_type == SourceType.GENIE) {
+				var parser = new Vala.Genie.Parser ();
+				parser.parse (context);
+			} else {
+				var parser = new Vala.Parser ();
+				parser.parse (context);
+			}
+			
 			CodeContext.pop ();
 			
 			parse_result.source_path = _source.path;
