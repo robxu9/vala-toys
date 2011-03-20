@@ -615,7 +615,24 @@ namespace Afrodite
 			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (p.name);
-			var s = add_symbol (SymbolType.PROPERTY, p, out _current_sr);
+			int last_line = 0;
+			if (p.get_accessor != null) {
+				var body = p.get_accessor.body;
+				if (body != null && body.source_reference != null)
+					last_line = body.source_reference.last_line;
+			}
+			if (p.set_accessor != null) {
+				var body = p.set_accessor.body;
+				if (body != null && body.source_reference != null && body.source_reference.last_line > last_line)
+					last_line = body.source_reference.last_line;
+			}
+
+			if (p.initializer != null) {
+				if (p.initializer.source_reference != null && p.initializer.source_reference.last_line > last_line)
+					last_line = p.initializer.source_reference.last_line;
+			}
+
+			var s = add_symbol (SymbolType.PROPERTY, p, out _current_sr, last_line);
 			s.return_type = new DataType (p.property_type.to_string ());
 			if (_current.has_generic_type_arguments) {
 				foreach (var gt in _current.generic_type_arguments) {
@@ -649,19 +666,6 @@ namespace Afrodite
 		public override void visit_property_accessor (PropertyAccessor a)
 		{
 			this.visit_scoped_codenode (a.readable ? "get" : "set", a, a.body);
-			/*
-			var prev = _current;
-			unowned SourceReference prev_sr = _current_sr;
-			
-			if (a.body != null 
-			    && a.body.source_reference != null
-			    && a.body.source_reference.last_line > _current_sr.last_line) {
-				_current_sr.last_line = a.body.source_reference.last_line;
-			}
-			
-			a.accept_children (this);
-			_current = prev;
-			_current_sr = prev_sr;*/
 		}
 		
 		public override void visit_error_domain (ErrorDomain ed)
@@ -1071,7 +1075,7 @@ namespace Afrodite
 			int last_line = 0;
 			if (body != null && body.source_reference != null) {
 				last_line = body.source_reference.last_line;
-				//print ("body for %s: %d,%d to %d,%d\n", name, body.source_reference.first_line, body.source_reference.first_column, body.source_reference.last_line, body.source_reference.last_column);
+				print ("body for %s: %d,%d to %d,%d\n", name, body.source_reference.first_line, body.source_reference.first_column, body.source_reference.last_line, body.source_reference.last_column);
 			}
 				
 			var s = add_codenode (SymbolType.SCOPED_CODE_NODE, node, out _current_sr, last_line);
