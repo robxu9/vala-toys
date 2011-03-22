@@ -38,6 +38,7 @@ namespace Vbf.Backends
 		private string _build_command;
 		private string _clean_command;
 		private GLib.Regex _regex;
+		private GLib.Regex _regex_genie;
 		private Vala.List<FileMonitor> _file_mons = new Vala.ArrayList<FileMonitor> ();
 		private Vala.List<string> _visited_directory;
 		private ProjectSubType _project_subtype = ProjectSubType.UNKNOWN;
@@ -141,7 +142,8 @@ namespace Vbf.Backends
 					_project_subtype = ProjectSubType.UNKNOWN;
 				}
 
-				_regex = new GLib.Regex ("""^\s*(using)\s+(\w\S*)\s*;.*$""");
+				_regex = new GLib.Regex ("""^\s*(using)\s+(\w\S*)\s*;.*$""", GLib.RegexCompileFlags.MULTILINE);
+				_regex_genie = new GLib.Regex ("""^(uses|\t+|\s+)(\w\S*)\s*\n""", GLib.RegexCompileFlags.MULTILINE);
 				_visited_directory = new Vala.ArrayList<string> ();
 				scan_directory (project.id, project, build_filename);
 				
@@ -149,6 +151,7 @@ namespace Vbf.Backends
 					setup_file_monitors (project);
 				
 				_regex = null;
+				_regex_genie = null;
 				_visited_directory.clear ();
 				_visited_directory = null;
 			} catch (Error err) {
@@ -171,7 +174,7 @@ namespace Vbf.Backends
 				} else {
 					Target target;
 					var name = file_info.get_display_name ();
-					if (name.has_suffix (".vala")) {
+					if (name.has_suffix (".vala") || name.has_suffix (".gs")) {
 						target = project.get_group (project.id).get_target_for_id (project.id);
 						add_vala_source (target, directory, file_info);
 					} else if (name.has_suffix (".vapi")) {
@@ -396,10 +399,16 @@ namespace Vbf.Backends
 				int count = 0;
 				string line;
 				size_t len;
+				GLib.Regex regex;
+				if (source.uri.has_suffix (".gs")) {
+					regex = _regex_genie;
+				} else {
+					regex = _regex;
+				}
 				while ((line = data_stream.read_line (out len)) != null && count < 100) {
 					count++;
 					GLib.MatchInfo match;
-					_regex.match (line, RegexMatchFlags.NEWLINE_ANY, out match);
+					regex.match (line, RegexMatchFlags.NEWLINE_ANY, out match);
 					while (match.matches ()) {
 						string package_name = Utils.guess_package_vapi (match.fetch (2));
 						Utils.trace ("guessing name for %s: %s", match.fetch (2), package_name);

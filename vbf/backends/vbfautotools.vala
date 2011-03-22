@@ -226,7 +226,7 @@ namespace Vbf.Backends
 		
 		private FileTypes source_file_type (string name)
 		{
-			if (name.has_suffix (".vala") || name.has_suffix (".vapi"))
+			if (name.has_suffix (".vala") || name.has_suffix (".vapi") || name.has_suffix (".gs"))
 				return FileTypes.VALA_SOURCE;
 			else
 				return FileTypes.OTHER_SOURCE;
