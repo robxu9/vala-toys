@@ -122,7 +122,7 @@ class Vala.GenProjectDialog
 					var tag_item = tag_cloud.get_item_with_text (tag);
 					if (tag_item == null) {
 						// if not exists create a new tag item
-						tag_item = new TagCloudItem (tag, 0, true);
+						tag_item = new TagCloudItem (tag, 0, SelectStatus.SELECTED);
 						tag_cloud.add_item (tag_item);
 					}
 					tag_item.occourrences++;
@@ -137,9 +137,13 @@ class Vala.GenProjectDialog
 				model.@get (iter, 1, out definition);
 				foreach (string tag in definition.tags) {
 					var tag_item = tag_cloud.get_item_with_text (tag);
-					if (tag_item != null && tag_item.selected) {
-						visible = true;
-						break;
+					if (tag_item != null) {
+						if (tag_item.select_status == SelectStatus.EXCLUDED) {
+							visible = false;
+							break; // no need to check futher tags
+						} else if (tag_item.select_status == SelectStatus.SELECTED) {
+							visible = true; // continue with the check to see if it's excluded
+						}
 					}
 				}
 				

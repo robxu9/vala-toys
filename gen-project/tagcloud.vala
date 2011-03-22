@@ -41,7 +41,7 @@ class Vala.TagCloud : Gtk.DrawingArea
 	public void add_item (TagCloudItem item)
 	{
 		_items.append (item);
-		item.notify["selected"].connect (this.on_tag_item_selected_changed);
+		item.select_status_changed.connect (this.on_tag_item_selected_changed);
 		this.queue_draw ();
 	}
 
@@ -73,7 +73,7 @@ class Vala.TagCloud : Gtk.DrawingArea
 		return null;
 	}
 	
-	private void on_tag_item_selected_changed (GLib.Object sender, ParamSpec pspec)
+	private void on_tag_item_selected_changed (GLib.Object sender)
 	{
 		this.queue_draw ();
 		this.selected_items_changed ();
@@ -97,7 +97,12 @@ class Vala.TagCloud : Gtk.DrawingArea
 	{
 		var i = hit_test (e.x, e.y);
 		if (i != null) {
-			i.selected = !i.selected;
+			if (i.select_status == SelectStatus.EXCLUDED)
+				i.select_status = SelectStatus.SELECTED;
+			else if (i.select_status == SelectStatus.SELECTED)
+				i.select_status = SelectStatus.EXCLUDED;
+			//else
+			//	i.select_status = SelectStatus.NOT_SELECTED;
 			this.queue_draw ();
 		}
 		
@@ -121,7 +126,9 @@ class Vala.TagCloud : Gtk.DrawingArea
 		int w, h;
 		e.window.get_size (out w, out h);
 
-		TextExtents te;
+		Pango.Rectangle ink_rect;
+		Pango.Rectangle logical_rect;
+		
 		c.set_source_rgb (1, 1, 1); // FIXME: use theme for this white background
 		c.rectangle (0,0, w, h);
 		c.fill ();
@@ -129,7 +136,10 @@ class Vala.TagCloud : Gtk.DrawingArea
 		Gtk.Style style = this.get_style ();
 		
 		string font_name = style.font_desc.get_family ();
-		//debug ("Using font name: %s", font_name);
+		Pango.FontDescription font = new Pango.FontDescription ();
+		font.set_family (font_name);
+		font.set_weight (Pango.Weight.NORMAL);
+
 		c.select_font_face (font_name, Cairo.FontSlant.NORMAL, Cairo.FontWeight.NORMAL);
 		double x = 4, y = 4;
 		
@@ -142,31 +152,39 @@ class Vala.TagCloud : Gtk.DrawingArea
 		double last_height = 0;
 		foreach (TagCloudItem item in _items) {
 			var size = min_size + ((max_occ - (max_occ - (item.occourrences - min_occ))) * multiplier);
-			c.set_font_size (size);
-			c.text_extents (item.text, out te);
-			if ((x + te.width) >= w) {
+			font.set_absolute_size (size * Pango.SCALE);
+
+			Pango.Layout layout = Pango.cairo_create_layout (c);
+			layout.set_font_description (font);
+			if (item.select_status == SelectStatus.EXCLUDED) {
+				layout.set_markup ("<s>%s</s>".printf(item.text), -1);
+			} else {
+				layout.set_text (item.text, -1);
+			}
+
+			layout.get_pixel_extents (out ink_rect, out logical_rect);
+
+			item.width = (int) Math.round (logical_rect.width) + 4 ;
+			item.height = (int) Math.round (logical_rect.height) + 4;
+			
+			if ((x + item.width) >= w - 4) {
 				x = 4;
 				y += last_height + 8;
 			}
-			
 
 			item.x = (int) Math.round (x);
 			item.y = (int) Math.round (y);
-			item.width = (int) Math.round (te.width) + 4 ; // item width
-			item.height = (int) Math.round (te.height - te.y_bearing); // item height
-			
-			
+
 			if (item.hilighted) {
 				Gdk.cairo_set_source_color (c, 
 					style.bg[Gtk.StateType.PRELIGHT]);
 				
 			} else {
-				if (item.selected) {
+				if (item.select_status == SelectStatus.SELECTED || item.select_status == SelectStatus.EXCLUDED) {
 					Gdk.cairo_set_source_color (c, 
 						style.bg[Gtk.StateType.SELECTED]);
 				} else {
 					Gdk.cairo_set_source_color (c, 
-//						style.bg[Gtk.StateType.INSENSITIVE]);
 						style.bg[Gtk.StateType.NORMAL]);
 				}
 			}
@@ -182,8 +200,7 @@ class Vala.TagCloud : Gtk.DrawingArea
 			c.arc (item.x + item.width -radius, item.y + item.height - radius, radius, 0, Math.PI * 0.5);
 			c.arc (item.x + radius, item.y + item.height - radius, radius, Math.PI * 0.5, Math.PI);
 			c.arc (item.x + radius, item.y +radius, radius, Math.PI, Math.PI * 1.5);
-			//c.rectangle (item.x, item.y, item.width, item.height);
-			if (item.selected)
+			if (item.select_status == SelectStatus.SELECTED || item.select_status == SelectStatus.EXCLUDED)
 				c.fill ();
 			else
 				c.stroke ();
@@ -194,10 +211,11 @@ class Vala.TagCloud : Gtk.DrawingArea
 			} else {
 				Gdk.cairo_set_source_color (c, 
 					this.style.fg[Gtk.StateType.NORMAL]);
+
 			}
-			c.move_to (item.x - te.x_bearing / 2 + 2, item.y + te.height - te.y_bearing / 2);
-			c.show_text (item.text);
-			x += te.width + 8;
+			c.move_to (item.x + 1, item.y + 1);
+			Pango.cairo_show_layout (c, layout);
+			x += logical_rect.width + 8;
 			last_height = item.height;
 		}
 

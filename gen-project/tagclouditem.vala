@@ -20,17 +20,27 @@
  * 	Andrea Del Signore <sejerpz@tin.it>
  */
 
+public enum Vala.SelectStatus
+{
+	SELECTED,
+	EXCLUDED,
+	NOT_SELECTED
+}
+
 class Vala.TagCloudItem : GLib.Object
 {
 	private string _text = "";
 	private int _occourrences = 0;
-	private bool _selected = false;
+	private SelectStatus _select_status = SelectStatus.NOT_SELECTED;
+	
 	private bool _hilighted = false;
 	
 	internal int x = 0;
 	internal int y = 0;
 	internal int width = 0;
 	internal int height = 0;
+	
+	public signal void select_status_changed ();
 	
 	public string text {
 		get {
@@ -50,12 +60,15 @@ class Vala.TagCloudItem : GLib.Object
 		}
 	}
 	
-	public bool selected {
+	public SelectStatus select_status {
 		get {
-			return _selected;
+			return _select_status;
 		}
 		set {
-			_selected = value;
+			if (_select_status != value) {
+				_select_status = value;
+				select_status_changed ();
+			}
 		}
 	}
 	
@@ -68,11 +81,11 @@ class Vala.TagCloudItem : GLib.Object
 		}
 	}
 
-	public TagCloudItem (string text, int occourrences, bool selected = false)
+	public TagCloudItem (string text, int occourrences, SelectStatus select_status = SelectStatus.NOT_SELECTED)
 	{
 		_text = text;
 		_occourrences = occourrences;
-		_selected = selected;
+		_select_status = select_status;
 	}
 }
 
