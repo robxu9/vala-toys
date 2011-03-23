@@ -134,7 +134,7 @@ namespace Vbf {
 		public string name;
 		public bool no_install;
 		public Vbf.TargetTypes type;
-		public Target (Vbf.Group group, Vbf.TargetTypes type, string id);
+		public Target (Vbf.Group group, Vbf.TargetTypes type, string id, string name);
 		public void add_package (Vbf.Package package);
 		public void add_source (Vbf.Source source);
 		public bool contains_include_dir (string dir);

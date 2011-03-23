@@ -283,7 +283,8 @@ namespace Vbf.Backends
 			Target target;
 			string normalized_id = normalize_target_id (target_id);
 			if (!group.contains_target (normalized_id)) {
-				target = new Target (group, type, normalized_id);
+				string name = normalize_target_id_for_display (target_id);
+				target = new Target (group, type, normalized_id, name);
 				group.add_target (target);
 				add_vala_sources (group, target);
 			}
@@ -339,7 +340,7 @@ namespace Vbf.Backends
 					   variable.name.has_suffix ("_LIBRARIES")) {
 					add_targets (group, variable.get_value (), TargetTypes.LIBRARY);
 				} else if (variable.name.has_suffix ("_DATA")) {
-					var target = new Target (group, TargetTypes.DATA, "data");
+					var target = new Target (group, TargetTypes.DATA, "data", "data");
 					add_data_files (group, target, variable.get_value ());
 					group.add_target (target);
 				} else if (variable.name == "BUILT_SOURCES") {
@@ -722,7 +723,28 @@ namespace Vbf.Backends
 
 			return convert_to_primary_name (result);
 		}
-		
+
+		private string normalize_target_id_for_display (string target_id)
+		{
+			var result = target_id;
+			if (result.has_suffix ("_VALASOURCES")) {
+				result = result.substring (0, result.length - "_VALASOURCES".length);
+			} else if (result.has_suffix ("_SOURCES")) {
+				result = result.substring (0, result.length - "_SOURCES".length);
+			} else if (result.has_suffix (".stamp")) {
+				result = result.substring (0, result.length - ".stamp".length);
+				if (result.has_suffix (".vala")) {
+					result = result.substring (0, result.length - ".vala".length);
+				}
+			}
+
+			if (result.has_suffix ("_la") || result.has_suffix ("_so")
+			    || result.has_suffix (".la") || result.has_suffix (".so")) {
+				result = result.substring(0, result.length - 3);
+			}
+			return result;
+		}
+
 		private string convert_to_primary_name (string data)
 		{
 			return data.replace (".", "_").replace ("-", "_");

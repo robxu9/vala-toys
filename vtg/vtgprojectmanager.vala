@@ -239,7 +239,7 @@ namespace Vtg
 			_project = new Vbf.Project ("vtg-default-project");
 			_project.name = _("default project");
 			var group = new Vbf.Group (_project, "Sources");
-			var target = new Vbf.Target (group, TargetTypes.PROGRAM, "Default");
+			var target = new Vbf.Target (group, TargetTypes.PROGRAM, "Default", _("Default"));
 			group.add_target (target);
 			_project.add_group (group);
 			_project.updated.connect (this.on_project_updated);

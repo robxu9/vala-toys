@@ -114,8 +114,8 @@ namespace Vbf.Backends
 				project.name = GLib.Filename.display_basename (file.get_basename ());
 				var group = new Group(project, project.id);
 				group.name = project.name;
-				var target = new Target (group, Vbf.TargetTypes.PROGRAM, project.id);
-				target.name = project.name;
+				var target = new Target (group, Vbf.TargetTypes.PROGRAM, project.id, project.name);
+				//target.name = project.name;
 				group.add_target (target);
 				project.add_group (group);
 

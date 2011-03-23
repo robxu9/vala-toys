@@ -46,16 +46,11 @@ namespace Vbf
 		private Vala.List<string> include_dirs = new Vala.ArrayList<string> ();
 		private Vala.List<string> built_libraries = new Vala.ArrayList<string> ();
 
-		public Target (Group group, TargetTypes type, string id)
+		public Target (Group group, TargetTypes type, string id, string name)
 		{
 			this.group = group;
 			this.id = id;
-			string[] tmp = id.split (".",2);
-			this.name = tmp[0];
-			if (this.name.has_suffix ("_la") || this.name.has_suffix ("_so")) {
-				// remove the library extension
-				this.name = this.name.substring(0, this.name.length - 3);
-			}
+			this.name = name;
 			this.type = type;
 		}
 		
