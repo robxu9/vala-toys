@@ -89,8 +89,10 @@ namespace Vtg
 
 						//sync the project combo view
 						Gtk.TreeIter iter;
-						if (this.lookup_iter_for_project_name (_current_project.project.name, out iter))
-							_prjs_combo.set_active_iter (iter);
+						if (_current_project.project != null) {
+							if (this.lookup_iter_for_project_name (_current_project.project.name, out iter))
+								_prjs_combo.set_active_iter (iter);
+						}
 					} else {
 						clear_project_treeview ();
 					}

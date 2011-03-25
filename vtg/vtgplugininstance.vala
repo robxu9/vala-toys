@@ -175,7 +175,7 @@ namespace Vtg
 			try {
 				var project_manager = Vtg.Plugin.main_instance.projects.get_project_manager_for_document (doc);
 
-				if (project_manager != null && project_manager.project.id == "vtg-default-project") {
+				if (project_manager != null && project_manager.project != null && project_manager.project.id == "vtg-default-project") {
 					check_vala_source_for_add (instance, project_manager, doc);
 				}
 			
