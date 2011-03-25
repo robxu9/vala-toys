@@ -53,7 +53,7 @@ namespace Vbf.Tests
 					dump_project (project);
 					return true;
 				} else {
-					print ("Error\n");
+					print ("Error project is null\n");
 					return false;
 				}
 
@@ -76,13 +76,13 @@ namespace Vbf.Tests
 					print ("        PACKAGE\n");
 					print ("          name....... %s\n", package.name);
 					print ("          constraint. %s\n", package.constraint);
-					print ("          version.... %s\n", package.version.to_string ());
+					print ("          version.... %s\n", package.version == null ? "(none)" : package.version.to_string ());
 				}
 			}
 			print ("  GROUPS\n");
 			foreach (Group group in project.get_groups ()) {
 				print ("    GROUP\n");
-				print ("      name %s\n", group.name);				
+				print ("      name %s\n", group.name);
 				print ("      TARGETS\n");
 				foreach (Target target in group.get_targets ()) {
 					print ("        TARGET\n");
@@ -111,6 +111,11 @@ namespace Vbf.Tests
 					}
 
 				}
+				print ("     GROUP VAPI DIRS\n");
+				foreach(string path in group.get_include_dirs ()) {
+					print ("        DIRECTORY %s\n", path);
+				}
+
 				print ("      GROUP REFERENCED PACKAGES\n");
 				foreach (Package package in group.get_packages ()) {
 					print ("        PACAKGE: %s", package.name);

@@ -118,6 +118,13 @@ namespace Vbf.Backends
 								name = match.fetch (1);
 								version = match.fetch (2);
 								url = match.fetch (3);
+							} else {
+								reg = new GLib.Regex ("AC_INIT\\s*\\(\\[(.*)\\],\\s*\\[(.*)\\],\\s*\\[(.*)\\],", GLib.RegexCompileFlags.MULTILINE);
+								if (reg.match (buffer, RegexMatchFlags.NEWLINE_ANY, out match)) {
+									name = match.fetch (1);
+									version = match.fetch (2);
+									url = match.fetch (3);
+								}
 							}
 						}
 					}
@@ -552,11 +559,13 @@ namespace Vbf.Backends
 					string include_filename = makefile.replace ("Makefile.am", filename);
 					string included_file;
 					try {
-					  if (FileUtils.get_contents (include_filename, out included_file)) {
-						  res = res.replace ("include %s".printf(filename), included_file);
-					  }
-					}	catch (Error e) {
-					  warning ("Cannot include %s", filename);
+						if (FileUtils.test (include_filename, FileTest.EXISTS)) {
+							if (FileUtils.get_contents (include_filename, out included_file)) {
+								res = res.replace ("include %s".printf(filename), included_file);
+							}
+						}
+					} catch (Error e) {
+						warning ("Cannot include %s", filename);
  					}
 				}
 			}
@@ -641,16 +650,22 @@ namespace Vbf.Backends
 				for(int idx=0; idx < count; idx++) {
 					if (tmps[idx] == "--vapidir" && (idx + 1) < count) {
 						var tmp = tmps[idx+1];
+
+						Utils.trace ("vapi: %s", tmp);
 						if (tmp.has_prefix (".")) {
 							tmp = Path.build_filename (group.project.id, group.name, tmp);
 						} else if (tmp.has_prefix("$(srcdir)")) {
 							tmp = tmp.replace ("$(srcdir)", Path.build_filename (group.project.id, group.name));
 						} else if (tmp.has_prefix("$(top_srcdir)")) {
 							tmp = tmp.replace ("$(top_srcdir)", group.project.id);
+						} else {
+							tmp = Path.build_filename (group.project.id, group.name, tmp);
 						}
+
 						if (target != null) {
 							target.add_include_dir (tmp);
 						} else {
+							Utils.trace ("adding vapidir %s to group because target is null", tmp);
 							group.add_include_dir (tmp);
 						}
 						idx++;
@@ -667,7 +682,7 @@ namespace Vbf.Backends
 						if (target != null) {
 							target.add_package (new Package (tmp));
 						} else {
-							Utils.trace ("adding to group because target is null");
+							Utils.trace ("adding package %s to group because target is null", tmp);
 							group.add_package (new Package (tmp));
 						}
 						idx++;

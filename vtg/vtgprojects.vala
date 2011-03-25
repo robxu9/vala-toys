@@ -155,6 +155,9 @@ namespace Vtg
 				dir = dir.get_parent ();
 			} while (dir != null);
 
+			if (root != null) {
+				Utils.trace ("found project directory: %s", root);
+			}
 			return root != null;
 		}
 

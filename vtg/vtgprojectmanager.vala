@@ -307,11 +307,29 @@ namespace Vtg
 
 					/* setup referenced packages */
 					Vala.List<string> vapis = target.get_include_dirs ();
-					string[] vapi_dirs = new string[vapis.size];
+					Vala.List<string> group_vapis = group.get_include_dirs ();
+
+					//TODO: duplicate entries should be removed
+					string[] vapi_dirs = new string[vapis.size + group_vapis.size];
 					int index = 0;
 					foreach (string item in vapis)
 						vapi_dirs[index++] = item;
+					foreach (string item in group_vapis) {
+						vapi_dirs[index++] = item;
+					}
 
+					foreach (Package package in group.get_packages ()) {
+						Utils.trace ("setup_completions: group %s, referenced package: %s", group.id, package.id);
+						var paths = Afrodite.Utils.get_package_paths (package.id, null, vapi_dirs);
+						if (paths != null) {
+							//foreach (string path in paths)
+							//	GLib.debug ("     target %s, referenced package: %s -> %s", target.id, package.id, path);
+							completion.queue_sourcefiles (paths, null, true);
+						} else {
+							Utils.trace ("setup_completions: group %s, no vapi found for: %s", group.id, package.id);
+						}
+					}
+					
 					foreach (Package package in target.get_packages ()) {
 						Utils.trace ("setup_completions: target %s, referenced package: %s", target.id, package.id);
 						var paths = Afrodite.Utils.get_package_paths (package.id, null, vapi_dirs);
@@ -338,6 +356,8 @@ namespace Vtg
 					foreach (PluginInstance instance in Vtg.Plugin.main_instance.instances) {
 						instance.bind_completion_engine_with_target (target, completion);
 					}
+					
+
 				}
 			}
 		}
