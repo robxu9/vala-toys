@@ -132,7 +132,11 @@ namespace Vbf.Backends
 			
 				project.clear ();
 				project.name = normalize_string (name);
-				project.version = normalize_string (version);
+				if (version != null && version != "" && version[0].isdigit()) {
+					project.version = normalize_string (version);
+				} else {
+					project.version = "";
+				}
 				project.url = normalize_string (url);
 				project.working_dir = project.id;
 				
