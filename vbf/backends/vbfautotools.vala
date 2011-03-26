@@ -170,15 +170,19 @@ namespace Vbf.Backends
 							int idx = 0;
 							while (pkgs[idx] != null) {
 								string pkg = pkgs[idx];
-								if (pkg == "\\") {idx++; continue;}
-								string variable = pkg.str ("$");
-								
-								if (variable != null) {
-									var var_name = variable.replace ("(", "").replace (")", "").substring (1);
-									Utils.trace ("Resoving variables: %s", var_name);
+								if (pkg == "\\") {
+									idx++;
+									continue;
+								}
+								int index = pkg.index_of ("$");
+
+								if (index >= 0) {
+									string variable = pkg.substring (index);
+									var var_name = variable.replace ("(", "").replace (")", "").substring(1);
+									Utils.trace ("Resolving variables: %s", var_name);
 									var res = this.resolve_variable (var_name, project.get_variables ());
 									if (res != null) {
-										Utils.trace ("resolved: %s", res.get_value ().to_string ());
+										Utils.trace ("resolved: %s = %s", variable, res.get_value ().to_string ());
 										pkg = pkg.replace (variable, res.get_value ().to_string ());
 									}
 								}
@@ -193,6 +197,7 @@ namespace Vbf.Backends
 	    								idx++;
 	    								ConfigNode node;
 	    								var val = pkgs[idx];
+	    								
 	    								if (val.has_prefix ("$")) {
 	    									node = new UnresolvedConfigNode (pkgs[idx].substring (1, pkgs[idx].length -1));
 	    								} else if (val != null){
@@ -675,8 +680,10 @@ namespace Vbf.Backends
 						idx++;
 					} else if (tmps[idx] == "--pkg" && (idx + 1) < count) {
 						var tmp = tmps[idx+1];
-						string variable = tmp.str ("$");
-						if (variable != null) {
+						int index = tmp.index_of ("$");
+
+						if (index >= 0) {
+							string variable = tmp.substring (index);
 							var var_name = variable.replace ("(", "").replace (")", "").substring (1);
 							var res = this.resolve_variable (var_name, group.project.get_variables ());
 							if (res != null) {
