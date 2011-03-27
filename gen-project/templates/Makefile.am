@@ -8,9 +8,12 @@ dist_templates_DATA = \
 	console-vala-template.ini \
 	console-vala-template.png \
 	console-vala-template.tar.gz \
-	gtk+-vala-template.ini \
-	gtk+-vala-template.png \
-	gtk+-vala-template.tar.gz \
+	gtk+-2.0-vala-template.ini \
+	gtk+-2.0-vala-template.png \
+	gtk+-2.0-vala-template.tar.gz \
+	gtk+-2.0-genie-template.ini \
+	gtk+-2.0-genie-template.png \
+	gtk+-2.0-genie-template.tar.gz \
 	sharedlib-vala-template.ini \
 	sharedlib-vala-template.png \
 	sharedlib-vala-template.tar.gz \
