@@ -127,6 +127,16 @@ class Vala.GenProjectDialog
 					}
 					tag_item.occourrences++;
 				}
+
+				// add a tag item for the language
+				var tag_item = tag_cloud.get_item_with_text (definition.language);
+				if (tag_item == null) {
+					// if not exists create a new tag item
+					tag_item = new TagCloudItem (definition.language, 0, SelectStatus.SELECTED);
+					tag_cloud.add_item (tag_item);
+				}
+				tag_item.occourrences++;
+
 				count++;
 			}
 			var filtered_model = new Gtk.TreeModelFilter (model, null);
@@ -144,6 +154,16 @@ class Vala.GenProjectDialog
 						} else if (tag_item.select_status == SelectStatus.SELECTED) {
 							visible = true; // continue with the check to see if it's excluded
 						}
+					}
+				}
+				
+				// check the language too
+				var tag_item = tag_cloud.get_item_with_text (definition.language);
+				if (tag_item != null) {
+					if (tag_item.select_status == SelectStatus.EXCLUDED) {
+						visible = false;
+					} else if (tag_item.select_status == SelectStatus.SELECTED) {
+						visible = true; // continue with the check to see if it's excluded
 					}
 				}
 				
