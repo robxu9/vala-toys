@@ -88,10 +88,14 @@ namespace Vbf.Utils
 
 	public bool is_simple_make_project (string path)
 	{
-		string file = Path.build_filename (path, "Makefile");
+		string makefile = Path.build_filename (path, "Makefile");
+		string makefile_am = Path.build_filename (path, "Makefile.am");
+		string makefile_in = Path.build_filename (path, "Makefile.in");
 		bool res = false;
 
-		if (GLib.FileUtils.test (file, FileTest.EXISTS)) {
+		if (GLib.FileUtils.test (makefile, FileTest.EXISTS) 
+		    && !GLib.FileUtils.test (makefile_in, FileTest.EXISTS)
+		    && !GLib.FileUtils.test (makefile_am, FileTest.EXISTS)) {
 			res = true;
 		}
 
