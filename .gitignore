@@ -68,7 +68,6 @@ afrodite/afrodite-1.0.gidl
 gen-project/libgen-project/gen-project-1.0.vapi
 .version
 vbf/backends/.dirstamp
-templates
 patches
 ChangeLog
 afrodite/afroditetest
