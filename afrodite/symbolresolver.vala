@@ -65,167 +65,19 @@ namespace Afrodite
 			}
 
 		}
-		
+
 		private Symbol? resolve_type (Symbol symbol, DataType type)
 		{
-			Symbol res = null;
+			var res = resolve_type_name (symbol, type.type_name);
 
-			// void symbol
-			if (type.type_name == "void") {
-				res = Symbol.VOID;
-			} else if (type.type_name == "...") {
-				res = Symbol.VOID;
-			}
-
-			// first try with the ast symbol index: fastest mode
-			if (res == null) {
+			// if not found and there is a "." may be is a fully qualified name, do a global lookup
+			if (res == null && type.type_name.contains (".")) {
+				//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
 				var s = _ast.symbols.@get (type.type_name);
 				if (s != null && s != symbol) {
 					res = s;
-				} else {
-					// test if is a generic type parameter
-					Symbol curr_symbol = symbol;
-					while (curr_symbol != null && curr_symbol != _ast.root) {
-						if (curr_symbol.name.has_prefix ("!") == false && curr_symbol.has_generic_type_arguments) {
-							foreach (var arg in curr_symbol.generic_type_arguments) {
-								if (type.type_name == arg.fully_qualified_name) {
-									res = arg;
-									break;
-								}
-							}
-						}
-						if (res != null) {
-							break;
-						}
-						curr_symbol = curr_symbol.parent;
-					}
-
-					// namespace that contains this symbol are automatically in scope
-					// from the inner one to the outmost
-					if (res == null) {
-						curr_symbol = symbol;
-						while (curr_symbol != null && curr_symbol != _ast.root) {
-							if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
-								s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type.type_name));
-								if (s != null && s != symbol) {
-									res = s;
-									break;
-								}
-							}
-							curr_symbol = curr_symbol.parent;
-						}
-					}
-
-					if (res == null) {
-						// try with the imported namespaces
-						bool has_glib_using = false;
-						foreach (SourceReference reference in symbol.source_references) {
-							var file = reference.file;
-							if (!file.has_using_directives) {
-								continue;
-							}
-
-							foreach (DataType using_directive in file.using_directives) {
-								if (using_directive.unresolved)
-									continue;
-
-								if (using_directive.name == "GLib") {
-									has_glib_using = true;
-								}
-
-								//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
-								s = _ast.symbols.@get ("%s.%s".printf (using_directive.type_name, type.type_name));
-								if (s != null && s != symbol) {
-									res = s;
-									break;
-								}
-							}
-
-							if (res != null) {
-								break;
-							}
-						}
-						if (res == null) {
-							if (!has_glib_using) {
-								// GLib namespace is automatically imported
-								s = _ast.symbols.@get ("GLib.%s".printf (type.type_name));
-								if (s != null && s != symbol) {
-									res = s;
-								}
-							}
-						}
-					}
-
-					// if not found and there is a "." may be is a fully qualified name, do a global lookup
-					if (res == null && type.type_name.contains (".")) {
-						//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
-						s = _ast.symbols.@get (type.type_name);
-						if (s != null && s != symbol) {
-							res = s;
-						}
-					}
 				}
 			}
-
-			/*
-			// optimization: first resolve in a direct lookup (just for simple types)
-			if (res == null) {
-				string[] tmp = type.type_name.split (".", 2);
-				var s = _ast.root.lookup_child (tmp[0]);
-				if (s != null) {
-					if (tmp.length > 1) {
-						// search for the remaining part
-						s = Ast.lookup_symbol (tmp[1], s, ref parent, Afrodite.CompareMode.EXACT);
-						if (s != null && s != symbol) {
-							res = s;
-						}
-					} else {
-						res = s;
-					}
-				}
-			}
-
-			// resolve symbol
-			//    first lookup: child symbols eg. MyInnerClass.MyEnum.VALUE
-			//    after lookup: in parent symbols
-			var curr_parent = symbol;
-			while (res == null && curr_parent != null) {
-				if (curr_parent.has_children) {
-					var s = Ast.lookup_symbol (type.type_name, curr_parent, ref parent, Afrodite.CompareMode.EXACT);
-					if (s != null && s != symbol) {
-						res = s;
-					}
-				}
-				curr_parent = curr_parent.parent;
-			}
-
-			if (res == null) {
-				// lookup in using directives
-				if (symbol.has_source_references) {
-					foreach (SourceReference reference in symbol.source_references) {
-						var file = reference.file;
-						if (!file.has_using_directives) {
-							continue;
-						}
-					
-						foreach (DataType using_directive in file.using_directives) {
-							if (using_directive.unresolved)
-								continue;
-
-							var s = Ast.lookup_symbol (type.type_name, using_directive.symbol, ref parent, Afrodite.CompareMode.EXACT);
-							if (s != null && s != symbol) {
-								res = s;
-								break;
-							}
-						}
-					
-						if (res != null) {
-							break; // symbol.source_references
-						}
-					}
-				}
-			}
-			*/
 
 			if (res != null) {
 				if (type.has_generic_types) {
@@ -257,6 +109,127 @@ namespace Afrodite
 					res.add_resolved_target (symbol);
 				}
 			}
+
+			return res;
+		}
+
+		private Symbol? resolve_type_name (Symbol symbol, string type_name)
+		{
+			string[] parts = type_name.split(".");
+			var current = symbol;
+			//Utils.trace ("START Resolving symbol %s type %s", current.name, type_name);
+			foreach (string part in parts) {
+				//Utils.trace ("\tresolving from %s: %s", current.name, part);
+				current = resolve_type_name_part (current, part);
+				if (current != null) {
+					if (current.symbol_data_type != null) {
+						if (current.symbol_data_type.unresolved)
+							visit_symbol (current);
+
+						current = current.symbol_data_type.symbol;
+					}
+				}
+				if (current == null)
+					break;
+
+			}
+			
+			//Utils.trace ("END  Resolving symbol %s type %s: %s\n", symbol.name, type_name, current == null ? "NOT RESOLVED" : current.name);
+			return current != symbol ? current : null;
+		}
+
+		private Symbol? resolve_type_name_part (Symbol symbol, string type_name)
+		{
+			Symbol res = null;
+
+			// void symbol
+			if (type_name == "void") {
+				res = Symbol.VOID;
+			} else if (type_name == "...") {
+				res = Symbol.VOID;
+			}
+
+			// first try with the ast symbol index: fastest mode
+			if (res == null) {
+				var s = _ast.symbols.@get (type_name);
+				if (s != null && s != symbol) {
+					res = s;
+				} else {
+					// test if is a generic type parameter
+					Symbol curr_symbol = symbol;
+					while (curr_symbol != null && curr_symbol != _ast.root) {
+						if (curr_symbol.name.has_prefix ("!") == false && curr_symbol.has_generic_type_arguments) {
+							foreach (var arg in curr_symbol.generic_type_arguments) {
+								if (type_name == arg.fully_qualified_name) {
+									res = arg;
+									break;
+								}
+							}
+						}
+						if (res != null) {
+							break;
+						}
+						curr_symbol = curr_symbol.parent;
+					}
+
+					// namespace that contains this symbol are automatically in scope
+					// from the inner one to the outmost
+					if (res == null) {
+						curr_symbol = symbol;
+						while (curr_symbol != null && curr_symbol != _ast.root) {
+							if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
+								s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type_name));
+								if (s != null && s != symbol) {
+									res = s;
+									break;
+								}
+							}
+							curr_symbol = curr_symbol.parent;
+						}
+					}
+
+					if (res == null) {
+						// try with the imported namespaces
+						bool has_glib_using = false;
+						foreach (SourceReference reference in symbol.source_references) {
+							var file = reference.file;
+							if (!file.has_using_directives) {
+								continue;
+							}
+
+							foreach (DataType using_directive in file.using_directives) {
+								if (using_directive.unresolved)
+									continue;
+
+								if (using_directive.name == "GLib") {
+									has_glib_using = true;
+								}
+
+								//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
+								s = _ast.symbols.@get ("%s.%s".printf (using_directive.type_name, type_name));
+								if (s != null && s != symbol) {
+									res = s;
+									break;
+								}
+							}
+
+							if (res != null) {
+								break;
+							}
+						}
+						if (res == null) {
+							if (!has_glib_using) {
+								// GLib namespace is automatically imported
+								s = _ast.symbols.@get ("GLib.%s".printf (type_name));
+								if (s != null && s != symbol) {
+									res = s;
+								}
+							}
+						}
+					}
+				}
+			}
+
 			return res;
 		}
 

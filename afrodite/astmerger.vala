@@ -364,9 +364,6 @@ namespace Afrodite
 				// don't visit method body in vapi files if not required
 				if (_merge_edited_file || _source_file.filename == null || !_source_file.filename.has_suffix (".vapi"))
 					m.body.accept (this);
-				else {
-					Utils.trace ("method: %s - skip visit body for vapi file: %s", m.name, _source_file.filename);
-				}
 			}
 			//Utils.trace ("visit method (body) %s: %f", m.name, timer.elapsed());
 			_current = prev;
@@ -779,7 +776,7 @@ namespace Afrodite
 			if (local.variable_type != null) {
 				s.type_name = get_datatype_typename (local.variable_type);
 			} else if (local.variable_type == null) {
-				Utils.trace ("infer from init '%s': %s", s.name, local.initializer.type_name);
+				//Utils.trace ("infer from init '%s': %s", s.name, local.initializer.type_name);
 				// try to resolve local variable type from initializers
 				if (local.initializer != null) {
 					var prev_inferred_type = _inferred_type;
@@ -794,9 +791,21 @@ namespace Afrodite
 					}
 
 					// simplify binary expressions like: var a = "A" + method() + "B";
-					// that returns string.string.string => string
+					// that returns string.string => string
 					if (local.initializer is BinaryExpression && s.type_name != null) {
-						s.type_name = s.type_name.split(".", 2)[0];
+						string[] tmps = s.type_name.split(".");
+						if (tmps.length <= 2) {
+							s.type_name = tmps[0];
+						} else {
+							// here we simplify: "A" + "B" + object_constr_Test.field.to_string () + "C" + "D";
+							// that returns Test.field.to_string.string => Test.field.to_string
+
+							string type_name = "";
+							for(int i=0; i < tmps.length - 1; i++) {
+								type_name =  type_name.concat (tmps[i], ".");
+							}
+							s.type_name = type_name.substring(0, type_name.length - 1);
+						}
 					}
 					_inferred_type = prev_inferred_type;
 				}
@@ -846,7 +855,7 @@ namespace Afrodite
 				return;
 
 			string member_name = expr.member_name;
-			Utils.trace ("MemberAccess %s - %s: %s -> %s (%s)", _inferred_type.name, _current.name, expr.member_name,  expr.inner == null ? "TRUE" : "FALSE", expr.inner != null ? expr.inner.to_string() : "");
+			//Utils.trace ("MemberAccess %s - %s: %s -> %s (%s)", _inferred_type.name, _current.name, expr.member_name,  expr.inner == null ? "TRUE" : "FALSE", expr.inner != null ? expr.inner.to_string() : "");
 			if (expr.inner == null) {
 				// Utils.trace (".\n");
 				// this is the last iteration
@@ -856,24 +865,28 @@ namespace Afrodite
 					DataType d = _current.lookup_datatype_for_variable_name (CompareMode.EXACT, member_name);
 					if (d != null) {
 						member_name = d.type_name;
-					} else if (_current.parent != null) {
+					} /* else if (_current.parent != null) {
 						d = _current.parent.lookup_datatype_for_symbol_name (CompareMode.EXACT, member_name);
 						if (d != null) {
 							member_name = d.type_name;
-						} /* else {
+						}*/ /* else {
 							// this is the slowest path
 							d = _current.scope_lookup_datatype_for_name (CompareMode.EXACT, member_name);
 							if (d != null) {
 								member_name = d.type_name;
 							}
 						}*/
-					}
+					//}
 				}
 			}
 			if (_inferred_type.type_name == null || _inferred_type.type_name == "") {
 				_inferred_type.type_name = member_name;
 			} else {
 				_inferred_type.type_name = "%s.%s".printf (member_name, _inferred_type.type_name);
+			}
+
+			if (expr.inner != null) {
+				expr.inner.accept (this);
 			}
 		}
 		
