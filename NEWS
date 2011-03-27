@@ -1,3 +1,10 @@
+Vala toys for gEdit version 0.11.2
+==================================
+
+* Improved libafrodite stability
+* Experimental GENIE support
+* Various fixes in the Vbf autotools backend
+
 Vala toys for gEdit version 0.11.0
 ==================================
 
