@@ -779,7 +779,7 @@ namespace Afrodite
 			if (local.variable_type != null) {
 				s.type_name = get_datatype_typename (local.variable_type);
 			} else if (local.variable_type == null) {
-				//Utils.trace ("infer from init '%s': %s", s.name, local.initializer.type_name);
+				Utils.trace ("infer from init '%s': %s", s.name, local.initializer.type_name);
 				// try to resolve local variable type from initializers
 				if (local.initializer != null) {
 					var prev_inferred_type = _inferred_type;
@@ -793,6 +793,11 @@ namespace Afrodite
 						s.type_name = s.type_name.substring (5);
 					}
 
+					// simplify binary expressions like: var a = "A" + method() + "B";
+					// that returns string.string.string => string
+					if (local.initializer is BinaryExpression && s.type_name != null) {
+						s.type_name = s.type_name.split(".", 2)[0];
+					}
 					_inferred_type = prev_inferred_type;
 				}
 
@@ -841,7 +846,7 @@ namespace Afrodite
 				return;
 
 			string member_name = expr.member_name;
-			//Utils.trace ("MemberAccess %s - %s: %s -> %s (%s)", _inferred_type.name, _current.name, expr.member_name,  expr.inner == null ? "TRUE" : "FALSE", expr.inner != null ? expr.inner.to_string() : "");
+			Utils.trace ("MemberAccess %s - %s: %s -> %s (%s)", _inferred_type.name, _current.name, expr.member_name,  expr.inner == null ? "TRUE" : "FALSE", expr.inner != null ? expr.inner.to_string() : "");
 			if (expr.inner == null) {
 				// Utils.trace (".\n");
 				// this is the last iteration
@@ -872,12 +877,15 @@ namespace Afrodite
 			}
 		}
 		
+
+		public override void visit_method_call (MethodCall mc)
+		{
+			mc.call.accept (this);
+		}
+
 		public override void visit_object_creation_expression (ObjectCreationExpression expr) 
 		{
-			if (_inferred_type == null)
-				return;
-
-			expr.member_name.accept_children (this);
+			expr.member_name.accept (this);
 		}
 
 		/*
