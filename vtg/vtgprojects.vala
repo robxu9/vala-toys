@@ -113,28 +113,47 @@ namespace Vtg
 
 		internal ProjectManager get_project_manager_for_document (Gedit.Document document) throws GLib.Error
 		{
+			ProjectManager result = null;
+			
 			var file = Utils.get_document_name (document);
 			if (file != null) {
 				foreach (ProjectManager project_manager in _project_managers) {
 					if (project_manager.contains_filename (file)) {
-						return project_manager;
+						result = project_manager;
+						break;
 					}
 				}
 			}
 
-			// check if we can automatically open a project in its root folder
-			string root = null;
-			if (Vtg.Plugin.main_instance.config.project_find_root_folder
-			    && Utils.is_vala_doc (document)
-			    && find_project_root_folder (file, out root)) {
-				// open this project instead
-				var project = this.open_project (root);
-				project.automanaged = true;
-				return project;
+			if (result == null && FileUtils.test (file, FileTest.EXISTS)) {
+				// check if we can automatically open a project in its root folder
+				string root = null;
+				if (Vtg.Plugin.main_instance.config.project_find_root_folder
+				    && Utils.is_vala_doc (document)
+				    && find_project_root_folder (file, out root)) {
+
+					// don't reopen the same project multiple times
+					foreach (ProjectManager project_manager in _project_managers) {
+						if (project_manager.project.id.has_prefix (root)) {
+							result = project_manager;
+							break;
+						}
+					}
+
+					if (result == null) {
+						var project = this.open_project (root);
+						project.automanaged = true;
+						result = project;
+					}
+				}
 			}
 
 			// if not found always return default project
-			return _default_project;
+			if (result == null) {
+				result = _default_project;
+			}
+
+			return result;
 		}
 
 		private bool find_project_root_folder (string file, out string? root)
