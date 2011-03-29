@@ -185,6 +185,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 AC_CONFIG_FILES([
 	Makefile
 	afrodite/Makefile
+	afrodite/tests/Makefile
 	gen-project/libgen-project/Makefile
 	gen-project/ui/Makefile
 	gen-project/Makefile

@@ -3,6 +3,7 @@ NULL =
 AUTOMAKE_OPTIONS = subdir-objects
 
 SUBDIRS = \
+	tests \
 	$(NULL)
 
 AM_CPPFLAGS = \

@@ -26,3 +26,6 @@ vtg/vtgsymbolcompletionprovider.c
 afrodite/afroditetest.c
 afrodite/symbol.c
 afrodite/utils.c
+data/org.gnome.gedit.plugins.vala-toys.gschema.xml.in
+ui/gen-project.ui
+
