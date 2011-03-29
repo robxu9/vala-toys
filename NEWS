@@ -3,6 +3,7 @@ Vala toys for gEdit version 0.11.2
 
 * Improved libafrodite stability
 * Experimental GENIE support
+* Afrodite has an initial test suite
 * Various fixes in the Vbf autotools backend
 
 Vala toys for gEdit version 0.11.0

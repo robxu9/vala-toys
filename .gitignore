@@ -71,5 +71,5 @@ patches
 ChangeLog
 afrodite/afroditetest
 configure
-tests/tests-basic
-tests/tests-var
+afrodite/tests/tests-basic
+afrodite/tests/tests-var
