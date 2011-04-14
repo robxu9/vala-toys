@@ -751,6 +751,7 @@ namespace Afrodite
 						d.is_ref = true;
 						break;
 				}
+				d.is_array = p.variable_type.is_array ();
 			}
 			_current.add_parameter (d);
 		}
