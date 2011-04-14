@@ -23,16 +23,20 @@ namespace Tests
 			return "a".concat ("b");
 		}
 
-		public int do_computation ()
+		public int do_computation (int[] array_param_int)
 		{
-			return 0;
+			int result = 0;
+
+			foreach (int param_int in array_param_int) {
+				result += param_int;
+			}
+			return result;
 		}
 
-		public static Test factory(string field)
+		public static Test factory(string param_str)
 		{
-			return new Test(field);
+			return new Test(parameter);
 		}
-
 	}
 
 	public static void main()

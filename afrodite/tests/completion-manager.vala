@@ -51,7 +51,7 @@ namespace AfroditeTests
 			options.access = Afrodite.SymbolAccessibility.ANY;
 			options.binding = Afrodite.MemberBinding.ANY;
 
-			QueryResult sym = _engine.ast.get_symbol_type_for_name_and_path (options, name, _filename, at_line, at_column);
+			QueryResult sym = _engine.ast.get_symbol_for_name_and_path (options, name, _filename, at_line, at_column);
 			return sym;
 		}
 	}
