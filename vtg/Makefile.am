@@ -79,13 +79,13 @@ libvtg_la_LIBADD = \
 	$(NULL)
 
 libvtg_DATA = \
-	vtg.gedit-plugin \
+	vtg.plugin \
 	$(NULL)
 
 EXTRA_DIST = \
 	$(libvtg_la_VALASOURCES) \
 	libvtg_la.vala.stamp \
-	vtg.gedit-plugin
+	vtg.plugin
 	$(NULL)
 
 DISTCLEANFILES = \
