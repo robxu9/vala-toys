@@ -33,7 +33,7 @@ namespace Vtg
 		
 		private Gdk.Pixbuf _icon;
 		private int _priority = 1;
-		private List<Gtk.SourceCompletionItem> _proposals;
+		private List<GtkSource.CompletionItem> _proposals;
 
 		private uint _timeout_id = 0;
 		private uint _idle_id = 0;
@@ -119,11 +119,7 @@ namespace Vtg
 
 		public bool match (GtkSource.CompletionContext context)
 		{
-<<<<<<< HEAD
-			Gtk.SourceBuffer src = (Gtk.SourceBuffer) _symbol_completion.view.get_buffer ();
-=======
 			var src = (GtkSource.Buffer) _symbol_completion.view.get_buffer ();
->>>>>>> Ported to gnome 3.0
 			weak TextMark mark = (TextMark) src.get_insert ();
 			TextIter start;
 

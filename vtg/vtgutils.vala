@@ -382,7 +382,7 @@ namespace Vtg
 		{
 			if (doc.language != null) {
 				if (doc.language.id == "vala") {
-					string name = doc.get_uri ();
+					string name = doc.location.get_uri ();
 					if (name != null && name.has_suffix (".vapi")) {
 						return SourceType.VAPI;
 					} else {
