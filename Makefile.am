@@ -17,7 +17,7 @@ if HAVE_VTGPLUGIN
 SUBDIRS += vbf vtg images ui po data
 endif
 
-vtgdocdir = ${prefix}/doc/vtg
+vtgdocdir = ${docdir}/vtg
 vtgdoc_DATA = \
         README\
         COPYING-GPL\
