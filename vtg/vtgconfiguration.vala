@@ -241,27 +241,27 @@ namespace Vtg
 					email_address = new_val;
 				}
 			} else if (key == "outliner-show-private-symbols") {
-				var new_val = _settings_prefs.get_boolean ("outliner-show-private-symbols");
+				var new_val = _settings_state.get_boolean ("outliner-show-private-symbols");
 				if (_outliner_show_private_symbols != new_val) {
 					outliner_show_private_symbols = new_val;
 				}
 			} else if (key == "outliner-show-public-symbols") {
-				var new_val = _settings_prefs.get_boolean ("outliner-show-public-symbols");
+				var new_val = _settings_state.get_boolean ("outliner-show-public-symbols");
 				if (_outliner_show_public_symbols != new_val) {
 					outliner_show_public_symbols = new_val;
 				}
 			} else if (key == "outliner-show-protected-symbols") {
-				var new_val = _settings_prefs.get_boolean ("outliner-show-protected-symbols");
+				var new_val = _settings_state.get_boolean ("outliner-show-protected-symbols");
 				if (_outliner_show_protected_symbols != new_val) {
 					outliner_show_protected_symbols = new_val;
 				}
 			} else if (key == "outliner-show-internal-symbols") {
-				var new_val = _settings_prefs.get_boolean ("outliner-show-internal-symbols");
+				var new_val = _settings_state.get_boolean ("outliner-show-internal-symbols");
 				if (_outliner_show_internal_symbols != new_val) {
 					outliner_show_internal_symbols = new_val;
 				}
 			} else if (key == "project-view-show-only-sources") {
-				var new_val = _settings_prefs.get_boolean ("project-view-show-only-sources");
+				var new_val = _settings_state.get_boolean ("project-view-show-only-sources");
 				if (_project_only_show_sources != new_val) {
 					project_only_show_sources = new_val;
 				}
