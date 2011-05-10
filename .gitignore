@@ -77,3 +77,7 @@ data/org.gnome.gedit.plugins.vala-toys.gschema.valid
 data/org.gnome.gedit.plugins.vala-toys.gschema.xml
 data/org.gnome.gedit.plugins.vala-toys.gschema.xml.in
 .dirstamp
+afrodite/afrodite-0.12.vapi
+afrodite/libafrodite-0.12.pc
+afrodite/libafrodite.pc
+templates

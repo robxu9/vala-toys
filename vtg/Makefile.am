@@ -65,7 +65,7 @@ libvtg_la_SOURCES = \
 	$(NULL)
 
 libvtg_la.vala.stamp: $(libvtg_la_VALASOURCES)
-	$(VALAC) $(DEBUG_FLAGS) -C --vapidir ../vapi --vapidir ../afrodite --vapidir ../vbf --basedir $(top_srcdir)/vtg --pkg config --pkg vbf-1.0 --pkg afrodite-1.0 --pkg libvala-$(VALA_VERSION) --pkg gedit-3.0 --pkg gtk+-3.0 --pkg gtksourceview-3.0 --pkg PeasGtk-1.0 --pkg utils --pkg gdkkeysyms $^
+	$(VALAC) $(DEBUG_FLAGS) -C --vapidir ../vapi --vapidir ../afrodite --vapidir ../vbf --basedir $(top_srcdir)/vtg --pkg config --pkg vbf-1.0 --pkg afrodite@PACKAGE_SUFFIX@ --pkg libvala-$(VALA_VERSION) --pkg gedit-3.0 --pkg gtk+-3.0 --pkg gtksourceview-3.0 --pkg PeasGtk-1.0 --pkg utils --pkg gdkkeysyms $^
 	touch $@
 
 libvtg_la_LDFLAGS = \
@@ -73,7 +73,7 @@ libvtg_la_LDFLAGS = \
 	-module -avoid-version
 
 libvtg_la_LIBADD = \
-	../afrodite/libafrodite.la \
+	../afrodite/libafrodite@PACKAGE_SUFFIX@.la \
 	../vbf/libvbf.la \
 	$(VTGPLUGIN_LIBS) \
 	$(NULL)

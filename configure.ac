@@ -36,9 +36,31 @@ GTKSOURCEVIEW_REQUIRED=2.91.0
 VALA_REQUIRED=0.11.0
 VALA_VERSION=0.12
 PEAS_REQUIRED=0.7.4
+AFRODITE_REQUIRED=
+
+PACKAGE_SUFFIX=-0.12
+AC_SUBST(PACKAGE_SUFFIX)
+AC_DEFINE_UNQUOTED(PACKAGE_SUFFIX, "$PACKAGE_SUFFIX", [Define the suffix of this package])
 
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
 AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
+
+
+AC_ARG_WITH([systemlibs], AS_HELP_STRING([--with-systemlibs], [Use the system wide installed copy of libraries [default=no]]), 
+ 	[
+            case "${withval}" in
+                yes) systemlibs=yes ;;
+                no) systemlibs=no ;;
+                *) AC_MSG_ERROR(bad value ${withval} for --with-systemlibs) ;;
+            esac
+        ],
+	[systemlibs=no])
+AM_CONDITIONAL([WITH_SYSTEMLIBS], [test "x$systemlibs" = xyes])
+if test "x$systemlibs" = "xyes" ; then
+	WITH_SYSTEMLIBS=1
+else
+	WITH_SYSTEMLIBS=0
+fi
 
 AC_ARG_WITH([vapidir], AS_HELP_STRING([--with-vapidir=PATH],[use PATH for default vala vapi directory]), [
 	        VALA_VAPIDIR=$withval
@@ -102,7 +124,7 @@ if test "x${genprj}" != xno ; then
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gtk+-3.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-3.0 >= $GTK_REQUIRED: not found]))
 			if test "x$genprj" = xyes ; then
-				AC_MSG_ERROR([gen-project dependencies not met: glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-3.0 >= $GTK_REQUIRED])
+				AC_MSG_ERROR([gen-project dependencies not met: please install the required packages and run configure again])
 			fi
 		])
 else
@@ -115,7 +137,6 @@ AC_SUBST(HAVE_GENPROJECT)
 AM_CONDITIONAL([HAVE_GENPROJECT], [test "x$HAVE_GENPROJECT" = x1])
 
 ###############################################################
-
 if test "x${afrodite}" != xno ; then
 	PKG_CHECK_MODULES(AFRODITE, 
 		[glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED libvala-$VALA_VERSION >= $VALA_REQUIRED],
@@ -130,13 +151,15 @@ if test "x${afrodite}" != xno ; then
 			PKG_CHECK_EXISTS([libvala-$VALA_VERSION >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    libvala-$VALA_VERSION >= $VALA_REQUIRED: not found]))
 
 			if test "x$afrodite" = xyes ; then
-				AC_MSG_ERROR([afrodite library dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED libvala-$VALA_VERSION >= $VALA_REQUIRED])
+				AC_MSG_ERROR([afrodite library dependencies not met: please install the required packages and run configure again])
 			fi
 		])
 else
 	HAVE_AFRODITE=0
 	if test "x${vtgplugin}" != xno ; then
-		AC_MSG_ERROR([afrodite library was disabled from configure command line, but vtg plugin requires it. Please disable vtg plugin too or reenable afrodite.])
+		if test "x${with_systemlibs}" != xyes ; then
+			AC_MSG_ERROR([afrodite library was disabled from configure command line, but vtg plugin requires it. Please disable vtg plugin too, reenable afrodite or use the with-systemlibs configure switch.])
+		fi
 	fi 
 fi
 
@@ -147,6 +170,13 @@ AM_CONDITIONAL([HAVE_AFRODITE], [test "x$HAVE_AFRODITE" = x1])
 
 ### vtg-plugin #################################################
 if test "x${vtgplugin}" != xno ; then
+
+	if test "x$systemlibs" = xyes ; then
+		CHECK_SYSTEM_AFRODITE=libafrodite$PACKAGE_SUFFIX >= $AFRODITE_REQUIRED
+	else
+		CHECK_SYSTEM_AFRODITE=
+	fi
+
 	PKG_CHECK_MODULES(VTGPLUGIN, 
 		[glib-2.0 >= $GLIB_REQUIRED 
 		gobject-2.0 >= $GLIB_REQUIRED 
@@ -156,7 +186,9 @@ if test "x${vtgplugin}" != xno ; then
 		gedit >= $GEDIT_REQUIRED 
 		libvala-$VALA_VERSION >= $VALA_REQUIRED 
 		libpeas-1.0 >= $PEAS_REQUIRED
-		libpeas-gtk-1.0 >= $PEAS_REQUIRED],
+		libpeas-gtk-1.0 >= $PEAS_REQUIRED
+		$CHECK_SYSTEM_AFRODITE	
+		],
 		HAVE_VTGPLUGIN=1,
 		[
 			HAVE_VTGPLUGIN=0
@@ -170,8 +202,11 @@ if test "x${vtgplugin}" != xno ; then
 			PKG_CHECK_EXISTS([libvala-$VALA_VERSION >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    libvala-$VALA_VERSION >= $VALA_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([libpeas-1.0 >= $PEAS_REQUIRED] ,, AC_MSG_RESULT([    libpeas-1.0 >= $PEAS_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([libpeas-gtk-1.0 >= $PEAS_REQUIRED] ,, AC_MSG_RESULT([    libpeas-1.0 >= $PEAS_REQUIRED: not found]))
+			if test "x$systemlibs" = xyes ; then
+				PKG_CHECK_EXISTS([$CHECK_SYSTEM_AFRODITE] ,, AC_MSG_RESULT([    libafrodite$PACKAGE_SUFFIX: not found]))
+			fi
 			if test "x$vtgplugin" = xyes ; then
-				AC_MSG_ERROR([vtg-plugin dependencies not met: glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED libvala-$VALA_VERSION >= $VALA_REQUIRED gtk+-3.0 >= $GTK_REQUIRED gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED gedit >= $GEDIT_REQUIRED libpeas-1.0 >= $PEAS_REQUIRED libpeas-gtk-1.0 >= $PEAS_REQUIRED])
+				AC_MSG_ERROR([vtg-plugin dependencies not met: please install the required packages and run configure again])
 			fi
 		])
 else
@@ -189,6 +224,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 AC_CONFIG_FILES([
 	Makefile
 	afrodite/Makefile
+	afrodite/libafrodite.pc
 	afrodite/tests/Makefile
 	gen-project/libgen-project/Makefile
 	gen-project/ui/Makefile
@@ -223,6 +259,11 @@ if test "x$HAVE_VTGPLUGIN" = "x1" ; then
    ENABLE_VTGPLUGIN=yes
 fi
 
+USE_SYSTEMLIBS=no
+if test "x$WITH_SYSTEMLIBS" = "x1" ; then
+   USE_SYSTEMLIBS=yes
+fi
+
 echo "
  ---{ $PACKAGE_NAME $VERSION }---
 
@@ -234,6 +275,7 @@ echo "
     Vala Vapidir:                  ${VALA_VAPIDIR}
     Enable gen-project:            ${ENABLE_GENPROJECT}
     Enable afrodite library:       ${ENABLE_AFRODITE}
+    Use system libraries:          ${USE_SYSTEMLIBS}
     Enable vtg:                    ${ENABLE_VTGPLUGIN}
 "
 

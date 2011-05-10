@@ -9,14 +9,14 @@ AM_CPPFLAGS = \
 
 COMMON_LIBS = \
         $(AFRODITE_LIBS) \
-        ../libafrodite.la  \
+        ../libafrodite@PACKAGE_SUFFIX@.la  \
         $(NULL)
 
 LIBVALA = libvala-$(VALA_VERSION)
 
 BUILT_SOURCES = tests_basic.vala.stamp tests_var.vala.stamp
 
-COMMON_FLAGS = -g --vapidir .. --vapidir . --pkg glib-assert --pkg afrodite-1.0 --pkg $(LIBVALA)
+COMMON_FLAGS = -g --vapidir .. --vapidir . --pkg glib-assert --pkg afrodite@PACKAGE_SUFFIX@ --pkg $(LIBVALA)
 
 TESTDATA = \
 	$(NULL)
