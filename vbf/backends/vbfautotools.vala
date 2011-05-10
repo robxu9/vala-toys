@@ -175,7 +175,7 @@ namespace Vbf.Backends
 									continue;
 								}
 								int index = pkg.index_of ("$");
-
+									
 								if (index >= 0) {
 									string variable = pkg.substring (index);
 									var var_name = variable.replace ("(", "").replace (")", "").substring(1);
@@ -680,16 +680,7 @@ namespace Vbf.Backends
 						idx++;
 					} else if (tmps[idx] == "--pkg" && (idx + 1) < count) {
 						var tmp = tmps[idx+1];
-						int index = tmp.index_of ("$");
-
-						if (index >= 0) {
-							string variable = tmp.substring (index);
-							var var_name = variable.replace ("(", "").replace (")", "").substring (1);
-							var res = this.resolve_variable (var_name, group.project.get_variables ());
-							if (res != null) {
-								tmp = tmp.replace (variable, res.get_value ().to_string ());
-							}
-						}
+						tmp = substitute_variables (tmp, group.project.get_variables ());
 						if (target != null) {
 							target.add_package (new Package (tmp));
 						} else {
@@ -699,6 +690,8 @@ namespace Vbf.Backends
 						idx++;
 					} else if (tmps[idx] == "--library") {
 						var tmp = tmps[idx+1];
+
+						tmp = substitute_variables (tmp, group.project.get_variables ());	
 						if (target != null) {
 							target.add_built_library (tmp);
 						} else {
@@ -708,6 +701,31 @@ namespace Vbf.Backends
 					}
 				}
 			}
+		}
+		
+		private string substitute_variables (string data, Vala.List<Variable> variables)
+		{
+			string result = data;
+
+			int index = data.index_of ("$");
+			if (index < 0) {
+				index = data.index_of ("@");
+			}
+		
+			if (index >= 0) {
+				string variable = data.substring (index);
+
+				var var_name = variable.replace ("(", "").replace (")", "").substring (1);
+				if (var_name.has_suffix ("@"))
+					var_name = var_name.substring (0, var_name.length - 1);
+
+				var res = this.resolve_variable (var_name, variables);
+				if (res != null) {
+					result = data.replace (variable, res.get_value ().to_string ());
+				}
+			}
+
+			return result;
 		}
 		
 		private string? normalize_string (string? data)
