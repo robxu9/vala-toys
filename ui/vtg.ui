@@ -103,8 +103,8 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button2</action-widget>
-      <action-widget response="0">button1</action-widget>
+      <action-widget response="-6">button2</action-widget>
+      <action-widget response="-5">button1</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="dialog-db">
@@ -240,8 +240,8 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button-db-cancel</action-widget>
-      <action-widget response="0">button-db-ok</action-widget>
+      <action-widget response="-6">button-db-cancel</action-widget>
+      <action-widget response="-5">button-db-ok</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="dialog-lm">
@@ -288,7 +288,7 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button-lm-ok</action-widget>
+      <action-widget response="-5">button-lm-ok</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="dialog-run">
@@ -424,8 +424,8 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button-run-cancel</action-widget>
-      <action-widget response="0">button-run-execute</action-widget>
+      <action-widget response="-6">button-run-cancel</action-widget>
+      <action-widget response="-5">button-run-execute</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="dialog-search">
@@ -554,8 +554,8 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button_close</action-widget>
-      <action-widget response="0">button_find</action-widget>
+      <action-widget response="-7">button_close</action-widget>
+      <action-widget response="-5">button_find</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="dialog-settings">
@@ -841,7 +841,7 @@ when opening s source file</property>
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button-settings-close</action-widget>
+      <action-widget response="-7">button-settings-close</action-widget>
     </action-widgets>
   </object>
 </interface>

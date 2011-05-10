@@ -136,18 +136,18 @@ namespace Vtg
 			_dialog.set_modal (true);
 			_dialog.show_all ();
 			int dialog_result = _dialog.run ();
-			if (dialog_result > 0) {
+			if (dialog_result == ResponseType.OK) {
 				TreeIter iter;
 				if (_treeview.get_selection ().get_selected (null, out iter)) {
 					TreeIter sort;
 					_sorted_model.convert_iter_to_child_iter (out sort, iter);
 					_filtered_model.convert_iter_to_child_iter (out selected_iter, sort);
 				} else
-					dialog_result = 0;
+					dialog_result = ResponseType.CANCEL;
 			}
 			_dialog.destroy ();
 			
-			return dialog_result > 0;
+			return dialog_result == ResponseType.OK;
 		}
 		
 		private void on_row_activated (Widget sender, TreePath path, TreeViewColumn column)
