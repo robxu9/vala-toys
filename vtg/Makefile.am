@@ -2,6 +2,27 @@ NULL =
 
 AUTOMAKE_OPTIONS = subdir-objects
 
+############################################
+# Built utility libraries that vtg links to
+############################################
+VTGUTILITYLIBS_CPPFLAGS= \
+	-I $(top_srcdir)/vbf \
+	$(NULL)
+
+VTGUTILITYLIBS_LIBS = \
+	../vbf/libvbf.la \
+	$(NULL)
+
+VTGUTILITYLIBS_VALAFLAGS = \
+	$(NULL)
+
+if !WITH_SYSTEMLIBS
+VTGUTILITYLIBS_CPPFLAGS += -I $(top_srcdir)/afrodite
+VTGUTILITYLIBS_LIBS += ../afrodite/libafrodite@PACKAGE_SUFFIX@.la 
+VTGUTILITYLIBS_VALAFLAGS += --vapidir ../afrodite 
+endif
+############################################
+
 SUBDIRS = \
 	$(NULL)
 
@@ -9,8 +30,7 @@ AM_CPPFLAGS = \
 	$(VTGPLUGIN_CFLAGS) \
 	-DPACKAGE_DATADIR=\""$(pkgdatadir)"\" \
 	-include $(CONFIG_HEADER) \
-	-I $(top_srcdir)/afrodite \
-	-I $(top_srcdir)/vbf \
+	$(VTGUTILITYLIBS_CPPFLAGS) \
 	$(NULL)
 
 BUILT_SOURCES = libvtg_la.vala.stamp
@@ -65,7 +85,7 @@ libvtg_la_SOURCES = \
 	$(NULL)
 
 libvtg_la.vala.stamp: $(libvtg_la_VALASOURCES)
-	$(VALAC) $(DEBUG_FLAGS) -C --vapidir ../vapi --vapidir ../afrodite --vapidir ../vbf --basedir $(top_srcdir)/vtg --pkg config --pkg vbf-1.0 --pkg afrodite@PACKAGE_SUFFIX@ --pkg libvala-$(VALA_VERSION) --pkg gedit-3.0 --pkg gtk+-3.0 --pkg gtksourceview-3.0 --pkg PeasGtk-1.0 --pkg utils --pkg gdkkeysyms $^
+	$(VALAC) $(DEBUG_FLAGS) -C $(VTGUTILITYLIBS_VALAFLAGS) --vapidir ../vapi --vapidir ../vbf --basedir $(top_srcdir)/vtg --pkg config --pkg vbf-1.0 --pkg afrodite@PACKAGE_SUFFIX@ --pkg libvala-$(VALA_VERSION) --pkg gedit-3.0 --pkg gtk+-3.0 --pkg gtksourceview-3.0 --pkg PeasGtk-1.0 --pkg utils --pkg gdkkeysyms $^
 	touch $@
 
 libvtg_la_LDFLAGS = \
@@ -73,8 +93,7 @@ libvtg_la_LDFLAGS = \
 	-module -avoid-version
 
 libvtg_la_LIBADD = \
-	../afrodite/libafrodite@PACKAGE_SUFFIX@.la \
-	../vbf/libvbf.la \
+	$(VTGUTILITYLIBS_LIBS) \
 	$(VTGPLUGIN_LIBS) \
 	$(NULL)
 

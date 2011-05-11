@@ -42,6 +42,8 @@ PACKAGE_SUFFIX=-0.12
 AC_SUBST(PACKAGE_SUFFIX)
 AC_DEFINE_UNQUOTED(PACKAGE_SUFFIX, "$PACKAGE_SUFFIX", [Define the suffix of this package])
 
+
+
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug messages]), enable_debug=$enableval, enable_debug=no)
 AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
 
@@ -55,13 +57,10 @@ AC_ARG_WITH([systemlibs], AS_HELP_STRING([--with-systemlibs], [Use the system wi
             esac
         ],
 	[systemlibs=no])
-AM_CONDITIONAL([WITH_SYSTEMLIBS], [test "x$systemlibs" = xyes])
-if test "x$systemlibs" = "xyes" ; then
-	WITH_SYSTEMLIBS=1
-else
-	WITH_SYSTEMLIBS=0
-fi
+AM_CONDITIONAL(WITH_SYSTEMLIBS, test x$systemlibs = xyes)
 
+
+### directory of standard vapis distributed with the vala compiler ###
 AC_ARG_WITH([vapidir], AS_HELP_STRING([--with-vapidir=PATH],[use PATH for default vala vapi directory]), [
 	        VALA_VAPIDIR=$withval
 	],[
@@ -70,6 +69,10 @@ AC_ARG_WITH([vapidir], AS_HELP_STRING([--with-vapidir=PATH],[use PATH for defaul
 	])
 
 AC_DEFINE_UNQUOTED([VALA_VAPIDIR], ["$VALA_VAPIDIR"], [Vala vapi directory])
+
+### directory for vapis from 3rd party library not included in standard vala distribution ###
+VAPIDIR=`echo ${datadir}/vala/vapi`
+AC_SUBST(VAPIDIR)
 
 ### gen-project ####
 
@@ -177,42 +180,63 @@ if test "x${vtgplugin}" != xno ; then
 		CHECK_SYSTEM_AFRODITE=
 	fi
 
-	PKG_CHECK_MODULES(VTGPLUGIN, 
-		[glib-2.0 >= $GLIB_REQUIRED 
-		gobject-2.0 >= $GLIB_REQUIRED 
-		gthread-2.0 >= $GTHREAD_REQUIRED 
-		gtk+-3.0 >= $GTK_REQUIRED 
-		gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED 
-		gedit >= $GEDIT_REQUIRED 
-		libvala-$VALA_VERSION >= $VALA_REQUIRED 
-		libpeas-1.0 >= $PEAS_REQUIRED
-		libpeas-gtk-1.0 >= $PEAS_REQUIRED
-		$CHECK_SYSTEM_AFRODITE	
-		],
+	PKG_CHECK_MODULES(VBF, 
+		[glib-2.0 >= $GLIB_REQUIRED gio-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gthread-2.0 >= $GTHREAD_REQUIRED libvala-$VALA_VERSION >= $VALA_REQUIRED],
 		HAVE_VTGPLUGIN=1,
 		[
 			HAVE_VTGPLUGIN=0
-			AC_MSG_RESULT([vtg-plugin dependencies not met:])
+			AC_MSG_RESULT([vbf utility library dependencies not met:])
 			PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
+			PKG_CHECK_EXISTS([gio-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gio-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gtk+-3.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-3.0 >= $GTK_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gedit >= $GEDIT_REQUIRED] ,, AC_MSG_RESULT([    gedit >= $GEDIT_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED] ,, AC_MSG_RESULT([    gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED: not found]))
 			PKG_CHECK_EXISTS([libvala-$VALA_VERSION >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    libvala-$VALA_VERSION >= $VALA_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([libpeas-1.0 >= $PEAS_REQUIRED] ,, AC_MSG_RESULT([    libpeas-1.0 >= $PEAS_REQUIRED: not found]))
-			PKG_CHECK_EXISTS([libpeas-gtk-1.0 >= $PEAS_REQUIRED] ,, AC_MSG_RESULT([    libpeas-1.0 >= $PEAS_REQUIRED: not found]))
-			if test "x$systemlibs" = xyes ; then
-				PKG_CHECK_EXISTS([$CHECK_SYSTEM_AFRODITE] ,, AC_MSG_RESULT([    libafrodite$PACKAGE_SUFFIX: not found]))
-			fi
+
 			if test "x$vtgplugin" = xyes ; then
-				AC_MSG_ERROR([vtg-plugin dependencies not met: please install the required packages and run configure again])
+				AC_MSG_ERROR([vbf utility library dependencies not met: please install the required packages and run configure again])
 			fi
 		])
+
+	if test "x$HAVE_VTGPLUGIN" = x1 ; then
+		PKG_CHECK_MODULES(VTGPLUGIN, 
+			[glib-2.0 >= $GLIB_REQUIRED 
+			gobject-2.0 >= $GLIB_REQUIRED 
+			gthread-2.0 >= $GTHREAD_REQUIRED 
+			gtk+-3.0 >= $GTK_REQUIRED 
+			gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED 
+			gedit >= $GEDIT_REQUIRED 
+			libvala-$VALA_VERSION >= $VALA_REQUIRED 
+			libpeas-1.0 >= $PEAS_REQUIRED
+			libpeas-gtk-1.0 >= $PEAS_REQUIRED
+			$CHECK_SYSTEM_AFRODITE	
+			],
+			HAVE_VTGPLUGIN=1,
+			[
+				HAVE_VTGPLUGIN=0
+				AC_MSG_RESULT([vtg-plugin dependencies not met:])
+				PKG_CHECK_EXISTS([glib-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    glib-2.0 >= $GLIB_REQUIRED: not found]))
+				PKG_CHECK_EXISTS([gobject-2.0 >= $GLIB_REQUIRED] ,, AC_MSG_RESULT([    gobject-2.0 >= $GLIB_REQUIRED: not found]))
+				PKG_CHECK_EXISTS([gthread-2.0 >= $GTHREAD_REQUIRED] ,, AC_MSG_RESULT([    gthread-2.0 >= $GTHREAD_REQUIRED: not found]))
+				PKG_CHECK_EXISTS([gtk+-3.0 >= $GTK_REQUIRED] ,, AC_MSG_RESULT([    gtk+-3.0 >= $GTK_REQUIRED: not found]))
+				PKG_CHECK_EXISTS([gedit >= $GEDIT_REQUIRED] ,, AC_MSG_RESULT([    gedit >= $GEDIT_REQUIRED: not found]))
+				PKG_CHECK_EXISTS([gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED] ,, AC_MSG_RESULT([    gtksourceview-3.0 >= $GTKSOURCEVIEW_REQUIRED: not found]))
+				PKG_CHECK_EXISTS([libvala-$VALA_VERSION >= $VALA_REQUIRED] ,, AC_MSG_RESULT([    libvala-$VALA_VERSION >= $VALA_REQUIRED: not found]))
+				PKG_CHECK_EXISTS([libpeas-1.0 >= $PEAS_REQUIRED] ,, AC_MSG_RESULT([    libpeas-1.0 >= $PEAS_REQUIRED: not found]))
+				PKG_CHECK_EXISTS([libpeas-gtk-1.0 >= $PEAS_REQUIRED] ,, AC_MSG_RESULT([    libpeas-1.0 >= $PEAS_REQUIRED: not found]))
+				if test "x$systemlibs" = xyes ; then
+					PKG_CHECK_EXISTS([$CHECK_SYSTEM_AFRODITE] ,, AC_MSG_RESULT([    libafrodite$PACKAGE_SUFFIX: not found]))
+				fi
+				if test "x$vtgplugin" = xyes ; then
+					AC_MSG_ERROR([vtg-plugin dependencies not met: please install the required packages and run configure again])
+				fi
+			])
+	fi
 else
     HAVE_VTGPLUGIN=0
 fi
 
+AC_SUBST(VBF_CFLAGS)
+AC_SUBST(VBF_LIBS)
 AC_SUBST(VTGPLUGIN_CFLAGS)
 AC_SUBST(VTGPLUGIN_LIBS)
 AC_SUBST(HAVE_VTGPLUGIN)
@@ -260,7 +284,7 @@ if test "x$HAVE_VTGPLUGIN" = "x1" ; then
 fi
 
 USE_SYSTEMLIBS=no
-if test "x$WITH_SYSTEMLIBS" = "x1" ; then
+if test "x$systemlibs" = "xyes" ; then
    USE_SYSTEMLIBS=yes
 fi
 
