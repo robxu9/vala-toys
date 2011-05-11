@@ -92,11 +92,15 @@ afroditetest_LDADD = \
 	libafrodite@PACKAGE_SUFFIX@.la  \
 	$(NULL)
 
+vapidir = @VAPIDIR@
+vapi_DATA = afrodite@PACKAGE_SUFFIX@.vapi
+
 EXTRA_DIST = \
 	$(libafrodite_la_VALASOURCES) \
 	$(afroditetest_VALASOURCES) \
 	libafrodite_la.vala.stamp \
 	afroditetest.vala.stamp \
+	afrodite@PACKAGE_SUFFIX@.vapi \
 	libafrodite.pc.in \
 	$(NULL)
 
