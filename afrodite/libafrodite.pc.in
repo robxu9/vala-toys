@@ -7,7 +7,7 @@ datarootdir=@datarootdir@
 datadir=@datadir@
 
 Name: Vala
-Description: The Afrodite Vala Toys completion library
+Description: The Vala Toys completion library
 Version: @VERSION@
 Requires: glib-2.0 gobject-2.0 libvala-@VALA_VERSION@
 Libs: -L${libdir} -lafrodite@PACKAGE_SUFFIX@
