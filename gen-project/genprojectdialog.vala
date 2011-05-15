@@ -30,6 +30,7 @@ class Vala.GenProjectDialog
 	private Gtk.FileChooserButton project_folder_button;
 	private Gtk.IconView project_type_iconview;
 	private Gtk.ComboBox license_combobox;
+	private Gtk.ComboBox combobox_languages;
 	private Gtk.Entry name_entry;
 	private Gtk.Entry email_entry;
 	private Gtk.Button button_create_project;
@@ -38,6 +39,7 @@ class Vala.GenProjectDialog
 	
 	private void initialize_ui (ProjectOptions options) 
 	{
+		Gtk.TreeIter item;
 		templates = Templates.load ();
 		var builder = new Gtk.Builder ();
 		try {
@@ -81,30 +83,26 @@ class Vala.GenProjectDialog
 			tag_cloud = new TagCloud ();
 			tag_cloud.selected_items_changed.connect((sender) => {
 				// refilter
-				var model = project_type_iconview.get_model () as Gtk.TreeModelFilter;
-				if (model != null) {
-					model.refilter ();
-				}
-
-				if (project_type_iconview.get_selected_items ().length () <= 0) {
-					project_type_iconview.select_path (new Gtk.TreePath.from_string ("0"));
-				}
-				if (project_type_iconview.get_selected_items ().length () > 0) {
-					button_create_project.set_sensitive (true);
-				} else {
-					button_create_project.set_sensitive (false);
-				}
-
+				refilter_projects ();
 			});
 			tag_cloud.show_all ();
 			tags.add_with_viewport (tag_cloud);
 			
 			/* Setup project types */
+			combobox_languages = builder.get_object ("combobox-project-language") as Gtk.ComboBox;
+			assert (combobox_languages != null);
+			combobox_languages.changed.connect ((sender) => {
+				refilter_projects ();
+			});
+			var languages_model = combobox_languages.get_model () as Gtk.ListStore;
+			renderer = new Gtk.CellRendererText ();
+			combobox_languages.pack_start (renderer, true);
+			combobox_languages.add_attribute (renderer, "text", 0);
+
 			var model = project_type_iconview.get_model () as Gtk.ListStore;
 			assert (model != null);
 			int selected_id = 0, count = 0;
 			foreach (TemplateDefinition definition in templates.definitions) {
-				Gtk.TreeIter item;
 				model.append (out item);
 				Gdk.Pixbuf icon = null;
 				
@@ -129,41 +127,52 @@ class Vala.GenProjectDialog
 				}
 
 				// add a tag item for the language
-				var tag_item = tag_cloud.get_item_with_text (definition.language);
-				if (tag_item == null) {
-					// if not exists create a new tag item
-					tag_item = new TagCloudItem (definition.language, 0, SelectStatus.SELECTED);
-					tag_cloud.add_item (tag_item);
+				bool language_exists = false;
+				Gtk.TreeIter iter;
+				if (languages_model.get_iter_first (out iter)) {
+					do {
+						string language;
+						languages_model.get (iter, 0, out language);
+						if (language == definition.language) {
+							language_exists = true;
+							break;
+						}
+					} while (languages_model.iter_next (ref iter));
 				}
-				tag_item.occourrences++;
-
+				if (!language_exists) {
+					languages_model.append (out item);
+					languages_model.set (item, 0, definition.language);
+				}
 				count++;
 			}
+			
+			combobox_languages.set_active (0);
+			
 			var filtered_model = new Gtk.TreeModelFilter (model, null);
 			filtered_model.set_visible_func((model, iter) => {
-				TemplateDefinition definition;
 				bool visible = false;
-				
+				TemplateDefinition definition;
 				model.@get (iter, 1, out definition);
-				foreach (string tag in definition.tags) {
-					var tag_item = tag_cloud.get_item_with_text (tag);
-					if (tag_item != null) {
-						if (tag_item.select_status == SelectStatus.EXCLUDED) {
-							visible = false;
-							break; // no need to check futher tags
-						} else if (tag_item.select_status == SelectStatus.SELECTED) {
-							visible = true; // continue with the check to see if it's excluded
-						}
-					}
-				}
+				Gtk.TreeIter language_iter;
 				
-				// check the language too
-				var tag_item = tag_cloud.get_item_with_text (definition.language);
-				if (tag_item != null) {
-					if (tag_item.select_status == SelectStatus.EXCLUDED) {
-						visible = false;
-					} else if (tag_item.select_status == SelectStatus.SELECTED) {
-						visible = true; // continue with the check to see if it's excluded
+				visible = combobox_languages.get_active_iter (out language_iter);
+				if (visible) {
+					var language_model = combobox_languages.get_model ();
+					string selected_language;
+					language_model.get (language_iter, 0, out selected_language);
+					visible = selected_language == definition.language;
+				}			
+				if (visible) {
+					foreach (string tag in definition.tags) {
+						var tag_item = tag_cloud.get_item_with_text (tag);
+						if (tag_item != null) {
+							if (tag_item.select_status == SelectStatus.EXCLUDED) {
+								visible = false;
+								break; // no need to check futher tags
+							} else if (tag_item.select_status == SelectStatus.SELECTED) {
+								visible = true; // continue with the check to see if it's excluded
+							}
+						}
 					}
 				}
 				
@@ -182,7 +191,6 @@ class Vala.GenProjectDialog
 
 			model = license_combobox.get_model () as Gtk.ListStore;
 			assert (model != null);
-			Gtk.TreeIter item;
 			model.append (out item);
 			model.set (item, 0, _("GNU General Public License, version 2 or later"), 1, ProjectLicense.GPL2);
 			model.append (out item);
@@ -206,6 +214,23 @@ class Vala.GenProjectDialog
 		}
 		catch (Error err) {
 			error ("can't build dialog ui: %s", err.message);
+		}
+	}
+
+	private void refilter_projects ()
+	{
+		var model = project_type_iconview.get_model () as Gtk.TreeModelFilter;
+		if (model != null) {
+			model.refilter ();
+		}
+
+		if (project_type_iconview.get_selected_items ().length () <= 0) {
+			project_type_iconview.select_path (new Gtk.TreePath.from_string ("0"));
+		}
+		if (project_type_iconview.get_selected_items ().length () > 0) {
+			button_create_project.set_sensitive (true);
+		} else {
+			button_create_project.set_sensitive (false);
 		}
 	}
 
