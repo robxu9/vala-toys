@@ -25,11 +25,11 @@ namespace Afrodite
 {
 	public class SourceReference
 	{
-		public unowned SourceFile file;
-		public int first_line;
-		public int last_line;
-		public int first_column;
-		public int last_column;
+		public unowned SourceFile file{ get; set; }
+		public int first_line{ get; set; }
+		public int last_line{ get; set; }
+		public int first_column{ get; set; }
+		public int last_column{ get; set; }
 		
 		public bool contains_position (int line, int column)
 		{
