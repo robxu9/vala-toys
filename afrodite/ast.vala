@@ -36,7 +36,10 @@ namespace Afrodite
 			Utils.trace ("Ast destroy");
 			// destroy the root symbol
 			_root = null;
-			source_files = null;// source have to be destroyes after root symbol
+			foreach (SourceFile file in source_files) {
+				file.parent = null;
+			}
+			source_files = null;// source have to be destroyed after root symbol
 			Utils.trace ("Ast destroyed");
 		}
 

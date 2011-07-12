@@ -30,6 +30,11 @@ namespace Afrodite
 		public int last_line{ get; set; }
 		public int first_column{ get; set; }
 		public int last_column{ get; set; }
+
+		~SourceReference ()
+		{
+			file = null;
+		}
 		
 		public bool contains_position (int line, int column)
 		{

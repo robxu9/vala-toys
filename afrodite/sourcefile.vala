@@ -29,7 +29,7 @@ namespace Afrodite
 		private string _filename;
 
 		public Vala.List<DataType> using_directives { get; set; }
-		public Vala.List<unowned Symbol> symbols { get; set; }
+		public Vala.List<Symbol> symbols { get; set; }
 		public unowned Ast parent { get; set; }
 
 		public TimeVal last_modification_time;
@@ -122,7 +122,7 @@ namespace Afrodite
 		public void add_symbol (Symbol symbol)
 		{
 			if (symbols == null) {
-				symbols = new ArrayList<unowned Symbol> ();
+				symbols = new ArrayList<Symbol> ();
 			}
 
 			symbols.add (symbol);
@@ -138,10 +138,18 @@ namespace Afrodite
 
 			symbol.remove_source_reference (sr);
 			symbols.remove (symbol);
+			if (symbols.size == 0)
+				symbols = null;
 
 			if (!symbol.has_source_references) {
-				parent.symbols.remove (symbol.fully_qualified_name);
-				parent.unresolved_symbols.remove (symbol);
+				if (parent != null) {
+					if (parent.symbols != null) {
+						parent.symbols.remove (symbol.fully_qualified_name);
+					}
+					if (parent.unresolved_symbols != null) {
+						parent.unresolved_symbols.remove (symbol);
+					}
+				}
 				if (symbol.parent != null) {
 					if (symbol.is_generic_type_argument) {
 						symbol.parent.remove_generic_type_argument (symbol);
@@ -149,11 +157,13 @@ namespace Afrodite
 						symbol.parent.remove_child (symbol);
 					}
 				}
+				if (symbol.generic_parent != null && symbol.generic_parent.has_specialized_symbols) {
+					symbol.generic_parent.remove_specialized_symbol (symbol);
+				}
+
 			}
 
 			//Utils.trace ("%s remove symbol %s: %u", filename, symbol.fully_qualified_name, symbol.ref_count);
-			if (symbols.size == 0)
-				symbols = null;
 		}
 		
 		public bool has_symbols

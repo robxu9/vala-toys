@@ -266,7 +266,7 @@ namespace Vtg
 
 		public unowned Gtk.Widget get_info_widget (GtkSource.CompletionProposal proposal)
 		{
-			return null;
+			return (Gtk.Widget)null;
 		}
 
 		public int get_interactive_delay ()
@@ -468,7 +468,7 @@ namespace Vtg
 			return false;
 		}
 
-		private void append_symbols (Afrodite.QueryOptions? options, Vala.List<Afrodite.Symbol> symbols, bool include_private_symbols = true)
+		private void append_symbols (Afrodite.QueryOptions? options, Vala.List<unowned Afrodite.Symbol> symbols, bool include_private_symbols = true)
 		{
 			foreach (Afrodite.Symbol symbol in symbols) {
 				if ((!include_private_symbols && symbol.access == Afrodite.SymbolAccessibility.PRIVATE)
