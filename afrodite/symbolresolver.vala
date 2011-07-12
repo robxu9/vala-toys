@@ -191,30 +191,32 @@ namespace Afrodite
 					if (res == null) {
 						// try with the imported namespaces
 						bool has_glib_using = false;
-						foreach (SourceReference reference in symbol.source_references) {
-							var file = reference.file;
-							if (!file.has_using_directives) {
-								continue;
-							}
-
-							foreach (DataType using_directive in file.using_directives) {
-								if (using_directive.unresolved)
+						if (symbol.has_source_references) {
+							foreach (SourceReference reference in symbol.source_references) {
+								var file = reference.file;
+								if (!file.has_using_directives) {
 									continue;
-
-								if (using_directive.name == "GLib") {
-									has_glib_using = true;
 								}
 
-								//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
-								s = _ast.symbols.@get ("%s.%s".printf (using_directive.type_name, type_name));
-								if (s != null && s != symbol) {
-									res = s;
+								foreach (DataType using_directive in file.using_directives) {
+									if (using_directive.unresolved)
+										continue;
+
+									if (using_directive.name == "GLib") {
+										has_glib_using = true;
+									}
+
+									//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
+									s = _ast.symbols.@get ("%s.%s".printf (using_directive.type_name, type_name));
+									if (s != null && s != symbol) {
+										res = s;
+										break;
+									}
+								}
+
+								if (res != null) {
 									break;
 								}
-							}
-
-							if (res != null) {
-								break;
 							}
 						}
 						if (res == null) {
