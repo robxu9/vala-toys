@@ -42,6 +42,7 @@ namespace Vtg
 
 		public SymbolCompletion (Vtg.PluginInstance plugin_instance, Gedit.View view, CompletionEngine completion_engine)
 		{
+			GLib.Object ();
 			this._plugin_instance = plugin_instance;
 			this._view = view;
 			this._completion_engine = completion_engine;

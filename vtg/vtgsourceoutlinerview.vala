@@ -48,7 +48,8 @@ namespace Vtg
 		{
 			this.symbol = symbol;
 			this.source_reference = source_reference;
-			this._file = source_reference.file;
+			if (source_reference != null)
+				this._file = source_reference.file;
 		}
 		
 		~Data ()

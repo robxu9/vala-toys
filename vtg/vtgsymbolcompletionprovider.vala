@@ -58,17 +58,16 @@ namespace Vtg
 
 		public SymbolCompletionProvider (Vtg.SymbolCompletion symbol_completion)
 		{
-			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
-			_icon = this.get_icon ();
-
 			_symbol_completion = symbol_completion;
-
 			_symbol_completion.view.key_press_event.connect (this.on_view_key_press);
 			_symbol_completion.view.focus_out_event.connect (this.on_view_focus_out);
 			_symbol_completion.view.get_completion ().show.connect (this.on_completion_window_hide);
+			
+			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 			doc.notify["cursor-position"].connect (this.on_cursor_position_changed);
 			Signal.connect (doc, "saved", (GLib.Callback) on_document_saved, this);
-			
+			_icon = this.get_icon ();
+						
 			var status_bar = (Gedit.Statusbar) _symbol_completion.plugin_instance.window.get_statusbar ();
 			_sb_context_id = status_bar.get_context_id ("symbol status");
 			
