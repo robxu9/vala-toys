@@ -1,0 +1,8 @@
+[Gedit Plugin]
+Module=${project-make-name}
+IAge=2
+Name=${project-name}
+Description=${project-description}
+Authors=${author-name} ${author-email} 
+Copyright=Copyright © ${author-name}
+Website=

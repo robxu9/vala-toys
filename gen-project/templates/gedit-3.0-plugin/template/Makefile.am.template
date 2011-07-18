@@ -1,0 +1,41 @@
+NULL = 
+
+#Build in these directories:
+
+SUBDIRS = \
+	src \
+	po \
+	$(NULL)
+
+${project-make-name}docdir = ${prefix}/doc/${project-make-name}
+${project-make-name}doc_DATA = \
+	ChangeLog \
+	README \
+	COPYING \
+	AUTHORS \
+	INSTALL \
+	NEWS\
+	$(NULL)
+
+EXTRA_DIST = \
+	$(${project-make-name}doc_DATA) \
+	intltool-extract.in \
+	intltool-merge.in \
+	intltool-update.in\
+	$(NULL)
+
+DISTCLEANFILES = \
+	intltool-extract \
+	intltool-merge \
+	intltool-update \
+	po/.intltool-merge-cache \
+	$(NULL)
+
+# Copy all the spec files. Of cource, only one is actually used.
+# dist-hook:
+	for specfile in *.spec; do \
+		if test -f $$specfile; then \
+			cp -p $$specfile $(distdir); \
+		fi \
+	done
+

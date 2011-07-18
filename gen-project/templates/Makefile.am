@@ -2,29 +2,50 @@ NULL =
 
 templatesdir = $(pkgdatadir)/templates
 
-# the created tar archive can be extracted with: tar -zxvf tar-archive.tar.gz
+# the created tar archive will be extracted with by the vala-gen-project executable: tar -zxvf tar-archive.tar.gz
 
-dist_templates_DATA = \
-	console-vala-template.ini \
-	console-vala-template.png \
-	console-vala-template.tar.gz \
-	gtk+-2.0-vala-template.ini \
-	gtk+-2.0-vala-template.png \
-	gtk+-2.0-vala-template.tar.gz \
-	gtk+-2.0-genie-template.ini \
-	gtk+-2.0-genie-template.png \
-	gtk+-2.0-genie-template.tar.gz \
-	sharedlib-vala-template.ini \
-	sharedlib-vala-template.png \
-	sharedlib-vala-template.tar.gz \
-	gedit-2.20-plugin.ini \
-	gedit-2.20-plugin.png \
-	gedit-2.20-plugin.tar.gz \
-	gedit-3.0-plugin.ini \
-	gedit-3.0-plugin.png \
-	gedit-3.0-plugin.tar.gz \
+TEMPLATES = \
+	console-vala.template \
+	gtk+-2.0-vala.template \
+	gtk+-2.0-genie.template \
+	sharedlib-vala.template \
+	gedit-2.20-plugin.template \
+	gedit-3.0-plugin.template \
+	$(NULL)
+
+BUILT_SOURCES = templates.stamp \
+	$(NULL)
+
+TEMPLATES_DIRS = \
+	$(TEMPLATES:.template=) \
+	$(NULL)
+
+templates.stamp: $(TEMPLATES_DIRS)
+	for TEMPLATE in $(TEMPLATES_DIRS); do \
+		cp $(srcdir)/$$TEMPLATE/$$TEMPLATE.ini $(builddir); \
+		cp $(srcdir)/$$TEMPLATE/$$TEMPLATE.png $(builddir); \
+		tar -zc -C $(srcdir)/$$TEMPLATE/template/ -f $(builddir)/$$TEMPLATE.tar.gz .; \
+	done; \
+	touch $@
+
+nodist_templates_DATA = \
+	templates.stamp \  
+        $(TEMPLATES:.template=.ini) \
+        $(TEMPLATES:.template=.png) \
+        $(TEMPLATES:.template=.tar.gz) \
+	$(NULL)
+ 
+CLEANFILES = \
+	templates.stamp \  
+	$(TEMPLATES:.template=.ini) \
+	$(TEMPLATES:.template=.png) \
+	$(TEMPLATES:.template=.tar.gz) \
 	$(NULL)
 
 DISTCLEANFILES = \
+	$(CLEANFILES) \
 	$(NULL)
 
+EXTRA_DIST = \
+	$(TEMPLATES_DIRS) \
+	$(NULL)

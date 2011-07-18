@@ -1,0 +1,41 @@
+NULL = 
+
+AM_CPPFLAGS = \
+	$(${project-uppercase-make-name}_CFLAGS) \
+	-include $(CONFIG_HEADER) \
+	$(NULL)
+
+lib${project-make-name}dir = $(libdir)/gedit-2/plugins
+
+lib${project-make-name}_LTLIBRARIES = lib${project-make-name}.la
+
+lib${project-make-name}_la_SOURCES = \
+	plugin.vala \
+	$(NULL)
+
+lib${project-make-name}_la_VALAFLAGS = --pkg gtk+-2.0 --pkg gedit-2.20 --pkg gtksourceview-2.0
+
+lib${project-make-name}_la_LDFLAGS = \
+        $(${project-uppercase-make-name}_FLAGS) \
+        -module -avoid-version \
+	$(NULL)
+
+${project-make-name}.gedit-plugin: plugin.gedit-plugin
+	cp -f $(srcdir)/plugin.gedit-plugin ${project-make-name}.gedit-plugin
+
+lib${project-make-name}_la_LIBADD = \
+	$(${project-uppercase-make-name}_LIBS) \
+	$(NULL)
+
+lib${project-make-name}_DATA = \
+        ${project-make-name}.gedit-plugin \
+        $(NULL)
+
+EXTRA_DIST = \
+        plugin.gedit-plugin
+        $(NULL)
+
+DISTCLEANFILES = \
+        ${project-make-name}.gedit-plugin \
+	$(NULL)
+

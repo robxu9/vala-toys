@@ -1,0 +1,41 @@
+NULL = 
+
+AM_CPPFLAGS = \
+	$(${project-uppercase-make-name}_CFLAGS) \
+	-include $(CONFIG_HEADER) \
+	$(NULL)
+
+lib${project-make-name}dir = $(libdir)/gedit/plugins
+
+lib${project-make-name}_LTLIBRARIES = lib${project-make-name}.la
+
+lib${project-make-name}_la_SOURCES = \
+	plugin.vala \
+	$(NULL)
+
+lib${project-make-name}_la_VALAFLAGS = --vapidir ../vapi --pkg gtk+-3.0 --pkg gedit-3.0 --pkg gtksourceview-3.0 --pkg PeasGtk-1.0
+
+lib${project-make-name}_la_LDFLAGS = \
+        $(${project-uppercase-make-name}_FLAGS) \
+        -module -avoid-version \
+	$(NULL)
+
+${project-make-name}.plugin: gedit.plugin.in
+	cp -f $(srcdir)/gedit.plugin.in ${project-make-name}.plugin
+
+lib${project-make-name}_la_LIBADD = \
+	$(${project-uppercase-make-name}_LIBS) \
+	$(NULL)
+
+lib${project-make-name}_DATA = \
+        ${project-make-name}.plugin \
+        $(NULL)
+
+EXTRA_DIST = \
+        gedit.plugin.in
+        $(NULL)
+
+DISTCLEANFILES = \
+        ${project-make-name}.plugin \
+	$(NULL)
+

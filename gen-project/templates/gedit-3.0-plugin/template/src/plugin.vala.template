@@ -1,0 +1,95 @@
+/* main.vala
+ *
+ * Copyright (C) 2010  ${author-name}
+ * ${license-header-vala}
+ * Author:
+ * 	${author-name} <${author-email}>
+ */
+
+using GLib;
+
+namespace GeditPluginExample
+{
+	/*
+	 * This plugin will be activated for each Gedit View
+	 */
+	public class View : Gedit.ViewActivatable, Peas.ExtensionBase
+	{
+		public View ()
+		{
+			GLib.Object ();
+		}
+
+		public Gedit.View view {
+			 get; construct;
+		}
+		
+		public void activate ()
+		{
+			print ("View: activated\n");
+			view.key_release_event.connect (this.on_key_release);
+		}
+		
+		public void deactivate ()
+		{
+			print ("View: deactivated\n");
+			view.key_release_event.disconnect (this.on_key_release);
+		}
+		
+		private bool on_key_release (Gtk.Widget sender, Gdk.EventKey event)
+		{
+			if (event.str == ">") {
+				// Close the tag
+				Gedit.View view = (Gedit.View)sender;
+				Gtk.TextBuffer buffer = view.get_buffer ();
+				Gtk.TextIter end, start;
+
+				buffer.get_iter_at_mark (out end, (Gtk.TextMark) buffer.get_insert ());
+				if (end.backward_char ()) {
+					start = end;
+					if (start.backward_word_start ()) {
+						string tag = "</%s>".printf (buffer.get_text (start, end, false));
+
+						// add the closing tag
+						buffer.begin_user_action ();
+						buffer.insert_interactive_at_cursor (tag, -1, true);
+						buffer.end_user_action ();
+
+						// move cursor back
+						buffer.get_iter_at_mark (out end, (Gtk.TextMark) buffer.get_insert ());
+						end.backward_chars (tag.length);
+						buffer.place_cursor (end);
+					}
+				}
+			}
+			return true;
+		}
+	}
+
+	/*
+	 * Plugin config dialog
+	 */
+	public class Config : Peas.ExtensionBase, PeasGtk.Configurable
+	{
+		public Config () 
+		{
+			Object ();
+		}
+
+		public Gtk.Widget create_configure_widget () 
+		{
+			return new Gtk.Label (" Gedit 3.0 Example Vala Plugin ");
+		}
+	}
+}
+
+[ModuleInit]
+public void peas_register_types (TypeModule module) 
+{
+	var objmodule = module as Peas.ObjectModule;
+
+	// Register my plugin extension
+	objmodule.register_extension_type (typeof (Gedit.ViewActivatable), typeof (GeditPluginExample.View));
+	// Register my config dialog
+	objmodule.register_extension_type (typeof (PeasGtk.Configurable), typeof (GeditPluginExample.Config));
+}

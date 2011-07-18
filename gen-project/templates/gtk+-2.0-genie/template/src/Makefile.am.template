@@ -1,0 +1,37 @@
+NULL = 
+
+AM_CPPFLAGS = \
+	$(${project-uppercase-make-name}_CFLAGS) \
+	-include $(CONFIG_HEADER) \
+	$(NULL)
+
+bin_PROGRAMS = ${project-make-name}
+
+BUILT_SOURCES = ${project-make-name}.vala.stamp
+
+${project-make-name}_VALASOURCES = \
+	main.gs \
+	$(NULL)
+
+${project-make-name}_SOURCES = \
+	$(${project-make-name}_VALASOURCES:.gs=.c) \
+	$(NULL)
+
+${project-make-name}_VALAFLAGS = --pkg gtk+-2.0
+
+${project-make-name}.vala.stamp: $(${project-make-name}_VALASOURCES)
+	$(VALAC) $(${project-make-name}_VALAFLAGS) -C $^
+	touch $@
+
+${project-make-name}_LDADD = \
+	$(${project-uppercase-make-name}_LIBS) \
+	$(NULL)
+
+EXTRA_DIST = \
+	$(${project-make-name}_VALASOURCES) \
+	${project-make-name}.vala.stamp \
+	$(NULL)
+
+DISTCLEANFILES = \
+	$(NULL)
+

@@ -1,0 +1,18 @@
+/* main.vala
+ *
+ * Copyright (C) 2010  ${author-name}
+ * ${license-header-vala}
+ * Author:
+ * 	${author-name} <${author-email}>
+ */
+
+using GLib;
+
+public class Main : Object {
+	public Main () {
+	}
+
+	public void hello_world () {
+		stdout.printf ("Hello, world!\n");
+	}
+}

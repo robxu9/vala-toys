@@ -1,0 +1,109 @@
+/* main.vala
+ *
+ * Copyright (C) 2010  ${author-name}
+ * ${license-header-vala}
+ * Author:
+ * 	${author-name} <${author-email}>
+ */
+
+using GLib;
+using Gtk;
+using Gedit;
+
+namespace ExamplePlugin
+{	
+	public class Plugin : Gedit.Plugin
+	{
+		private string _ui = """<ui>
+                                            <menubar name="MenuBar">
+                                              <placeholder name="ExtraMenu_1">
+                                                <menu name="ExampleMenu" action="ExampleMenuAction">
+                                                    <placeholder name="ExampleMenuOps_1">
+                                                        <menuitem name="ExampleMenuItem" action="ExampleMenuItemAction"/>
+                                                    </placeholder>
+                                                </menu>
+                                              </placeholder>
+                                            </menubar>
+                                        </ui>""";
+
+		const ActionEntry[] _action_entries = {
+			{"ExampleMenuItem", null, N_("_Example..."), null, N_("Example"), on_example_menu_item}};
+
+		private uint _ui_id;
+		private ActionGroup _actions = null;
+
+		public Plugin ()
+		{
+			GLib.Object ();
+		}
+
+		public override void activate (Gedit.Window window)
+		{
+			GLib.debug ("${project-name} plugin activated");
+			initialize_ui (window);
+		}
+		
+		public override void deactivate (Gedit.Window window)
+		{
+			GLib.debug ("${project-name} plugin deactivated");
+			var manager = window.get_ui_manager ();
+			manager.remove_ui (_ui_id);
+			manager.remove_action_group (_actions);
+		}
+
+		public override bool is_configurable ()
+		{
+			return false;
+		}
+
+		public override unowned Gtk.Widget? create_configure_dialog ()
+		{
+			return null;
+		}
+
+		public override void update_ui (Gedit.Window window)
+		{
+			GLib.debug ("${project-name} plugin deactivated");
+		}
+
+		private void initialize_ui (Gedit.Window window)
+		{
+			_actions = new ActionGroup ("ExampleAction");
+			_actions.add_actions (_action_entries, this);
+			
+			var manager = window.get_ui_manager ();
+			manager.insert_action_group (_actions, -1);
+			try {
+				_ui_id = manager.add_ui_from_string (_ui, -1);
+			} catch (Error err) {
+				GLib.warning ("Error %s", err.message);
+			}
+		}
+
+		private void on_example_menu_item (Gtk.Action action)
+		{
+			var dialog = new Gtk.Dialog.with_buttons ("${project-name} menu item clicked", null,
+				DialogFlags.DESTROY_WITH_PARENT,
+				Gtk.STOCK_OK,
+				Gtk.ResponseType.NONE);
+
+			dialog.response.connect ((sender) => {
+				dialog.destroy ();
+			});
+
+			var container = (Gtk.Container) dialog.get_content_area ();
+			var label = new Gtk.Label ("${project-name} hello!");
+			container.add (label);
+
+			dialog.show_all ();
+
+			dialog.run ();
+		}
+	}
+}
+
+[ModuleInit]
+public GLib.Type register_gedit_plugin (TypeModule module) 
+{
+	return typeof (ExamplePlugin.Plugin);
+}
