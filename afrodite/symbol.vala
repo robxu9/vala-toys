@@ -42,6 +42,9 @@ namespace Afrodite
 		
 		// symbol whose this symbol is contained in the children collection
 		private unowned Symbol _parent;
+
+		// contains a reference to symbols of whose this symbol is a resolved reference for any target data type
+		public Vala.List<unowned Symbol> _resolved_targets = null;
 		
 		public unowned Symbol parent {
 			get { return _parent; }
@@ -53,8 +56,11 @@ namespace Afrodite
 
 		public Vala.List<unowned Symbol> children { get { return _children; } }
 		
-		// contains a reference to symbols of whose this symbol is a resolved reference for any target data type
-		public Vala.List<unowned Symbol> resolved_targets = null;
+		public Vala.List<unowned Symbol> resolved_targets {
+			get {
+				return _resolved_targets;
+			}
+		}
 
 		// contains a reference to symbols that this symbol use as resolved targets
 		public Vala.List<unowned Symbol> resolve_targets = null;
@@ -468,12 +474,12 @@ namespace Afrodite
 
 			// resolve target collection can be accessed from multiple threads
 			lock (resolved_targets) {
-				if (resolved_targets == null) {
-					resolved_targets = new ArrayList<unowned Symbol> ();
+				if (_resolved_targets == null) {
+					_resolved_targets = new ArrayList<unowned Symbol> ();
 				}
 
-				if (!resolved_targets.contains (resolve_target))
-					resolved_targets.add (resolve_target);
+				if (!_resolved_targets.contains (resolve_target))
+					_resolved_targets.add (resolve_target);
 
 				if (resolve_target.resolve_targets == null) {
 					resolve_target.resolve_targets = new ArrayList<unowned Symbol> ();
@@ -489,8 +495,8 @@ namespace Afrodite
 			// resolve target collection can be accessed from multiple threads
 			lock (resolved_targets) {
 				resolved_targets.remove (resolve_target);
-				if (resolved_targets.size == 0)
-					resolved_targets = null;
+				if (_resolved_targets.size == 0)
+					_resolved_targets = null;
 
 				if (resolve_target.resolve_targets != null) {
 					resolve_target.resolve_targets.remove (this);
@@ -507,7 +513,7 @@ namespace Afrodite
 				bool res;
 				
 				lock (resolved_targets) {
-					res = resolved_targets != null;
+					res = _resolved_targets != null;
 				}
 				
 				return res;
