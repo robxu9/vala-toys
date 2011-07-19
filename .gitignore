@@ -80,3 +80,6 @@ data/org.gnome.gedit.plugins.vala-toys.gschema.xml.in
 afrodite/afrodite-0.12.vapi
 afrodite/libafrodite-0.12.pc
 afrodite/libafrodite.pc
+gen-project/templates/*.ini
+gen-project/templates/*.png
+gen-project/templates/*.tar.gz
