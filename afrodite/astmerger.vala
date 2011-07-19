@@ -67,7 +67,7 @@ namespace Afrodite
 			unowned SourceReference prev_sr = _current_sr;
 			
 			if (ns.name != null)
-				_current = visit_symbol (SymbolType.NAMESPACE, ns, out _current_sr);
+				_current = visit_symbol (MemberType.NAMESPACE, ns, out _current_sr);
 
 			foreach (Enum en in ns.get_enums ()) {
 				yield visit_enum_sliced (en);
@@ -120,7 +120,7 @@ namespace Afrodite
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
 
-			_current = visit_symbol (SymbolType.CLASS, c, out _current_sr);
+			_current = visit_symbol (MemberType.CLASS, c, out _current_sr);
 			_current.is_abstract = c.is_abstract;
 			
 		        foreach (Vala.DataType type in c.get_base_types ()) {
@@ -244,7 +244,7 @@ namespace Afrodite
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
 			
-			_current = visit_symbol (SymbolType.STRUCT, s, out _current_sr);
+			_current = visit_symbol (MemberType.STRUCT, s, out _current_sr);
 			s.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
@@ -259,7 +259,7 @@ namespace Afrodite
 			_ast.remove_source (source);
 		}
 
-		private Afrodite.Symbol visit_symbol (SymbolType type, Vala.Symbol s, out unowned Afrodite.SourceReference source_reference)
+		private Afrodite.Symbol visit_symbol (MemberType type, Vala.Symbol s, out unowned Afrodite.SourceReference source_reference)
 		{
 			Afrodite.Symbol symbol;
 
@@ -295,7 +295,7 @@ namespace Afrodite
 			return symbol;
 		}
 		
-		private Afrodite.Symbol add_symbol (SymbolType type, Vala.Symbol s, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
+		private Afrodite.Symbol add_symbol (MemberType type, Vala.Symbol s, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, type);
 			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
@@ -308,7 +308,7 @@ namespace Afrodite
 			return symbol;
 		}
 
-		private Afrodite.Symbol add_codenode (SymbolType type, Vala.CodeNode c, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
+		private Afrodite.Symbol add_codenode (MemberType type, Vala.CodeNode c, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, type);
 			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
@@ -391,7 +391,7 @@ namespace Afrodite
 			var prev = _current;
 			unowned SourceReference prev_sr = _current_sr;
 
-			_current = visit_symbol (SymbolType.INTERFACE, iface, out _current_sr);
+			_current = visit_symbol (MemberType.INTERFACE, iface, out _current_sr);
 			iface.accept_children (this);
 			_current = prev;
 			_current_sr = prev_sr;
@@ -425,7 +425,7 @@ namespace Afrodite
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
 				
-			var s = add_symbol (SymbolType.METHOD, m, out _current_sr, last_line);
+			var s = add_symbol (MemberType.METHOD, m, out _current_sr, last_line);
 			s.return_type = new DataType (m.return_type.to_string ());
 			// check if return type is generic
 			if (_current.has_generic_type_arguments) {
@@ -477,7 +477,7 @@ namespace Afrodite
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
 				
-			var s = add_symbol (SymbolType.CREATION_METHOD, m, out _current_sr, last_line);
+			var s = add_symbol (MemberType.CREATION_METHOD, m, out _current_sr, last_line);
 			if (m.name == ".new")
 				s.return_type = new DataType (m.return_type.to_string ());
 			else {
@@ -525,7 +525,7 @@ namespace Afrodite
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
 				
-			var s = add_symbol (SymbolType.CONSTRUCTOR, m, out _current_sr, last_line);
+			var s = add_symbol (MemberType.CONSTRUCTOR, m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
 			s.return_type = new DataType (_current.fully_qualified_name);
 			_current.add_child (s);
@@ -550,7 +550,7 @@ namespace Afrodite
 			if (m.body != null && m.body.source_reference != null)
 				last_line = m.body.source_reference.last_line;
 				
-			var s = add_symbol (SymbolType.DESTRUCTOR, m, out _current_sr, last_line);
+			var s = add_symbol (MemberType.DESTRUCTOR, m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
 			s.display_name = "~%s".printf (s.name);
 			_current.add_child (s);
@@ -572,7 +572,7 @@ namespace Afrodite
 			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (ev.name);
-			var sym = add_symbol (SymbolType.ENUM_VALUE, ev, out _current_sr);
+			var sym = add_symbol (MemberType.ENUM_VALUE, ev, out _current_sr);
 			sym.access = _current.access;
 			sym.binding = _current.binding;
 			_current.add_child (sym);
@@ -589,7 +589,7 @@ namespace Afrodite
 			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (e.name);
-			var s = add_symbol (SymbolType.ENUM, e, out _current_sr);
+			var s = add_symbol (MemberType.ENUM, e, out _current_sr);
 			_current.add_child (s);
 			_current = s;
 
@@ -617,7 +617,7 @@ namespace Afrodite
 			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (d.name);
-			var sym = add_symbol (SymbolType.DELEGATE, d, out _current_sr);
+			var sym = add_symbol (MemberType.DELEGATE, d, out _current_sr);
 			sym.return_type = new DataType (d.return_type.to_string ());
 			_current.add_child (sym);
 			_current = sym;
@@ -641,7 +641,7 @@ namespace Afrodite
 			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (s.name);
-			var sym = add_symbol (SymbolType.SIGNAL, s, out _current_sr);
+			var sym = add_symbol (MemberType.SIGNAL, s, out _current_sr);
 			sym.return_type = new DataType (s.return_type.to_string ());
 			sym.is_virtual = s.is_virtual;
 			_current.add_child (sym);
@@ -669,7 +669,7 @@ namespace Afrodite
 			
 			
 			set_fqn (f.name);
-			var s = add_symbol (SymbolType.FIELD, f, out _current_sr);
+			var s = add_symbol (MemberType.FIELD, f, out _current_sr);
 			s.return_type = new DataType (get_datatype_typename (f.variable_type));
 			s.binding =  get_vala_member_binding (f.binding);
 			if (_current.has_generic_type_arguments) {
@@ -696,7 +696,7 @@ namespace Afrodite
 			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (c.name);
-			var s = add_symbol (SymbolType.CONSTANT, c, out _current_sr);
+			var s = add_symbol (MemberType.CONSTANT, c, out _current_sr);
 			s.binding = MemberBinding.STATIC;
 			s.return_type = new DataType (c.type_reference.to_string ());
 			_current.add_child (s);
@@ -730,7 +730,7 @@ namespace Afrodite
 					last_line = p.initializer.source_reference.last_line;
 			}
 
-			var s = add_symbol (SymbolType.PROPERTY, p, out _current_sr, last_line);
+			var s = add_symbol (MemberType.PROPERTY, p, out _current_sr, last_line);
 			s.return_type = new DataType (p.property_type.to_string ());
 			if (_current.has_generic_type_arguments) {
 				foreach (var gt in _current.generic_type_arguments) {
@@ -773,7 +773,7 @@ namespace Afrodite
 			unowned SourceReference prev_sr = _current_sr;
 						
 			set_fqn (ed.name);
-			var s = add_symbol (SymbolType.ERROR_DOMAIN, ed, out _current_sr);
+			var s = add_symbol (MemberType.ERROR_DOMAIN, ed, out _current_sr);
 			_current.add_child (s);
 			
 			_current = s;
@@ -798,7 +798,7 @@ namespace Afrodite
 			unowned SourceReference prev_sr = _current_sr;
 			
 			set_fqn (ecode.name);
-			var s = add_symbol (SymbolType.ERROR_CODE, ecode, out _current_sr);
+			var s = add_symbol (MemberType.ERROR_CODE, ecode, out _current_sr);
 			s.access = _current.access;
 			_current.add_child (s);
 			
@@ -1145,7 +1145,7 @@ namespace Afrodite
 					break;
 			}*/
 
-			var symbol = new Afrodite.Symbol (p.name, SymbolType.PARAMETER);
+			var symbol = new Afrodite.Symbol (p.name, MemberType.PARAMETER);
 			symbol.access = SymbolAccessibility.ANY;
 
 			//Utils.trace ("adding type parameter: '%s' to '%s'", p.name, _current.fully_qualified_name);
@@ -1162,7 +1162,7 @@ namespace Afrodite
 				_current_type.add_generic_type (t);
 				
 			} else if (_current != null
-				&& (_current.symbol_type == SymbolType.CLASS || _current.symbol_type == SymbolType.INTERFACE || _current.symbol_type == SymbolType.STRUCT)) {
+				&& (_current.member_type == MemberType.CLASS || _current.member_type == MemberType.INTERFACE || _current.member_type == MemberType.STRUCT)) {
 				// add this type to the base class types
 				if (t.type_name.length == 1 && t.type_name.up () == t.type_name) {
 					// there's must be a better method
@@ -1201,7 +1201,7 @@ namespace Afrodite
 				//debug ("body for %s: %d,%d to %d,%d\n", name, body.source_reference.first_line, body.source_reference.first_column, body.source_reference.last_line, body.source_reference.last_column);
 			}
 				
-			var s = add_codenode (SymbolType.SCOPED_CODE_NODE, node, out _current_sr, last_line);
+			var s = add_codenode (MemberType.SCOPED_CODE_NODE, node, out _current_sr, last_line);
 			s.display_name = name;
 			
 			_current.add_child (s);

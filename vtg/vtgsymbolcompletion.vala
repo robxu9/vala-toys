@@ -151,7 +151,7 @@ namespace Vtg
 					string name = Utils.get_document_name (doc);
 					do {
 						item = item.parent;
-					} while (item.fully_qualified_name != null && (item.name.has_prefix ("!") || item.symbol_type == SymbolType.ENUM));
+					} while (item.fully_qualified_name != null && (item.name.has_prefix ("!") || item.member_type == MemberType.ENUM));
 
 					Afrodite.SourceReference sr = item.lookup_source_reference_filename (name);
 					if (sr != null) {

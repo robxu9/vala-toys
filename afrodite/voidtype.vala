@@ -27,7 +27,7 @@ namespace Afrodite
 	{
 		public VoidType ()
 		{
-			base ("void", SymbolType.VOID);
+			base ("void", MemberType.VOID);
 		}
 	}
 }

@@ -120,52 +120,52 @@ namespace Afrodite.Utils
 			return _predefined;
 		}
 		
-		public static string get_symbol_type_description (SymbolType type)
+		public static string get_symbol_type_description (MemberType type)
 		{
 			switch (type) {
-				case SymbolType.NONE:
+				case MemberType.NONE:
 					return _("None");
-				case SymbolType.VOID:
+				case MemberType.VOID:
 					return _("Void");
-				case SymbolType.CONSTANT:
+				case MemberType.CONSTANT:
 					return _("Constant");
-				case SymbolType.ENUM:
+				case MemberType.ENUM:
 					return _("Enum");
-				case SymbolType.ENUM_VALUE:
+				case MemberType.ENUM_VALUE:
 					return _("Enum Value");
-				case SymbolType.FIELD:
+				case MemberType.FIELD:
 					return _("Field");
-				case SymbolType.PROPERTY:
+				case MemberType.PROPERTY:
 					return _("Property");
-				case SymbolType.LOCAL_VARIABLE:
+				case MemberType.LOCAL_VARIABLE:
 					return _("Variable");
-				case SymbolType.SIGNAL:
+				case MemberType.SIGNAL:
 					return _("Signal");
-				case SymbolType.CREATION_METHOD:
+				case MemberType.CREATION_METHOD:
 					return _("Creation Method");
-				case SymbolType.CONSTRUCTOR:
+				case MemberType.CONSTRUCTOR:
 					return _("Constructor");
-				case SymbolType.DESTRUCTOR:
+				case MemberType.DESTRUCTOR:
 					return _("Destructor");
-				case SymbolType.METHOD:
+				case MemberType.METHOD:
 					return _("Method");
-				case SymbolType.DELEGATE:
+				case MemberType.DELEGATE:
 					return _("Delegate");
-				case SymbolType.PARAMETER:
+				case MemberType.PARAMETER:
 					return _("Parameter");
-				case SymbolType.ERROR_DOMAIN:
+				case MemberType.ERROR_DOMAIN:
 					return _("Error Domain");
-				case SymbolType.ERROR_CODE:
+				case MemberType.ERROR_CODE:
 					return _("Error Code");
-				case SymbolType.NAMESPACE:
+				case MemberType.NAMESPACE:
 					return _("Namespace");
-				case SymbolType.STRUCT:
+				case MemberType.STRUCT:
 					return _("Struct");
-				case SymbolType.CLASS:
+				case MemberType.CLASS:
 					return _("Class");
-				case SymbolType.INTERFACE:
+				case MemberType.INTERFACE:
 					return _("Interface");
-				case SymbolType.SCOPED_CODE_NODE:
+				case MemberType.SCOPED_CODE_NODE:
 					return _("Block");
 				default:
 					string des = type.to_string ().up ();
@@ -184,19 +184,19 @@ namespace Afrodite.Utils
 			
 			public PredefinedSymbols ()
 			{
-				_connect_method = new Afrodite.Symbol ("connect", SymbolType.METHOD);
+				_connect_method = new Afrodite.Symbol ("connect", MemberType.METHOD);
 				_connect_method.return_type = new DataType ("void");
 				_connect_method.return_type.symbol =  Symbol.VOID;
 				_connect_method.access = SymbolAccessibility.ANY;
 				_connect_method.binding = MemberBinding.ANY;
 			
-				_disconnect_method = new Afrodite.Symbol ("disconnect", SymbolType.METHOD);
+				_disconnect_method = new Afrodite.Symbol ("disconnect", MemberType.METHOD);
 				_disconnect_method.return_type = new DataType ("void");
 				_disconnect_method.return_type.symbol =  Symbol.VOID;
 				_disconnect_method.access = SymbolAccessibility.ANY;
 				_disconnect_method.binding = MemberBinding.ANY;
 				
-				_signal_symbol = new Symbol ("#signal", SymbolType.CLASS);
+				_signal_symbol = new Symbol ("#signal", MemberType.CLASS);
 				_signal_symbol.add_child (_connect_method);
 				_signal_symbol.add_child (_disconnect_method);
 				

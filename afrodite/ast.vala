@@ -29,7 +29,7 @@ namespace Afrodite
 		public Vala.HashMap<string, unowned Symbol> symbols = new Vala.HashMap <string, unowned Symbol>(GLib.str_hash, GLib.str_equal);
 		public Vala.List<unowned Symbol> unresolved_symbols = new Vala.ArrayList<unowned Symbol>();
 		
-		private Symbol _root = new Symbol (null, SymbolType.NONE);
+		private Symbol _root = new Symbol (null, MemberType.NONE);
 
 		~Ast ()
 		{
@@ -230,9 +230,9 @@ namespace Afrodite
 				}
 				
 				if (parts.length > 1 && sym != null && sym.has_children) {
-					if (sym.symbol_type == SymbolType.NAMESPACE
+					if (sym.member_type == MemberType.NAMESPACE
 					    || (parts[0] == sym.name 
-					        && (sym.symbol_type == SymbolType.CLASS || sym.symbol_type == SymbolType.STRUCT || sym.symbol_type == SymbolType.INTERFACE))) {
+					        && (sym.member_type == MemberType.CLASS || sym.member_type == MemberType.STRUCT || sym.member_type == MemberType.INTERFACE))) {
 					    	// namespace access or MyClass.my_static_method
 						//debug ("CHANGE ONLY STATIC");
 						binding = MemberBinding.STATIC;
@@ -361,9 +361,9 @@ namespace Afrodite
 			// search first class in the parent chain, break when a namespace is found
 			Symbol current = root;
 			while (current != null) {
-				if (current.symbol_type == SymbolType.CLASS || current.symbol_type == SymbolType.STRUCT) {
+				if (current.member_type == MemberType.CLASS || current.member_type == MemberType.STRUCT) {
 					break;
-				} else if (current.symbol_type == SymbolType.NAMESPACE) {
+				} else if (current.member_type == MemberType.NAMESPACE) {
 					current = null; // exit
 				} else
 					current = current.parent;
@@ -385,7 +385,7 @@ namespace Afrodite
 					if (!d.unresolved 
 					    && ((access & SymbolAccessibility.PRIVATE) != 0)
 					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
-						var s = new Afrodite.Symbol (d.name, SymbolType.LOCAL_VARIABLE);
+						var s = new Afrodite.Symbol (d.name, MemberType.LOCAL_VARIABLE);
 						s.return_type = d.copy ();
 						s.return_type.symbol = d.symbol;
 						results.add (s);
@@ -399,7 +399,7 @@ namespace Afrodite
 					if (!d.unresolved 
 					    && ((access & SymbolAccessibility.PRIVATE) != 0)
 					    && (name == null || compare_symbol_names (d.name, name, mode, case_sensitiveness))) {
-						var s = new Afrodite.Symbol (d.name, SymbolType.PARAMETER);
+						var s = new Afrodite.Symbol (d.name, MemberType.PARAMETER);
 						s.return_type = d.copy ();
 						s.return_type.symbol = d.symbol;
 						results.add (s);
@@ -523,7 +523,7 @@ namespace Afrodite
 					foreach (DataType type in this_sym.base_types) {
 						//debug ("search base types: %s", type.type_name);
 						
-						if (!type.unresolved && type.symbol.symbol_type == SymbolType.CLASS) {
+						if (!type.unresolved && type.symbol.member_type == MemberType.CLASS) {
 							return type.symbol;
 						}
 					}

@@ -202,7 +202,7 @@ namespace Vtg
 			hbox.pack_start (_check_show_private_symbols, false, true, 4);
 
 			_side_panel.show_all ();
-			var icon = new Gtk.Image.from_pixbuf (Utils.get_icon_for_type_name (SymbolType.CLASS));
+			var icon = new Gtk.Image.from_pixbuf (Utils.get_icon_for_type_name (MemberType.CLASS));
 			panel.add_item (_side_panel, "Source", _("Source"), icon);
 			panel.activate_item (_side_panel);
 
@@ -435,7 +435,7 @@ namespace Vtg
 								model.append (out iter);
 								model.set (iter,
 									Columns.NAME, child.name,
-									Columns.ICON, Utils.get_icon_for_type_name (child.symbol_type),
+									Columns.ICON, Utils.get_icon_for_type_name (child.member_type),
 									Columns.DATA, new Data(child, sr));
 							}
 							count++;
@@ -538,7 +538,7 @@ namespace Vtg
 			Afrodite.SymbolAccessibility sym_access;
 
 			if (symbol.has_children && !symbol.name.has_prefix ("!")
-			    && (symbol.symbol_type == SymbolType.CLASS || symbol.symbol_type == SymbolType.STRUCT || symbol.symbol_type == SymbolType.NAMESPACE)) {
+			    && (symbol.member_type == MemberType.CLASS || symbol.member_type == MemberType.STRUCT || symbol.member_type == MemberType.NAMESPACE)) {
 				sym_access = symbol.access;
 				
 				foreach (Afrodite.Symbol child in symbol.children) {
@@ -559,18 +559,18 @@ namespace Vtg
 				var symbol = item.symbol;
 				TreeIter iter_group;
 
-				if (symbol.symbol_type == SymbolType.NAMESPACE
-				    || symbol.symbol_type == SymbolType.CLASS
-				    || symbol.symbol_type == SymbolType.INTERFACE
-				    || symbol.symbol_type == SymbolType.STRUCT
-				    || symbol.symbol_type == SymbolType.ENUM) {
+				if (symbol.member_type == MemberType.NAMESPACE
+				    || symbol.member_type == MemberType.CLASS
+				    || symbol.member_type == MemberType.INTERFACE
+				    || symbol.member_type == MemberType.STRUCT
+				    || symbol.member_type == MemberType.ENUM) {
 					Afrodite.SourceReference sr = symbol.lookup_source_reference_filename (_current_source_path);
 
 					if (sr != null) {
 						combo_model.append (out iter_group);
 						combo_model.set (iter_group,
 							Columns.NAME, symbol.fully_qualified_name, 
-							Columns.ICON, Utils.get_icon_for_type_name (symbol.symbol_type),
+							Columns.ICON, Utils.get_icon_for_type_name (symbol.member_type),
 							Columns.DATA, new Data (symbol, sr));
 					}
 
@@ -582,7 +582,7 @@ namespace Vtg
 					combo_model.append (out iter_group);
 					combo_model.set (iter_group,
 						Columns.NAME, _("(none)"),
-						Columns.ICON, Utils.get_icon_for_type_name (SymbolType.NAMESPACE),
+						Columns.ICON, Utils.get_icon_for_type_name (MemberType.NAMESPACE),
 						Columns.DATA, new Data (symbol.parent, null));
 					root_namespace_added = true;
 				}
@@ -631,7 +631,7 @@ namespace Vtg
 					
 						model.@set (iter,
 							Columns.NAME, des,
-							Columns.ICON, Utils.get_icon_for_type_name (symbol.symbol_type),
+							Columns.ICON, Utils.get_icon_for_type_name (symbol.member_type),
 							Columns.DATA, new Data (symbol, sr));
 
 						if (item.children.size > 0) {

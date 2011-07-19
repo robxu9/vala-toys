@@ -609,7 +609,7 @@ namespace Vtg
 					FilteredListDialogColumns.MARKUP, item.symbol.display_name,
 					FilteredListDialogColumns.VISIBILITY, true, 
 					FilteredListDialogColumns.OBJECT, new FilteredListDialogData (item.symbol),
-					FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (item.symbol.symbol_type),
+					FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (item.symbol.member_type),
 					FilteredListDialogColumns.SELECTABLE, true);
 
 				if (item.children.size > 0) {
@@ -645,7 +645,7 @@ namespace Vtg
 						FilteredListDialogColumns.MARKUP, symbol.display_name,
 						FilteredListDialogColumns.VISIBILITY, true,
 						FilteredListDialogColumns.OBJECT, new FilteredListDialogData (symbol),
-						FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (symbol.symbol_type),
+						FilteredListDialogColumns.ICON, Utils.get_icon_for_type_name (symbol.member_type),
 						FilteredListDialogColumns.SELECTABLE, true);
 
 					if (symbol.has_children) {

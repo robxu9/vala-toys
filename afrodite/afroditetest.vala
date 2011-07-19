@@ -172,7 +172,7 @@ public class AfroditeTest.Application : Object {
 				print (" %d\n", engine.ast.unresolved_symbols.size);
 				foreach (Afrodite.Symbol symbol in engine.ast.unresolved_symbols) {
 					print ("\t%s: %s - '%s'\n", 
-						Utils.Symbols.get_symbol_type_description (symbol.symbol_type),
+						Utils.Symbols.get_symbol_type_description (symbol.member_type),
 						symbol.fully_qualified_name,
 						symbol.description);
 

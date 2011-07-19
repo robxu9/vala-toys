@@ -479,7 +479,7 @@ namespace Vtg
 
 				string name;
 
-				if (symbol.symbol_type == SymbolType.CREATION_METHOD) {
+				if (symbol.member_type == MemberType.CREATION_METHOD) {
 					name = symbol.name;
 				} else {
 					name = (symbol.display_name != null ? symbol.display_name : "<null>");
@@ -488,7 +488,7 @@ namespace Vtg
 				if (!symbol.overrides || (symbol.overrides && !this.proposal_list_contains_name (name))) {
 					GtkSource.CompletionItem proposal;
 					var info = (symbol.info != null ? symbol.info : "");
-					Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.symbol_type);
+					Gdk.Pixbuf icon = Utils.get_icon_for_type_name (symbol.member_type);
 
 					/*if (false && _prealloc_index < Utils.prealloc_count) {
 						proposal = proposals [_prealloc_index];
@@ -540,13 +540,13 @@ namespace Vtg
 		private void append_base_type_symbols (Afrodite.QueryOptions? options, Symbol symbol, Vala.List<Symbol> visited_interfaces)
 		{
 			if (symbol.has_base_types 
-			    && (symbol.symbol_type == SymbolType.CLASS || symbol.symbol_type == SymbolType.INTERFACE || symbol.symbol_type == SymbolType.STRUCT)) {
+			    && (symbol.member_type == MemberType.CLASS || symbol.member_type == MemberType.INTERFACE || symbol.member_type == MemberType.STRUCT)) {
 				foreach (DataType type in symbol.base_types) {
 					Utils.trace ("visiting base type: %s", type.type_name);
 					if (!type.unresolved 
 					    && type.symbol.has_children
 					    && (options == null || type.symbol.check_options (options))
-					    && (type.symbol.symbol_type == SymbolType.CLASS || type.symbol.symbol_type == SymbolType.INTERFACE || type.symbol.symbol_type == SymbolType.STRUCT)) {
+					    && (type.symbol.member_type == MemberType.CLASS || type.symbol.member_type == MemberType.INTERFACE || type.symbol.member_type == MemberType.STRUCT)) {
 							// symbols of base types (classes or interfaces)
 							if (!visited_interfaces.contains (type.symbol)) {
 								visited_interfaces.add (type.symbol);
@@ -556,7 +556,7 @@ namespace Vtg
 					}
 				}
 			} else {
-				Utils.trace ("NO base type for %s-%s", symbol.name, symbol.symbol_type.to_string ());
+				Utils.trace ("NO base type for %s-%s", symbol.name, symbol.member_type.to_string ());
 			}
 		}
 

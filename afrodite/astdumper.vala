@@ -74,13 +74,13 @@ namespace Afrodite
 			
 			sb.append (pad);
 
-			if (s.symbol_type == SymbolType.NAMESPACE
-			    || s.symbol_type == SymbolType.CLASS
-			    || s.symbol_type == SymbolType.STRUCT
-			    || s.symbol_type == SymbolType.INTERFACE
-			    || s.symbol_type == SymbolType.ENUM
-			    || s.symbol_type == SymbolType.ERROR_DOMAIN)
-				sb.append_printf ("%s ", Utils.Symbols.get_symbol_type_description (s.symbol_type));
+			if (s.member_type == MemberType.NAMESPACE
+			    || s.member_type == MemberType.CLASS
+			    || s.member_type == MemberType.STRUCT
+			    || s.member_type == MemberType.INTERFACE
+			    || s.member_type == MemberType.ENUM
+			    || s.member_type == MemberType.ERROR_DOMAIN)
+				sb.append_printf ("%s ", Utils.Symbols.get_symbol_type_description (s.member_type));
 
 			sb.append_printf ("%s ", Utils.unescape_xml_string (s.description));
 			
