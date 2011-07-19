@@ -529,7 +529,7 @@ namespace Vtg
 		private void populate_combo_groups_model (ListStore combo_model, Afrodite.SourceFile source)
 		{
 			bool root_namespace_added = false;
-			foreach (Afrodite.Symbol symbol in source.symbols) {
+			foreach (unowned Afrodite.Symbol symbol in source.symbols) {
 				TreeIter iter_group;
 
 				if (symbol.member_type == MemberType.NAMESPACE

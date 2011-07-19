@@ -57,19 +57,20 @@ namespace Afrodite
 
 		public Vala.List<SourceFile> source_files { get; set; }
 	
-		public Symbol? lookup (string fully_qualified_name)
+		internal Symbol? lookup (string fully_qualified_name)
 		{
 			Symbol result = null;
-			
-			Symbol parent = _root;
-			if (_root.has_children) {
-				result = lookup_symbol (fully_qualified_name, _root, ref parent, CompareMode.EXACT);
-			}
 
+			foreach (var s in symbols.get_values ()) {
+				if (s.fully_qualified_name == fully_qualified_name) {
+					result = s;
+					break;
+				}
+			}
 			return result;
 		}
 		
-		internal static Symbol? lookup_symbol (string qualified_name, Symbol parent_symbol, 
+		private static Symbol? lookup_symbol (string qualified_name, Symbol parent_symbol, 
 			ref Symbol? parent,  CompareMode mode,
 			SymbolAccessibility access = SymbolAccessibility.ANY, MemberBinding binding = MemberBinding.ANY)
 		{

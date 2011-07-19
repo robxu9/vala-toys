@@ -367,7 +367,7 @@ namespace Afrodite
 			}
 		}*/
 
-		private void visit_symbols (Vala.List<unowned Afrodite.Symbol> symbols)
+		private void visit_symbols (Vala.List<Afrodite.Symbol> symbols)
 		{
 			Vala.List<unowned Afrodite.Symbol> resolved = new Vala.ArrayList<unowned Afrodite.Symbol>();
 			

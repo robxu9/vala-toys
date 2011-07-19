@@ -125,7 +125,6 @@ namespace Vtg
 		
 		public void activate ()
 		{
-			GLib.debug ("app activate");
 			_config = new Configuration ();
 			_config.notify.connect (this.on_configuration_property_changed);
 			GLib.Intl.bindtextdomain (Config.GETTEXT_PACKAGE, null);
@@ -136,7 +135,6 @@ namespace Vtg
 
 		public void deactivate ()
 		{
-			GLib.debug ("app deactivate");
 			deactivate_modules ();
 			_instances.clear ();
 		}
@@ -312,7 +310,6 @@ namespace Vtg
 
 		~Plugin ()
 		{
-			GLib.debug ("~Plugin");
 			_projects.project_opened.disconnect (this.on_project_opened);
 			_projects.project_closed.disconnect (this.on_project_closed);
 			deactivate_modules ();
@@ -338,7 +335,6 @@ namespace Vtg
 public void peas_register_types (TypeModule module) 
 {
 	var objmodule = module as Peas.ObjectModule;
-	GLib.debug ("register types: %s", objmodule == null ? "null": "NOT null");
  	objmodule.register_extension_type (typeof (Gedit.AppActivatable),
                                      typeof (Vtg.Plugin));
  	objmodule.register_extension_type (typeof (Gedit.WindowActivatable),

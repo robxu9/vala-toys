@@ -116,86 +116,7 @@ namespace Afrodite
 
 		private async void visit_class_sliced (Class c)
 		{
-			var prev_vala_fqn = _vala_symbol_fqn;
-			var prev = _current;
-			unowned SourceReference prev_sr = _current_sr;
-
-			_current = visit_symbol (MemberType.CLASS, c, out _current_sr);
-			_current.is_abstract = c.is_abstract;
-			
-		        foreach (Vala.DataType type in c.get_base_types ()) {
-		                type.accept (this);
-		        }
-
-		        foreach (TypeParameter p in c.get_type_parameters ()) {
-		                p.accept (this);
-		        }
-
-		        /* process enums first to avoid order problems in C code */
-		        foreach (Enum en in c.get_enums ()) {
-		                en.accept (this);
-		        }
-
-		        foreach (Field f in c.get_fields ()) {
-		                f.accept (this);
-		        }
-
-		        foreach (Constant cst in c.get_constants ()) {
-		                cst.accept (this);
-		        }
-
-		        foreach (Method m in c.get_methods ()) {
-		        	yield visit_method_sliced (m);
-		        }
-
-		        foreach (Property prop in c.get_properties ()) {
-		                prop.accept (this);
-		        }
-
-		        foreach (Vala.Signal sig in c.get_signals ()) {
-		                sig.accept (this);
-		        }
-
-		        if (c.constructor != null) {
-		                c.constructor.accept (this);
-		        }
-
-		        if (c.class_constructor != null) {
-		                c.class_constructor.accept (this);
-		        }
-
-			if (c.static_constructor != null) {
-				c.static_constructor.accept (this);
-			}
-
-			if (c.destructor != null) {
-				c.destructor.accept (this);
-			}
-
-			if (c.static_destructor != null) {
-				c.static_destructor.accept (this);
-			}
-
-			if (c.class_destructor != null) {
-				c.class_destructor.accept (this);
-			}
-
-			foreach (Class cl in c.get_classes ()) {
-				yield visit_class_sliced (cl);
-			}
-
-			foreach (Struct st in c.get_structs ()) {
-				yield visit_struct_sliced (st);
-			}
-
-			foreach (Delegate d in c.get_delegates ()) {
-				yield visit_delegate_sliced (d);
-			}
-
-
-			_current = prev;
-			_current_sr = prev_sr;
-			_vala_symbol_fqn = prev_vala_fqn;
+			visit_class (c);
 		}
 
 		private async void visit_struct_sliced (Struct st)
@@ -235,7 +156,17 @@ namespace Afrodite
 		
 		public override void visit_class (Class c)
 		{
-			visit_class_sliced (c);
+			var prev_vala_fqn = _vala_symbol_fqn;
+			var prev = _current;
+			unowned SourceReference prev_sr = _current_sr;
+
+			_current = visit_symbol (MemberType.CLASS, c, out _current_sr);
+			_current.is_abstract = c.is_abstract;
+			c.accept_children (this);
+			
+			_current = prev;
+			_current_sr = prev_sr;
+			_vala_symbol_fqn = prev_vala_fqn;
 		}
 		
 		public override void visit_struct (Struct s)
@@ -297,7 +228,12 @@ namespace Afrodite
 		
 		private Afrodite.Symbol add_symbol (MemberType type, Vala.Symbol s, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
-			var symbol = new Afrodite.Symbol (s.name, type);
+			var name = s.name;
+			if (name == null) {
+				name = "%s:%s".printf(type.to_string ().down(), _current.fully_qualified_name);
+			}
+			
+			var symbol = new Afrodite.Symbol (name, type);
 			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
 				var sr = create_source_reference (s, last_line, last_column);
 				symbol.add_source_reference (sr);
@@ -480,6 +416,7 @@ namespace Afrodite
 			var s = add_symbol (MemberType.CREATION_METHOD, m, out _current_sr, last_line);
 			if (m.name == ".new")
 				s.return_type = new DataType (m.return_type.to_string ());
+
 			else {
 				// creation method
 				s.return_type = new DataType (m.parent_symbol.get_full_name ());
@@ -494,6 +431,8 @@ namespace Afrodite
 			}
 			s.binding =  get_vala_member_binding (m.binding);
 			_current.add_child (s);
+			s.return_type.symbol = _current;
+			_current.add_resolved_target (s);
 			
 			_current = s;
 			visit_type_for_generics (m.return_type, s.return_type);
@@ -528,8 +467,11 @@ namespace Afrodite
 			var s = add_symbol (MemberType.CONSTRUCTOR, m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
 			s.return_type = new DataType (_current.fully_qualified_name);
+			s.display_name = _current.name;
 			_current.add_child (s);
-			
+			s.return_type.symbol = _current;
+			_current.add_resolved_target (s);
+
 			_current = s;
 			if (m.body != null) {
 				m.body.accept (this);
@@ -1202,7 +1144,7 @@ namespace Afrodite
 			}
 				
 			var s = add_codenode ("!%s".printf(name), MemberType.SCOPED_CODE_NODE, node, out _current_sr, last_line);
-			s.display_name = name;
+			//s.display_name = name;
 			
 			_current.add_child (s);
 			
