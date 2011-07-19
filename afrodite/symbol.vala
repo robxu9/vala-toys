@@ -67,8 +67,13 @@ namespace Afrodite
 
 		public unowned Symbol? generic_parent { get; set; }
 		
-		public string name { get; set; }
-		public string fully_qualified_name { get; set; }
+		public string name { get; private set; }
+		
+		public string fully_qualified_name { 
+			owned get {
+				return parent == null || parent.is_root ? name : "%s.%s".printf (parent.fully_qualified_name, name);
+			}
+		}
 		
 		public DataType return_type { get; set; } // real symbol return type
 		public MemberType member_type { get; set; }
@@ -95,7 +100,7 @@ namespace Afrodite
 		public bool is_root
 		{
 			get {
-				return fully_qualified_name == null;
+				return name == null;
 			}
 		}
 
@@ -108,12 +113,12 @@ namespace Afrodite
 			}
 		}
 
-		public Symbol (string? fully_qualified_name, MemberType type)
+		public Symbol (string? symbol_name, MemberType type)
 		{
-			if (fully_qualified_name != null) {
-				string[] parts = fully_qualified_name.split (".");
+			if (symbol_name != null) {
+				string[] parts = symbol_name.split (".");
 				name = parts[parts.length-1];
-				this.fully_qualified_name = fully_qualified_name;
+				//this.fully_qualified_name = fully_qualified_name;
 			}
 			this.member_type = type;
 
@@ -196,7 +201,7 @@ namespace Afrodite
 				int prev_size = source_references.size;
 				var sr = source_references.get (0);
 				if (sr.file.has_symbols) {
-					Utils.trace ("removing from source %s: %s", sr.file.filename, this._fully_qualified_name);
+					Utils.trace ("removing from source %s: %s", sr.file.filename, this.fully_qualified_name);
 					sr.file.remove_symbol (this); // this will remove the source reference from the symbol
 				} else {
 					critical ("%s belong to source %p but it isn't listed in its symbol table. Leak?", this.fully_qualified_name, sr.file);
@@ -990,11 +995,9 @@ namespace Afrodite
 
 		public Symbol copy ()
 		{
-			var res = new Symbol (_fully_qualified_name, member_type);
+			var res = new Symbol (this.name, member_type);
 			res.parent = this.parent;
 
-			res.name = this.name;
-			res.fully_qualified_name = this.fully_qualified_name;
 			if (_return_type != null) {
 				res.return_type = _return_type.copy ();
 			}
@@ -1065,7 +1068,6 @@ namespace Afrodite
 				}
 				string name = this.generic_type_arguments[i].fully_qualified_name ?? this.generic_type_arguments[i].name;
 				resolve_generic_type (this, name, types[i]);
-				this.generic_type_arguments[i].fully_qualified_name = types[i].type_name;
 				this.generic_type_arguments[i].name  = types[i].type_name;
 				this.generic_type_arguments[i].return_type = types[i];
 				this._des = null;
