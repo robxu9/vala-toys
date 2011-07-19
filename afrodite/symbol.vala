@@ -29,7 +29,20 @@ namespace Afrodite
 		public static VoidType VOID = new VoidType ();
 		public static EllipsisType ELLIPSIS = new EllipsisType ();
 
+		private string _des = null;
+		private string _display_name = null;
+		
+		private DataType _symbol_data_type = null;
+		
+		// all the children symbols. the parent of each child should be equal to this symbol reference
+		private Vala.List<unowned Symbol> _children = null;
+		
+		// specializations of this generic type symbol
+		private Vala.List<unowned Symbol> _specialized_symbols = null;
+		
+		// symbol whose this symbol is contained in the children collection
 		private unowned Symbol _parent;
+		
 		public unowned Symbol parent {
 			get { return _parent; }
 			set {
@@ -38,7 +51,8 @@ namespace Afrodite
 			}
 		}
 
-		public Vala.List<unowned Symbol> children { get; set; }
+		public Vala.List<unowned Symbol> children { get { return _children; } }
+		
 		// contains a reference to symbols of whose this symbol is a resolved reference for any target data type
 		public Vala.List<unowned Symbol> resolved_targets = null;
 
@@ -71,13 +85,6 @@ namespace Afrodite
 		public bool overrides = false;
 		internal int _static_child_count = 0;
 		internal int _creation_method_child_count = 0;
-
-		private string _des = null;
-		private string _display_name = null;
-		
-		private DataType _symbol_data_type = null;
-		
-		private Vala.List<Symbol> _specialized_symbols = null;
 
 		public bool is_root
 		{
@@ -133,12 +140,12 @@ namespace Afrodite
 
 			// deallocate the children
 			if (has_children) {
-				foreach (Symbol child in children) {
+				foreach (Symbol child in _children) {
 					if (child.parent == this) {
 						child.parent = null;
 					}
 				}
-				children = null;
+				_children = null;
 			}
 			
 			// unresolve all the targets. direction target *is resolved by* this symbol
@@ -302,11 +309,11 @@ namespace Afrodite
 		public void add_child (Symbol child)
 		{
 			assert (child != this);
-			if (children == null) {
-				children = new ArrayList<unowned Symbol> ();
+			if (_children == null) {
+				_children = new ArrayList<unowned Symbol> ();
 			}
 
-			children.add (child);
+			_children.add (child);
 			child.parent = this;
 			if (child.is_static || child.has_static_child) {
 				static_child_count++;
@@ -322,8 +329,8 @@ namespace Afrodite
 			if (child.parent == this)
 				child.parent = null;
 
-			if (children.size == 0)
-				children = null;
+			if (_children.size == 0)
+				_children = null;
 				
 			if (_static_child_count > 0
 				&& (child.is_static || child.has_static_child)) {
@@ -450,7 +457,7 @@ namespace Afrodite
 		public bool has_children
 		{
 			get {
-				return children != null;
+				return _children != null;
 			}
 		}
 
@@ -1013,6 +1020,7 @@ namespace Afrodite
 				}
 			}
 
+			
 			if (has_source_references) {
 				foreach (var item in source_references) {
 					res.add_source_reference (item);
@@ -1020,6 +1028,7 @@ namespace Afrodite
 				}
 				
 			}
+			
 
 			if (has_parameters) {
 				foreach (var item in parameters) {
