@@ -39,7 +39,7 @@ namespace Vtg
 	
 	private class Data : GLib.Object
 	{
-		public Afrodite.Symbol symbol;
+		public unowned Afrodite.Symbol symbol;
 		public Afrodite.SourceReference? source_reference;
 		
 		private Afrodite.SourceFile _file;
