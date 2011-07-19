@@ -30,7 +30,7 @@ namespace Afrodite
 
 		public Vala.List<DataType> using_directives { get; set; }
 		public Vala.List<Symbol> symbols { get; set; }
-		public unowned Ast parent { get; set; }
+		public unowned Ast ast { get; set; }
 
 		public TimeVal last_modification_time;
 		
@@ -127,8 +127,8 @@ namespace Afrodite
 
 			symbols.add (symbol);
 
-			parent.symbols.set (symbol.fully_qualified_name, symbol);
-			parent.unresolved_symbols.add(symbol);
+			ast.symbols.set (symbol.fully_qualified_name, symbol);
+			ast.unresolved_symbols.add(symbol);
 		}
 
 		public void remove_symbol (Symbol symbol)
@@ -137,18 +137,13 @@ namespace Afrodite
 			assert (sr != null);
 
 			symbol.remove_source_reference (sr);
-			symbols.remove (symbol);
+			//this is done by remove_source_reference: symbols.remove (symbol);
 			if (symbols.size == 0)
 				symbols = null;
 
 			if (!symbol.has_source_references) {
-				if (parent != null) {
-					if (parent.symbols != null) {
-						parent.symbols.remove (symbol.fully_qualified_name);
-					}
-					if (parent.unresolved_symbols != null) {
-						parent.unresolved_symbols.remove (symbol);
-					}
+				if (ast != null) {
+					remove_symbol_from_ast (symbol);
 				}
 				if (symbol.parent != null) {
 					if (symbol.is_generic_type_argument) {
@@ -160,7 +155,6 @@ namespace Afrodite
 				if (symbol.generic_parent != null && symbol.generic_parent.has_specialized_symbols) {
 					symbol.generic_parent.remove_specialized_symbol (symbol);
 				}
-
 			}
 
 			//Utils.trace ("%s remove symbol %s: %u", filename, symbol.fully_qualified_name, symbol.ref_count);
@@ -170,6 +164,17 @@ namespace Afrodite
 		{
 			get {
 				return symbols != null;
+			}
+		}
+		
+		internal void remove_symbol_from_ast (Symbol symbol)
+		{
+			assert (ast != null);
+			if (ast.symbols != null) {
+				ast.symbols.remove (symbol.fully_qualified_name);
+			}
+			if (ast.unresolved_symbols != null) {
+				ast.unresolved_symbols.remove (symbol);
 			}
 		}
 	}

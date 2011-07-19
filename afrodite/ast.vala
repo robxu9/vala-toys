@@ -36,7 +36,7 @@ namespace Afrodite
 			Utils.trace ("Ast destroy");
 			// destroy the root symbol
 			foreach (SourceFile file in source_files) {
-				file.parent = null;
+				file.ast = null;
 			}
 			_root = null;
 			source_files = null;// source have to be destroyed after root symbol
@@ -119,7 +119,7 @@ namespace Afrodite
 					source_files = new ArrayList<SourceFile> ();
 				}
 				//Utils.trace ("add source: %s (%p)", file.filename, file);
-				file.parent = this;
+				file.ast = this;
 				source_files.add (file);
 			}
 			return file;
@@ -148,6 +148,16 @@ namespace Afrodite
 		{
 			return_if_fail (source_files != null);
 			source_files.remove (source);
+			
+			// remove the symbols from the symbol table if the
+			// only source reference that it has is this source file
+			foreach (Symbol symbol in source.symbols) {
+				if (symbol.has_source_references 
+				    && symbol.source_references.size == 1
+				    && symbol.source_references[0].file.filename == source.filename) {
+					source.remove_symbol_from_ast (symbol);
+				}
+			}
 		}
 		
 		public Symbol? lookup_symbol_at (string filename, int line, int column)
