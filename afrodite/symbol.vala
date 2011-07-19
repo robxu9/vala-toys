@@ -472,51 +472,40 @@ namespace Afrodite
 		{
 			assert (resolve_target != this);
 
-			// resolve target collection can be accessed from multiple threads
-			lock (resolved_targets) {
-				if (_resolved_targets == null) {
-					_resolved_targets = new ArrayList<unowned Symbol> ();
-				}
-
-				if (!_resolved_targets.contains (resolve_target))
-					_resolved_targets.add (resolve_target);
-
-				if (resolve_target.resolve_targets == null) {
-					resolve_target.resolve_targets = new ArrayList<unowned Symbol> ();
-				}
-
-				if (!resolve_target.resolve_targets.contains (this))
-					resolve_target.resolve_targets.add (this);
+			if (_resolved_targets == null) {
+				_resolved_targets = new ArrayList<unowned Symbol> ();
 			}
+
+			if (!_resolved_targets.contains (resolve_target))
+				_resolved_targets.add (resolve_target);
+
+			if (resolve_target.resolve_targets == null) {
+				resolve_target.resolve_targets = new ArrayList<unowned Symbol> ();
+			}
+
+			if (!resolve_target.resolve_targets.contains (this))
+				resolve_target.resolve_targets.add (this);
 		}
 
 		public void remove_resolved_target (Symbol resolve_target)
 		{
 			// resolve target collection can be accessed from multiple threads
-			lock (resolved_targets) {
-				resolved_targets.remove (resolve_target);
-				if (_resolved_targets.size == 0)
-					_resolved_targets = null;
+			_resolved_targets.remove (resolve_target);
+			if (_resolved_targets.size == 0)
+				_resolved_targets = null;
 
-				if (resolve_target.resolve_targets != null) {
-					resolve_target.resolve_targets.remove (this);
+			if (resolve_target.resolve_targets != null) {
+				resolve_target.resolve_targets.remove (this);
 
-					if (resolve_target.resolve_targets.size == 0)
-						resolve_target.resolve_targets = null;
-				}
+				if (resolve_target.resolve_targets.size == 0)
+					resolve_target.resolve_targets = null;
 			}
 		}
 
 		public bool has_resolved_targets
 		{
 			get {
-				bool res;
-				
-				lock (resolved_targets) {
-					res = _resolved_targets != null;
-				}
-				
-				return res;
+				return _resolved_targets != null;
 			}
 		}
 
