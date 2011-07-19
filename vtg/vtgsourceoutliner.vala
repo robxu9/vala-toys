@@ -32,7 +32,6 @@ namespace Vtg
 		private Gedit.View _active_view = null; // it's not unowned because we need to cleanup later
 		private Gedit.Document _active_doc = null; // it's not unowned because we need to cleanup later
 		private SourceOutlinerView _outliner_view = null;
-		private uint idle_id = 0;
 		private bool completion_setup = false;
 
 		public View active_view {
@@ -54,11 +53,8 @@ namespace Vtg
 						var doc = (Document) _active_view.get_buffer ();
 						setup_document (doc);
 						if (Utils.is_vala_doc (doc)) {
-							// update source outliner view on the idle handler
-							// to be sure that the sourceview document was
-							// loaded from gEdit
-							setup_idle ();
 							setup_completion_with_view (_active_view);
+							update_source_outliner_view ();
 						}
 					}
 				}
@@ -81,9 +77,6 @@ namespace Vtg
 				_outliner_view.deactivate ();
 				_outliner_view = null;
 			}
-			if (idle_id != 0) {
-				GLib.Source.remove (idle_id);
-			}
 			if (_active_view != null)
 			{
 				cleanup_document ();
@@ -91,11 +84,12 @@ namespace Vtg
 					cleanup_completion_with_view (_active_view);
 				_active_view = null;
 			}
+			_active_doc = null;
 		}
 
 		private void on_filter_changed (SourceOutlinerView sender)
 		{
-			setup_idle ();
+			update_source_outliner_view ();
 		}
 		
 		private void on_goto_source (SourceOutlinerView sender, int line, int start_column, int end_column)		
@@ -139,7 +133,7 @@ namespace Vtg
 		public void setup_completion_engine (Afrodite.CompletionEngine engine)
 		{
 			completion_setup = true;
-			engine.end_parsing.connect (this.on_end_parsing);
+			engine.file_parsed.connect (this.on_file_parsed);
 		}
 
 		private void cleanup_completion_with_view (View view)
@@ -154,7 +148,7 @@ namespace Vtg
 
 		public void cleanup_completion_engine (Afrodite.CompletionEngine engine)
 		{
-			engine.end_parsing.disconnect (this.on_end_parsing);
+			engine.file_parsed.disconnect (this.on_file_parsed);
 			completion_setup = false;
 		}
 		
@@ -186,30 +180,13 @@ namespace Vtg
 			}
 		}
 
-		private void on_end_parsing (Afrodite.CompletionEngine sender)
+		private void on_file_parsed (Afrodite.CompletionEngine sender, string filename, Afrodite.ParseResult parse_result)
 		{
-			setup_idle ();
-		}
-
-		private void setup_idle ()
-		{
-			Utils.trace ("Idle setup");
-			lock (idle_id) {
-				if (idle_id == 0) {
-					Utils.trace ("Idle setup real");
-					idle_id =  Idle.add (this.on_idle_update, Priority.LOW);
-				}
-			}
-		}
-		
-		private bool on_idle_update ()
-		{
-			lock (idle_id) {
-				bool success = update_source_outliner_view ();
-				if (success) {
-					idle_id = 0;
-				}
-				return !success; // remove the idle on a sucessful update
+			var doc = (Gedit.Document) _active_view.get_buffer ();
+			var name = Utils.get_document_name (doc);
+			Utils.trace ("File parsed: %s - current file: %s", filename, name);
+			if (filename == name) {
+				update_source_outliner_view ();
 			}
 		}
 
