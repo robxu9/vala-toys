@@ -529,33 +529,35 @@ namespace Vtg
 		private void populate_combo_groups_model (ListStore combo_model, Afrodite.SourceFile source)
 		{
 			bool root_namespace_added = false;
-			foreach (unowned Afrodite.Symbol symbol in source.symbols) {
-				TreeIter iter_group;
+			if (source.has_symbols) {
+				foreach (unowned Afrodite.Symbol symbol in source.symbols) {
+					TreeIter iter_group;
 
-				if (symbol.member_type == MemberType.NAMESPACE
-				    || symbol.member_type == MemberType.CLASS
-				    || symbol.member_type == MemberType.INTERFACE
-				    || symbol.member_type == MemberType.STRUCT
-				    || symbol.member_type == MemberType.ENUM) {
-					Afrodite.SourceReference sr = symbol.lookup_source_reference_sourcefile (source);
+					if (symbol.member_type == MemberType.NAMESPACE
+					    || symbol.member_type == MemberType.CLASS
+					    || symbol.member_type == MemberType.INTERFACE
+					    || symbol.member_type == MemberType.STRUCT
+					    || symbol.member_type == MemberType.ENUM) {
+						Afrodite.SourceReference sr = symbol.lookup_source_reference_sourcefile (source);
 
-					if (sr != null) {
+						if (sr != null) {
+							combo_model.append (out iter_group);
+							combo_model.set (iter_group,
+								Columns.NAME, symbol.fully_qualified_name, 
+								Columns.ICON, Utils.get_icon_for_type_name (symbol.member_type),
+								Columns.DATA, new Data (symbol, sr));
+						}
+
+						
+					} else if (root_namespace_added == false && symbol.parent != null && symbol.parent.is_root) {
+						// add a special root symbols
 						combo_model.append (out iter_group);
 						combo_model.set (iter_group,
-							Columns.NAME, symbol.fully_qualified_name, 
-							Columns.ICON, Utils.get_icon_for_type_name (symbol.member_type),
-							Columns.DATA, new Data (symbol, sr));
+							Columns.NAME, _("(none)"),
+							Columns.ICON, Utils.get_icon_for_type_name (MemberType.NAMESPACE),
+							Columns.DATA, new Data (symbol.parent, null));
+						root_namespace_added = true;
 					}
-
-					
-				} else if (root_namespace_added == false && symbol.parent != null && symbol.parent.is_root) {
-					// add a special root symbols
-					combo_model.append (out iter_group);
-					combo_model.set (iter_group,
-						Columns.NAME, _("(none)"),
-						Columns.ICON, Utils.get_icon_for_type_name (MemberType.NAMESPACE),
-						Columns.DATA, new Data (symbol.parent, null));
-					root_namespace_added = true;
 				}
 			}
 		}
