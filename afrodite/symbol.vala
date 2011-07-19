@@ -145,16 +145,6 @@ namespace Afrodite
 				generic_parent.remove_specialized_symbol (this);
 			}
 
-			// deallocate the children
-			if (has_children) {
-				foreach (Symbol child in _children) {
-					if (child.parent == this) {
-						child.parent = null;
-					}
-				}
-				_children = null;
-			}
-			
 			// unresolve all the targets. direction target *is resolved by* this symbol
 			if (has_resolved_targets) {
 				foreach(var symbol in resolved_targets) {
@@ -180,19 +170,7 @@ namespace Afrodite
 			}
 
 			this.remove_from_targets ();
-
-			
-
-			if (has_specialized_symbols) {
-				foreach (Symbol sym in _specialized_symbols) {
-					if (sym.generic_parent == this) {
-						sym.generic_parent = null;
-					}
-				}
-				_specialized_symbols = null;
-			}
-			
-			
+		
 			while (has_source_references) {
 				int prev_size = source_references.size;
 				var sr = source_references.get (0);
@@ -207,6 +185,26 @@ namespace Afrodite
 				if (has_source_references) {
 					assert (source_references.size < prev_size);
 				}
+			}
+
+
+			// deallocate the children
+			if (has_children) {
+				foreach (Symbol child in _children) {
+					if (child.parent == this) {
+						child.parent = null;
+					}
+				}
+				_children = null;
+			}
+	
+			if (has_specialized_symbols) {
+				foreach (Symbol sym in _specialized_symbols) {
+					if (sym.generic_parent == this) {
+						sym.generic_parent = null;
+					}
+				}
+				_specialized_symbols = null;
 			}
 			//Utils.trace ("Symbol destroyied: %s (%p)", _fully_qualified_name, this);
 		}

@@ -149,16 +149,6 @@ namespace Afrodite
 		{
 			return_if_fail (source_files != null);
 			source_files.remove (source);
-			
-			// remove the symbols from the symbol table if the
-			// only source reference that it has is this source file
-			foreach (Symbol symbol in source.symbols) {
-				if (symbol.has_source_references 
-				    && symbol.source_references.size == 1
-				    && symbol.source_references[0].file.filename == source.filename) {
-					source.remove_symbol_from_ast (symbol);
-				}
-			}
 		}
 		
 		public Symbol? lookup_symbol_at (string filename, int line, int column)
