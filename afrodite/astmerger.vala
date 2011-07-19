@@ -60,7 +60,7 @@ namespace Afrodite
 			yield visit_namespace_sliced (context.root);
 		}
 
-		public async void visit_namespace_sliced (Namespace ns)
+		private async void visit_namespace_sliced (Namespace ns)
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
@@ -70,7 +70,7 @@ namespace Afrodite
 				_current = visit_symbol (SymbolType.NAMESPACE, ns, out _current_sr);
 
 			foreach (Enum en in ns.get_enums ()) {
-				en.accept (this);
+				yield visit_enum_sliced (en);
 			}
 
 			foreach (ErrorDomain edomain in ns.get_error_domains ()) {
@@ -94,19 +94,19 @@ namespace Afrodite
 			}
 
 			foreach (Delegate d in ns.get_delegates ()) {
-				d.accept (this);
+				yield visit_delegate_sliced (d);
 			}
 
 			foreach (Constant c in ns.get_constants ()) {
-				c.accept (this);
+				yield visit_constant_sliced (c);
 			}
 
 			foreach (Field f in ns.get_fields ()) {
-				f.accept (this);
+				yield visit_field_sliced (f);
 			}
 
 			foreach (Method m in ns.get_methods ()) {
-				m.accept (this);
+				yield visit_method_sliced (m);
 			}
 
 			_current = prev;
@@ -114,22 +114,7 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 
-		public async void visit_class_sliced (Class c)
-		{
-			visit_class (c);
-		}
-
-		public async void visit_struct_sliced (Struct st)
-		{
-			visit_struct (st);
-		}
-
-		public async void visit_interface_sliced (Interface iface)
-		{
-			visit_interface (iface);
-		}
-
-		public override void visit_class (Class c)
+		private async void visit_class_sliced (Class c)
 		{
 			var prev_vala_fqn = _vala_symbol_fqn;
 			var prev = _current;
@@ -137,11 +122,120 @@ namespace Afrodite
 
 			_current = visit_symbol (SymbolType.CLASS, c, out _current_sr);
 			_current.is_abstract = c.is_abstract;
-			c.accept_children (this);
+			
+		        foreach (Vala.DataType type in c.get_base_types ()) {
+		                type.accept (this);
+		        }
+
+		        foreach (TypeParameter p in c.get_type_parameters ()) {
+		                p.accept (this);
+		        }
+
+		        /* process enums first to avoid order problems in C code */
+		        foreach (Enum en in c.get_enums ()) {
+		                en.accept (this);
+		        }
+
+		        foreach (Field f in c.get_fields ()) {
+		                f.accept (this);
+		        }
+
+		        foreach (Constant cst in c.get_constants ()) {
+		                cst.accept (this);
+		        }
+
+		        foreach (Method m in c.get_methods ()) {
+		        	yield visit_method_sliced (m);
+		        }
+
+		        foreach (Property prop in c.get_properties ()) {
+		                prop.accept (this);
+		        }
+
+		        foreach (Vala.Signal sig in c.get_signals ()) {
+		                sig.accept (this);
+		        }
+
+		        if (c.constructor != null) {
+		                c.constructor.accept (this);
+		        }
+
+		        if (c.class_constructor != null) {
+		                c.class_constructor.accept (this);
+		        }
+
+			if (c.static_constructor != null) {
+				c.static_constructor.accept (this);
+			}
+
+			if (c.destructor != null) {
+				c.destructor.accept (this);
+			}
+
+			if (c.static_destructor != null) {
+				c.static_destructor.accept (this);
+			}
+
+			if (c.class_destructor != null) {
+				c.class_destructor.accept (this);
+			}
+
+			foreach (Class cl in c.get_classes ()) {
+				yield visit_class_sliced (cl);
+			}
+
+			foreach (Struct st in c.get_structs ()) {
+				yield visit_struct_sliced (st);
+			}
+
+			foreach (Delegate d in c.get_delegates ()) {
+				yield visit_delegate_sliced (d);
+			}
+
 
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
+		}
+
+		private async void visit_struct_sliced (Struct st)
+		{
+			visit_struct (st);
+		}
+
+		private async void visit_interface_sliced (Interface iface)
+		{
+			visit_interface (iface);
+		}
+
+		private async void visit_method_sliced (Method m)
+		{
+			visit_method (m);
+		}
+
+		private async void visit_field_sliced (Field f)
+		{
+			visit_field (f);
+		}
+
+		private async void visit_constant_sliced (Constant c)
+		{
+			visit_constant (c);
+		}
+
+		private async void visit_enum_sliced (Enum e)
+		{
+			visit_enum (e);
+		}
+
+		private async void visit_delegate_sliced (Delegate d)
+		{
+			visit_delegate (d);
+		}
+		
+		public override void visit_class (Class c)
+		{
+			visit_class_sliced (c);
 		}
 		
 		public override void visit_struct (Struct s)
