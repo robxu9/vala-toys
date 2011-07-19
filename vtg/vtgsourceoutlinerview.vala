@@ -654,8 +654,10 @@ namespace Vtg
 
 		private void idle_highlight_current_position ()
 		{
-			if (_idle_id == 0)
-				_idle_id = Idle.add_full (Priority.LOW, this.highlight_current_position);
+			if (_idle_id != 0)
+				GLib.Source.remove (_idle_id);
+				
+			_idle_id = Timeout.add (500, this.highlight_current_position, Priority.LOW);
 		}
 
 		private bool highlight_current_position ()
@@ -670,9 +672,9 @@ namespace Vtg
 				do {
 					Data data;
 					model.get (iter, Columns.DATA, out data);
-					if (data.symbol.has_children) {
+					if (data.source_reference != null && data.symbol.has_children) {
 						foreach (Afrodite.Symbol child in data.symbol.children) {
-							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
+							Afrodite.SourceReference sr = child.lookup_source_reference_sourcefile (data.source_reference.file);
 							if (sr != null && sr.contains_position (_current_line + 1, _current_column)) {
 								symbol = child;
 								found = iter;
