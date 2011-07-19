@@ -297,7 +297,7 @@ namespace Afrodite
 		
 		private Afrodite.Symbol add_symbol (MemberType type, Vala.Symbol s, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
-			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, type);
+			var symbol = new Afrodite.Symbol (s.name, type);
 			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
 				var sr = create_source_reference (s, last_line, last_column);
 				symbol.add_source_reference (sr);
@@ -308,9 +308,9 @@ namespace Afrodite
 			return symbol;
 		}
 
-		private Afrodite.Symbol add_codenode (MemberType type, Vala.CodeNode c, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
+		private Afrodite.Symbol add_codenode (string name, MemberType type, Vala.CodeNode c, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
-			var symbol = new Afrodite.Symbol (_vala_symbol_fqn, type);
+			var symbol = new Afrodite.Symbol (name, type);
 			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
 				var sr = create_source_reference (c, last_line, last_column);
 				symbol.add_source_reference (sr);
@@ -1201,7 +1201,7 @@ namespace Afrodite
 				//debug ("body for %s: %d,%d to %d,%d\n", name, body.source_reference.first_line, body.source_reference.first_column, body.source_reference.last_line, body.source_reference.last_column);
 			}
 				
-			var s = add_codenode (MemberType.SCOPED_CODE_NODE, node, out _current_sr, last_line);
+			var s = add_codenode ("!%s".printf(name), MemberType.SCOPED_CODE_NODE, node, out _current_sr, last_line);
 			s.display_name = name;
 			
 			_current.add_child (s);

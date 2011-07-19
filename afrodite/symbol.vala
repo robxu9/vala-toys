@@ -115,11 +115,7 @@ namespace Afrodite
 
 		public Symbol (string? symbol_name, MemberType type)
 		{
-			if (symbol_name != null) {
-				string[] parts = symbol_name.split (".");
-				name = parts[parts.length-1];
-				//this.fully_qualified_name = fully_qualified_name;
-			}
+			this.name = symbol_name;
 			this.member_type = type;
 
 			if (this.member_type == MemberType.SIGNAL) {
