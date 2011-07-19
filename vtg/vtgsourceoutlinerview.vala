@@ -369,22 +369,21 @@ namespace Vtg
 			_model.clear ();
 		}
 
-		public void update_view (string source_path, Afrodite.QueryResult? result = null)
+		public void update_view (Afrodite.SourceFile? source)
 		{
 			var model = build_tree_model ();
 			var sorted = build_sort_model (model);
 			var combo_model = (ListStore) _combo_groups.get_model ();
 
 
-			_current_source_path = source_path;
+			_current_source_path = source.filename;
 			_updating_combos = true;
 			_combo_groups.set_model (null);
 			combo_model.clear ();
 
-			if (result != null && !result.is_empty) {
-				var first = result.children.get (0);
-				populate_treeview_model (model, source_path, first.children);
-				populate_combo_groups_model (combo_model, first.children);
+			if (source != null) {
+				populate_treeview_model (model, source, source.symbols);
+				populate_combo_groups_model (combo_model, source);
 			}
 
 			// build combos
@@ -415,22 +414,6 @@ namespace Vtg
 					foreach (Afrodite.Symbol child in data.symbol.children) {
 						if (!child.name.has_prefix ("!")) {
 							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
-							/*
-							string des = child.description;
-							//remove the access qualifier and the return type
-							foreach(string qualifier in qualifiers) {
-								if (des.has_prefix (qualifier)) {
-									des = des.substring (qualifier.length);
-									break;
-								}
-							}
-
-							string[] tmp = des.split (" ", 2);
-							if (tmp.length == 2) {
-								des = tmp[1];
-							}
-							*/
-
 							if (sr != null) {
 								model.append (out iter);
 								model.set (iter,
@@ -552,11 +535,10 @@ namespace Vtg
 			return sym_access;
 		}
 
-		private void populate_combo_groups_model (ListStore combo_model, Vala.List<ResultItem>? items)
+		private void populate_combo_groups_model (ListStore combo_model, Afrodite.SourceFile source)
 		{
 			bool root_namespace_added = false;
-			foreach (ResultItem item in items) {
-				var symbol = item.symbol;
+			foreach (Afrodite.Symbol symbol in source.symbols) {
 				TreeIter iter_group;
 
 				if (symbol.member_type == MemberType.NAMESPACE
@@ -564,7 +546,7 @@ namespace Vtg
 				    || symbol.member_type == MemberType.INTERFACE
 				    || symbol.member_type == MemberType.STRUCT
 				    || symbol.member_type == MemberType.ENUM) {
-					Afrodite.SourceReference sr = symbol.lookup_source_reference_filename (_current_source_path);
+					Afrodite.SourceReference sr = symbol.lookup_source_reference_sourcefile (source);
 
 					if (sr != null) {
 						combo_model.append (out iter_group);
@@ -574,9 +556,7 @@ namespace Vtg
 							Columns.DATA, new Data (symbol, sr));
 					}
 
-					if (item.children.size > 0) {
-						populate_combo_groups_model (combo_model, item.children);
-					}
+					
 				} else if (root_namespace_added == false && symbol.parent != null && symbol.parent.is_root) {
 					// add a special root symbols
 					combo_model.append (out iter_group);
@@ -588,10 +568,10 @@ namespace Vtg
 				}
 			}
 		}
-
-		private void populate_treeview_model (TreeStore model, string source_path, Vala.List<ResultItem>? items, TreeIter? parent_iter = null)
+		
+		private void populate_treeview_model (TreeStore model, Afrodite.SourceFile source, Vala.List<unowned Afrodite.Symbol>? symbols, TreeIter? parent_iter = null)
 		{
-			if (items == null || items.size == 0)
+			if (symbols == null || symbols.size == 0)
 				return;
 
 			Afrodite.SymbolAccessibility accessibility = 0;
@@ -608,14 +588,28 @@ namespace Vtg
 				accessibility |= Afrodite.SymbolAccessibility.INTERNAL;
 			}
 
-			foreach (ResultItem item in items) {
+			foreach (unowned Afrodite.Symbol symbol in symbols) {
+				// skip some simbols
+				if (symbol.member_type == MemberType.NONE
+				    || symbol.member_type == MemberType.LOCAL_VARIABLE
+				    || symbol.member_type == MemberType.SCOPED_CODE_NODE
+				    || symbol.member_type == MemberType.VOID
+				    || symbol.name.has_prefix ("!")) {
+					continue;
+				}
+				
+				// this will include root symbols is parent_iter == null
+				if (parent_iter == null && !symbol.parent.is_root)
+					continue;
+					
 				TreeIter iter;
-				var symbol = item.symbol;
-
 				Afrodite.SymbolAccessibility sym_access = get_symbol_accessibility (symbol);
 
-				if (!symbol.name.has_prefix ("!")) {
-					if ((sym_access & accessibility) != 0) {
+				if ((sym_access & accessibility) != 0) {
+					var sr = symbol.lookup_source_reference_sourcefile (source);
+				
+					if (sr != null) // a child can be defined in a different source too
+					{
 						string des = symbol.markup_description;
 						//remove the access qualifier
 						foreach(string qualifier in qualifiers) {
@@ -624,18 +618,20 @@ namespace Vtg
 								break;
 							}
 						}
-
 						model.append (out iter, parent_iter);
-
-						var sr = symbol.lookup_source_reference_filename (source_path);
-					
 						model.@set (iter,
 							Columns.NAME, des,
 							Columns.ICON, Utils.get_icon_for_type_name (symbol.member_type),
 							Columns.DATA, new Data (symbol, sr));
 
-						if (item.children.size > 0) {
-							populate_treeview_model (model, source_path, item.children, iter);
+						if ((symbol.member_type == MemberType.CLASS
+						     || symbol.member_type == MemberType.STRUCT
+						     || symbol.member_type == MemberType.INTERFACE
+						     || symbol.member_type == MemberType.NAMESPACE
+						     || symbol.member_type == MemberType.ENUM
+						     || symbol.member_type == MemberType.ERROR_DOMAIN)
+						    && symbol.has_children) {
+							populate_treeview_model (model, source, symbol.children, iter);
 						}
 					}
 				}

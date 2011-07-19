@@ -212,7 +212,7 @@ namespace Vtg
 				return !success; // remove the idle on a sucessful update
 			}
 		}
-		
+
 		private bool update_source_outliner_view ()
 		{
 			var scs = _plugin_instance.scs_find_from_view (_active_view);
@@ -223,14 +223,11 @@ namespace Vtg
 			
 			var doc = (Gedit.Document) _active_view.get_buffer ();
 			var name = Utils.get_document_name (doc);
-			Afrodite.QueryResult result = null;
-			var options = Afrodite.QueryOptions.standard ();
-			options.all_symbols = true;
-			result = scs.completion_engine.ast.get_symbols_for_path (options, name);
+			var result = scs.completion_engine.ast.lookup_source_file (name);
 			update_cursor_position (doc);
-			_outliner_view.update_view (name, result);
+			_outliner_view.update_view (result);
 
-			if (result == null || result.is_empty) {
+			if (result == null) {
 				_outliner_view.clear_view ();
 			}
 			return true;
