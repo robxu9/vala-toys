@@ -410,10 +410,10 @@ namespace Vtg
 			_combo_items.set_model (null);
 			if (_combo_groups.get_active_iter (out iter)) {
 				_combo_groups.get_model ().get (iter, Columns.DATA, out data);
-				if (data.symbol != null && data.symbol.has_children) {
+				if (data.source_reference != null && data.symbol != null && data.symbol.has_children) {
 					foreach (Afrodite.Symbol child in data.symbol.children) {
 						if (!child.name.has_prefix ("!")) {
-							Afrodite.SourceReference sr = child.lookup_source_reference_filename (_current_source_path);
+							Afrodite.SourceReference sr = child.lookup_source_reference_sourcefile (data.source_reference.file);
 							if (sr != null) {
 								model.append (out iter);
 								model.set (iter,
