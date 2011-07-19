@@ -42,19 +42,10 @@ namespace Vtg
 		public unowned Afrodite.Symbol symbol;
 		public Afrodite.SourceReference? source_reference;
 		
-		private Afrodite.SourceFile _file;
-		
 		public Data (Afrodite.Symbol symbol, Afrodite.SourceReference? source_reference = null)
 		{
 			this.symbol = symbol;
 			this.source_reference = source_reference;
-			if (source_reference != null)
-				this._file = source_reference.file;
-		}
-		
-		~Data ()
-		{
-			_file = null;
 		}
 	}
 	

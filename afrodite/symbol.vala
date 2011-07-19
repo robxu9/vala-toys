@@ -35,10 +35,10 @@ namespace Afrodite
 		private DataType _symbol_data_type = null;
 		
 		// all the children symbols. the parent of each child should be equal to this symbol reference
-		private Vala.List<unowned Symbol> _children = null;
+		private Vala.List<Symbol> _children = null;
 		
 		// specializations of this generic type symbol
-		private Vala.List<unowned Symbol> _specialized_symbols = null;
+		private Vala.List<Symbol> _specialized_symbols = null;
 		
 		// symbol whose this symbol is contained in the children collection
 		private unowned Symbol _parent;
@@ -54,7 +54,7 @@ namespace Afrodite
 			}
 		}
 
-		public Vala.List<unowned Symbol> children { get { return _children; } }
+		public Vala.List<Symbol> children { get { return _children; } }
 		
 		public Vala.List<unowned Symbol> resolved_targets {
 			get {
@@ -316,7 +316,7 @@ namespace Afrodite
 		{
 			assert (child != this);
 			if (_children == null) {
-				_children = new ArrayList<unowned Symbol> ();
+				_children = new ArrayList<Symbol> ();
 			}
 
 			_children.add (child);

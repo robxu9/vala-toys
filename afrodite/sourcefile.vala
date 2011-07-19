@@ -29,7 +29,7 @@ namespace Afrodite
 		private string _filename;
 
 		public Vala.List<DataType> using_directives { get; set; }
-		public Vala.List<Symbol> symbols { get; set; }
+		public Vala.List<unowned Symbol> symbols { get; set; }
 		public unowned Ast ast { get; set; }
 
 		public TimeVal last_modification_time;
@@ -122,7 +122,7 @@ namespace Afrodite
 		public void add_symbol (Symbol symbol)
 		{
 			if (symbols == null) {
-				symbols = new ArrayList<Symbol> ();
+				symbols = new ArrayList<unowned Symbol> ();
 			}
 
 			symbols.add (symbol);
