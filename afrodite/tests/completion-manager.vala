@@ -9,6 +9,10 @@ namespace AfroditeTests
 		private Afrodite.CompletionEngine _engine;
 		private string _filename;
 
+		public Afrodite.CompletionEngine engine { get { return _engine; } }
+
+		public string filename { get { return _filename; } }
+
 		public CompletionManager (string filename, bool absolute = false)
 		{
 			_filename = filename;
@@ -41,6 +45,11 @@ namespace AfroditeTests
 			_engine.queue_sourcefile (_filename);
 
 			_loop.run();
+		}
+
+		public void remove_source ()
+		{
+			_engine.remove_source_filename (_filename);
 		}
 		
 		public QueryResult lookup_symbol (string name, int at_line, int at_column)
