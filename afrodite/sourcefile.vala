@@ -136,6 +136,7 @@ namespace Afrodite
 			var sr = symbol.lookup_source_reference_sourcefile (this);
 			assert (sr != null);
 
+			Utils.trace ("%s removing symbol %s: %u", filename, symbol.fully_qualified_name, symbol.ref_count);
 			symbol.remove_source_reference (sr);
 			//this is done by remove_source_reference: symbols.remove (symbol);
 			if (symbols.size == 0)
@@ -157,7 +158,7 @@ namespace Afrodite
 				}
 			}
 
-			//Utils.trace ("%s remove symbol %s: %u", filename, symbol.fully_qualified_name, symbol.ref_count);
+			Utils.trace ("%s removed symbol %s: %u", filename, symbol.fully_qualified_name, symbol.ref_count);
 		}
 		
 		public bool has_symbols
