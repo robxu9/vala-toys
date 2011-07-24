@@ -36,6 +36,8 @@ namespace Afrodite
 		private Vala.List<SourceItem> _source_queue;
 		
 		private Mutex _source_queue_mutex;
+
+		private bool _begin_parse_event_fired = false;
 		
 		private unowned Thread<int> _parser_thread;
 		private int _parser_stamp = 0;
@@ -45,7 +47,7 @@ namespace Afrodite
 		private bool _is_parsing = false;
 
 		private Ast _ast;
-		private Vala.List<ParseResult> _parse_result_list = new Vala.ArrayList<ParseResult> ();
+		private GLib.AsyncQueue<ParseResult> _parse_result_list = new GLib.AsyncQueue<ParseResult> ();
 		private uint _idle_id = 0;
 
 		public CompletionEngine (string? id = null)
@@ -279,12 +281,13 @@ namespace Afrodite
 
 					Parser p = new Parser.with_source (source);
 					var parse_results = p.parse ();
-					lock (_parse_result_list) {
-						_parse_result_list.add (parse_results);
-						if (_idle_id == 0)
-							//_idle_id = Idle.add (this.on_parse_results, Priority.LOW);
-							_idle_id = Timeout.add (250, this.on_parse_results, Priority.LOW);
+					_parse_result_list.@lock ();
+					_parse_result_list.push_unlocked (parse_results);
+					if (_idle_id == 0) {
+						//_idle_id = Idle.add (this.on_parse_results, Priority.LOW);
+						_idle_id = Timeout.add (250, this.on_parse_results, Priority.LOW);
 					}
+					_parse_result_list.unlock ();
 #if DEBUG
 					Utils.trace ("engine %s: parsing source: %s done %g", id, source.path, timer.elapsed () - start_time);
 #endif
@@ -326,33 +329,30 @@ namespace Afrodite
 			}
 		}
 
-
 		private bool on_parse_results ()
 		{
-			bool merge_scheduled = false;
+			ParseResult? parse_result = null;
 
-			lock (_parse_result_list) {
-				if (_parse_result_list.size > 0) {
-					foreach (ParseResult key in _parse_result_list) {
-						if (!merge_scheduled) {
-							merge_scheduled = true;
-							merge_and_resolve.begin (key, this.on_merge_and_resolve_ended);
-							_parse_result_list.remove (key);
-							break;
-						}
-					}
-				} else {
-					// Tell to the parser thread the a new Idle should be created
-					// for the merge process
-					_idle_id = 0;
-				}
+			_parse_result_list.@lock();
+			parse_result = _parse_result_list.try_pop_unlocked ();
+			if (parse_result != null) {
+				// Tell to the parser thread that a new Idle should be created
+				// for the merge process
+				_idle_id = 0;
 			}
-
-			if (merge_scheduled) {
-				on_begin_parsing();
+			_parse_result_list.@unlock();
+			
+			// schedule the merge if required
+			if (parse_result != null) {
+				if (!_begin_parse_event_fired) {
+					_begin_parse_event_fired = true;
+					on_begin_parsing();
+				}
+				merge_and_resolve.begin (parse_result, this.on_merge_and_resolve_ended);
 			} else {
 				// this is the last run after the merge
 				on_end_parsing ();
+				_begin_parse_event_fired = false;
 			}
 
 			return false;
@@ -361,8 +361,8 @@ namespace Afrodite
 		private void on_merge_and_resolve_ended (GLib.Object? source, GLib.AsyncResult r)
 		{
 			merge_and_resolve.end (r);
-			//_idle_id = Idle.add (this.on_parse_results, Priority.LOW);
-			_idle_id = Timeout.add (250, this.on_parse_results, Priority.LOW);
+			_idle_id = Idle.add (this.on_parse_results, Priority.LOW);
+			//_idle_id = Timeout.add (250, this.on_parse_results, Priority.LOW);
 		}
 
 		private async void merge_and_resolve (ParseResult result)
