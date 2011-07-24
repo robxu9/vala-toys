@@ -355,7 +355,8 @@ namespace Afrodite
 				
 			var s = add_symbol (MemberType.METHOD, m, out _current_sr, last_line);
 			s.return_type = new DataType (m.return_type.to_string ());
-			// check if return type is generic
+
+			// check if return type is generic from the parent symbol
 			if (_current.has_generic_type_arguments) {
 				foreach (var gt in _current.generic_type_arguments) {
 					if (s.return_type.type_name == gt.fully_qualified_name) {
@@ -374,10 +375,11 @@ namespace Afrodite
 			_current = s;
 			visit_type_for_generics (m.return_type, s.return_type);
 			//Utils.trace ("visit method (symbol) %s: %f", m.name, timer.elapsed());
+			//Utils.trace ("visit method (typeparam) %s: %f", m.name, timer.elapsed());
 			foreach (TypeParameter p in m.get_type_parameters ()) {
 				p.accept (this);
 			}
-			//Utils.trace ("visit method (typeparam) %s: %f", m.name, timer.elapsed());
+
 			foreach (Vala.Parameter param in m.get_parameters ()) {
 				param.accept (this);
 			}
@@ -388,6 +390,17 @@ namespace Afrodite
 					m.body.accept (this);
 			}
 			//Utils.trace ("visit method (body) %s: %f", m.name, timer.elapsed());
+			
+			// check if return type is generic of this method
+			if (_current.has_generic_type_arguments) {
+				foreach (var gt in _current.generic_type_arguments) {
+					if (_current.return_type.type_name == gt.name) {
+						_current.return_type.is_generic = true;
+						break;
+					}
+				}
+			}
+
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -782,6 +795,16 @@ namespace Afrodite
 				d.is_array = p.variable_type.is_array ();
 			}
 			_current.add_parameter (d);
+			
+			// check if the parameter is a generic argument
+			if (_current.has_generic_type_arguments) {
+				foreach (Symbol type in _current.generic_type_arguments) {
+					if (type.name == d.type_name) {
+						d.is_generic = true;
+						break;
+					}
+				}
+			}
 		}
 
 		public override void visit_block (Block b) 
@@ -1079,7 +1102,7 @@ namespace Afrodite
 					break;
 			}*/
 
-			var symbol = new Afrodite.Symbol (p.name, MemberType.PARAMETER);
+			var symbol = new Afrodite.Symbol (p.name, MemberType.TYPE_PARAMETER);
 			symbol.access = SymbolAccessibility.ANY;
 
 			//Utils.trace ("adding type parameter: '%s' to '%s'", p.name, _current.fully_qualified_name);
