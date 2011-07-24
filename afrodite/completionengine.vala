@@ -367,7 +367,7 @@ namespace Afrodite
 			_idle_id = Timeout.add (250, this.on_parse_results, Priority.LOW);
 		}
 
-		private async ParseResult merge_and_resolve (ParseResult result)
+		private async void merge_and_resolve (ParseResult result)
 		{
 			Utils.trace ("engine %s: async merge and resolve: %s", id, result.source_path);
 			foreach (Vala.SourceFile s in result.context.get_source_files ()) {
@@ -398,7 +398,7 @@ namespace Afrodite
 				}
 			}
 			
-			return result;
+			//return result;
 		}
 
 		private async void perform_merge_and_resolve (Vala.SourceFile s, ParseResult result, bool source_exists)
