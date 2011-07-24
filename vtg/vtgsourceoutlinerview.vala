@@ -39,7 +39,7 @@ namespace Vtg
 	
 	private class Data : GLib.Object
 	{
-		public unowned Afrodite.Symbol symbol;
+		public Afrodite.Symbol symbol;
 		public Afrodite.SourceReference? source_reference;
 		
 		public Data (Afrodite.Symbol symbol, Afrodite.SourceReference? source_reference = null)
@@ -408,7 +408,7 @@ namespace Vtg
 							if (sr != null) {
 								model.append (out iter);
 								model.set (iter,
-									Columns.NAME, child.name,
+									Columns.NAME, child.display_name,
 									Columns.ICON, Utils.get_icon_for_type_name (child.member_type),
 									Columns.DATA, new Data(child, sr));
 							}
