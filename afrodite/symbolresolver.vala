@@ -66,7 +66,47 @@ namespace Afrodite
 				Afrodite.Utils.trace ("(symbol resolver): dumping first 5");
 				for(int i=0; i < 5; i++) {
 					var symbol = ast.unresolved_symbols.get(i);
-					Afrodite.Utils.trace ("\tname: %s (%s)", symbol.fully_qualified_name, symbol.source_references.get(0).file.filename);
+					var sr = symbol.source_references.get(0);
+					string cause = null;
+					
+					if (symbol.symbol_data_type.unresolved) {
+						cause = "symbol_data_type: %s".printf (symbol.symbol_data_type.type_name);
+					}
+
+					if (cause == null) {
+						if (symbol.has_parameters) {
+							foreach (Afrodite.DataType type in symbol.parameters) {
+								if (type.unresolved) {
+									cause = "parameter: %s".printf (type.type_name);
+									break;
+								}
+
+							}
+						}
+					}
+					if (cause == null) {
+						if (symbol.has_local_variables) {
+							foreach (Afrodite.DataType type in symbol.local_variables) {
+								if (type.unresolved) {
+									cause = "variable: %s".printf (type.type_name);
+									break;
+								}
+
+							}
+						}							
+					}
+					if (cause == null) {
+						if (symbol.has_base_types) {
+							foreach (DataType type in symbol.base_types) {
+								if (type.unresolved) {
+									cause = "base_type: %s".printf (type.type_name);
+									break;
+								}
+							}
+						}
+					}
+					
+					Afrodite.Utils.trace ("\tname: %s %s (%s, line %d)", symbol.fully_qualified_name, cause, sr.file.filename, sr.first_line);
 				}
 
 #endif
@@ -125,23 +165,29 @@ namespace Afrodite
 		{
 			string[] parts = type_name.split(".");
 			var current = symbol;
-			//Utils.trace ("START Resolving symbol %s type %s", current.name, type_name);
-			foreach (string part in parts) {
-				//Utils.trace ("\tresolving from %s: %s", current.name, part);
-				current = resolve_type_name_part (current, part);
-				if (current != null) {
-					if (current.symbol_data_type != null) {
-						if (current.symbol_data_type.unresolved)
-							visit_symbol (current);
-
-						current = current.symbol_data_type.symbol;
-					}
-				}
-				if (current == null)
-					break;
-
-			}
 			
+						// void symbol
+			if (type_name == "void" || type_name == "...") {
+				current = Symbol.VOID;
+			} else {
+				//Utils.trace ("START Resolving symbol %s type %s", current.name, type_name);
+				foreach (string part in parts) {
+					//Utils.trace ("\tresolving from %s: %s", current.name, part);
+					current = resolve_type_name_part (current, part);
+					if (current != null) {
+						if (current.symbol_data_type != null) {
+							if (current.symbol_data_type.unresolved)
+								visit_symbol (current);
+
+							current = current.symbol_data_type.symbol;
+						}
+					}
+					if (current == null)
+						break;
+
+				}
+			}
+						
 			//Utils.trace ("END  Resolving symbol %s type %s: %s\n", symbol.name, type_name, current == null ? "NOT RESOLVED" : current.name);
 			return current != symbol ? current : null;
 		}
@@ -149,13 +195,6 @@ namespace Afrodite
 		private Symbol? resolve_type_name_part (Symbol symbol, string type_name)
 		{
 			Symbol res = null;
-
-			// void symbol
-			if (type_name == "void") {
-				res = Symbol.VOID;
-			} else if (type_name == "...") {
-				res = Symbol.VOID;
-			}
 
 			// first try with the ast symbol index: fastest mode
 			if (res == null) {
