@@ -335,7 +335,7 @@ namespace Afrodite
 
 			_parse_result_list.@lock();
 			parse_result = _parse_result_list.try_pop_unlocked ();
-			if (parse_result != null) {
+			if (parse_result == null) {
 				// Tell to the parser thread that a new Idle should be created
 				// for the merge process
 				_idle_id = 0;
