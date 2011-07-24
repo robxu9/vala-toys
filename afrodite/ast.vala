@@ -149,6 +149,11 @@ namespace Afrodite
 		{
 			return_if_fail (source_files != null);
 			source_files.remove (source);
+			foreach (Afrodite.Symbol symbol in source.symbols) {
+				if (!symbol.has_source_references) {
+					symbol.destroy_thyself ();
+				}
+			} 
 		}
 		
 		public Symbol? lookup_symbol_at (string filename, int line, int column)

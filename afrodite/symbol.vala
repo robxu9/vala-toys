@@ -24,7 +24,7 @@ using Vala;
 
 namespace Afrodite
 {	
-	public class Symbol
+	public class Symbol : GLib.Object
 	{
 		public static VoidType VOID = new VoidType ();
 		public static EllipsisType ELLIPSIS = new EllipsisType ();
@@ -125,8 +125,13 @@ namespace Afrodite
 		
 		~Symbol ()
 		{
+			destroy_thyself ();
+		}
+
+		internal void destroy_thyself ()
+		{
 			
-			//Utils.trace ("Symbol destroy: %s (%p)", _fully_qualified_name, this);	
+			Utils.trace ("Symbol destroy: %s (%p)", this.fully_qualified_name, this);	
 			
 			// parent and generic parent if this symbol is a specialization
 			if (parent != null) {
@@ -170,7 +175,8 @@ namespace Afrodite
 			}
 
 			this.remove_from_targets ();
-		
+	
+				
 			while (has_source_references) {
 				int prev_size = source_references.size;
 				var sr = source_references.get (0);
@@ -186,8 +192,8 @@ namespace Afrodite
 					assert (source_references.size < prev_size);
 				}
 			}
-
-
+			
+			
 			// deallocate the children
 			if (has_children) {
 				foreach (Symbol child in _children) {
