@@ -486,6 +486,7 @@ namespace Afrodite
 				
 			var s = add_symbol (MemberType.DESTRUCTOR, m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
+			s.display_name = "~%s".printf (_current.display_name);
 			_current.add_child (s);
 			 
 			_current = s;
@@ -493,8 +494,6 @@ namespace Afrodite
 				m.body.accept (this);
 			}
 
-
-			s.display_name = "~%s".printf (s.name);
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;

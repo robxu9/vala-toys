@@ -74,6 +74,7 @@ namespace Afrodite
 				remove_symbol (symbol);
 			}
 			Utils.trace ("SourceFile destroyed: %s", filename);
+			
 		}
 
 		public DataType add_using_directive (string name)
