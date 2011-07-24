@@ -182,14 +182,6 @@ namespace Afrodite
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
 
-		public async void remove_source_filename (string filename)
-		{
-			var source = _ast.lookup_source_file (filename);
-			assert (source != null);
-
-			_ast.remove_source (source);
-		}
-
 		private Afrodite.Symbol visit_symbol (MemberType type, Vala.Symbol s, out unowned Afrodite.SourceReference source_reference)
 		{
 			Afrodite.Symbol symbol;
@@ -467,7 +459,6 @@ namespace Afrodite
 			var s = add_symbol (MemberType.CONSTRUCTOR, m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
 			s.return_type = new DataType (_current.fully_qualified_name);
-			s.display_name = _current.name;
 			_current.add_child (s);
 			s.return_type.symbol = _current;
 			_current.add_resolved_target (s);
@@ -477,6 +468,7 @@ namespace Afrodite
 				m.body.accept (this);
 			}
 			_current = prev;
+			s.display_name = _current.name;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
 		}
@@ -494,7 +486,6 @@ namespace Afrodite
 				
 			var s = add_symbol (MemberType.DESTRUCTOR, m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
-			s.display_name = "~%s".printf (s.name);
 			_current.add_child (s);
 			 
 			_current = s;
@@ -502,6 +493,8 @@ namespace Afrodite
 				m.body.accept (this);
 			}
 
+
+			s.display_name = "~%s".printf (s.name);
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;

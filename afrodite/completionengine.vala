@@ -207,6 +207,26 @@ namespace Afrodite
 			queue_sources (sources);
 		}
 
+		public void remove_source_filename (string source_path)
+		{
+#if DEBUG
+                        GLib.Timer timer = new GLib.Timer ();
+                        double start_time = 0;
+
+                        timer.start ();
+			Utils.trace ("engine %s: removing source %s", id, source_path);
+			start_time = timer.elapsed ();
+#endif
+
+                        var source = _ast.lookup_source_file (source_path);
+                        assert (source != null);
+                        _ast.remove_source (source);
+
+#if DEBUG
+			Utils.trace ("engine %s: removing source %s done %g", id, source_path, timer.elapsed () - start_time);
+#endif
+		}
+
 		public Ast ast
 		{
 			get {
@@ -400,7 +420,7 @@ namespace Afrodite
 				Utils.trace ("engine %s: removing source (%p) %s", id, result, result.source_path);
 				start_time = timer.elapsed ();
 #endif
-				yield merger.remove_source_filename (result.source_path);
+				remove_source_filename (result.source_path);
 #if DEBUG
 				Utils.trace ("engine %s: removing source (%p) %s done %g", id, result, result.source_path, timer.elapsed () - start_time);
 #endif
