@@ -355,17 +355,6 @@ namespace Afrodite
 				
 			var s = add_symbol (MemberType.METHOD, m, out _current_sr, last_line);
 			s.return_type = new DataType (m.return_type.to_string ());
-
-			// check if return type is generic from the parent symbol
-			if (_current.has_generic_type_arguments) {
-				foreach (var gt in _current.generic_type_arguments) {
-					if (s.return_type.type_name == gt.name) {
-						s.return_type.is_generic = true;
-						break;
-					}
-				}
-			}
-
 			s.is_abstract = m.is_abstract;
 			s.is_virtual = m.is_virtual;
 			s.overrides = m.overrides;
@@ -391,14 +380,10 @@ namespace Afrodite
 			}
 			//Utils.trace ("visit method (body) %s: %f", m.name, timer.elapsed());
 			
-			// check if return type is generic of this method
-			if (_current.has_generic_type_arguments) {
-				foreach (var gt in _current.generic_type_arguments) {
-					if (_current.return_type.type_name == gt.name) {
-						_current.return_type.is_generic = true;
-						break;
-					}
-				}
+			// check if return type is generic
+			var gt = _current.get_generic_type_argument (_current.return_type.type_name);
+			if (gt != null) {
+				_current.return_type.is_generic = true;
 			}
 
 			_current = prev;
@@ -576,6 +561,12 @@ namespace Afrodite
 				param.accept (this);
 			}
 
+			var gt = _current.get_generic_type_argument (_current.return_type.type_name);
+			if (gt != null) {
+				_current.return_type.is_generic = true;
+			}
+			
+			//Utils.trace ("delegate: %s", _current.fully_qualified_name);
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -603,6 +594,11 @@ namespace Afrodite
 				s.default_handler.accept (this);
 			}
 
+			var gt = _current.get_generic_type_argument (_current.return_type.type_name);
+			if (gt != null) {
+				_current.return_type.is_generic = true;
+			}
+			
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -619,18 +615,15 @@ namespace Afrodite
 			var s = add_symbol (MemberType.FIELD, f, out _current_sr);
 			s.return_type = new DataType (get_datatype_typename (f.variable_type));
 			s.binding =  get_vala_member_binding (f.binding);
-			if (_current.has_generic_type_arguments) {
-				foreach (var gt in _current.generic_type_arguments) {
-					if (s.return_type.type_name == gt.fully_qualified_name) {
-						s.return_type.is_generic = true;
-						break;
-					}
-				}
-			}
-
 			_current.add_child (s);
 			_current = s;
 
+			// check if return type is generic
+			var gt = _current.get_generic_type_argument (_current.return_type.type_name);
+			if (gt != null) {
+				_current.return_type.is_generic = true;
+			}
+			
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -679,16 +672,6 @@ namespace Afrodite
 
 			var s = add_symbol (MemberType.PROPERTY, p, out _current_sr, last_line);
 			s.return_type = new DataType (p.property_type.to_string ());
-			if (_current.has_generic_type_arguments) {
-				foreach (var gt in _current.generic_type_arguments) {
-					if (s.return_type.type_name == gt.fully_qualified_name) {
-						Utils.trace ("property %s is generic: %s", p.name, _current.fully_qualified_name);
-						s.return_type.is_generic = true;
-						break;
-					}
-				}
-			}
-
 			_current.add_child (s);
 			
 			_current = s;
@@ -703,6 +686,11 @@ namespace Afrodite
 				p.initializer.accept (this);
 			}
 
+			// check if return type is generic
+			var gt = _current.get_generic_type_argument (_current.return_type.type_name);
+			if (gt != null) {
+				_current.return_type.is_generic = true;
+			}
 			_current = prev;
 			_current_sr = prev_sr;
 			_vala_symbol_fqn = prev_vala_fqn;
@@ -797,13 +785,9 @@ namespace Afrodite
 			_current.add_parameter (d);
 			
 			// check if the parameter is a generic argument
-			if (_current.has_generic_type_arguments) {
-				foreach (Symbol type in _current.generic_type_arguments) {
-					if (type.name == d.type_name) {
-						d.is_generic = true;
-						break;
-					}
-				}
+			var gt = _current.get_generic_type_argument (d.type_name);
+			if (gt != null) {
+				d.is_generic = true;
 			}
 		}
 

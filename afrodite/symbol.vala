@@ -1104,6 +1104,23 @@ namespace Afrodite
 			}
 		}
 
+		public Symbol? get_generic_type_argument (string name)
+		{
+			if (has_generic_type_arguments) {
+				foreach(Symbol arg in _generic_type_arguments) {
+					if (arg.name == name) {
+						return arg;
+					}
+				}
+			}
+			
+			if (_parent != null) {
+				return _parent.get_generic_type_argument (name);
+			}
+			
+			return null;
+		}
+
 		private void resolve_generic_type (Symbol symbol, string generic_type_name, DataType type)
 		{
 			if (symbol.return_type != null) {
