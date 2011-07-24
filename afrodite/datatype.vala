@@ -62,7 +62,7 @@ namespace Afrodite
 		public bool unresolved
 		{
 			get {
-				return type_name != null && symbol == null;
+				return type_name != null && symbol == null && !is_generic;
 			}
 		}
 
