@@ -134,6 +134,7 @@ namespace Vtg
 		{
 			completion_setup = true;
 			engine.file_parsed.connect (this.on_file_parsed);
+			engine.file_removed.connect (this.on_file_removed);
 		}
 
 		private void cleanup_completion_with_view (View view)
@@ -149,6 +150,7 @@ namespace Vtg
 		public void cleanup_completion_engine (Afrodite.CompletionEngine engine)
 		{
 			engine.file_parsed.disconnect (this.on_file_parsed);
+			engine.file_removed.disconnect (this.on_file_removed);
 			completion_setup = false;
 		}
 		
@@ -177,6 +179,16 @@ namespace Vtg
 				var line = start.get_line ();
 				var column = start.get_line_index ();
 				_outliner_view.set_current_position (line, column);
+			}
+		}
+
+		private void on_file_removed (Afrodite.CompletionEngine sender, string filename)
+		{
+			var doc = (Gedit.Document) _active_view.get_buffer ();
+			var name = Utils.get_document_name (doc);
+			Utils.trace ("File removed: %s - current file: %s", filename, name);
+			if (filename == name) {
+				_outliner_view.clear_view ();
 			}
 		}
 
