@@ -29,6 +29,7 @@ namespace Afrodite
 		public string id;
 		public signal void begin_parsing (CompletionEngine sender);
 		public signal void end_parsing (CompletionEngine sender);
+		public signal void file_removed (CompletionEngine sender, string filename);
 		public signal void file_parsed (CompletionEngine sender, string filename, ParseResult parse_result);
 
 		private Vala.List<string> _vapidirs;
@@ -222,6 +223,7 @@ namespace Afrodite
                         assert (source != null);
                         _ast.remove_source (source);
 
+			this.file_removed (this, source_path);
 #if DEBUG
 			Utils.trace ("engine %s: removing source %s done %g", id, source_path, timer.elapsed () - start_time);
 #endif
