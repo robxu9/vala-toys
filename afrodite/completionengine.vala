@@ -34,10 +34,8 @@ namespace Afrodite
 
 		private Vala.List<string> _vapidirs;
 		private Vala.List<SourceItem> _source_queue;
-		private Vala.List<SourceItem> _merge_queue;
 		
 		private Mutex _source_queue_mutex;
-		private Mutex _merge_queue_mutex;
 		
 		private unowned Thread<int> _parser_thread;
 		private int _parser_stamp = 0;
@@ -58,9 +56,7 @@ namespace Afrodite
 			this.id = id;
 			_vapidirs = new ArrayList<string> (GLib.str_equal);
 			_source_queue = new ArrayList<SourceItem> ();
-			_merge_queue = new ArrayList<SourceItem> ();
 			_source_queue_mutex = new Mutex ();
-			_merge_queue_mutex = new Mutex ();
 			
 			_ast = new Ast ();
 		}
