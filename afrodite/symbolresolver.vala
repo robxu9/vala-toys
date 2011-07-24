@@ -63,52 +63,54 @@ namespace Afrodite
 				visit_symbols (ast.unresolved_symbols);
 				Afrodite.Utils.trace ("(symbol resolver): unresolved symbol after resolve process %d", ast.unresolved_symbols.size);
 #if DEBUG
-				Afrodite.Utils.trace ("(symbol resolver): dumping first 5");
-				for(int i=0; i < 5; i++) {
-					var symbol = ast.unresolved_symbols.get(i);
-					var sr = symbol.source_references.get(0);
-					string cause = null;
+				int count = ast.unresolved_symbols.size > 5 ? 5 : ast.unresolved_symbols.size;
+				if (count > 0) {
+					Afrodite.Utils.trace ("(symbol resolver): dumping first %d", count);
+					for(int i=0; i < count; i++) {
+						var symbol = ast.unresolved_symbols.get(i);
+						var sr = symbol.source_references.get(0);
+						string cause = null;
 					
-					if (symbol.symbol_data_type.unresolved) {
-						cause = "symbol_data_type: %s".printf (symbol.symbol_data_type.type_name);
-					}
-
-					if (cause == null) {
-						if (symbol.has_parameters) {
-							foreach (Afrodite.DataType type in symbol.parameters) {
-								if (type.unresolved) {
-									cause = "parameter: %s".printf (type.type_name);
-									break;
-								}
-
-							}
+						if (symbol.symbol_data_type.unresolved) {
+							cause = "symbol_data_type: %s".printf (symbol.symbol_data_type.type_name);
 						}
-					}
-					if (cause == null) {
-						if (symbol.has_local_variables) {
-							foreach (Afrodite.DataType type in symbol.local_variables) {
-								if (type.unresolved) {
-									cause = "variable: %s".printf (type.type_name);
-									break;
-								}
 
-							}
-						}							
-					}
-					if (cause == null) {
-						if (symbol.has_base_types) {
-							foreach (DataType type in symbol.base_types) {
-								if (type.unresolved) {
-									cause = "base_type: %s".printf (type.type_name);
-									break;
+						if (cause == null) {
+							if (symbol.has_parameters) {
+								foreach (Afrodite.DataType type in symbol.parameters) {
+									if (type.unresolved) {
+										cause = "parameter: %s".printf (type.type_name);
+										break;
+									}
+
 								}
 							}
 						}
-					}
+						if (cause == null) {
+							if (symbol.has_local_variables) {
+								foreach (Afrodite.DataType type in symbol.local_variables) {
+									if (type.unresolved) {
+										cause = "variable: %s".printf (type.type_name);
+										break;
+									}
+
+								}
+							}							
+						}
+						if (cause == null) {
+							if (symbol.has_base_types) {
+								foreach (DataType type in symbol.base_types) {
+									if (type.unresolved) {
+										cause = "base_type: %s".printf (type.type_name);
+										break;
+									}
+								}
+							}
+						}
 					
-					Afrodite.Utils.trace ("\tname: %s %s (%s, line %d)", symbol.fully_qualified_name, cause, sr.file.filename, sr.first_line);
+						Afrodite.Utils.trace ("\tname: %s %s (%s, line %d)", symbol.fully_qualified_name, cause, sr.file.filename, sr.first_line);
+					}
 				}
-
 #endif
 			}
 
@@ -197,82 +199,81 @@ namespace Afrodite
 			Symbol res = null;
 
 			// first try with the ast symbol index: fastest mode
-			if (res == null) {
-				var s = _ast.symbols.@get (type_name);
-				if (s != null && s != symbol) {
-					res = s;
-				} else {
-					// test if is a generic type parameter
-					Symbol curr_symbol = symbol;
-					while (curr_symbol != null && curr_symbol != _ast.root) {
-						if (curr_symbol.name.has_prefix ("!") == false && curr_symbol.has_generic_type_arguments) {
-							foreach (var arg in curr_symbol.generic_type_arguments) {
-								if (type_name == arg.fully_qualified_name) {
-									res = arg;
-									break;
-								}
+			var s = _ast.symbols.@get (type_name);
+			if (s != null && s != symbol) {
+				res = s;
+			} else {
+				// test if it'is a generic type parameter
+				// FIXME: this code is broken!
+				Symbol curr_symbol = symbol;
+				while (curr_symbol != null && curr_symbol != _ast.root) {
+					if (curr_symbol.name.has_prefix ("!") == false && curr_symbol.has_generic_type_arguments) {
+						foreach (var arg in curr_symbol.generic_type_arguments) {
+							if (type_name == arg.fully_qualified_name) {
+								res = arg;
+								break;
 							}
 						}
-						if (res != null) {
-							break;
+					}
+					if (res != null) {
+						break;
+					}
+					curr_symbol = curr_symbol.parent;
+				}
+
+				// namespace that contains this symbol are automatically in scope
+				// from the inner one to the outmost
+				if (res == null) {
+					curr_symbol = symbol;
+					while (curr_symbol != null && curr_symbol != _ast.root) {
+						if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
+							s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type_name));
+							if (s != null && s != symbol) {
+								res = s;
+								break;
+							}
 						}
 						curr_symbol = curr_symbol.parent;
 					}
+				}
 
-					// namespace that contains this symbol are automatically in scope
-					// from the inner one to the outmost
-					if (res == null) {
-						curr_symbol = symbol;
-						while (curr_symbol != null && curr_symbol != _ast.root) {
-							if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
-								s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type_name));
+				if (res == null) {
+					// try with the imported namespaces
+					bool has_glib_using = false;
+					if (symbol.has_source_references) {
+						foreach (SourceReference reference in symbol.source_references) {
+							var file = reference.file;
+							if (!file.has_using_directives) {
+								continue;
+							}
+
+							foreach (DataType using_directive in file.using_directives) {
+								if (using_directive.unresolved)
+									continue;
+
+								if (using_directive.name == "GLib") {
+									has_glib_using = true;
+								}
+
+								//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
+								s = _ast.symbols.@get ("%s.%s".printf (using_directive.type_name, type_name));
 								if (s != null && s != symbol) {
 									res = s;
 									break;
 								}
 							}
-							curr_symbol = curr_symbol.parent;
+
+							if (res != null) {
+								break;
+							}
 						}
 					}
-
 					if (res == null) {
-						// try with the imported namespaces
-						bool has_glib_using = false;
-						if (symbol.has_source_references) {
-							foreach (SourceReference reference in symbol.source_references) {
-								var file = reference.file;
-								if (!file.has_using_directives) {
-									continue;
-								}
-
-								foreach (DataType using_directive in file.using_directives) {
-									if (using_directive.unresolved)
-										continue;
-
-									if (using_directive.name == "GLib") {
-										has_glib_using = true;
-									}
-
-									//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
-									s = _ast.symbols.@get ("%s.%s".printf (using_directive.type_name, type_name));
-									if (s != null && s != symbol) {
-										res = s;
-										break;
-									}
-								}
-
-								if (res != null) {
-									break;
-								}
-							}
-						}
-						if (res == null) {
-							if (!has_glib_using) {
-								// GLib namespace is automatically imported
-								s = _ast.symbols.@get ("GLib.%s".printf (type_name));
-								if (s != null && s != symbol) {
-									res = s;
-								}
+						if (!has_glib_using) {
+							// GLib namespace is automatically imported
+							s = _ast.symbols.@get ("GLib.%s".printf (type_name));
+							if (s != null && s != symbol) {
+								res = s;
 							}
 						}
 					}
