@@ -359,7 +359,7 @@ namespace Afrodite
 			// check if return type is generic from the parent symbol
 			if (_current.has_generic_type_arguments) {
 				foreach (var gt in _current.generic_type_arguments) {
-					if (s.return_type.type_name == gt.fully_qualified_name) {
+					if (s.return_type.type_name == gt.name) {
 						s.return_type.is_generic = true;
 						break;
 					}
