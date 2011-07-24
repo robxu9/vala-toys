@@ -62,6 +62,14 @@ namespace Afrodite
 				Afrodite.Utils.trace ("(symbol resolver): symbols to resolve %d", ast.unresolved_symbols.size);
 				visit_symbols (ast.unresolved_symbols);
 				Afrodite.Utils.trace ("(symbol resolver): unresolved symbol after resolve process %d", ast.unresolved_symbols.size);
+#if DEBUG
+				Afrodite.Utils.trace ("(symbol resolver): dumping first 5");
+				for(int i=0; i < 5; i++) {
+					var symbol = ast.unresolved_symbols.get(i);
+					Afrodite.Utils.trace ("\tname: %s (%s)", symbol.fully_qualified_name, symbol.source_references.get(0).file.filename);
+				}
+
+#endif
 			}
 
 		}
