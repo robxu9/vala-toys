@@ -165,7 +165,7 @@ namespace Afrodite
 
 		private Symbol? resolve_type_name (Symbol symbol, string type_name)
 		{
-			string[] parts = type_name.split(".");
+			//string[] parts = type_name.split(".");
 			var current = symbol;
 			
 						// void symbol
@@ -173,108 +173,121 @@ namespace Afrodite
 				current = Symbol.VOID;
 			} else {
 				//Utils.trace ("START Resolving symbol %s type %s", current.name, type_name);
-				foreach (string part in parts) {
-					//Utils.trace ("\tresolving from %s: %s", current.name, part);
-					current = resolve_type_name_part (current, part);
-					if (current != null) {
-						if (current.symbol_data_type != null) {
-							if (current.symbol_data_type.unresolved)
-								visit_symbol (current);
+				/*
+				
+				*/
+				
+				// fast lookup first
+				current = _ast.symbols.@get (type_name);
+				
+				// if not found or I just found myself
+				if (current == null || current == symbol) {
+					string[] parts = type_name.split(".");
+					current = symbol;
+					foreach (string part in parts) {
+						//Utils.trace ("\tresolving from %s: %s", current.name, part);
+						current = resolve_type_name_part (current, part);
+						if (current != null) {
+							if (current.symbol_data_type != null) {
+								if (current.symbol_data_type.unresolved)
+									visit_symbol (current);
 
-							current = current.symbol_data_type.symbol;
+								current = current.symbol_data_type.symbol;
+							}
 						}
+						if (current == null)
+							break;
 					}
-					if (current == null)
-						break;
-
 				}
-			}
-						
+
+				if (current != null) {
+					if (current.symbol_data_type != null) {
+						if (current.symbol_data_type.unresolved)
+							visit_symbol (current);
+
+						current = current.symbol_data_type.symbol;
+					}
+				}
+			}		
 			//Utils.trace ("END  Resolving symbol %s type %s: %s\n", symbol.name, type_name, current == null ? "NOT RESOLVED" : current.name);
 			return current != symbol ? current : null;
 		}
 
 		private Symbol? resolve_type_name_part (Symbol symbol, string type_name)
 		{
-			Symbol res = null;
+			Symbol res = null, s = null;
 
-			// first try with the ast symbol index: fastest mode
-			var s = _ast.symbols.@get (type_name);
-			if (s != null && s != symbol) {
-				res = s;
-			} else {
-				// test if it'is a generic type parameter
-				// FIXME: this code is broken!
-				Symbol curr_symbol = symbol;
-				while (curr_symbol != null && curr_symbol != _ast.root) {
-					if (curr_symbol.name.has_prefix ("!") == false && curr_symbol.has_generic_type_arguments) {
-						foreach (var arg in curr_symbol.generic_type_arguments) {
-							if (type_name == arg.fully_qualified_name) {
-								res = arg;
-								break;
-							}
+			// test if it'is a generic type parameter
+			// FIXME: this code is broken!
+			Symbol curr_symbol = symbol;
+			while (curr_symbol != null && curr_symbol != _ast.root) {
+				if (curr_symbol.name.has_prefix ("!") == false && curr_symbol.has_generic_type_arguments) {
+					foreach (var arg in curr_symbol.generic_type_arguments) {
+						if (type_name == arg.fully_qualified_name) {
+							res = arg;
+							break;
 						}
 					}
-					if (res != null) {
-						break;
+				}
+				if (res != null) {
+					break;
+				}
+				curr_symbol = curr_symbol.parent;
+			}
+
+			// namespace that contains this symbol are automatically in scope
+			// from the inner one to the outmost
+			if (res == null) {
+				curr_symbol = symbol;
+				while (curr_symbol != null && curr_symbol != _ast.root) {
+					if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
+						s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type_name));
+						if (s != null && s != symbol) {
+							res = s;
+							break;
+						}
 					}
 					curr_symbol = curr_symbol.parent;
 				}
+			}
 
-				// namespace that contains this symbol are automatically in scope
-				// from the inner one to the outmost
-				if (res == null) {
-					curr_symbol = symbol;
-					while (curr_symbol != null && curr_symbol != _ast.root) {
-						if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
-							s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type_name));
+			if (res == null) {
+				// try with the imported namespaces
+				bool has_glib_using = false;
+				if (symbol.has_source_references) {
+					foreach (SourceReference reference in symbol.source_references) {
+						var file = reference.file;
+						if (!file.has_using_directives) {
+							continue;
+						}
+
+						foreach (DataType using_directive in file.using_directives) {
+							if (using_directive.unresolved)
+								continue;
+
+							if (using_directive.name == "GLib") {
+								has_glib_using = true;
+							}
+
+							//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
+							s = _ast.symbols.@get ("%s.%s".printf (using_directive.type_name, type_name));
 							if (s != null && s != symbol) {
 								res = s;
 								break;
 							}
 						}
-						curr_symbol = curr_symbol.parent;
+
+						if (res != null) {
+							break;
+						}
 					}
 				}
-
 				if (res == null) {
-					// try with the imported namespaces
-					bool has_glib_using = false;
-					if (symbol.has_source_references) {
-						foreach (SourceReference reference in symbol.source_references) {
-							var file = reference.file;
-							if (!file.has_using_directives) {
-								continue;
-							}
-
-							foreach (DataType using_directive in file.using_directives) {
-								if (using_directive.unresolved)
-									continue;
-
-								if (using_directive.name == "GLib") {
-									has_glib_using = true;
-								}
-
-								//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
-								s = _ast.symbols.@get ("%s.%s".printf (using_directive.type_name, type_name));
-								if (s != null && s != symbol) {
-									res = s;
-									break;
-								}
-							}
-
-							if (res != null) {
-								break;
-							}
-						}
-					}
-					if (res == null) {
-						if (!has_glib_using) {
-							// GLib namespace is automatically imported
-							s = _ast.symbols.@get ("GLib.%s".printf (type_name));
-							if (s != null && s != symbol) {
-								res = s;
-							}
+					if (!has_glib_using) {
+						// GLib namespace is automatically imported
+						s = _ast.symbols.@get ("GLib.%s".printf (type_name));
+						if (s != null && s != symbol) {
+							res = s;
 						}
 					}
 				}
