@@ -240,7 +240,10 @@ namespace Afrodite
 			if (res == null) {
 				curr_symbol = symbol;
 				while (curr_symbol != null && curr_symbol != _ast.root) {
-					if (curr_symbol.name.has_prefix ("!") == false) { // skip internal symbols
+					if (curr_symbol.member_type == MemberType.CLASS ||
+					    curr_symbol.member_type == MemberType.NAMESPACE ||
+					    curr_symbol.member_type == MemberType.INTERFACE ||
+					    curr_symbol.member_type == MemberType.STRUCT) {
 						s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type_name));
 						if (s != null && s != symbol) {
 							res = s;
