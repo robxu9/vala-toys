@@ -39,7 +39,7 @@ libafrodite_la_VALASOURCES = \
 	voidtype.vala \
 	sourcereference.vala \
 	sourcefile.vala \
-	ast.vala \
+	codedom.vala \
 	utils.vala \
 	completionengine.vala \
 	ellipsistype.vala \
