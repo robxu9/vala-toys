@@ -11,7 +11,7 @@ namespace AfroditeTests
 			var s = _manager.lookup_symbol ("this.field", 19, 1);
 			assert (s.is_empty == false);
 			Assert.cmpint (s.children.size, Assert.Compare.EQUAL, 1);
-			Assert.cmpstr (s.children[0].symbol.symbol_data_type.symbol.name, Assert.Compare.EQUAL, "string");
+			Assert.cmpstr (s.children[0].symbol.symbol_type.symbol.name, Assert.Compare.EQUAL, "string");
 		}
 
 		public static void test_this_property_string ()
@@ -19,7 +19,7 @@ namespace AfroditeTests
 			var s = _manager.lookup_symbol ("this.property", 19, 1);
 			assert (s.is_empty == false);
 			Assert.cmpint (s.children.size, Assert.Compare.EQUAL, 1);
-			Assert.cmpstr (s.children[0].symbol.symbol_data_type.symbol.name, Assert.Compare.EQUAL, "string");
+			Assert.cmpstr (s.children[0].symbol.symbol_type.symbol.name, Assert.Compare.EQUAL, "string");
 		}
 
 		public static void test_this_method_invocation_int ()
@@ -27,7 +27,7 @@ namespace AfroditeTests
 			var s = _manager.lookup_symbol ("this.do_computation", 19, 1);
 			assert (s.is_empty == false);
 			Assert.cmpint (s.children.size, Assert.Compare.EQUAL, 1);
-			Assert.cmpstr (s.children[0].symbol.symbol_data_type.symbol.name, Assert.Compare.EQUAL, "int");
+			Assert.cmpstr (s.children[0].symbol.symbol_type.symbol.name, Assert.Compare.EQUAL, "int");
 		}
 
 		public static void test_member_access_string ()

@@ -71,8 +71,8 @@ namespace Afrodite
 						var sr = symbol.source_references.get(0);
 						string cause = null;
 					
-						if (symbol.symbol_data_type.unresolved) {
-							cause = "symbol_data_type: %s".printf (symbol.symbol_data_type.type_name);
+						if (symbol.symbol_type.unresolved) {
+							cause = "symbol_type: %s".printf (symbol.symbol_type.type_name);
 						}
 
 						if (cause == null) {
@@ -188,11 +188,11 @@ namespace Afrodite
 						//Utils.trace ("\tresolving from %s: %s", current.name, part);
 						current = resolve_type_name_part (current, part);
 						if (current != null) {
-							if (current.symbol_data_type != null) {
-								if (current.symbol_data_type.unresolved)
+							if (current.symbol_type != null) {
+								if (current.symbol_type.unresolved)
 									visit_symbol (current);
 
-								current = current.symbol_data_type.symbol;
+								current = current.symbol_type.symbol;
 							}
 						}
 						if (current == null)
@@ -201,11 +201,11 @@ namespace Afrodite
 				}
 
 				if (current != null) {
-					if (current.symbol_data_type != null) {
-						if (current.symbol_data_type.unresolved)
+					if (current.symbol_type != null) {
+						if (current.symbol_type.unresolved)
 							visit_symbol (current);
 
-						current = current.symbol_data_type.symbol;
+						current = current.symbol_type.symbol;
 					}
 				}
 			}		

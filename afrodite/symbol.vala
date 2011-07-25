@@ -32,7 +32,7 @@ namespace Afrodite
 		private string _des = null;
 		private string _display_name = null;
 		
-		private DataType _symbol_data_type = null;
+		private DataType _symbol_type = null;
 		
 		// all the children symbols. the parent of each child should be equal to this symbol reference
 		private Vala.List<Symbol> _children = null;
@@ -75,7 +75,12 @@ namespace Afrodite
 			}
 		}
 		
-		public DataType return_type { get; set; } // real symbol return type
+		// the return type of the symbol if it's a method like
+		// symbol. Eg. signals and delegates are "method like symbols"
+		// Note: this property shouldn't be used, use symbol_type instead
+		internal DataType return_type { get; set; } 
+		
+		// The type id of this symbol
 		public MemberType member_type { get; set; }
 		
 		public Vala.List<SourceReference> source_references { get; set; }
@@ -104,12 +109,14 @@ namespace Afrodite
 			}
 		}
 
-		public DataType symbol_data_type {
+		// The symbol type, this is equal to the return_type 
+		// if not overriden. Eg. Signals return an internal special Signal Class
+		public DataType symbol_type {
 			get {
-				if (_symbol_data_type == null)
+				if (_symbol_type == null)
 					return return_type;
 					
-				return _symbol_data_type;
+				return _symbol_type;
 			}
 		}
 
@@ -119,7 +126,7 @@ namespace Afrodite
 			this.member_type = type;
 
 			if (this.member_type == MemberType.SIGNAL) {
-				_symbol_data_type = Afrodite.Utils.Symbols.get_predefined ().signal_type;
+				_symbol_type = Afrodite.Utils.Symbols.get_predefined ().signal_type;
 			}
 		}
 		
@@ -234,8 +241,8 @@ namespace Afrodite
 				}
 			}
 
-			if (_symbol_data_type != null && !_symbol_data_type.unresolved) {
-				_symbol_data_type.symbol = null;
+			if (_symbol_type != null && !_symbol_type.unresolved) {
+				_symbol_type.symbol = null;
 			}
 		}
 
@@ -275,8 +282,8 @@ namespace Afrodite
 				unresolve_datatype_of_target (base_types, target);
 			}
 
-			if (_symbol_data_type != null && _symbol_data_type.symbol == target)
-				_symbol_data_type.symbol = null;
+			if (_symbol_type != null && _symbol_type.symbol == target)
+				_symbol_type.symbol = null;
 		}
 
 		public int static_child_count
@@ -998,7 +1005,7 @@ namespace Afrodite
 			res.is_abstract = this.is_abstract;
 			res.overrides = this.overrides;
 
-			res._symbol_data_type = _symbol_data_type;
+			res._symbol_type = _symbol_type;
 			res._static_child_count = this._static_child_count;
 			res._creation_method_child_count = this._creation_method_child_count;
 

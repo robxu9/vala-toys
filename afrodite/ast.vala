@@ -219,9 +219,9 @@ namespace Afrodite
 				}
 
 				sym = lookup_name_with_symbol (parts[0], sym, source, options.compare_mode);
-				if (sym != null && sym.symbol_data_type != null) {
+				if (sym != null && sym.symbol_type != null) {
 					if (mode != LookupMode.Symbol || parts.length > 1) {
-						sym = sym.symbol_data_type.symbol;
+						sym = sym.symbol_type.symbol;
 					}
 				}
 				
@@ -245,10 +245,10 @@ namespace Afrodite
 						}
 						
 						//print ("... result: %s\n", sym == null ? "not found" : sym.name);
-						if (sym != null && mode == LookupMode.Type && sym.symbol_data_type != null) {
+						if (sym != null && mode == LookupMode.Type && sym.symbol_type != null) {
 							//debug ("result type %s", sym.symbol_type.unresolved ? "<unresolved>" : sym.symbol_type.symbol.name);
 							
-							sym = sym.symbol_data_type.symbol;
+							sym = sym.symbol_type.symbol;
 						} else {
 							break;
 						}
@@ -257,8 +257,8 @@ namespace Afrodite
 			}
 			
 			// return the symbol or the return type: for properties, field and methods
-			if (sym != null && sym.symbol_data_type != null && mode == LookupMode.Type)
-				return sym.symbol_data_type.symbol;
+			if (sym != null && sym.symbol_type != null && mode == LookupMode.Type)
+				return sym.symbol_type.symbol;
 			else
 				return sym;
 		}
