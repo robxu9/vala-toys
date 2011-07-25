@@ -212,7 +212,7 @@ namespace Vtg
 			
 			var doc = (Gedit.Document) _active_view.get_buffer ();
 			var name = Utils.get_document_name (doc);
-			var result = scs.completion_engine.ast.lookup_source_file (name);
+			var result = scs.completion_engine.codedom.lookup_source_file (name);
 			update_cursor_position (doc);
 			_outliner_view.update_view (result);
 

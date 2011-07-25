@@ -26,7 +26,7 @@ namespace Afrodite
 {
 	public class SymbolResolver
 	{
-		Ast _ast = null;
+		CodeDom _codedom = null;
 		string _vala_symbol_fqn = null;
 		
 		/*
@@ -37,19 +37,19 @@ namespace Afrodite
 		}
 		*/
 	
-		public void resolve (Ast ast)
+		public void resolve (CodeDom codedom)
 		{
 			_vala_symbol_fqn = null;
-			this._ast = ast;
+			this._codedom = codedom;
 
 			// first resolve the using directives
-			if (_ast.has_source_files) {
-				foreach (SourceFile file in _ast.source_files) {
+			if (_codedom.has_source_files) {
+				foreach (SourceFile file in _codedom.source_files) {
 					if (file.has_using_directives) {
 						foreach (DataType using_directive in file.using_directives) {
 							//
 							if (using_directive.unresolved) {
-								using_directive.symbol = _ast.lookup (using_directive.type_name);
+								using_directive.symbol = _codedom.lookup (using_directive.type_name);
 								if (using_directive.unresolved)
 									message ("file %s - can't resolve using directive: %s", file.filename, using_directive.type_name);
 							}
@@ -58,16 +58,16 @@ namespace Afrodite
 				}
 			}
 
-			if (ast.unresolved_symbols.size > 0) {
-				Afrodite.Utils.trace ("(symbol resolver): symbols to resolve %d", ast.unresolved_symbols.size);
-				visit_symbols (ast.unresolved_symbols);
-				Afrodite.Utils.trace ("(symbol resolver): unresolved symbol after resolve process %d", ast.unresolved_symbols.size);
+			if (codedom.unresolved_symbols.size > 0) {
+				Afrodite.Utils.trace ("(symbol resolver): symbols to resolve %d", codedom.unresolved_symbols.size);
+				visit_symbols (codedom.unresolved_symbols);
+				Afrodite.Utils.trace ("(symbol resolver): unresolved symbol after resolve process %d", codedom.unresolved_symbols.size);
 #if DEBUG
-				int count = ast.unresolved_symbols.size > 5 ? 5 : ast.unresolved_symbols.size;
+				int count = codedom.unresolved_symbols.size > 5 ? 5 : codedom.unresolved_symbols.size;
 				if (count > 0) {
 					Afrodite.Utils.trace ("(symbol resolver): dumping first %d", count);
 					for(int i=0; i < count; i++) {
-						var symbol = ast.unresolved_symbols.get(i);
+						var symbol = codedom.unresolved_symbols.get(i);
 						var sr = symbol.source_references.get(0);
 						string cause = null;
 					
@@ -123,7 +123,7 @@ namespace Afrodite
 			// if not found and there is a "." may be is a fully qualified name, do a global lookup
 			if (res == null && type.type_name.contains (".")) {
 				//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
-				var s = _ast.symbols.@get (type.type_name);
+				var s = _codedom.symbols.@get (type.type_name);
 				if (s != null && s != symbol) {
 					res = s;
 				}
@@ -178,7 +178,7 @@ namespace Afrodite
 				*/
 				
 				// fast lookup first
-				current = _ast.symbols.@get (type_name);
+				current = _codedom.symbols.@get (type_name);
 				
 				// if not found or I just found myself
 				if (current == null || current == symbol) {
@@ -220,7 +220,7 @@ namespace Afrodite
 			// test if it'is a generic type parameter
 			// FIXME: this code is broken!
 			Symbol curr_symbol = symbol;
-			while (curr_symbol != null && curr_symbol != _ast.root) {
+			while (curr_symbol != null && curr_symbol != _codedom.root) {
 				if (curr_symbol.name.has_prefix ("!") == false && curr_symbol.has_generic_type_arguments) {
 					foreach (var arg in curr_symbol.generic_type_arguments) {
 						if (type_name == arg.fully_qualified_name) {
@@ -239,12 +239,12 @@ namespace Afrodite
 			// from the inner one to the outmost
 			if (res == null) {
 				curr_symbol = symbol;
-				while (curr_symbol != null && curr_symbol != _ast.root) {
+				while (curr_symbol != null && curr_symbol != _codedom.root) {
 					if (curr_symbol.member_type == MemberType.CLASS ||
 					    curr_symbol.member_type == MemberType.NAMESPACE ||
 					    curr_symbol.member_type == MemberType.INTERFACE ||
 					    curr_symbol.member_type == MemberType.STRUCT) {
-						s = _ast.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type_name));
+						s = _codedom.symbols.@get ("%s.%s".printf (curr_symbol.fully_qualified_name, type_name));
 						if (s != null && s != symbol) {
 							res = s;
 							break;
@@ -273,7 +273,7 @@ namespace Afrodite
 							}
 
 							//Utils.trace ("resolving with %s.%s".printf (using_directive.type_name, type.type_name));
-							s = _ast.symbols.@get ("%s.%s".printf (using_directive.type_name, type_name));
+							s = _codedom.symbols.@get ("%s.%s".printf (using_directive.type_name, type_name));
 							if (s != null && s != symbol) {
 								res = s;
 								break;
@@ -288,7 +288,7 @@ namespace Afrodite
 				if (res == null) {
 					if (!has_glib_using) {
 						// GLib namespace is automatically imported
-						s = _ast.symbols.@get ("GLib.%s".printf (type_name));
+						s = _codedom.symbols.@get ("GLib.%s".printf (type_name));
 						if (s != null && s != symbol) {
 							res = s;
 						}

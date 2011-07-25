@@ -636,7 +636,7 @@ namespace Afrodite
 			source_references.remove (reference);
 			if (source_references.size == 0) {
 				source_references = null;
-				reference.file.remove_symbol_from_ast (this);
+				reference.file.remove_symbol_from_codedom (this);
 			}
 			reference.file.symbols.remove (this);
 			if (has_specialized_symbols) {

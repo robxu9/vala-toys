@@ -92,18 +92,18 @@ public class AfroditeTest.Application : Object {
 		{
 			// dumping tree (just a debug facility)
 			var dumper = new Afrodite.AstDumper ();
-			dumper.dump (engine.ast, option_namespace);
+			dumper.dump (engine.codedom, option_namespace);
 			print ("\n");
 
 			// Query the AST
 			if (option_visible_symbols != null) {
-				var source = engine.ast.lookup_source_file (option_visible_symbols);
+				var source = engine.codedom.lookup_source_file (option_visible_symbols);
 				if (source != null) {
 					// get the source node at this position
-					var s = engine.ast.get_symbol_for_source_and_position (source, option_line, option_column);
+					var s = engine.codedom.get_symbol_for_source_and_position (source, option_line, option_column);
 					if (s != null) {
 						Vala.List<Symbol> syms = null;
-						syms = engine.ast.lookup_visible_symbols_from_symbol (s, option_filter);
+						syms = engine.codedom.lookup_visible_symbols_from_symbol (s, option_filter);
 						print ("Symbols found: %d\n", syms.size);
 						foreach (Symbol sym in syms) {
 							print ("          from %s: %s\n", sym.parent == null ? "<root>" : sym.parent.fully_qualified_name, Utils.unescape_xml_string (sym.description));
@@ -123,7 +123,7 @@ public class AfroditeTest.Application : Object {
 				options.binding = Afrodite.MemberBinding.ANY;
 
 				QueryResult sym = null;
-				sym = engine.ast.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
+				sym = engine.codedom.get_symbol_type_for_name_and_path (options, option_symbol_name, option_files[0], option_line, option_column);
 				print ("The type for '%s' is: ", option_symbol_name);
 				if (!sym.is_empty) {
 					foreach (ResultItem item in sym.children) {
@@ -168,9 +168,9 @@ public class AfroditeTest.Application : Object {
 		
 		if (option_dump_unresolved) {
 			print ("Unresolved symbols:");
-			if (engine.ast.unresolved_symbols != null && engine.ast.unresolved_symbols.size > 0) {
-				print (" %d\n", engine.ast.unresolved_symbols.size);
-				foreach (Afrodite.Symbol symbol in engine.ast.unresolved_symbols) {
+			if (engine.codedom.unresolved_symbols != null && engine.codedom.unresolved_symbols.size > 0) {
+				print (" %d\n", engine.codedom.unresolved_symbols.size);
+				foreach (Afrodite.Symbol symbol in engine.codedom.unresolved_symbols) {
 					print ("\t%s: %s - '%s'\n", 
 						Utils.Symbols.get_symbol_type_description (symbol.member_type),
 						symbol.fully_qualified_name,

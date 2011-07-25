@@ -30,7 +30,7 @@ namespace Afrodite
 
 		public Vala.List<DataType> using_directives { get; set; }
 		public Vala.List<unowned Symbol> symbols { get; set; }
-		public unowned Ast ast { get; set; }
+		public unowned CodeDom codedom { get; set; }
 
 		public TimeVal last_modification_time;
 		
@@ -128,8 +128,8 @@ namespace Afrodite
 
 			symbols.add (symbol);
 
-			ast.symbols.set (symbol.fully_qualified_name, symbol);
-			ast.unresolved_symbols.add(symbol);
+			codedom.symbols.set (symbol.fully_qualified_name, symbol);
+			codedom.unresolved_symbols.add(symbol);
 		}
 
 		public void remove_symbol (Symbol symbol)
@@ -144,8 +144,8 @@ namespace Afrodite
 				symbols = null;
 
 			if (!symbol.has_source_references) {
-				if (ast != null) {
-					remove_symbol_from_ast (symbol);
+				if (codedom != null) {
+					remove_symbol_from_codedom (symbol);
 				}
 				if (symbol.parent != null) {
 					if (symbol.is_generic_type_argument) {
@@ -169,14 +169,14 @@ namespace Afrodite
 			}
 		}
 		
-		internal void remove_symbol_from_ast (Symbol symbol)
+		internal void remove_symbol_from_codedom (Symbol symbol)
 		{
 			//Utils.trace ("%s removing from ast: %s", filename, symbol.fully_qualified_name);
-			if (ast != null && ast.symbols != null) {
-				ast.symbols.remove (symbol.fully_qualified_name);
+			if (codedom != null && codedom.symbols != null) {
+				codedom.symbols.remove (symbol.fully_qualified_name);
 			}
-			if (ast != null && ast.unresolved_symbols != null) {
-				ast.unresolved_symbols.remove (symbol);
+			if (codedom != null && codedom.unresolved_symbols != null) {
+				codedom.unresolved_symbols.remove (symbol);
 			}
 		}
 	}

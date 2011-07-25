@@ -97,7 +97,7 @@ namespace Afrodite
 			return sb.str;
 		}
 
-		public void dump (Ast ast, string? filter_symbol = null)
+		public void dump (CodeDom ast, string? filter_symbol = null)
 		{
 			pad = null;
 			level = 0;

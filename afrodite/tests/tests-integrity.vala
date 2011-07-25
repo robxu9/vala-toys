@@ -8,14 +8,14 @@ namespace AfroditeTests
 
 		public static void test_source_remove ()
 		{
-			var ast = _manager.engine.ast;
-			var source = ast.lookup_source_file (_manager.filename);
+			var codedom = _manager.engine.codedom;
+			var source = codedom.lookup_source_file (_manager.filename);
 
 			assert (source != null);
 
 			// DEBUG: copy the symbol table for future reference
 			var symbol_table = new GLib.HashTable <weak void*, string> (GLib.direct_hash, GLib.direct_equal);
-			foreach (unowned Afrodite.Symbol symbol in ast.symbols.get_values ()) {
+			foreach (unowned Afrodite.Symbol symbol in codedom.symbols.get_values ()) {
 				symbol_table.insert (symbol, symbol.fully_qualified_name);
 			}
 
@@ -29,7 +29,7 @@ namespace AfroditeTests
 			_manager.remove_source ();
 
 			// do the integrity test
-			source = ast.lookup_source_file (_manager.filename);
+			source = codedom.lookup_source_file (_manager.filename);
 			assert ( source == null );
 
 			// all the source symbols should be disposed
@@ -45,7 +45,7 @@ namespace AfroditeTests
 			// the ast should not contain a disposed symbol
 			// and all the symbol should have just one source reference
 			// and that reference shouldn't be my source file
-			foreach (unowned Afrodite.Symbol symbol in ast.symbols.get_values ()) {
+			foreach (unowned Afrodite.Symbol symbol in codedom.symbols.get_values ()) {
 				if (!(symbol is GLib.Object)) {
 					error ("symbol disposed: %p %s", symbol, symbol_table.lookup (symbol));
 				}

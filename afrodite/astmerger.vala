@@ -36,11 +36,11 @@ namespace Afrodite
 		bool _merge_glib = true;
 		bool _merge_edited_file = false;
 		
-		private Afrodite.Ast _ast = null;
+		private Afrodite.CodeDom _codedom = null;
 
-		public AstMerger (Afrodite.Ast ast)
+		public AstMerger (Afrodite.CodeDom codedom)
 		{
-			this._ast = ast;
+			this._codedom = codedom;
 		}
 
 		public async void merge_vala_context (Vala.SourceFile source, CodeContext context, bool merge_glib, bool merge_edited_file)
@@ -49,11 +49,11 @@ namespace Afrodite
 			_merge_edited_file = merge_edited_file;
 			_vala_symbol_fqn = null;
 			_current_type = null;
-			_current = _ast.root;
-			assert (_ast.lookup_source_file (source.filename) == null);
+			_current = _codedom.root;
+			assert (_codedom.lookup_source_file (source.filename) == null);
 
 			//debug ("COMPLETING FILE %s", source.filename);
-			_source_file = _ast.add_source_file (source.filename);
+			_source_file = _codedom.add_source_file (source.filename);
 			foreach (UsingDirective u in source.current_using_directives) {
 				_source_file.add_using_directive (u.namespace_symbol.to_string ());
 			}
@@ -195,7 +195,7 @@ namespace Afrodite
 			if (s.type_name != "ValaNamespace") {
 				symbol = add_symbol (_current, type, s, out source_reference);
 			} else {
-				symbol = _ast.lookup (_vala_symbol_fqn);
+				symbol = _codedom.lookup (_vala_symbol_fqn);
 				if (symbol == null) {
 					symbol = add_symbol (_current, type, s, out source_reference);
 					//Utils.trace ("adding %s to source %s", symbol.fully_qualified_name, _source_file.filename);

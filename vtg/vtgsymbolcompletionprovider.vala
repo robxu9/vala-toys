@@ -609,7 +609,7 @@ namespace Vtg
 			string name = Utils.get_document_name (doc);
 
 			get_current_line_and_column (out line, out col);
-			symbol = _completion.ast.lookup_symbol_at (name, line, col);
+			symbol = _completion.codedom.lookup_symbol_at (name, line, col);
 
 			return symbol;
 		}
@@ -649,16 +649,16 @@ namespace Vtg
 				first_part = word; // "this"; //HACK: this won't work for static methods
 			}
 			
-			Afrodite.Ast ast = _completion.ast;
+			Afrodite.CodeDom codedom = _completion.codedom;
 			Afrodite.Symbol? symbol = null;
 			
 			Afrodite.QueryResult? result = null;
 			Afrodite.QueryOptions options = this.get_options_for_line (text, is_assignment, is_creation);
 			
 			if (word == symbol_name)
-				result = get_symbol_for_name (options, ast, first_part, null,  line, col);
+				result = get_symbol_for_name (options, codedom, first_part, null,  line, col);
 			else
-				result = get_symbol_type_for_name (options, ast, first_part, null,  line, col);
+				result = get_symbol_type_for_name (options, codedom, first_part, null,  line, col);
 				
 			if (result != null && !result.is_empty) {
 				var first = result.children.get (0);
@@ -739,7 +739,7 @@ namespace Vtg
 
 			ParserUtils.parse_line (text, out word, out is_assignment, out is_creation, out is_declaration);
 
-			Afrodite.Ast ast = _completion.ast;
+			Afrodite.CodeDom codedom = _completion.codedom;
 			Utils.trace ("completing word: '%s'", word);
 			if (!StringUtils.is_null_or_empty (word)) {
 			        QueryOptions options = get_options_for_line (text, is_assignment, is_creation);
@@ -753,7 +753,7 @@ namespace Vtg
 				} else if (word.has_prefix ("\'") && word.has_suffix ("\'")) {
 					word = "unichar";
 				}
-				result = get_symbol_type_for_name (options, ast, word, text, line, col);
+				result = get_symbol_type_for_name (options, codedom, word, text, line, col);
 				transform_result (options, result);
 			} else {
 				if (!StringUtils.is_null_or_empty (word)) {
@@ -768,7 +768,7 @@ namespace Vtg
 
 		private void lookup_visible_symbols_in_scope (string word, CompareMode mode)
 		{
-			Afrodite.Ast ast = _completion.ast;
+			Afrodite.CodeDom codedom = _completion.codedom;
 			Utils.trace ("lookup_all_symbols_in_scope: mode: %s word:'%s' ", 
 				mode == CompareMode.EXACT ? "exact" : "start-with",
 				word);
@@ -776,15 +776,15 @@ namespace Vtg
         			Vala.List<Afrodite.Symbol> results = new Vala.ArrayList<Afrodite.Symbol> ();
 
 				weak Gedit.Document doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
-				var source = ast.lookup_source_file (Utils.get_document_name (doc));
+				var source = codedom.lookup_source_file (Utils.get_document_name (doc));
 				if (source != null) {
 					// get the source node at this position
 					int line, column;
 					get_current_line_and_column (out line, out column);
 					
-					var s = ast.get_symbol_for_source_and_position (source, line, column);
+					var s = codedom.get_symbol_for_source_and_position (source, line, column);
 					if (s != null) {
-						results = ast.lookup_visible_symbols_from_symbol (s, word, mode, CaseSensitiveness.CASE_SENSITIVE);
+						results = codedom.lookup_visible_symbols_from_symbol (s, word, mode, CaseSensitiveness.CASE_SENSITIVE);
 					}
 				} else {
 					Utils.trace ("no source file for: %s", Utils.get_document_name (doc));
@@ -812,22 +812,22 @@ namespace Vtg
 			return false;
 		}
 		
-		private Afrodite.QueryResult? get_symbol_type_for_name (QueryOptions options, Afrodite.Ast ast, string word, string? whole_line, int line, int column)
+		private Afrodite.QueryResult? get_symbol_type_for_name (QueryOptions options, Afrodite.CodeDom codedom, string word, string? whole_line, int line, int column)
 		{
 			Afrodite.QueryResult result = null;
 			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 
-			result = ast.get_symbol_type_for_name_and_path (options, word, Utils.get_document_name (doc), line, column);
+			result = codedom.get_symbol_type_for_name_and_path (options, word, Utils.get_document_name (doc), line, column);
 			Utils.trace ("symbol matched %d", result.children.size);
 			return result;
 		}
 
-		private Afrodite.QueryResult? get_symbol_for_name (QueryOptions options, Afrodite.Ast ast,string word, string? whole_line, int line, int column)
+		private Afrodite.QueryResult? get_symbol_for_name (QueryOptions options, Afrodite.CodeDom codedom,string word, string? whole_line, int line, int column)
 		{
 			Afrodite.QueryResult result = null;
 			var doc = (Gedit.Document) _symbol_completion.view.get_buffer ();
 
-			result = ast.get_symbol_for_name_and_path (options, word, Utils.get_document_name (doc), line, column);
+			result = codedom.get_symbol_for_name_and_path (options, word, Utils.get_document_name (doc), line, column);
 			return result;
 		}
 	}

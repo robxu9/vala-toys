@@ -24,19 +24,19 @@ using Vala;
 
 namespace Afrodite
 {
-	public class Ast
+	public class CodeDom
 	{
 		public Vala.HashMap<string, unowned Symbol> symbols = new Vala.HashMap <string, unowned Symbol>(GLib.str_hash, GLib.str_equal);
 		public Vala.List<unowned Symbol> unresolved_symbols = new Vala.ArrayList<unowned Symbol>();
 		
 		private Symbol _root = new Symbol (null, MemberType.NONE);
 
-		~Ast ()
+		~CodeDom ()
 		{
 			Utils.trace ("Ast destroy");
 			// destroy the root symbol
 			foreach (SourceFile file in source_files) {
-				file.ast = null;
+				file.codedom = null;
 			}
 			_root = null;
 			source_files = null;// source have to be destroyed after root symbol
@@ -120,7 +120,7 @@ namespace Afrodite
 					source_files = new ArrayList<SourceFile> ();
 				}
 				//Utils.trace ("add source: %s (%p)", file.filename, file);
-				file.ast = this;
+				file.codedom = this;
 				source_files.add (file);
 			}
 			return file;

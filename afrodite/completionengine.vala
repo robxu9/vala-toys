@@ -46,7 +46,7 @@ namespace Afrodite
 		private bool _glib_init = false;
 		private bool _is_parsing = false;
 
-		private Ast _ast;
+		private CodeDom _codedom;
 		private GLib.AsyncQueue<ParseResult> _parse_result_list = new GLib.AsyncQueue<ParseResult> ();
 		private uint _idle_id = 0;
 
@@ -60,14 +60,14 @@ namespace Afrodite
 			_source_queue = new ArrayList<SourceItem> ();
 			_source_queue_mutex = new Mutex ();
 			
-			_ast = new Ast ();
+			_codedom = new CodeDom ();
 		}
 		
 		~Completion ()
 		{
 			Utils.trace ("Completion %s destroy", id);
 			// invalidate the ast so the parser thread will exit asap
-			_ast = null;
+			_codedom = null;
 
 			if (AtomicInt.@get (ref _parser_stamp) != 0) {
 				Utils.trace ("join the parser thread before exit");
@@ -144,8 +144,8 @@ namespace Afrodite
 				bool skip_unchanged_file = false;
 
 				// test if file is really changed but only if it's not a live buffer
-				if (no_update_check == false && source.content == null && _ast != null) {
-					var sf = _ast.lookup_source_file (source.path);
+				if (no_update_check == false && source.content == null && _codedom != null) {
+					var sf = _codedom.lookup_source_file (source.path);
 					if (sf != null && sf.update_last_modification_time ()) {
 						Utils.trace ("engine %s: skip unchanged source %s", id, source.path);
 						skip_unchanged_file = true;
@@ -217,9 +217,9 @@ namespace Afrodite
 			start_time = timer.elapsed ();
 #endif
 
-                        var source = _ast.lookup_source_file (source_path);
+                        var source = _codedom.lookup_source_file (source_path);
                         assert (source != null);
-                        _ast.remove_source (source);
+                        _codedom.remove_source (source);
 
 			this.file_removed (this, source_path);
 #if DEBUG
@@ -227,10 +227,10 @@ namespace Afrodite
 #endif
 		}
 
-		public Ast ast
+		public CodeDom codedom
 		{
 			get {
-				return _ast;
+				return _codedom;
 			}
 		}
 
@@ -297,7 +297,7 @@ namespace Afrodite
 				sources.clear ();
 
 				//check for changes or exit request
-				if (_ast == null || AtomicInt.compare_and_exchange (ref _parser_stamp, stamp, 0)) {
+				if (_codedom == null || AtomicInt.compare_and_exchange (ref _parser_stamp, stamp, 0)) {
 					break;
 				}
 			}
@@ -370,7 +370,7 @@ namespace Afrodite
 			Utils.trace ("engine %s: async merge and resolve: %s", id, result.source_path);
 			foreach (Vala.SourceFile s in result.context.get_source_files ()) {
 				if (s.filename == result.source_path) {
-					var ast_source = _ast.lookup_source_file (result.source_path);
+					var ast_source = _codedom.lookup_source_file (result.source_path);
 					bool source_exists = ast_source != null;
 					bool need_update = true;
 
@@ -402,7 +402,7 @@ namespace Afrodite
 		private async void perform_merge_and_resolve (Vala.SourceFile s, ParseResult result, bool source_exists)
 		{
 			yield merge_vala_source (s, result, source_exists);
-			yield resolve_ast ();
+			yield resolve_codedom ();
 		}
 		
 		private async void merge_vala_source (Vala.SourceFile s, ParseResult result, bool source_exists)
@@ -412,7 +412,7 @@ namespace Afrodite
 			double start_time = 0, elapsed;
 			timer.start ();
 #endif
-			var merger = new AstMerger (_ast);
+			var merger = new AstMerger (_codedom);
 			if (source_exists) {
 #if DEBUG
 				Utils.trace ("engine %s: removing source (%p) %s", id, result, result.source_path);
@@ -436,18 +436,18 @@ namespace Afrodite
 #endif
 		}
 		
-		private async void resolve_ast ()
+		private async void resolve_codedom ()
 		{
 #if DEBUG
 			GLib.Timer timer = new GLib.Timer ();
 			double start_time = 0;
 			timer.start ();
-			//_ast.dump_symbols ();
+			//_codedom.dump_symbols ();
 			Utils.trace ("engine %s: resolving ast", id);
 			start_time = timer.elapsed ();
 #endif
 			var resolver = new SymbolResolver ();
-			resolver.resolve (_ast);
+			resolver.resolve (_codedom);
 #if DEBUG
 			Utils.trace ("engine %s: resolving ast done %g", id, timer.elapsed () - start_time);
 #endif

@@ -522,8 +522,8 @@ namespace Vtg
 				/* getting the symbols */
 
 				foreach (Afrodite.CompletionEngine engine in pm.completions.get_values ()) {
-					Afrodite.Ast ast = engine.ast;
-					build_search_symbol_model (pm.project.id, model, ast.root);
+					Afrodite.CodeDom codedom = engine.codedom;
+					build_search_symbol_model (pm.project.id, model, codedom.root);
 				}
 
 				var dialog = new FilteredListDialog (model, this.sort_symbol_model);
@@ -701,7 +701,7 @@ namespace Vtg
 				var options = Afrodite.QueryOptions.standard ();
 
 				options.all_symbols = true;
-				result = scs.completion_engine.ast.get_symbols_for_path (options, name);
+				result = scs.completion_engine.codedom.get_symbols_for_path (options, name);
 
 				/* building the model */
 				model = FilteredListDialog.create_model ();
