@@ -112,7 +112,7 @@ namespace Afrodite.Utils
 	{
 		private static PredefinedSymbols _predefined = null;
 		
-		public static PredefinedSymbols get_predefined ()
+		internal static PredefinedSymbols get_predefined ()
 		{
 			if (_predefined == null)
 				_predefined = new PredefinedSymbols ();
@@ -174,7 +174,7 @@ namespace Afrodite.Utils
 			}
 		}
 
-		public class PredefinedSymbols
+		internal class PredefinedSymbols
 		{
 			private Symbol _connect_method;
 			private Symbol _disconnect_method;
@@ -212,7 +212,7 @@ namespace Afrodite.Utils
 		return res.replace ("&lt;", "<").replace ("&gt;", ">");
 	}
 
-	public static string binary_operator_to_string (Vala.BinaryOperator op)
+	internal static string binary_operator_to_string (Vala.BinaryOperator op)
 	{
 		string res;
 
@@ -289,7 +289,7 @@ namespace Afrodite.Utils
 		return res;
 	}
 
-	public static string unary_operator_to_string (Vala.UnaryOperator op)
+	internal static string unary_operator_to_string (Vala.UnaryOperator op)
 	{
 		string res;
 

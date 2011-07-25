@@ -24,7 +24,7 @@ using Vala;
 
 namespace Afrodite
 {
-	public class AstMerger : CodeVisitor
+	internal class AstMerger : CodeVisitor
 	{
 		Afrodite.Symbol _current = null;
 		Afrodite.DataType _current_type = null;

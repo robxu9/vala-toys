@@ -24,7 +24,7 @@ using Vala;
 
 namespace Afrodite
 {
-	public class Parser : GLib.Object
+	internal class Parser : GLib.Object
 	{
 		private CodeContext context = null;
 

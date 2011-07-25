@@ -62,7 +62,7 @@ namespace Afrodite
 			print ("%s\n", create_symbol_dump_info (s));
 		}
 
-		public string create_symbol_dump_info (Afrodite.Symbol? s, bool update_counters = true)
+		internal string create_symbol_dump_info (Afrodite.Symbol? s, bool update_counters = true)
 		{
 			if (s == null)
 				return "(empty)";
