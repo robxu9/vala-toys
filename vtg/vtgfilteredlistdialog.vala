@@ -153,7 +153,7 @@ namespace Vtg
 		private void on_row_activated (Widget sender, TreePath path, TreeViewColumn column)
 		{
 			if (can_select_current_row ())
-				_dialog.response (2);
+				_dialog.response (ResponseType.OK);
 		}
 
 		private void on_tree_selection_changed (Gtk.TreeSelection sender)
