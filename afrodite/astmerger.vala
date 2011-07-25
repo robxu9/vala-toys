@@ -235,7 +235,7 @@ namespace Afrodite
 			return symbol;
 		}
 
-		private Afrodite.Symbol add_codenode (string name, MemberType type, Vala.CodeNode c, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
+		private Afrodite.Symbol add_codenode (Afrodite.Symbol parent, string name, MemberType type, Vala.CodeNode c, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var symbol = new Afrodite.Symbol (name, type);
 			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
@@ -244,6 +244,7 @@ namespace Afrodite
 				source_ref = sr;
 			}
 			symbol.access = Afrodite.SymbolAccessibility.PRIVATE;
+			parent.add_child (symbol);
 			_source_file.add_symbol (symbol);
 			return symbol;
 		}
@@ -1128,11 +1129,8 @@ namespace Afrodite
 				//debug ("body for %s: %d,%d to %d,%d\n", name, body.source_reference.first_line, body.source_reference.first_column, body.source_reference.last_line, body.source_reference.last_column);
 			}
 				
-			var s = add_codenode ("!%s".printf(name), MemberType.SCOPED_CODE_NODE, node, out _current_sr, last_line);
+			var s = add_codenode (_current, "!%s".printf(name), MemberType.SCOPED_CODE_NODE, node, out _current_sr, last_line);
 			//s.display_name = name;
-			
-			_current.add_child (s);
-			
 			_current = s;
 			if (body == null) {
 				node.accept_children (this);

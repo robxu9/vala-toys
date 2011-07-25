@@ -131,23 +131,20 @@ namespace Afrodite
 		internal void destroy_thyself ()
 		{
 			
-			Utils.trace ("Symbol destroy: %s (%p)", this.fully_qualified_name, this);	
+			//Utils.trace ("Symbol destroy: %s (%p:%d) ", this.fully_qualified_name, this, (int)this.ref_count);
 			
-			// parent and generic parent if this symbol is a specialization
-			if (parent != null) {
-				if (is_generic_type_argument) {
-					if (parent.has_generic_type_arguments) {
-						parent.remove_generic_type_argument (this);
-					}
-				} else {
-					if (parent.has_children) {
-						parent.remove_child (this);
-					}
+			// delete this simbol from the ast
+			while (has_source_references) {
+				int prev_size = source_references.size;
+				var sr = source_references.get (0);
+				if (!sr.file.has_symbols) {
+					critical ("%s belong to source %p but it isn't listed in its symbol table. Leak?", this.fully_qualified_name, sr.file);
+					// if the source reference wasn't removed remove it by hand!
 				}
-			}
-
-			if (generic_parent != null && generic_parent.has_specialized_symbols) {
-				generic_parent.remove_specialized_symbol (this);
+				remove_source_reference (sr);
+				if (has_source_references) {
+					assert (source_references.size < prev_size);
+				}
 			}
 
 			// unresolve all the targets. direction target *is resolved by* this symbol
@@ -175,44 +172,35 @@ namespace Afrodite
 			}
 
 			this.remove_from_targets ();
-	
-				
-			while (has_source_references) {
-				int prev_size = source_references.size;
-				var sr = source_references.get (0);
-				if (sr.file.has_symbols) {
-					Utils.trace ("removing from source %s: %s", sr.file.filename, this.fully_qualified_name);
-					sr.file.remove_symbol (this); // this will remove the source reference from the symbol
-				} else {
-					critical ("%s belong to source %p but it isn't listed in its symbol table. Leak?", this.fully_qualified_name, sr.file);
-					// if the source reference wasn't removed remove it by hand!
-					remove_source_reference (sr);
-				}
-				if (has_source_references) {
-					assert (source_references.size < prev_size);
-				}
-			}
-			
-			
+
 			// deallocate the children
-			if (has_children) {
-				foreach (Symbol child in _children) {
-					if (child.parent == this) {
-						child.parent = null;
+			var tmp = _children; // keep the collection alive
+			_children = null; // destroy the collection 1
+			tmp = null; // HACK: destroy the collection 2: now has_children will return false
+			
+			var tmp2 = _specialized_symbols;		
+			_specialized_symbols = null;
+			tmp2 = null;
+			
+			if (generic_parent != null && generic_parent.has_specialized_symbols) {
+				generic_parent.remove_specialized_symbol (this);
+			}
+
+
+			// parent and generic parent if this symbol is a specialization
+			if (parent != null) {
+				if (is_generic_type_argument) {
+					if (parent.has_generic_type_arguments) {
+						parent.remove_generic_type_argument (this);
+					}
+				} else {
+					if (parent.has_children) {
+						parent.remove_child (this);
 					}
 				}
-				_children = null;
 			}
-	
-			if (has_specialized_symbols) {
-				foreach (Symbol sym in _specialized_symbols) {
-					if (sym.generic_parent == this) {
-						sym.generic_parent = null;
-					}
-				}
-				_specialized_symbols = null;
-			}
-			//Utils.trace ("Symbol destroyied: %s (%p)", _fully_qualified_name, this);
+
+			//Utils.trace ("Symbol destroyied: %s (%p:%d)", _name, this, (int)this.ref_count);
 		}
 
 		private void remove_from_targets ()
@@ -468,7 +456,7 @@ namespace Afrodite
 		public bool has_children
 		{
 			get {
-				return _children != null;
+				return _children != null && _children.size > 0;
 			}
 		}
 
@@ -641,6 +629,7 @@ namespace Afrodite
 			source_references.remove (reference);
 			if (source_references.size == 0) {
 				source_references = null;
+				reference.file.remove_symbol_from_ast (this);
 			}
 			reference.file.symbols.remove (this);
 			if (has_specialized_symbols) {
