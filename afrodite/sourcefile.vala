@@ -172,11 +172,10 @@ namespace Afrodite
 		internal void remove_symbol_from_ast (Symbol symbol)
 		{
 			//Utils.trace ("%s removing from ast: %s", filename, symbol.fully_qualified_name);
-			assert (ast != null);
-			if (ast.symbols != null) {
+			if (ast != null && ast.symbols != null) {
 				ast.symbols.remove (symbol.fully_qualified_name);
 			}
-			if (ast.unresolved_symbols != null) {
+			if (ast != null && ast.unresolved_symbols != null) {
 				ast.unresolved_symbols.remove (symbol);
 			}
 		}
