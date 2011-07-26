@@ -277,6 +277,20 @@ namespace Vtg
 		public static Gdk.Pixbuf icon_namespace;
 
 		public static Gdk.Pixbuf icon_project;
+		public static Gdk.Pixbuf icon_folder_packages;
+		public static Gdk.Pixbuf icon_package;
+
+		public static Gdk.Pixbuf icon_project_library_16;
+		public static Gdk.Pixbuf icon_project_library_22;
+		
+		public static Gdk.Pixbuf icon_project_unknown_16;
+		public static Gdk.Pixbuf icon_project_unknown_22;
+
+		public static Gdk.Pixbuf icon_project_data_16;
+		public static Gdk.Pixbuf icon_project_data_22;
+
+		public static Gdk.Pixbuf icon_project_executable_16;
+		public static Gdk.Pixbuf icon_project_executable_22;
 		
 		[Diagnostics]
 		[PrintfFormat]
@@ -450,7 +464,22 @@ namespace Vtg
 				icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
 				icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
 				icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));	
+
 				icon_project = new Gdk.Pixbuf.from_file (Utils.get_image_path ("project-16.png"));
+				icon_folder_packages = new Gdk.Pixbuf.from_file (Utils.get_image_path ("project-reference-folder-16.png"));
+				icon_package = new Gdk.Pixbuf.from_file (Utils.get_image_path ("package-16.png"));
+
+				icon_project_library_16 = new Gdk.Pixbuf.from_file (Utils.get_image_path ("project-library-16.png"));
+				icon_project_library_22 = new Gdk.Pixbuf.from_file (Utils.get_image_path ("project-library-22.png"));
+				
+				icon_project_unknown_16 = new Gdk.Pixbuf.from_file (Utils.get_image_path ("project-unknown-16.png"));
+				icon_project_unknown_22 = new Gdk.Pixbuf.from_file (Utils.get_image_path ("project-unknown-22.png"));
+
+				icon_project_data_16 = new Gdk.Pixbuf.from_file (Utils.get_image_path ("project-data-16.png"));
+				icon_project_data_22 = new Gdk.Pixbuf.from_file (Utils.get_image_path ("project-data-22.png"));
+
+				icon_project_executable_16 = IconTheme.get_default().load_icon (Gtk.Stock.EXECUTE,16,IconLookupFlags.GENERIC_FALLBACK);
+				icon_project_executable_22 = IconTheme.get_default().load_icon (Gtk.Stock.EXECUTE,22,IconLookupFlags.GENERIC_FALLBACK);
 				
 				_initialized = true;
 			} catch (Error err) {
@@ -527,7 +556,7 @@ namespace Vtg
 			return icon_generic;
 		}
 
-		public static string get_stock_id_for_target_type (Vbf.TargetTypes type)
+		public static string get_stock_id_for_target_type_to_delete (Vbf.TargetTypes type)
 		{
 			switch (type) {
 				case TargetTypes.PROGRAM:
@@ -542,6 +571,38 @@ namespace Vtg
 					return Gtk.Stock.DIRECTORY;
 			}
 		}
+
+		public static Gdk.Pixbuf get_small_icon_for_target_type (Vbf.TargetTypes type)
+		{
+			switch (type) {
+				case TargetTypes.PROGRAM:
+					return icon_project_executable_16;
+				case TargetTypes.LIBRARY:
+					return icon_project_library_16;
+				case TargetTypes.DATA:
+					return icon_project_data_16;
+				case TargetTypes.BUILT_SOURCES:
+					return icon_project_executable_16;
+				default:
+					return icon_project_unknown_16;
+			}
+		}
+
+		public static Gdk.Pixbuf get_big_icon_for_target_type (Vbf.TargetTypes type)
+		{
+			switch (type) {
+				case TargetTypes.PROGRAM:
+					return icon_project_executable_22;
+				case TargetTypes.LIBRARY:
+					return icon_project_library_22;
+				case TargetTypes.DATA:
+					return icon_project_data_22;
+				case TargetTypes.BUILT_SOURCES:
+					return icon_project_executable_22;
+				default:
+					return icon_project_unknown_22;
+			}
+		}		
 		
 		public static int symbol_type_compare (Symbol? vala, Symbol? valb)
 		{

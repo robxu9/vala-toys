@@ -118,7 +118,7 @@ namespace Vtg
 			
 			var column = new TreeViewColumn ();
 			column.pack_start (renderer, false);
-			column.add_attribute (renderer, "stock-id", 0);
+			column.add_attribute (renderer, "pixbuf", 0);
 			renderer = new CellRendererText ();
 			column.pack_start (renderer, true);
 			column.add_attribute (renderer, "text", 1);

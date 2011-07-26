@@ -472,13 +472,14 @@ namespace Vtg
 			TreeIter? modules_iter = null;
 			TreeIter groups_iter;
 			TreeIter? group_iter = null;
+			var image = new Gtk.Image();
 
-			_model = new Gtk.TreeStore (5, typeof(string), typeof(string), typeof(string), typeof(GLib.Object), typeof(string));
+			_model = new Gtk.TreeStore (5, typeof(Gdk.Pixbuf), typeof(string), typeof(string), typeof(GLib.Object), typeof(string));
 			_model.append (out project_iter, null);
 			if (StringUtils.is_null_or_empty (_project.version)) {
-				_model.set (project_iter, 0, Gtk.Stock.DIRECTORY, 1, "%s".printf (_project.name), 2, "project-root", 4, "");
+				_model.set (project_iter, 0, Utils.icon_project, 1, "%s".printf (_project.name), 2, "project-root", 4, "");
 			} else {
-				_model.set (project_iter, 0, Gtk.Stock.DIRECTORY, 1, "%s - %s".printf (_project.name, _project.version), 2, "project-root", 4, "");
+				_model.set (project_iter, 0, Utils.icon_project, 1, "%s - %s".printf (_project.name, _project.version), 2, "project-root", 4, "");
 			}
 			
 			bool reference_added = false;
@@ -486,20 +487,24 @@ namespace Vtg
 			foreach (Module module in _project.get_modules ()) {
 				if (!reference_added) {
 					_model.append (out modules_iter, project_iter);
-					_model.set (modules_iter, 0, Gtk.Stock.DIRECTORY, 1, _("References"), 2, "project-reference", 4, "1");
+					_model.set (modules_iter, 
+						0, image.render_icon_pixbuf (Gtk.Stock.DIRECTORY, IconSize.MENU),
+						1, _("References"), 2, "project-reference", 4, "1");
 					reference_added = true;
 				}
 				TreeIter module_iter;
 				_model.append (out module_iter, modules_iter);
-				_model.set (module_iter, 0, Gtk.Stock.DIRECTORY, 1, module.name, 2, module.id, 3, module, 4, module.name);
+				_model.set (module_iter, 
+					0, Utils.icon_folder_packages, 
+					1, module.name, 2, module.id, 3, module, 4, module.name);
 				foreach (Package package in module.get_packages ()) {
 					TreeIter package_iter;
 					_model.append (out package_iter, module_iter);
-					_model.set (package_iter, 0, Gtk.Stock.FILE, 1, package.name, 2, package.id, 3, package, 4, package.name);
+					_model.set (package_iter, 0, Utils.icon_package, 1, package.name, 2, package.id, 3, package, 4, package.name);
 				}
 			}
 			_model.append (out groups_iter, project_iter);
-			_model.set (groups_iter, 0, Gtk.Stock.DIRECTORY, 1, _("Files"), 2, "project-files", 4, "2");
+			_model.set (groups_iter, 0, image.render_icon_pixbuf (Gtk.Stock.DIRECTORY, IconSize.MENU), 1, _("Files"), 2, "project-files", 4, "2");
 			foreach (Group group in _project.get_groups ()) {
 				bool group_added = false;
 				
@@ -519,46 +524,50 @@ namespace Vtg
 
 							if (!group_added) {
 								_model.append (out group_iter, groups_iter);
-								_model.set (group_iter, 0, Gtk.Stock.DIRECTORY, 1, group.name, 2, "group-targets", 3, group, 4, "2");
+								_model.set (group_iter, 0, image.render_icon_pixbuf (Gtk.Stock.DIRECTORY, IconSize.MENU), 1, group.name, 2, "group-targets", 3, group, 4, "2");
 								group_added = true;
 							}
 							if (!target_added) {
 								_model.append (out target_iter, group_iter);
-								_model.set (target_iter, 0, Utils.get_stock_id_for_target_type (target.type), 1, target.name, 2, target.id, 3, target, 4, group.name);
+								_model.set (target_iter, 
+									0, Utils.get_small_icon_for_target_type (target.type), 
+									1, target.name, 2, target.id, 3, target, 4, group.name);
 								target_added = true;
 							}
 							TreeIter source_iter;
 							_model.append (out source_iter, target_iter);
-							_model.set (source_iter, 0, Gtk.Stock.FILE, 1, source.name, 2, source.uri, 3, source, 4, source.name);
+							_model.set (source_iter, 0, image.render_icon_pixbuf (Gtk.Stock.FILE, IconSize.MENU), 1, source.name, 2, source.uri, 3, source, 4, source.name);
 						}
 						foreach (Vbf.File file in target.get_files ()) {
 							if (!group_added) {
 								_model.append (out group_iter, groups_iter);
-								_model.set (group_iter, 0, Gtk.Stock.DIRECTORY, 1, group.name, 2, "group-targets", 3, group, 4, "2");
+								_model.set (group_iter, 0, image.render_icon_pixbuf (Gtk.Stock.DIRECTORY, IconSize.MENU), 1, group.name, 2, "group-targets", 3, group, 4, "2");
 								group_added = true;
 							}
 							if (!target_added) {
 								_model.append (out target_iter, group_iter);
-								_model.set (target_iter, 0, Utils.get_stock_id_for_target_type (target.type), 1, target.name, 2, target.id, 3, target, 4, group.name);
+								_model.set (target_iter, 
+									0, Utils.get_small_icon_for_target_type (target.type), 
+									1, target.name, 2, target.id, 3, target, 4, group.name);
 								target_added = true;
 							}
 
 							TreeIter file_iter;
 							_model.append (out file_iter, target_iter);
-							_model.set (file_iter, 0, Gtk.Stock.FILE, 1, file.name, 2, file.uri, 3, file, 4, file.name);
+							_model.set (file_iter, 0, image.render_icon_pixbuf (Gtk.Stock.FILE, IconSize.MENU), 1, file.name, 2, file.uri, 3, file, 4, file.name);
 						}
 						
 						bool vapi_group_added = false;
 						foreach (Vbf.Package package in target.get_packages ()) {
 							if (!vapi_group_added) {
 								_model.append (out vapi_group_iter, target_iter);
-								_model.set (vapi_group_iter, 0, Gtk.Stock.DIRECTORY, 1, _("Referenced packages"), 2, "vapi-targets", 3, null, 4, "2");
+								_model.set (vapi_group_iter, 0, Utils.icon_folder_packages, 1, _("Referenced packages"), 2, "vapi-targets", 3, null, 4, "2");
 								vapi_group_added = true;
 							}
 							
 							TreeIter vapi_iter;
 							_model.append (out vapi_iter, vapi_group_iter);
-							_model.set (vapi_iter, 0, Gtk.Stock.FILE, 1, package.name, 2, package.uri, 3, package, 4, package.name);
+							_model.set (vapi_iter, 0, Utils.icon_package, 1, package.name, 2, package.uri, 3, package, 4, package.name);
 						}
 					}
 					
