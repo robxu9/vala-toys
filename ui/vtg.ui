@@ -213,10 +213,14 @@
                 <property name="height_request">400</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="shadow_type">in</property>
                 <child>
                   <object class="GtkTreeView" id="treeview-db-docs">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="valign">start</property>
+                    <property name="margin_left">2</property>
+                    <property name="margin_right">2</property>
                     <property name="headers_visible">False</property>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection" id="treeview-selection2"/>
