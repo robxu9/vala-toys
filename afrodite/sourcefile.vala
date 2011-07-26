@@ -129,6 +129,7 @@ namespace Afrodite
 			symbols.add (symbol);
 
 			codedom.symbols.set (symbol.fully_qualified_name, symbol);
+
 			codedom.unresolved_symbols.add(symbol);
 		}
 
@@ -150,7 +151,7 @@ namespace Afrodite
 				if (symbol.parent != null) {
 					if (symbol.is_generic_type_argument) {
 						symbol.parent.remove_generic_type_argument (symbol);
-					} else {
+					} else if (symbol.parent.has_children) {
 						symbol.parent.remove_child (symbol);
 					}
 				}

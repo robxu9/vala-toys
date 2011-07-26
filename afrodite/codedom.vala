@@ -33,14 +33,14 @@ namespace Afrodite
 
 		~CodeDom ()
 		{
-			Utils.trace ("Ast destroy");
+			Utils.trace ("CodeDom destroy");
 			// destroy the root symbol
 			foreach (SourceFile file in source_files) {
 				file.codedom = null;
 			}
 			_root = null;
 			source_files = null;// source have to be destroyed after root symbol
-			Utils.trace ("Ast destroyed");
+			Utils.trace ("CodeDom destroyed");
 		}
 
 		public void dump_symbols ()
@@ -62,9 +62,13 @@ namespace Afrodite
 			Symbol result = null;
 
 			foreach (var s in symbols.get_values ()) {
-				if (s.fully_qualified_name == fully_qualified_name) {
-					result = s;
-					break;
+				if (s is GLib.Object) {
+					if (s.fully_qualified_name == fully_qualified_name) {
+						result = s;
+						break;
+					}
+				} else {
+					critical ("FIXME: destroyed object in symbol table: %p", s);
 				}
 			}
 			return result;
@@ -148,12 +152,12 @@ namespace Afrodite
 		internal void remove_source (SourceFile source)
 		{
 			return_if_fail (source_files != null);
-			source_files.remove (source);
 			foreach (Afrodite.Symbol symbol in source.symbols) {
-				if (!symbol.has_source_references) {
-					symbol.destroy_thyself ();
+				if (symbol.has_source_references && symbol.source_references.size == 1) {
+					source.remove_symbol_from_codedom (symbol);
 				}
 			} 
+			source_files.remove (source);
 		}
 		
 		public Symbol? lookup_symbol_at (string filename, int line, int column)
