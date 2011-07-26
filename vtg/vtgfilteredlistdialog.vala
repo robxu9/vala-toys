@@ -182,6 +182,9 @@ namespace Vtg
 					TreeIter tmp = curr;
 					while (model.iter_parent (out target, tmp)) {
 						tmp = target;
+						if (model.iter_next(ref target)) {
+							break;
+						}
 					}
 					target = tmp; // last valid iter
 					if (!model.iter_next (ref target)) {
@@ -197,40 +200,21 @@ namespace Vtg
 		private bool move_cursor_up (TreeModel model, TreeIter curr, out TreeIter target)
 		{
 			bool result = true;
-
+			TreeIter tmp;
+			
 			target = curr;
-			if (!model.iter_previous (ref target)) {
-				// we should go up until the first level
-				// move previous and then try to go down again
-				int count = 0;
-				TreeIter tmp = curr;
-				while (model.iter_parent (out target, tmp)) {
-					tmp = target;
-					count++;
-				}
-				target = tmp; // last valid iter
-				if (model.iter_previous (ref target)) {
-					tmp = target;
-					while (model.iter_children (out target, tmp) && count > 0) {
-						tmp = target;
-						count--;
-					}
-					if (count == 0) {
-						// now go to the last item
+			if (model.iter_previous (ref target)) {
+				while (model.iter_children (out tmp, target)) {
+					target = tmp;
+					while (model.iter_next (ref tmp)) {
 						target = tmp;
-						while (model.iter_next (ref tmp))
-						{
-							target = tmp;
-						}
-					} else {
-						target = curr;
-						result = false;
 					}
-				} else {
+				}
+			} else {
+				if (!model.iter_parent (out target, curr)) {
 					target = curr;
 					result = false;
 				}
-				
 			}
 			
 			return result;	
