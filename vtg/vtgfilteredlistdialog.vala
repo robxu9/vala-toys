@@ -216,7 +216,12 @@ namespace Vtg
 						count--;
 					}
 					if (count == 0) {
+						// now go to the last item
 						target = tmp;
+						while (model.iter_next (ref tmp))
+						{
+							target = tmp;
+						}
 					} else {
 						target = curr;
 						result = false;
