@@ -71,7 +71,7 @@ namespace Afrodite
 						var sr = symbol.source_references.get(0);
 						string cause = null;
 					
-						if (symbol.symbol_type.unresolved) {
+						if (symbol.symbol_type != null && symbol.symbol_type.unresolved) {
 							cause = "symbol_type: %s".printf (symbol.symbol_type.type_name);
 						}
 
