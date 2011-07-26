@@ -21,7 +21,7 @@ afrodite/completionengine.vala
 afrodite/symbol.vala
 afrodite/astmerger.vala
 afrodite/datatype.vala
-afrodite/ast.vala
+afrodite/codedom.vala
 afrodite/symbolresolver.vala
 afrodite/astdumper.vala
 afrodite/parser.vala
