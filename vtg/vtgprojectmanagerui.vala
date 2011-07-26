@@ -554,38 +554,54 @@ namespace Vtg
 		
 		private void on_project_goto_document (Gtk.Action action)
 		{
-			var project = _plugin_instance.project_view.current_project.project;
-			return_if_fail (project != null);
+			var default_project = Vtg.Plugin.main_instance.projects.default_project;
+			var projects = Vtg.Plugin.main_instance.projects.project_managers;
+			return_if_fail (projects != null);
 			var image = new Gtk.Image();
 			
 			TreeIter iter;
+			TreeIter? project_iter = null;
+			
 			Gtk.TreeStore model = FilteredListDialog.create_model ();
-			foreach (Vbf.Group group in project.get_groups ()) {
-				foreach (Vbf.Target target in group.get_targets ()) {
-					if (target.has_sources_of_type (FileTypes.VALA_SOURCE)) {
-						TreeIter target_iter;
-						model.append (out target_iter, null);
-						model.set (target_iter, 
-							FilteredListDialogColumns.NAME, target.name, 
-							FilteredListDialogColumns.MARKUP, target.name, 
-							FilteredListDialogColumns.VISIBILITY, true, 
-							FilteredListDialogColumns.OBJECT, target,
-							FilteredListDialogColumns.ICON, 
-								image.render_icon (Utils.get_stock_id_for_target_type (target.type), IconSize.BUTTON, ""),
-							FilteredListDialogColumns.SELECTABLE, false);
-						foreach (Vbf.Source src in target.get_sources ()) {
-							model.append (out iter, target_iter);
-							model.set (iter, 
-								FilteredListDialogColumns.NAME, src.name, 
-								FilteredListDialogColumns.MARKUP, src.name, 
+			foreach (ProjectManager prj in projects) {
+				if (projects.size > 2 || (projects.size > 1 && default_project.all_vala_sources.size > 0)) {
+					model.append (out project_iter, null);
+					model.set (project_iter, 
+						FilteredListDialogColumns.NAME, prj.project.name, 
+						FilteredListDialogColumns.MARKUP, prj.project.name, 
+						FilteredListDialogColumns.VISIBILITY, true, 
+						FilteredListDialogColumns.OBJECT, prj,
+						FilteredListDialogColumns.ICON, 
+							Utils.icon_project,
+						FilteredListDialogColumns.SELECTABLE, false);
+				}
+				foreach (Vbf.Group group in prj.project.get_groups ()) {
+					foreach (Vbf.Target target in group.get_targets ()) {
+						if (target.has_sources_of_type (FileTypes.VALA_SOURCE)) {
+							TreeIter target_iter;
+							model.append (out target_iter, project_iter);
+							model.set (target_iter, 
+								FilteredListDialogColumns.NAME, target.name, 
+								FilteredListDialogColumns.MARKUP, target.name, 
 								FilteredListDialogColumns.VISIBILITY, true, 
-								FilteredListDialogColumns.OBJECT, src,
-								FilteredListDialogColumns.ICON, image.render_icon (Gtk.Stock.FILE, IconSize.BUTTON, ""),
-								FilteredListDialogColumns.SELECTABLE, true);
+								FilteredListDialogColumns.OBJECT, target,
+								FilteredListDialogColumns.ICON, 
+									image.render_icon (Utils.get_stock_id_for_target_type (target.type), IconSize.BUTTON, ""),
+								FilteredListDialogColumns.SELECTABLE, false);
+							foreach (Vbf.Source src in target.get_sources ()) {
+								model.append (out iter, target_iter);
+								model.set (iter, 
+									FilteredListDialogColumns.NAME, src.name, 
+									FilteredListDialogColumns.MARKUP, src.name, 
+									FilteredListDialogColumns.VISIBILITY, true, 
+									FilteredListDialogColumns.OBJECT, src,
+									FilteredListDialogColumns.ICON, image.render_icon (Gtk.Stock.FILE, IconSize.BUTTON, ""),
+									FilteredListDialogColumns.SELECTABLE, true);
+							}
 						}
 					}
-				}
-			}						
+				}						
+			}
 			var dialog = new FilteredListDialog (model);
 			dialog.set_transient_for (_plugin_instance.window);
 			if (dialog.run ()) {

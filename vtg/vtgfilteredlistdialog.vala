@@ -171,39 +171,64 @@ namespace Vtg
 			_button_ok.set_sensitive (can_select_current_row ());
 		}
 		
-		private void move_cursor_down (TreeModel model, TreeIter curr, out TreeIter target)
+		private bool move_cursor_down (TreeModel model, TreeIter curr, out TreeIter target)
 		{
+			bool result = true;
 			if (model.iter_has_child(curr)) {
 				model.iter_children (out target, curr);
 			} else {
 				target = curr;
 				if (!model.iter_next (ref target)) {
-					model.iter_parent (out target, curr);
-					if (!model.iter_next (ref target))
+					TreeIter tmp = curr;
+					while (model.iter_parent (out target, tmp)) {
+						tmp = target;
+					}
+					target = tmp; // last valid iter
+					if (!model.iter_next (ref target)) {
 						target = curr;
-				}
-			}			
-		}
-		
-		private void move_cursor_up (TreeModel model, TreeIter curr, out TreeIter target)
-		{
-			TreePath path = model.get_path (curr);
-			if (path.prev ()) {
-				model.get_iter (out curr, path);
-				if (model.iter_has_child(curr)) {
-					int nch = model.iter_n_children (curr);
-					model.iter_nth_child (out target, curr, nch - 1);
-				} else {
-					target = curr;
-				}
-			} else {
-				path = model.get_path (curr);
-				if (path.get_depth () > 1 && path.up ()) {
-					model.get_iter (out target, path);
-				} else {
-					target = curr;
+						result = false;
+					}
 				}
 			}
+			
+			return result;	
+		}
+		
+		private bool move_cursor_up (TreeModel model, TreeIter curr, out TreeIter target)
+		{
+			bool result = true;
+
+			target = curr;
+			if (!model.iter_previous (ref target)) {
+				// we should go up until the first level
+				// move previous and then try to go down again
+				int count = 0;
+				TreeIter tmp = curr;
+				while (model.iter_parent (out target, tmp)) {
+					tmp = target;
+					count++;
+				}
+				target = tmp; // last valid iter
+				if (model.iter_previous (ref target)) {
+					tmp = target;
+					while (model.iter_children (out target, tmp) && count > 0) {
+						tmp = target;
+						count--;
+					}
+					if (count == 0) {
+						target = tmp;
+					} else {
+						target = curr;
+						result = false;
+					}
+				} else {
+					target = curr;
+					result = false;
+				}
+				
+			}
+			
+			return result;	
 		}
 				
 		private bool on_entry_key_press (Gtk.Widget sender, Gdk.EventKey evt)
@@ -217,20 +242,20 @@ namespace Vtg
 				
 				if (_treeview.get_selection ().get_selected (out model, out curr)) {
 					if (evt.keyval == Gdk.Key_Down) {
-						move_cursor_down (model, curr, out target);
-
-						model.get (target, FilteredListDialogColumns.SELECTABLE, out selectable);
-						if (!selectable) {
+						while (move_cursor_down (model, curr, out target)) {
+							model.get (target, FilteredListDialogColumns.SELECTABLE, out selectable);
+							if (selectable) {
+								break;
+							}
 							curr = target;
-							move_cursor_down (model, curr, out target);
 						}
 					} else {
-						move_cursor_up (model, curr, out target);	
-
-						model.get (target, FilteredListDialogColumns.SELECTABLE, out selectable);
-						if (!selectable) {
+						while (move_cursor_up (model, curr, out target)) {
+							model.get (target, FilteredListDialogColumns.SELECTABLE, out selectable);
+							if (selectable) {
+								break;
+							}
 							curr = target;
-							move_cursor_up (model, curr, out target);
 						}
 					}
 				} else {
@@ -241,7 +266,13 @@ namespace Vtg
 					model.get (target, FilteredListDialogColumns.SELECTABLE, out selectable);
 					if (!selectable) {
 						curr = target;
-						move_cursor_down (model, curr, out target);
+						while (move_cursor_down (model, curr, out target)) {
+							model.get (target, FilteredListDialogColumns.SELECTABLE, out selectable);
+							if (selectable) {
+								break;
+							}
+							curr = target;
+						}
 					}					
 				}
 				path = model.get_path (target);

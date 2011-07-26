@@ -12,6 +12,7 @@ vtg_icons_DATA = \
 	element-namespace-16.png \
 	element-property-16.png \
 	element-structure-16.png \
+	project-16.png \
 	private-symbols-22.png \
 	protected-symbols-22.png \
 	internal-symbols-22.png \

@@ -52,6 +52,13 @@ namespace Vtg
 			_project_managers.add (_default_project);
 		}
 		
+		internal Vtg.ProjectManager default_project
+		{
+			get {
+				return _default_project;
+			}
+		}
+		
 		internal Vala.List<Vtg.ProjectManager> project_managers
 		{
 			get {

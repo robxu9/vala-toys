@@ -276,6 +276,8 @@ namespace Vtg
 		public static Gdk.Pixbuf icon_enum;
 		public static Gdk.Pixbuf icon_namespace;
 
+		public static Gdk.Pixbuf icon_project;
+		
 		[Diagnostics]
 		[PrintfFormat]
 		internal static inline void trace (string format, ...)
@@ -448,7 +450,8 @@ namespace Vtg
 				icon_enum = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-enumeration-16.png"));
 				icon_const = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-literal-16.png"));
 				icon_namespace = new Gdk.Pixbuf.from_file (Utils.get_image_path ("element-namespace-16.png"));	
-
+				icon_project = new Gdk.Pixbuf.from_file (Utils.get_image_path ("project-16.png"));
+				
 				_initialized = true;
 			} catch (Error err) {
 				warning (err.message);
