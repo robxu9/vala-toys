@@ -1,3 +1,13 @@
+Vala toys for gEdit version 0.12.0
+==================================
+
+* Improved build system for project templates
+* Afrodite: api cleanup and a lot of bug fixing and refactory
+* Vala Toys: speedup outliner view
+* Vala Toys: added multiproject support to goto document dialog
+* Vala Toys: new icons in the project view
+* Test suite: added a new integrity test
+
 Vala toys for gEdit version 0.11.2
 ==================================
 
