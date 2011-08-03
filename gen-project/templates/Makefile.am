@@ -29,14 +29,14 @@ templates.stamp: $(TEMPLATES_DIRS)
 	touch $@
 
 nodist_templates_DATA = \
-	templates.stamp \  
+	templates.stamp \ 
         $(TEMPLATES:.template=.ini) \
         $(TEMPLATES:.template=.png) \
         $(TEMPLATES:.template=.tar.gz) \
 	$(NULL)
  
 CLEANFILES = \
-	templates.stamp \  
+	templates.stamp \ 
 	$(TEMPLATES:.template=.ini) \
 	$(TEMPLATES:.template=.png) \
 	$(TEMPLATES:.template=.tar.gz) \
