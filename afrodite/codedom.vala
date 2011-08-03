@@ -152,11 +152,13 @@ namespace Afrodite
 		internal void remove_source (SourceFile source)
 		{
 			return_if_fail (source_files != null);
-			foreach (Afrodite.Symbol symbol in source.symbols) {
-				if (symbol.has_source_references && symbol.source_references.size == 1) {
-					source.remove_symbol_from_codedom (symbol);
+			if (source.has_symbols) {
+				foreach (Afrodite.Symbol symbol in source.symbols) {
+					if (symbol.has_source_references && symbol.source_references.size == 1) {
+						source.remove_symbol_from_codedom (symbol);
+					}
 				}
-			} 
+			}
 			source_files.remove (source);
 		}
 		
