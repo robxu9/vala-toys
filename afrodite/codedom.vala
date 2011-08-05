@@ -35,8 +35,10 @@ namespace Afrodite
 		{
 			Utils.trace ("CodeDom destroy");
 			// destroy the root symbol
-			foreach (SourceFile file in source_files) {
-				file.codedom = null;
+			if (has_source_files) {
+				foreach (SourceFile file in source_files) {
+					file.codedom = null;
+				}
 			}
 			_root = null;
 			source_files = null;// source have to be destroyed after root symbol
