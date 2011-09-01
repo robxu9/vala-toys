@@ -16,7 +16,7 @@ LIBVALA = libvala-$(VALA_VERSION)
 
 BUILT_SOURCES = tests_basic.vala.stamp tests_var.vala.stamp tests_integrity.vala.stamp
 
-COMMON_FLAGS = -g --vapidir .. --vapidir . --pkg glib-assert --pkg afrodite@PACKAGE_SUFFIX@ --pkg $(LIBVALA)
+COMMON_FLAGS = -g --vapidir .. --vapidir . --pkg glib-assert --pkg libafrodite@PACKAGE_SUFFIX@ --pkg $(LIBVALA)
 
 TESTDATA = \
 	$(NULL)

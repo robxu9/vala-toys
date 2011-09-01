@@ -64,7 +64,7 @@ libafrodite@PACKAGE_SUFFIX@_la_SOURCES = \
 	$(NULL)
 
 libafrodite_la.vala.stamp: $(libafrodite_la_VALASOURCES)
-	$(VALAC) $(DEBUG_FLAGS) -C -H afrodite.h --library afrodite@PACKAGE_SUFFIX@ --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg libvala-$(VALA_VERSION) --pkg utils --basedir $(top_srcdir)/afrodite $^
+	$(VALAC) $(DEBUG_FLAGS) -C -H afrodite.h --library libafrodite@PACKAGE_SUFFIX@ --vapidir ../vapi --pkg gio-2.0 --pkg config --pkg libvala-$(VALA_VERSION) --pkg utils --basedir $(top_srcdir)/afrodite $^
 	touch $@
 
 libafrodite@PACKAGE_SUFFIX@_la_LDFLAGS = \
@@ -84,7 +84,7 @@ afroditetest_SOURCES = \
 	$(NULL)
 
 afroditetest.vala.stamp: $(afroditetest_VALASOURCES)
-	$(VALAC) $(DEBUG_FLAGS) -C --vapidir ../vapi --vapidir ./ --pkg afrodite@PACKAGE_SUFFIX@ --pkg gio-2.0 --pkg config --pkg libvala-$(VALA_VERSION) --pkg utils --basedir $(top_srcdir)/afrodite $^
+	$(VALAC) $(DEBUG_FLAGS) -C --vapidir ../vapi --vapidir ./ --pkg libafrodite@PACKAGE_SUFFIX@ --pkg gio-2.0 --pkg config --pkg libvala-$(VALA_VERSION) --pkg utils --basedir $(top_srcdir)/afrodite $^
 	touch $@
 
 afroditetest_LDADD = \
@@ -93,14 +93,14 @@ afroditetest_LDADD = \
 	$(NULL)
 
 vapidir = @VAPIDIR@
-vapi_DATA = afrodite@PACKAGE_SUFFIX@.vapi
+vapi_DATA = libafrodite@PACKAGE_SUFFIX@.vapi
 
 EXTRA_DIST = \
 	$(libafrodite_la_VALASOURCES) \
 	$(afroditetest_VALASOURCES) \
 	libafrodite_la.vala.stamp \
 	afroditetest.vala.stamp \
-	afrodite@PACKAGE_SUFFIX@.vapi \
+	libafrodite@PACKAGE_SUFFIX@.vapi \
 	libafrodite.pc.in \
 	$(NULL)
 
@@ -112,7 +112,7 @@ DISTCLEANFILES = \
 	$(NULL)
 
 MAINTAINERCLEANFILES = \
-	afrodite@PACKAGE_SUFFIX@.vapi \
+	libafrodite@PACKAGE_SUFFIX@.vapi \
 	libafrodite.pc \
 	libafrodite@PACKAGE_SUFFIX@.pc \
 	afrodite.h \
