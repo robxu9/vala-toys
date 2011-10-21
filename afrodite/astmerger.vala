@@ -219,12 +219,14 @@ namespace Afrodite
 		private Afrodite.Symbol add_symbol (Afrodite.Symbol parent, MemberType type, Vala.Symbol s, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var name = s.name;
+			
 			if (name == null) {
 				name = "%s:%s".printf(type.to_string ().down(), _current.fully_qualified_name);
 			}
 			
 			var symbol = new Afrodite.Symbol (name, type);
-			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
+			source_ref = symbol.lookup_source_reference_filename (_source_file.filename);
+			if (source_ref == null) {
 				var sr = create_source_reference (s, last_line, last_column);
 				symbol.add_source_reference (sr);
 				source_ref = sr;
@@ -238,7 +240,8 @@ namespace Afrodite
 		private Afrodite.Symbol add_codenode (Afrodite.Symbol parent, string name, MemberType type, Vala.CodeNode c, out unowned Afrodite.SourceReference source_ref, int last_line = 0, int last_column = 0)
 		{
 			var symbol = new Afrodite.Symbol (name, type);
-			if (symbol.lookup_source_reference_filename (_source_file.filename) == null) {
+			source_ref = symbol.lookup_source_reference_filename (_source_file.filename);
+			if (source_ref == null) {
 				var sr = create_source_reference (c, last_line, last_column);
 				symbol.add_source_reference (sr);
 				source_ref = sr;
