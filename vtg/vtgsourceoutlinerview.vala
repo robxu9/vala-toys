@@ -74,7 +74,7 @@ namespace Vtg
                                         </popup>
                                         </ui>""";
 
-		const ActionEntry[] _action_entries = {
+		const Gtk.ActionEntry[] _action_entries = {
 			{"source-outliner-goto", Gtk.Stock.OPEN, N_("Goto definition..."), null, N_("Goto symbol definition"), on_source_outliner_goto}
 		};
 

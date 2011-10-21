@@ -131,7 +131,7 @@ namespace Vtg
                                         </ui>""";
 		private uint _ui_id;
 
-		const ActionEntry[] _action_entries = {
+		const Gtk.ActionEntry[] _action_entries = {
 			{"ProjectNew", null, N_("_New Project..."), null, N_("Create a new project"), on_project_new},
 			{"ProjectOpen", null, N_("Op_en Project..."), "<control><alt>O", N_("Open an existing project"), on_project_open},
 			{"ProjectSaveAll", null, N_("Save All"), null, N_("Save all project files"), on_project_save_all},			

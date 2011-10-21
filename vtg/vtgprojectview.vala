@@ -56,7 +56,7 @@ namespace Vtg
                                         </ui>""";
 
 
-		const ActionEntry[] _action_entries = {
+		const Gtk.ActionEntry[] _action_entries = {
 			{"packages-open-configure", Gtk.Stock.OPEN, N_("Open configure file..."), "<control><shift>C", N_("Open configure.ac file"), on_packages_open_configure},
 			{"target-open-makefile", Gtk.Stock.OPEN, N_("Open makefile"), "<control><shift>M", N_("Open makefile.am file"), on_target_open_makefile}
 		};
