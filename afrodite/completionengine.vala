@@ -376,7 +376,7 @@ namespace Afrodite
 
 					// if I already parsed this source and this copy is a live gedit buffer
 					// and the parsing contains some error, I maintain the previous copy in the ast
-					if (!(source_exists && result.is_edited && result.errors.size > 0))
+					if (!(source_exists && result.is_edited && result.error_messages.size > 0))
 					{
 						// if the source was already parsed and it's not opend in a edit window
 						if (source_exists && !result.is_edited) {

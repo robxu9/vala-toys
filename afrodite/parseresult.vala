@@ -26,9 +26,9 @@ namespace Afrodite
 {
 	public class ParseResult : Vala.Report
 	{
-		public Vala.List<string> warnings = new Vala.ArrayList<string> ();
-		public Vala.List<string> errors = new Vala.ArrayList<string> ();
-		public Vala.List<string> notes = new Vala.ArrayList<string> ();
+		public Vala.List<string> warning_messages = new Vala.ArrayList<string> ();
+		public Vala.List<string> error_messages = new Vala.ArrayList<string> ();
+		public Vala.List<string> note_messages = new Vala.ArrayList<string> ();
 
 		public string source_path = null;
 		public bool is_glib = false;
@@ -39,21 +39,21 @@ namespace Afrodite
 		{
 			base.warn (source, message);
 			if (source != null)
-				warnings.add ("%s: warning: %s\n".printf (source.to_string (), message));
+				warning_messages.add ("%s: warning: %s\n".printf (source.to_string (), message));
 		}
 
 		public override void err (Vala.SourceReference? source, string message)
 		{
 			base.err (source, message);
 			if (source != null)
-				errors.add ("%s: error: %s\n".printf (source.to_string (), message));
+				error_messages.add ("%s: error: %s\n".printf (source.to_string (), message));
 		}
 
 		public override void note (Vala.SourceReference? source, string message)
 		{
 			base.note (source, message);
 			if (source != null)
-				notes.add ("%s: note: %s\n".printf (source.to_string (), message));
+				note_messages.add ("%s: note: %s\n".printf (source.to_string (), message));
 		}
 	}
 }

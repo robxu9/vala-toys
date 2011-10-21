@@ -402,10 +402,10 @@ namespace Vtg
 
 		public void update_parse_result (string filename, Afrodite.ParseResult parse_result)
 		{
-			foreach (string message in parse_result.errors) {
+			foreach (string message in parse_result.error_messages) {
 				add_message (OutputTypes.AUTO_BUILD, message);
 			}
-			foreach (string message in parse_result.warnings) {
+			foreach (string message in parse_result.warning_messages) {
 				add_message (OutputTypes.AUTO_BUILD, message);
 			}
 			update_toolbar_button_status ();
