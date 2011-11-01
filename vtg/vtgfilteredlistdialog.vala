@@ -61,14 +61,17 @@ namespace Vtg
 		private Gtk.Button _button_ok;
 		
 		public TreeIter selected_iter;
+
+		private unowned Gtk.TreeIterCompareFunc? _custom_compare_func = null;
 		
-		public FilteredListDialog (TreeStore model, Gtk.TreeIterCompareFunc? compare_func = null)
+		public FilteredListDialog (TreeStore model, Gtk.TreeIterCompareFunc? custom_compare_func = null)
 		{
 			this._child_model = model;
-			initialize_ui (compare_func);
+			this._custom_compare_func = custom_compare_func;
+			initialize_ui ();
 		}
 
-		private void initialize_ui (Gtk.TreeIterCompareFunc? compare_func)
+		private void initialize_ui ()
 		{
 			var builder = new Gtk.Builder ();
 			try {
@@ -105,10 +108,7 @@ namespace Vtg
 			
 			_sorted_model = new Gtk.TreeModelSort.with_model (_filtered_model);
 			_sorted_model.set_sort_column_id (Columns.NAME, SortType.ASCENDING);
-			if (compare_func == null)
-				_sorted_model.set_sort_func (Columns.NAME, this.sort_model);
-			else
-				_sorted_model.set_sort_func (Columns.NAME, compare_func);
+			_sorted_model.set_sort_func (Columns.NAME, this.sort_model);
 			
 			_treeview.set_model (_sorted_model);
 			_treeview.get_selection ().set_mode (SelectionMode.SINGLE);
@@ -399,13 +399,17 @@ namespace Vtg
 		
 		private int sort_model (TreeModel model, TreeIter a, TreeIter b)
 		{
-			string vala;
-			string valb;
+			if (_custom_compare_func != null) {
+				return _custom_compare_func (model, a, b);
+			} else {
+				string vala;
+				string valb;
 			
-			model.get (a, FilteredListDialogColumns.NAME, out vala);
-			model.get (b, FilteredListDialogColumns.NAME, out valb);
-			
-			return PathUtils.compare_vala_filenames (vala,valb);
+				model.get (a, FilteredListDialogColumns.NAME, out vala);
+				model.get (b, FilteredListDialogColumns.NAME, out valb);
+
+				return PathUtils.compare_vala_filenames (vala,valb);
+			}
 		}
 	}
 }

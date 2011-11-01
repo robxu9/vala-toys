@@ -248,11 +248,12 @@ namespace Vtg
 			}
 		}
 
-		private bool lookup_iter_for_project_name (string project_name, out TreeIter combo_iter)
+		private bool lookup_iter_for_project_name (string project_name, out TreeIter? combo_iter)
 		{
 			TreeModel model = _prjs_combo.get_model ();
 			Gtk.TreeIter iter;
 			
+			combo_iter = null;
 			bool valid = model.get_iter_first (out iter);
 			while (valid) {
 				string name;
