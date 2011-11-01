@@ -40,7 +40,7 @@ if ENABLE_DEBUG
 endif
 
 
-libvtgdir = $(datadir)/gedit/plugins
+libvtgdir = $(libdir)/gedit/plugins
 
 libvtg_LTLIBRARIES = libvtg.la
 
