@@ -26,6 +26,7 @@ vala_gen_project_VALAFLAGS = --vapidir $(srcdir)/../vapi --vapidir $(srcdir)/lib
 vala_gen_project_LDADD = \
 	./libgen-project/libgen-project.la
 	$(GENPROJECT_LIBS) \
+	$(LIBM) \
 	$(NULL)
 
 EXTRA_DIST = \

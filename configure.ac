@@ -112,11 +112,13 @@ AC_ARG_ENABLE([vtg-plugin],
 AC_SUBST(VALA_VERSION)
 AC_DEFINE_UNQUOTED([VALA_VERSION], ["$VALA_VERSION"], [Vala vapi directory version suffix])
 
+
 # dummy check to initialize pkg-config. Is this a PKG_CHECK_MODULES bug?
 PKG_CHECK_MODULES(GLIB, [glib-2.0 >= $GLIB_REQUIRED],,)
 
 ### gen-project ###############################################
 if test "x${genprj}" != xno ; then
+	AC_CHECK_LIBM
 	PKG_CHECK_MODULES(GENPROJECT, 
 		[glib-2.0 >= $GLIB_REQUIRED gobject-2.0 >= $GLIB_REQUIRED gtk+-3.0 >= $GTK_REQUIRED],
 		HAVE_GENPROJECT=1,
@@ -137,6 +139,7 @@ fi
 AC_SUBST(GENPROJECT_CFLAGS)
 AC_SUBST(GENPROJECT_LIBS)
 AC_SUBST(HAVE_GENPROJECT)
+AC_SUBST(LIBM)
 AM_CONDITIONAL([HAVE_GENPROJECT], [test "x$HAVE_GENPROJECT" = x1])
 
 ###############################################################
