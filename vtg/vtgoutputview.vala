@@ -263,7 +263,7 @@ namespace Vtg
 
 				if (!StringUtils.is_null_or_empty(line))
 				{
-					_messages.insert (iter, line, -1);
+					_messages.insert (ref iter, line, -1);
 				}
 			}
 			_textview.scroll_mark_onscreen (_messages.get_insert ());

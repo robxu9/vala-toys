@@ -56,7 +56,7 @@ namespace Afrodite
 
 			try {
 				var info = File.new_for_path (_filename).query_info (GLib.FILE_ATTRIBUTE_TIME_MODIFIED + "," + GLib.FILE_ATTRIBUTE_TIME_MODIFIED_USEC, FileQueryInfoFlags.NONE);
-				info.get_modification_time (out new_value);
+				new_value = info.get_modification_time ( );
 				result = !(last_modification_time.tv_sec == new_value.tv_sec
 					   && last_modification_time.tv_usec == new_value.tv_usec);
 				last_modification_time = new_value;

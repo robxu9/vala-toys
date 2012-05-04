@@ -71,7 +71,7 @@ namespace Vtg
 			SOURCECODE_OUTLINER
 	        }
 
-		public Vala.List<PluginInstance> instances
+		internal Vala.List<PluginInstance> instances
 		{
 			get { return _instances; }
 		}
