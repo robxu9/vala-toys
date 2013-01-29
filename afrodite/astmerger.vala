@@ -292,12 +292,12 @@ namespace Afrodite
 			int first_column = 0;
 			
 			if (s.source_reference != null) {
-				first_line = s.source_reference.first_line;
-				first_column = s.source_reference.first_column;
+				first_line = s.source_reference.begin.line;
+				first_column = s.source_reference.begin.column;
 				if (last_line == 0)
-					last_line = s.source_reference.last_line;
+					last_line = s.source_reference.end.line;
 				if (last_column == 0)
-					last_column = s.source_reference.last_column;
+					last_column = s.source_reference.end.column;
 			}
 			source_ref.first_line = first_line;
 			source_ref.first_column = first_column;
@@ -354,7 +354,7 @@ namespace Afrodite
 			set_fqn (m.name);
 			int last_line = 0;
 			if (m.body != null && m.body.source_reference != null)
-				last_line = m.body.source_reference.last_line;
+				last_line = m.body.source_reference.end.line;
 				
 			var s = add_symbol (_current, MemberType.METHOD, m, out _current_sr, last_line);
 			s.return_type = new DataType (m.return_type.to_string ());
@@ -403,7 +403,7 @@ namespace Afrodite
 			set_fqn (m.name);
 			int last_line = 0;
 			if (m.body != null && m.body.source_reference != null)
-				last_line = m.body.source_reference.last_line;
+				last_line = m.body.source_reference.end.line;
 				
 			var s = add_symbol (_current, MemberType.CREATION_METHOD, m, out _current_sr, last_line);
 			if (m.name == ".new")
@@ -453,7 +453,7 @@ namespace Afrodite
 			set_fqn ("constructor:%s".printf(_current.fully_qualified_name));
 			int last_line = 0;
 			if (m.body != null && m.body.source_reference != null)
-				last_line = m.body.source_reference.last_line;
+				last_line = m.body.source_reference.end.line;
 				
 			var s = add_symbol (_current, MemberType.CONSTRUCTOR, m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
@@ -480,7 +480,7 @@ namespace Afrodite
 			set_fqn ("destructor:%s".printf(_current.fully_qualified_name));
 			int last_line = 0;
 			if (m.body != null && m.body.source_reference != null)
-				last_line = m.body.source_reference.last_line;
+				last_line = m.body.source_reference.end.line;
 				
 			var s = add_symbol (_current, MemberType.DESTRUCTOR, m, out _current_sr, last_line);
 			s.binding =  get_vala_member_binding (m.binding);
@@ -650,17 +650,17 @@ namespace Afrodite
 			if (p.get_accessor != null) {
 				var body = p.get_accessor.body;
 				if (body != null && body.source_reference != null)
-					last_line = body.source_reference.last_line;
+					last_line = body.source_reference.end.line;
 			}
 			if (p.set_accessor != null) {
 				var body = p.set_accessor.body;
-				if (body != null && body.source_reference != null && body.source_reference.last_line > last_line)
-					last_line = body.source_reference.last_line;
+				if (body != null && body.source_reference != null && body.source_reference.end.line > last_line)
+					last_line = body.source_reference.end.line;
 			}
 
 			if (p.initializer != null) {
-				if (p.initializer.source_reference != null && p.initializer.source_reference.last_line > last_line)
-					last_line = p.initializer.source_reference.last_line;
+				if (p.initializer.source_reference != null && p.initializer.source_reference.end.line > last_line)
+					last_line = p.initializer.source_reference.end.line;
 			}
 
 			var s = add_symbol (_current, MemberType.PROPERTY, p, out _current_sr, last_line);
@@ -785,8 +785,8 @@ namespace Afrodite
 		{
 			if (_current != null && _current_sr != null) {
 				// see if this block extends a parent symbol
-				if (b.source_reference != null && b.source_reference.last_line > _current_sr.last_line) {
-					_current_sr.last_line = b.source_reference.last_line;
+				if (b.source_reference != null && b.source_reference.end.line > _current_sr.last_line) {
+					_current_sr.last_line = b.source_reference.end.line;
 				}
 			}
 			b.accept_children (this);
@@ -1128,7 +1128,7 @@ namespace Afrodite
 			set_fqn ("!%s".printf (name));
 			int last_line = 0;
 			if (body != null && body.source_reference != null) {
-				last_line = body.source_reference.last_line;
+				last_line = body.source_reference.end.line;
 				//debug ("body for %s: %d,%d to %d,%d\n", name, body.source_reference.first_line, body.source_reference.first_column, body.source_reference.last_line, body.source_reference.last_column);
 			}
 				
